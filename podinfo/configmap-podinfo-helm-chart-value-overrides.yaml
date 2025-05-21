@@ -21,7 +21,7 @@ data:
 
     ui:
       color: "#34577c"
-      message: "👋 Greetings, fellow geek!"
+      message: " Greetings, fellow geek!"
       logo: "https://geek-cookbook.funkypenguin.co.nz/images/site-logo.svg"
 
     # failure conditions
@@ -37,7 +37,7 @@ data:
     service:
       enabled: true
       annotations: {}
-      type: ClusterIP
+      type: LoadBalancer
       metricsPort: 9797
       httpPort: 9898
       externalPort: 9898
