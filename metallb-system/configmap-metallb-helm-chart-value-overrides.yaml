@@ -312,7 +312,9 @@ speaker:
       # cpu: 100m
       # memory: 100Mi
   nodeSelector: {}
-  tolerations: []
+  tolerations: 
+    - key: "node-role.kubernetes.io/master"
+      effect: "NoSchedule"
   priorityClassName: ""
   affinity: {}
   ## Selects which runtime class will be used by the pod.
