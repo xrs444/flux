@@ -1,8 +1,8 @@
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
-  name: metallb-pool
+  name: production
   namespace: metallb-system
 spec:
   addresses:
-    - 172.21.0.0/24
+  - 172.21.0.1-172.21.0.254  # IP range for LoadBalancer services
