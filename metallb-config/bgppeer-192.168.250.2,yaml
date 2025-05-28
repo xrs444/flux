@@ -1,0 +1,48 @@
+# metallb-config.yaml
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: production
+  namespace: metallb-system
+spec:
+  addresses:
+  - 172.21.0.1-172.21.0.254  # IP range for LoadBalancer services
+---
+apiVersion: metallb.io/v1beta1
+kind: BGPPeer
+metadata:
+  name: xsvr1-peer
+  namespace: metallb-system
+spec:
+  myASN: 65001        # MetalLB's ASN
+  peerASN: 65000      # FRR's ASN (matches router bgp config)
+  peerAddress: 172.20.1.10  # xsvr1 IP
+---
+apiVersion: metallb.io/v1beta1
+kind: BGPPeer
+metadata:
+  name: xsvr2-peer
+  namespace: metallb-system
+spec:
+  myASN: 65001
+  peerASN: 65000
+  peerAddress: 172.20.1.20  # xsvr2 IP
+---
+apiVersion: metallb.io/v1beta1
+kind: BGPPeer
+metadata:
+  name: xsvr3-peer
+  namespace: metallb-system
+spec:
+  myASN: 65001
+  peerASN: 65000
+  peerAddress: 172.20.1.30  # xsvr3 IP
+---
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata:
+  name: production-advertisement
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - production
