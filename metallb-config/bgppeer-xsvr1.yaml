@@ -1,9 +1,0 @@
-apiVersion: metallb.io/v1beta2
-kind: BGPPeer
-metadata:
-  name: xsvr1-peer
-  namespace: metallb-system
-spec:
-  myASN: 65001        # MetalLB's ASN
-  peerASN: 65000      # FRR's ASN (matches router bgp config)
-  peerAddress: 172.20.1.10  # xsvr1 IP
