@@ -1,4 +1,4 @@
-apiVersion: metallb.io/v1beta12
+apiVersion: metallb.io/v1beta2
 kind: BGPPeer
 metadata:
   name: xsvr1-peer
