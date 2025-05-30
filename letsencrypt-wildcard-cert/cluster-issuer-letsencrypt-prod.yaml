@@ -4,17 +4,17 @@ metadata:
   name: letsencrypt-prod
 spec:
   acme:
-    email: batman@example.com
+    email: xrs444@xrs444.net
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
     - selector:
         dnsZones:
-          - "example.com"
+          - "xrs444.net"
       dns01:
         cloudflare:
-          email: batman@example.com
+          email: xrs444@xrs444.net
           apiTokenSecretRef:
             name: cloudflare-api-token-secret
             key: api-token
