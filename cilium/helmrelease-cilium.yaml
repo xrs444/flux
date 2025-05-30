@@ -4,7 +4,7 @@ metadata:
   name: cilium
   namespace: kube-system
 spec:
-  interval: 5m
+  interval: 15m
   chart:
     spec:
       chart: cilium
@@ -13,8 +13,6 @@ spec:
         kind: HelmRepository
         name: cilium
         namespace: kube-system
-      interval: 15m
-      timeout: 5m
   values:
     ipam:
       mode: kubernetes
@@ -56,4 +54,3 @@ spec:
     k8sServiceHost: localhost
     k8sServicePort: "7445"
     bgpControlPlane.enabled: true
-    
