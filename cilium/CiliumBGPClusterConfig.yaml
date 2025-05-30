@@ -1,0 +1,25 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPClusterConfig
+metadata:
+  name: cilium-bgp
+  namespace: kube-system
+spec:
+  bgpInstances:
+  - name: "nixos-hosts"
+    localASN: 65001
+    peers:
+    - name: "xsvr1"
+      peerASN: 65000
+      peerAddress: 172.20.1.10
+      peerConfigRef:
+        name: "xsvr-peer"
+    - name: "xsvr2"
+      peerASN: 65000
+      peerAddress: 172.20.1.20
+      peerConfigRef:
+        name: "xsvr-peer"
+    - name: "xsvr3"
+      peerASN: 65000
+      peerAddress: 172.20.1.30
+      peerConfigRef:
+        name: "xsvr-peer"
