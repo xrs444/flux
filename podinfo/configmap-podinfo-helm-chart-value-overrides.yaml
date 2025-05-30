@@ -105,7 +105,7 @@ data:
       name:
 
     # set container security context
-    securityContext: {}
+    securityContext: {"NET_BIND_SERVICE"}
 
     ingress:
       enabled: false
