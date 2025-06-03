@@ -16,3 +16,4 @@ spec:
       advertisements:
         matchLabels:
           advertise: "bgp"
+  authSecretRef: "testauth"
