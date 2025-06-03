@@ -4,15 +4,18 @@ metadata:
   name: cert-manager
   namespace: cert-manager
 spec:
-  interval: 5m
   chart:
     spec:
       chart: cert-manager
-      version: "1.17.x"
+      version: v1.7.x
       sourceRef:
         kind: HelmRepository
         name: jetstack
-        namespace: cert-manager
-      interval: 1m
-  values:
-    installCRDs: true
+        namespace: flux-system
+  interval: 15m
+  timeout: 5m
+  releaseName: cert-manager
+  valuesFrom:
+  - kind: ConfigMap
+    name: cert-manager-helm-chart-value-overrides
+    valuesKey: values.yaml # This is the default, but best to be explicit for clarity
