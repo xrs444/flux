@@ -7,7 +7,7 @@ spec:
   interval: 15m
   path: ./cert-manager
   prune: true # remove any elements later removed from the above path
-  timeout: 2m # if not set, this defaults to interval duration, which is 1h
+  timeout: 5m  # Increased from 2m to 5m
   sourceRef:
     kind: GitRepository
     name: flux-system
