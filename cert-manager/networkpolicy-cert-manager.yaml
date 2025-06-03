@@ -1,28 +1,29 @@
-apiVersion: "cilium.io/v1"
-kind: CiliumNetworkPolicy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
 metadata:
   name: cert-manager-webhook
   namespace: cert-manager
 spec:
-  endpointSelector:
+  podSelector:
     matchLabels:
       app.kubernetes.io/name: webhook
       app.kubernetes.io/instance: cert-manager
+  policyTypes:
+    - Ingress
+    - Egress
   ingress:
-    - fromEndpoints:
-        - {}  # Allow from all namespaces
-      toPorts:
-        - ports:
-            - port: "443"
-              protocol: TCP
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - port: 10250
+          protocol: TCP
   egress:
-    - toEndpoints:
-        - matchLabels:
-            k8s:io.kubernetes.pod.namespace: kube-system
-            k8s:k8s-app: kube-dns
-      toPorts:
-        - ports:
-            - port: "53"
-              protocol: UDP
-            - port: "53"
-              protocol: TCP
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
