@@ -8,7 +8,8 @@ spec:
     matchLabels:
       kubernetes.io/os: linux
   bgpInstances:
-    - localASN: 65001
+    - name: bgp-instance-1      # Added required name field
+      localASN: 65001
       exportPodCIDR: true
       neighbors:
         - peerAddress: "172.20.1.10"
