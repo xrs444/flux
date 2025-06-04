@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: traefik
-      version: "3.4.0"  # Using explicit version instead of 3.4.x
+      version: "3.4.0"
       sourceRef:
         kind: HelmRepository
         name: traefik
@@ -20,10 +20,27 @@ spec:
       retries: 3
   values:
     deployment:
-      kind: Deployment
+      enabled: true
+      replicas: 1
+    ingressRoute:
+      dashboard:
+        enabled: true
     service:
       enabled: true
   valuesFrom:
     - kind: ConfigMap
       name: traefik-helm-chart-value-overrides
       valuesKey: values.yaml
+  dependsOn:
+    - name: cert-manager
+      namespace: cert-manager
+  upgrade:
+    timeout: 5m
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: traefik
+      namespace: traefik
