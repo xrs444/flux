@@ -13,7 +13,3 @@ spec:
   families:
     - afi: ipv4
       safi: unicast
-      advertisements:
-        serviceSelector:
-          matchLabels:
-            type: loadbalancer
