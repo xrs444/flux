@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: traefik
-      version: 3.4.x 
+      version: "3.4.0"  # Using explicit version instead of 3.4.x
       sourceRef:
         kind: HelmRepository
         name: traefik
@@ -15,7 +15,15 @@ spec:
   interval: 15m
   timeout: 5m
   releaseName: traefik
+  install:
+    remediation:
+      retries: 3
+  values:
+    deployment:
+      kind: Deployment
+    service:
+      enabled: true
   valuesFrom:
-  - kind: ConfigMap
-    name: traefik-helm-chart-value-overrides
-    valuesKey: values.yaml # This is the default, but best to be explicit for clarity
+    - kind: ConfigMap
+      name: traefik-helm-chart-value-overrides
+      valuesKey: values.yaml
