@@ -63,3 +63,11 @@ spec:
     k8sServicePort: "7445"
     bgpControlPlane:
       enabled: true
+      announce:
+        loadbalancerIP: true
+        podCIDR: true
+    tunnel: disabled
+    ipv4NativeRoutingCIDR: "172.20.0.0/16"
+    loadBalancer:
+      algorithm: maglev
+      mode: dsr
