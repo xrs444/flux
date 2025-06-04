@@ -13,10 +13,7 @@ spec:
   families:
     - afi: ipv4
       safi: unicast
-      routeSelection:
-        localPref: 100
       advertisements:
-        podCIDR: true
         serviceSelector:
           matchLabels:
             type: loadbalancer
