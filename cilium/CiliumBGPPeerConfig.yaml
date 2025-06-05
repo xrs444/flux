@@ -13,5 +13,4 @@ spec:
   families:
     - afi: ipv4
       safi: unicast
-  authSecretRef:
-    name: "bgpsecret"
+  authSecretRef: "bgpsecret"
