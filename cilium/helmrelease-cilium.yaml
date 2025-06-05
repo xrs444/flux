@@ -17,9 +17,14 @@ spec:
     createNamespace: true
     remediation:
       retries: 3
+    crds: CreateReplace
   upgrade:
+    cleanupOnFail: true
     remediation:
+      remediateLastFailure: true
       retries: 3
+    force: true
+    crds: CreateReplace
   values:
     ipam:
       mode: kubernetes
