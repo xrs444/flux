@@ -14,3 +14,7 @@ spec:
     - afi: ipv4
       safi: unicast
   authSecretRef: "bgpsecret"
+  peerAddress: "172.20.1.101"  # Replace with your BGP peer's IP
+  peerPort: 179                    # Standard BGP port
+  peerASN: 65000                   # Replace with your peer's ASN
+  localASN: 65001                  # Replace with your local ASN
