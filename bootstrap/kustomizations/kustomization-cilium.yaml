@@ -7,7 +7,7 @@ spec:
   interval: 15m
   path: ./cilium
   prune: true
-  timeout: 5m
+  timeout: 15m
   sourceRef:
     kind: GitRepository
     name: flux-system
