@@ -4,17 +4,11 @@ metadata:
   name: "xsvr-peer"
   namespace: kube-system
 spec:
-  timers:
-    holdTimeSeconds: 9
-    keepAliveTimeSeconds: 3
-  gracefulRestart:
-    enabled: true
-    restartTimeSeconds: 15
-  families:
-    - afi: ipv4
-      safi: unicast
-  authSecretRef: "bgpsecret"
-  peerAddress: "172.20.1.101"  # Replace with your BGP peer's IP
-  peerPort: 179                    # Standard BGP port
-  peerASN: 65000                   # Replace with your peer's ASN
-  localASN: 65001                  # Replace with your local ASN
+  nodeSelector: {}  # Empty selector matches all nodes
+  virtualRouters:
+    - localASN: 65001
+      exportPodCIDR: true
+      neighbors:
+        - peerAddress: "172.20.1.101"
+          peerASN: 65000
+          authSecretRef: "bgpsecret"
