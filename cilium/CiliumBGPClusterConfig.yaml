@@ -11,18 +11,8 @@ spec:
     - name: xsvr-conn
       localASN: 65001
       peers:
-        - name: xsvr1
-          peerAddress: "172.20.1.10"
-          peerASN: 65000
-          peerConfigRef:
-            name: "xsvr-peer"
-        - name: xsvr2
-          peerAddress: "172.20.1.20"
-          peerASN: 65000
-          peerConfigRef:
-            name: "xsvr-peer"
-        - name: xsvr3
-          peerAddress: "172.20.1.30"
+        - name: xsvr-vip
+          peerAddress: "172.20.1.101"
           peerASN: 65000
           peerConfigRef:
             name: "xsvr-peer"
