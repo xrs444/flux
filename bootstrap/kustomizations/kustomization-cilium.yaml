@@ -6,9 +6,8 @@ metadata:
 spec:
   interval: 15m
   path: ./cilium
-  prune: true
+  prune: false
   timeout: 15m
   sourceRef:
     kind: GitRepository
     name: flux-system
-  force: true
