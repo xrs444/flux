@@ -8,8 +8,6 @@ spec:
   path: ./cilium
   prune: true
   timeout: 5m
-  dependsOn:
-    - name: helm-repositories
   sourceRef:
     kind: GitRepository
     name: flux-system
