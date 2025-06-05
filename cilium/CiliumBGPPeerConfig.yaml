@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v2alpha1
 kind: CiliumBGPPeerConfig
 metadata:
-  name: svr-peer
+  name: xsvr-peer
   namespace: kube-system
 spec:
   timers:
