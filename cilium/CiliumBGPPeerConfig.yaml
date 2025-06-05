@@ -4,7 +4,6 @@ metadata:
   name: "xsvr-peer"
   namespace: kube-system
 spec:
-  nodeSelector: {}  # Empty selector matches all nodes
   virtualRouters:
     - localASN: 65001
       exportPodCIDR: true
