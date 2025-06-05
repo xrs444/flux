@@ -70,7 +70,6 @@ spec:
       announce:
         loadbalancerIP: true
         podCIDR: true
-    tunnel: disabled
     ipv4NativeRoutingCIDR: "172.20.0.0/16"
     loadBalancer:
       algorithm: maglev
