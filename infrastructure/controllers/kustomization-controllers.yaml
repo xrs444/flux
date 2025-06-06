@@ -8,6 +8,6 @@ resources:
   - cilium
   - cert-manager
 #  - traefik
-  - longhorn
+#  - longhorn
   - sealedsecrets
   
