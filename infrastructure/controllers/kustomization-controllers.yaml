@@ -11,3 +11,4 @@ resources:
   - controllers/traefik
   - controllers/longhorn
   - controllers/sealedsecrets
+  
