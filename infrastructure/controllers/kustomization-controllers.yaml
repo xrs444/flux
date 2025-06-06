@@ -5,11 +5,11 @@ metadata:
   namespace: flux-system
 
 resources:
-- cert-manager/
-- cilium/
-- longhorn/
-- sealedsecrets/
-- traefik/
+- ./infrastructure/controllers/cert-manager
+- ./infrastructure/controllers/cilium
+- ./infrastructure/controllers/longhorn
+- ./infrastructure/controllers/sealedsecrets
+- ./infrastructure/controllers/traefik
 
 spec:
   interval: 10m
