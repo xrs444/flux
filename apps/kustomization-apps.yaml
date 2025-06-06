@@ -8,12 +8,12 @@ spec:
   interval: 10m
   retryInterval: 1m
   timeout: 10m
-  path: ./apps
+  path: ./apps  
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
   resources:
-    - jellyfin
-    - lubelogger
-    - podinfo
+    - ./jellyfin 
+    - ./lubelogger
+    - ./podinfo
