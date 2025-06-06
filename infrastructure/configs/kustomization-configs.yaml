@@ -6,4 +6,3 @@ metadata:
 resources:
   - configs/cluster-issuers
   - configs/reflector
-  - configs/sealedsecrets
