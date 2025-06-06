@@ -4,11 +4,10 @@ kind: Kustomization
 metadata:
   name: infra-controllers
   namespace: flux-system
-
 resources:
-  - controllers/cilium
-  - controllers/cert-manager
-  - controllers/traefik
-  - controllers/longhorn
-  - controllers/sealedsecrets
+  - cilium
+  - cert-manager
+  - traefik
+  - longhorn
+  - sealedsecrets
   
