@@ -15,7 +15,6 @@ spec:
   interval: 10m
   retryInterval: 1m
   timeout: 10m 
-  path: ./infrastructure/configs
   prune: true
   sourceRef:
     kind: GitRepository
