@@ -4,10 +4,6 @@ metadata:
   name: infra-configs
   namespace: flux-system
 
-resources:
-- reflector
-- cluster-issuers
-
 spec:
   interval: 10m
   retryInterval: 1m
@@ -19,3 +15,6 @@ spec:
     name: flux-system
   dependsOn:
     - name: infra-controllers
+  resources:
+    - reflector
+    - cluster-issuers
