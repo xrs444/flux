@@ -2,20 +2,16 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: infra-configs
-  namespace: flux-system
-
-resources:
-- reflector/
-- cluster-issuers/
-
 spec:
   interval: 10m
-  retryInterval: 1m
-  timeout: 5m
   path: ./infrastructure/configs
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  dependsOn:
-    - name: infra-controllers
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: cert-manager
+      namespace: cert-manager
+  timeout: 5m
