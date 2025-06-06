@@ -5,16 +5,17 @@ metadata:
   namespace: flux-system
 
 resources:
-- ./infrastructure/controllers/cert-manager
-- ./infrastructure/controllers/cilium
-- ./infrastructure/controllers/longhorn
-- ./infrastructure/controllers/sealedsecrets
-- ./infrastructure/controllers/traefik
+- cert-manager
+- cilium
+- longhorn
+- sealedsecrets
+- traefik
 
 spec:
   interval: 10m
   retryInterval: 1m
-  timeout: 10m 
+  timeout: 10m
+  path: ./infrastructure/controllers
   prune: true
   sourceRef:
     kind: GitRepository

@@ -5,8 +5,8 @@ metadata:
   namespace: flux-system
 
 resources:
-- ./infrastructure/configs/reflector
-- ./infrastructure/configs/cluster-issuers
+- reflector
+- cluster-issuers
 
 spec:
   interval: 10m
