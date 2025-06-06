@@ -19,8 +19,8 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  healthChecks:  # Add health checks for critical controllers
-    - apiVersion: apps/v1
+  healthChecks:
+    - apiVersion: "cilium.io/v2alpha1"
       kind: Deployment
       name: cilium
       namespace: cilium
