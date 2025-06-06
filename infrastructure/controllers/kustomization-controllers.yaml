@@ -11,17 +11,17 @@ resources:
 - sealedsecrets/
 - traefik/
 
-
 spec:
   interval: 10m
+  retryInterval: 1m
+  timeout: 10m 
   path: ./infrastructure/configs
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  healthChecks:
+  healthChecks:  # Add health checks for critical controllers
     - apiVersion: apps/v1
       kind: Deployment
-      name: cert-manager
-      namespace: cert-manager
-  timeout: 5m
+      name: cilium
+      namespace: cilium
