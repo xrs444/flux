@@ -4,6 +4,6 @@ metadata:
   name: apps
   namespace: flux-system
 resources:
-  - jellyfin
-  - lubelogger
-  - podinfo
+  - ./jellyfin
+  - ./lubelogger
+  - ./podinfo
