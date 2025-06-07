@@ -3,7 +3,6 @@ kind: Kustomization
 metadata:
   name: infra-controllers
   namespace: flux-system
-
 spec:
   interval: 10m
   retryInterval: 1m
@@ -14,13 +13,7 @@ spec:
     kind: GitRepository
     name: flux-system
   healthChecks:
-    - apiVersion: apps/v1  # Changed from cilium.io/v2alpha1
+    - apiVersion: apps/v1
       kind: Deployment
       name: cilium
       namespace: kube-system
-  resources:  # Moved resources under spec
-    - cert-manager
-    - cilium
-    - longhorn
-    - sealedsecrets
-    - traefik
