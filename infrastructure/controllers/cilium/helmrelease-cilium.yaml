@@ -36,9 +36,9 @@ spec:
       ui:
         enabled: true
       peerService:
-        clusterDomain: k.xrs444.net
+        clusterDomain: cluster.local
     etcd:
-      clusterDomain: k.xrs444.net
+      clusterDomain: cluster.local
     kubeProxyReplacement: true
     securityContext:
       capabilities:
