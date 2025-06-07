@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 15m
   path: ./infrastructure/controllers/cilium
-  prune: false
+  prune: true
   timeout: 15m
   sourceRef:
     kind: GitRepository
