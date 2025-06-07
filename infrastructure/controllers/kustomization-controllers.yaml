@@ -17,7 +17,7 @@ spec:
     - apiVersion: apps/v1  # Changed from cilium.io/v2alpha1
       kind: Deployment
       name: cilium
-      namespace: cilium
+      namespace: kube-system
   resources:  # Moved resources under spec
     - cert-manager
     - cilium
