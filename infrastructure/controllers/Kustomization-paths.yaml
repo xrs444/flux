@@ -9,3 +9,4 @@ resources:
   - ./longhorn
   - ./sealedsecrets
   - ./traefik
+  - ./traefik-crds
