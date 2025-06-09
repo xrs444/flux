@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: traefik-crds-helm-chart-value-overrides
-  namespace: traefik-crds
-data:
-  values.yaml: |-
