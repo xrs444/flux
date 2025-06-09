@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: traefik
-      version: "3.4.0"
+      version: "3.4.x"
       sourceRef:
         kind: HelmRepository
         name: traefik
@@ -40,3 +40,5 @@ spec:
   dependsOn:
     - name: cert-manager
       namespace: cert-manager
+    - name: traefik
+      namespace: traefik

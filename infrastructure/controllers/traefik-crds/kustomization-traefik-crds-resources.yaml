@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: traefik-crds
+  namespace: flux-system
+resources:
+  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-ingressroute.yaml
+  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-ingressroutetcp.yaml
+  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-ingressrouteudp.yaml
+  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-middleware.yaml
+  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-tlsoption.yaml
+  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-tlsstore.yaml
+  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-traefikservice.yaml
