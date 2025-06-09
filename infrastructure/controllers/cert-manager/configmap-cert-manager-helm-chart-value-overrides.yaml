@@ -5,7 +5,8 @@ metadata:
   namespace: cert-manager
 data:
   values.yaml: |-
-    installCRDs: true
+    CRDs:
+      enabled: true
     webhook:
       securePort: 10250
     global:
