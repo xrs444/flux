@@ -4,5 +4,6 @@ metadata:
   name: infra-configs
   namespace: flux-system
 resources:
-  - ./reflector
-  - ./cluster-issuers
+  - ./infrastructure/configs/bgp
+  - ./infrastructure/configs/cluster-issuers
+  - ./infrastructure/configs/reflector
