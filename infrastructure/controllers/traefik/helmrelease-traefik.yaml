@@ -18,11 +18,11 @@ spec:
   install:
     timeout: 10m
     remediation:
-      retries: 3
+      retries: 5
   upgrade:
     timeout: 5m
     remediation:
-      retries: 3
+      retries: 5
       remediateLastFailure: true
   values:
     deployment:

@@ -13,3 +13,13 @@ spec:
         name: longhorn-repo
       version: v1.7.2
   interval: 1m0s
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+    crds: CreateReplace
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      remediateLastFailure: true
+      retries: 5
