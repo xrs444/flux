@@ -16,7 +16,7 @@ spec:
   timeout: 5m
   releaseName: traefik
   install:
-    timeout: 5m
+    timeout: 10m
     remediation:
       retries: 3
   upgrade:
