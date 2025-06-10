@@ -18,6 +18,7 @@ spec:
     remediation:
       retries: 3
     crds: CreateReplace
+    timeout: 10m0s
   upgrade:
     cleanupOnFail: true
     remediation:
@@ -25,6 +26,7 @@ spec:
       retries: 3
     force: true
     crds: CreateReplace
+    timeout: 10m0s
   values:
     ipam:
       mode: kubernetes
