@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 15m
-  path: ./infrastructure/controllers/longhorn
+  path: ./longhorn
   prune: true
   timeout: 15m
   sourceRef:

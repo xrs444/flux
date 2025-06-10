@@ -73,5 +73,5 @@ spec:
     ipv4NativeRoutingCIDR: "172.20.0.0/16"
     loadBalancer:
       algorithm: maglev
-      mode: dsr
+      mode: hybrid
 
