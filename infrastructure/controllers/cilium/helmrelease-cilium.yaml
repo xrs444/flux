@@ -40,6 +40,12 @@ spec:
     etcd:
       clusterDomain: cluster.local
     kubeProxyReplacement: true
+    # Add DNS configuration
+    dns:
+      enabled: true
+    # Add DNS policy settings
+    enableXTSocketFallback: true
+    installNoConntrackIptablesRules: true
     securityContext:
       capabilities:
         ciliumAgent:
