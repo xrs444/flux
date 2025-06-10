@@ -5,10 +5,13 @@ metadata:
   namespace: flux-system
 path: ./infrastructure/controllers/traefik-crds
 resources:
-  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-ingressroute.yaml
-  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-ingressroutetcp.yaml
-  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-ingressrouteudp.yaml
-  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-middleware.yaml
-  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-tlsoption.yaml
-  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-tlsstore.yaml
-  - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-traefikservice.yaml
+  - https://github.com/traefik/traefik-helm-chart/tree/master/traefik-crds/crds-files/traefik/traefik.io_ingressroutes.yaml
+  - https://github.com/traefik/traefik-helm-chart/tree/master/traefik-crds/crds-files/traefik/traefik.io_ingressroutetcps.yaml
+  - https://github.com/traefik/traefik-helm-chart/tree/master/traefik-crds/crds-files/traefik/traefik.io_ingressrouteudps.yaml
+  - https://github.com/traefik/traefik-helm-chart/tree/master/traefik-crds/crds-files/traefik/traefik.io_middlewares.yaml
+  - https://github.com/traefik/traefik-helm-chart/tree/master/traefik-crds/crds-files/traefik/traefik.io_middlewaretcps.yaml
+  - https://github.com/traefik/traefik-helm-chart/tree/master/traefik-crds/crds-files/traefik/traefik.io_serverstransports.yaml
+  - https://github.com/traefik/traefik-helm-chart/tree/master/traefik-crds/crds-files/traefik/traefik.io_serverstransporttcps.yaml
+  - https://github.com/traefik/traefik-helm-chart/tree/master/traefik-crds/crds-files/traefik/traefik.io_tlsoptions.yaml
+  - https://github.com/traefik/traefik-helm-chart/tree/master/traefik-crds/crds-files/traefik/traefik.io_tlsstores.yaml
+  - https://github.com/traefik/traefik-helm-chart/tree/master/traefik-crds/crds-files/traefik/traefik.io_traefikservices.yaml
