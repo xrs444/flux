@@ -3,7 +3,7 @@ kind: Kustomization
 metadata:
   name: traefik-crds
   namespace: flux-system
-path: ./infrastructure/controllers/sealedsecrets
+path: ./infrastructure/controllers/traefik-crds
 resources:
   - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-ingressroute.yaml
   - https://github.com/traefik/traefik-helm-chart/raw/traefik-3.4.0/traefik/crds/crd-ingressroutetcp.yaml
