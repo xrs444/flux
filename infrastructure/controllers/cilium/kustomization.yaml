@@ -11,3 +11,4 @@ resources:
   - ./helmrepository-cilium.yaml
   - ./helmrelease-cilium.yaml
   - ./namespace-cilium.yaml
+  - ./kustomization-cilium.yaml
