@@ -74,5 +74,3 @@ spec:
         podCIDR: true
     loadBalancer:
       algorithm: maglev
-      mode: dsr
-
