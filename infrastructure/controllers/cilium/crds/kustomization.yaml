@@ -1,0 +1,15 @@
+resources:
+  - ciliumbgpclusterconfigurations.crd.yaml
+  - ciliumbgpnodeconfigs.crd.yaml
+  - ciliumbgppeeringpolicies.crd.yaml
+  - ciliumclusterwidenetworkpolicies.crd.yaml
+  - ciliumendpoints.crd.yaml
+  - ciliumidentities.crd.yaml
+  - ciliumloadbalancerippools.crd.yaml
+  - ciliumnetworkpolicies.crd.yaml
+  - ciliumnodes.crd.yaml
+  - ciliumpodippools.crd.yaml
+  - ciliumcidrgroups.crd.yaml
+  - ciliumbgpadvertisements.crd.yaml
+  - ciliumbgppeerconfigs.crd.yaml
+  - ciliuml2announcementpolicies.crd.yaml
