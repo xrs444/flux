@@ -7,7 +7,7 @@ spec:
   interval: 15m
   path: ./infrastructure/controllers/cert-manager
   prune: true # remove any elements later removed from the above path
-  timeout: 5m  # Increased from 2m to 5m
+  timeout: 10m  # Increased from 2m to 5m
   sourceRef:
     kind: GitRepository
     name: flux-system
