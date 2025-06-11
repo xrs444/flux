@@ -75,4 +75,4 @@ spec:
     loadBalancer:
       algorithm: maglev
       mode: hybrid
-
+    tunnel: disabled
