@@ -9,4 +9,4 @@ rules:
     - ciliumbgpnodeconfigs
     - ciliumbgpadvertisements
     - ciliumbgppeerconfigs
-  verbs: ["list"]
+  verbs: ["list", "watch"]
