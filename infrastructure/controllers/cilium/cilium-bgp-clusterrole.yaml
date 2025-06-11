@@ -16,7 +16,7 @@ rules:
     - ciliumnetworkpolicies
     - ciliumclusterwidenetworkpolicies
     - ciliumloadbalancerippools
-  verbs: ["list", "watch", "get", "create", "update", "patch"]
+  verbs: ["list", "watch", "get", "create", "update", "patch", "delete"]
 - apiGroups: [""]
   resources:
     - pods
