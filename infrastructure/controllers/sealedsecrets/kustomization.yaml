@@ -4,7 +4,7 @@ namespace: sealed-secrets
 
 resources:
   - ./configmap-sealed-secrets-helm-chart-value-overrides.yaml
-  - ./helmrelease-sealed-secrets.yaml
+  - ./helmrelease-sealedsecrets.yaml
   - ./namespace-sealed-secrets.yaml
   - ./helmrepository-sealedsecrets.yaml
   - ./kustomization-sealedsecrets.yaml
