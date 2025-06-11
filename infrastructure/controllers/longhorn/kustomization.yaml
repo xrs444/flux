@@ -6,3 +6,4 @@ resources:
   - ./helmrelease-longhorn.yaml
   - ./namespace-longhorn.yaml
   - ./helmrepository-longhorn.yaml
+  - ./kustomization-longhorn.yaml
