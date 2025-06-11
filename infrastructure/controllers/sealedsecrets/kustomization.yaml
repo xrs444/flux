@@ -6,5 +6,5 @@ resources:
   - ./configmap-sealed-secrets-helm-chart-value-overrides.yaml
   - ./helmrelease-sealed-secrets.yaml
   - ./namespace-sealed-secrets.yaml
-  - ./helmrepository-sealed-secrets.yaml
-  - ./kustomization-sealed-secrets.yaml
+  - ./helmrepository-sealedsecrets.yaml
+  - ./kustomization-sealedsecrets.yaml
