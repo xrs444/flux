@@ -9,4 +9,5 @@ rules:
     - ciliumbgpnodeconfigs
     - ciliumbgpadvertisements
     - ciliumbgppeerconfigs
+    - CiliumCIDRGroups
   verbs: ["list", "watch"]
