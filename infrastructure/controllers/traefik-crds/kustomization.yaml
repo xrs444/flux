@@ -8,3 +8,4 @@ resources:
   - kustomization-traefik-crds-resources.yaml
   - namespace-traefik-crds.yaml
   - helmrepository-traefik-crds.yaml
+  - helmrelease-traefik-crds.yaml
