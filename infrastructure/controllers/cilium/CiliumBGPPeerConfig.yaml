@@ -7,7 +7,7 @@ spec:
   timers:
     holdTimeSeconds: 9
     keepAliveTimeSeconds: 3
-  authSecretRef: "bbgpmd5-secret"
+#  authSecretRef: "bbgpmd5-secret"
   ebgpMultihop: 4
   gracefulRestart:
     enabled: true
