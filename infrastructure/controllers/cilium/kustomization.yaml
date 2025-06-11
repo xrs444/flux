@@ -11,3 +11,5 @@ resources:
   - ./helmrelease-cilium.yaml
   - ./namespace-cilium.yaml
   - ./kustomization-cilium.yaml
+  - ./cilium-bgp-clusterrole.yaml
+  - ./cilium-bgp-clusterrolebinding.yaml
