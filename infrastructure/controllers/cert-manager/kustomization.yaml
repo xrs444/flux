@@ -1,0 +1,6 @@
+namespace: cert-manager
+resources:
+  - namespace-cert-manager.yaml
+  - configmap-cert-manager-helm-chart-value-overrides.yaml
+  - helmrepository-jetstack.yaml
+  - helmrelease-cert-manager.yaml
