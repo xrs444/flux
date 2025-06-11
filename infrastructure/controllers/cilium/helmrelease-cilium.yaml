@@ -30,7 +30,6 @@ spec:
   values:
     ipam:
       mode: kubernetes
-    tunnel: disabled
     hostFirewall:
       enabled: false
     hubble:
