@@ -4,5 +4,9 @@ metadata:
   name: cilium-bgp-peering-list
 rules:
 - apiGroups: ["cilium.io"]
-  resources: ["ciliumbgppeeringpolicies"]
+  resources:
+    - ciliumbgppeeringpolicies
+    - ciliumbgpnodeconfigs
+    - ciliumbgpadvertisements
+    - ciliumbgppeerconfigs
   verbs: ["list"]
