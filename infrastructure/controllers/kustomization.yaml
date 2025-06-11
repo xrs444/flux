@@ -4,9 +4,9 @@ metadata:
   name: infra-controllers
   namespace: flux-system
 resources:
-  - ./cert-manager
-  - ./cilium
-  - ./longhorn
-  - ./sealedsecrets
-  - ./traefik
-  - ./traefik-crds
+  - ./cert-manager/
+  - ./cilium/
+  - ./longhorn/
+  - ./sealedsecrets/
+  - ./traefik/
+  - ./traefik-crds/
