@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: flux-system
+
+resources:
+  - ./bgpmd5-secret.yaml
+  - ./cilium-ippool.yaml
+  - ./CiliumBGPAdvertisement.yaml
+  - ./CiliumBGPClusterConfig.yaml
+  - ./CiliumBGPPeerConfig.yaml
+  - ./helmrepository-cilium.yaml
+  - ./helmrelease-cilium.yaml
+  # Add any other resource files as needed
