@@ -1,18 +1,12 @@
 resources:
-  - ciliumbgpadvertisements.yaml
-  - ciliumbgpclusterconfigs.yaml
-  - ciliumbgpnodeconfigoverrides.yaml
-  - ciliumbgpnodeconfigs.yaml
-  - ciliumbgppeerconfigs.yaml
-  - ciliumcidrgroups.yaml
   - ciliumclusterwideenvoyconfigs.yaml
   - ciliumclusterwidenetworkpolicies.yaml
   - ciliumegressgatewaypolicies.yaml
   - ciliumendpoints.yaml
   - ciliumenvoyconfigs.yaml
+  - ciliumexternalworkloads.yaml
   - ciliumidentities.yaml
-  - ciliumloadbalancerippools.yaml
   - ciliumlocalredirectpolicies.yaml
   - ciliumnetworkpolicies.yaml
-  - ciliumnodepolicies.yaml
+  - ciliumnodeconfigs.yaml
   - ciliumnodes.yaml
