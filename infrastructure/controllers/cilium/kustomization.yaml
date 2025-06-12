@@ -28,8 +28,6 @@ resources:
   - ./cilium-tlsinterception-secrets-rolebinding.yaml
   - ./cilium-operator-tlsinterception-secrets-role.yaml
   - ./cilium-operator-tlsinterception-secrets-rolebinding.yaml
-  - ./cilium-bgp-clusterrole.yaml
-  - ./cilium-bgp-clusterrolebinding.yaml
 
   # (Remove this if not needed)
   - ./kustomization-cilium.yaml
