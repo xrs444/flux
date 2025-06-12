@@ -32,25 +32,3 @@ resources:
   # (Remove this if not needed)
   - ./kustomization-cilium.yaml
 
-  - ./crds/ciliumbgpadvertisements.yaml
-  - ./crds/ciliumbgpclusterconfigs.yaml
-  - ./crds/ciliumbgpnodeconfigoverrides.yaml
-  - ./crds/ciliumbgpnodeconfigs.yaml
-  - ./crds/ciliumbgppeerconfigs.yaml
-  - ./crds/ciliumbgppeeringpolicies.yaml
-  - ./crds/ciliumcidrgroups.yaml
-  - ./crds/ciliumclusterwideenvoyconfigs.yaml
-  - ./crds/ciliumclusterwidenetworkpolicies.yaml
-  - ./crds/ciliumegressgatewaypolicies.yaml
-  - ./crds/ciliumendpoints.yaml
-  - ./crds/ciliumendpointslices.yaml
-  - ./crds/ciliumenvoyconfigs.yaml
-  - ./crds/ciliumexternalworkloads.yaml
-  - ./crds/ciliumidentities.yaml
-  - ./crds/ciliuml2announcementpolicies.yaml
-  - ./crds/ciliumloadbalancerippools.yaml
-  - ./crds/ciliumlocalredirectpolicies.yaml
-  - ./crds/ciliumnetworkpolicies.yaml
-  - ./crds/ciliumnodeconfigs.yaml
-  - ./crds/ciliumnodes.yaml
-
