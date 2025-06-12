@@ -1,0 +1,15 @@
+resources:
+  - ./ciliumbgpadvertisements.yaml
+  - ./ciliumbgpclusterconfigs.yaml
+  - ./ciliumbgpnodeconfigs.yaml
+  - ./ciliumbgppeeringpolicies.yaml
+  - ./ciliumbgppeerconfigs.yaml
+  - ./ciliumcidrgroups.yaml
+  - ./ciliumclusterwidenetworkpolicies.yaml
+  - ./ciliumendpoints.yaml
+  - ./ciliumidentities.yaml
+  - ./ciliumloadbalancerippools.yaml
+  - ./ciliuml2announcementpolicies.yaml
+  - ./ciliumnetworkpolicies.yaml
+  - ./ciliumnodes.yaml
+  - ./ciliumpodippools.yaml
