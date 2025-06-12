@@ -28,6 +28,17 @@ spec:
     crds: CreateReplace
     timeout: 10m0s
   values:
+    identityAllocationMode: crd
+    enablePolicy: default
+    enableMetrics: true
+    enablePolicySecretsSync: true
+    policySecretsNamespace: cilium-secrets
+    enableIPv4: true
+    enableIPv6: false
+    routingMode: tunnel
+    tunnelProtocol: vxlan
+    enableL7Proxy: true
+    enableHubble: true
     ipam:
       mode: kubernetes
     hostFirewall:
