@@ -14,3 +14,4 @@ resources:
   - ./kustomization-cilium.yaml
   - ./cilium-bgp-clusterrole.yaml
   - ./cilium-bgp-clusterrolebinding.yaml
+  
