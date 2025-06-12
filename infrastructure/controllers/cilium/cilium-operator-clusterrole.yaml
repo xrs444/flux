@@ -22,6 +22,10 @@ rules:
       - configmaps
       - events
     verbs: ["create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources:
+      - services/status
+    verbs: ["patch", "update"]
   - apiGroups: ["cilium.io"]
     resources:
       - ciliumnetworkpolicies
@@ -41,6 +45,10 @@ rules:
       - ciliumbgpnodeconfigoverrides
       - ciliuml2announcementpolicies
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["cilium.io"]
+    resources:
+      - ciliumloadbalancerippools/status
+    verbs: ["patch", "update"]
   - apiGroups: ["discovery.k8s.io"]
     resources:
       - endpointslices
