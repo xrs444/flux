@@ -29,5 +29,5 @@ resources:
   - ./cilium-operator-tlsinterception-secrets-rolebinding.yaml
 
   # (Remove this if not needed)
-   - ./kustomization-cilium.yaml
+  - ./kustomization-cilium.yaml
 
