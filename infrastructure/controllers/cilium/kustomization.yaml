@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ./crds                # <-- Add this line at the top to install all CRDs first
+  - ./crds
   - ./bgpmd5-secret.yaml
   - ./cilium-ippool.yaml
   - ./CiliumBGPAdvertisement.yaml
@@ -11,7 +11,23 @@ resources:
   - ./helmrepository-cilium.yaml
   - ./helmrelease-cilium.yaml
   - ./namespace-cilium.yaml
-  - ./kustomization-cilium.yaml
-  - ./cilium-bgp-clusterrole.yaml
-  - ./cilium-bgp-clusterrolebinding.yaml
-  
+
+  # Cilium RBAC
+  - ./cilium-agent-clusterrole.yaml
+  - ./cilium-agent-clusterrolebinding.yaml
+  - ./cilium-operator-clusterrole.yaml
+  - ./cilium-operator-clusterrolebinding.yaml
+  - ./hubble-ui-clusterrole.yaml
+  - ./hubble-ui-clusterrolebinding.yaml
+  - ./cilium-config-agent-role.yaml
+  - ./cilium-config-agent-rolebinding.yaml
+  - ./cilium-bgp-control-plane-secrets-role.yaml
+  - ./cilium-bgp-control-plane-secrets-rolebinding.yaml
+  - ./cilium-tlsinterception-secrets-role.yaml
+  - ./cilium-tlsinterception-secrets-rolebinding.yaml
+  - ./cilium-operator-tlsinterception-secrets-role.yaml
+  - ./cilium-operator-tlsinterception-secrets-rolebinding.yaml
+
+  # (Remove this if not needed)
+   - ./kustomization-cilium.yaml
+
