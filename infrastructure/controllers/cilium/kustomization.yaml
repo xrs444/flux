@@ -3,6 +3,8 @@ kind: Kustomization
 
 resources:
   - ./crds
+  - ./namespace-cilium.yaml
+  - ./namespace-cilium-secrets.yaml
   - ./bgpmd5-secret.yaml
   - ./cilium-ippool.yaml
   - ./CiliumBGPAdvertisement.yaml
@@ -10,7 +12,6 @@ resources:
   - ./CiliumBGPPeerConfig.yaml
   - ./helmrepository-cilium.yaml
   - ./helmrelease-cilium.yaml
-  - ./namespace-cilium.yaml
 
   # Cilium RBAC
   - ./cilium-agent-clusterrole.yaml
@@ -27,6 +28,8 @@ resources:
   - ./cilium-tlsinterception-secrets-rolebinding.yaml
   - ./cilium-operator-tlsinterception-secrets-role.yaml
   - ./cilium-operator-tlsinterception-secrets-rolebinding.yaml
+  - ./cilium-bgp-clusterrole.yaml
+  - ./cilium-bgp-clusterrolebinding.yaml
 
   # (Remove this if not needed)
   - ./kustomization-cilium.yaml
