@@ -24,3 +24,6 @@ spec:
     remediation:
       remediateLastFailure: true
       retries: 5
+  values:
+    defaultSettings:
+      enableSPDK: true
