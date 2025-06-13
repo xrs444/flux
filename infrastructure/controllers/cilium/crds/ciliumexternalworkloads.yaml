@@ -59,8 +59,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: Spec is the desired configuration of the external Cilium
-              workload.
+            description: Spec is the desired configuration of the external Cilium workload.
             properties:
               ipv4-alloc-cidr:
                 description: |-
@@ -81,13 +80,11 @@ spec:
               It is a read-only field.
             properties:
               id:
-                description: ID is the numeric identity allocated for the external
-                  workload.
+                description: ID is the numeric identity allocated for the external workload.
                 format: int64
                 type: integer
               ip:
-                description: IP is the IP address of the workload. Empty if the workload
-                  has not registered.
+                description: IP is the IP address of the workload. Empty if the workload has not registered.
                 type: string
             type: object
         required:

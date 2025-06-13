@@ -36,8 +36,7 @@ spec:
               description: CoreCiliumEndpoint is slim version of status of CiliumEndpoint.
               properties:
                 encryption:
-                  description: EncryptionSpec defines the encryption relevant configuration
-                    of a node.
+                  description: EncryptionSpec defines the encryption relevant configuration of a node.
                   properties:
                     key:
                       description: |-
@@ -78,8 +77,7 @@ spec:
                     type: object
                   type: array
                 networking:
-                  description: EndpointNetworking is the addressing information of
-                    an endpoint.
+                  description: EndpointNetworking is the addressing information of an endpoint.
                   properties:
                     addressing:
                       description: IP4/6 addresses assigned to this Endpoint

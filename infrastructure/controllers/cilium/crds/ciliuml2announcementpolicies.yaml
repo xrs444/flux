@@ -48,8 +48,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: Spec is a human readable description of a L2 announcement
-              policy
+            description: Spec is a human readable description of a L2 announcement policy
             properties:
               externalIPs:
                 description: If true, the external IPs of the services are announced
@@ -75,16 +74,14 @@ spec:
                   If nil this policy applies to all nodes.
                 properties:
                   matchExpressions:
-                    description: matchExpressions is a list of label selector requirements.
-                      The requirements are ANDed.
+                    description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
                     items:
                       description: |-
                         A label selector requirement is a selector that contains values, a key, and an operator that
                         relates the key and values.
                       properties:
                         key:
-                          description: key is the label key that the selector applies
-                            to.
+                          description: key is the label key that the selector applies  to.
                           type: string
                         operator:
                           description: |-
@@ -114,8 +111,7 @@ spec:
                     x-kubernetes-list-type: atomic
                   matchLabels:
                     additionalProperties:
-                      description: MatchLabelsValue represents the value from the
-                        MatchLabels {key,value} pair.
+                      description: MatchLabelsValue represents the value from the MatchLabels {key,value} pair.
                       maxLength: 63
                       pattern: ^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$
                       type: string
@@ -138,16 +134,14 @@ spec:
                   If nil this policy applies to all services.
                 properties:
                   matchExpressions:
-                    description: matchExpressions is a list of label selector requirements.
-                      The requirements are ANDed.
+                    description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
                     items:
                       description: |-
                         A label selector requirement is a selector that contains values, a key, and an operator that
                         relates the key and values.
                       properties:
                         key:
-                          description: key is the label key that the selector applies
-                            to.
+                          description: key is the label key that the selector applies to.
                           type: string
                         operator:
                           description: |-
@@ -177,8 +171,7 @@ spec:
                     x-kubernetes-list-type: atomic
                   matchLabels:
                     additionalProperties:
-                      description: MatchLabelsValue represents the value from the
-                        MatchLabels {key,value} pair.
+                      description: MatchLabelsValue represents the value from the MatchLabels {key,value} pair.
                       maxLength: 63
                       pattern: ^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$
                       type: string
@@ -196,8 +189,7 @@ spec:
               conditions:
                 description: Current service state
                 items:
-                  description: Condition contains details for one aspect of the current
-                    state of this API Resource.
+                  description: Condition contains details for one aspect of the current state of this API Resource.
                   properties:
                     lastTransitionTime:
                       description: |-
