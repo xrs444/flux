@@ -6,4 +6,4 @@ resources:
   - ./cluster-issuer-letsencrypt-staging.yaml
   - ./cluster-issuer-letsencrypt-prod.yaml
   - ./kustomization-letsencrypt-wildcard-cert.yaml
-  - ./namespame-letsencrypt-wildcard-cert.yaml
+  - ./namespace-letsencrypt-wildcard-cert.yaml
