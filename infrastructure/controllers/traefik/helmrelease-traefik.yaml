@@ -13,7 +13,7 @@ spec:
         name: traefik
         namespace: flux-system
   interval: 15m
-  timeout: 5m
+  timeout: 10m
   releaseName: traefik
   install:
     timeout: 10m
