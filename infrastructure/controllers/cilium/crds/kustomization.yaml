@@ -20,4 +20,3 @@ resources:
   - ./ciliumexternalworkloads.yaml
   - ./ciliumlocalredirectpolicies.yaml
   - ./ciliumnodeconfigs.yaml
-  - ./kustomization.yaml
