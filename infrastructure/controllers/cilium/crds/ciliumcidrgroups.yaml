@@ -1,5 +1,3 @@
-apiVersion: apiextensions.k8s.io/v1
-kind: CustomResourceDefinition
 metadata:
   name: ciliumcidrgroups.cilium.io
 spec:
@@ -15,13 +13,14 @@ spec:
       - cilium
   scope: Cluster
   versions:
-    - name: v2alpha1
+    - name: v2
       served: true
       storage: true
       schema:
         openAPIV3Schema:
           description: >-
-            CiliumCIDRGroup is a list of external CIDRs (i.e: CIDRs selecting peers
+            CiliumCIDRGroup is a list of external CIDRs (i.e: CIDRs selecting
+            peers
 
             outside the clusters) that can be referenced as a single entity from
 
@@ -32,25 +31,31 @@ spec:
           properties:
             apiVersion:
               description: >-
-                APIVersion defines the versioned schema of this representation of an object.
+                APIVersion defines the versioned schema of this representation
+                of an object.
 
-                Servers should convert recognized schemas to the latest internal value, and
+                Servers should convert recognized schemas to the latest internal
+                value, and
 
                 may reject unrecognized values.
 
-                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+                More info:
+                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
               type: string
             kind:
               description: >-
-                Kind is a string value representing the REST resource this object represents.
+                Kind is a string value representing the REST resource this
+                object represents.
 
-                Servers may infer this from the endpoint the client submits requests to.
+                Servers may infer this from the endpoint the client submits
+                requests to.
 
                 Cannot be updated.
 
                 In CamelCase.
 
-                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                More info:
+                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
               type: string
             metadata:
               type: object
@@ -61,7 +66,72 @@ spec:
               properties:
                 externalCIDRs:
                   description: >-
-                    ExternalCIDRs is a list of CIDRs selecting peers outside the clusters.
+                    ExternalCIDRs is a list of CIDRs selecting peers outside the
+                    clusters.
+                  type: array
+                  minItems: 0
+                  items:
+                    description: |-
+                      CIDR specifies a block of IP addresses.
+                      Example: 192.0.2.1/32
+                    type: string
+                    format: cidr
+    - name: v2alpha1
+      served: true
+      storage: false
+      deprecated: true
+      schema:
+        openAPIV3Schema:
+          description: >-
+            CiliumCIDRGroup is a list of external CIDRs (i.e: CIDRs selecting
+            peers
+
+            outside the clusters) that can be referenced as a single entity from
+
+            CiliumNetworkPolicies.
+          type: object
+          required:
+            - spec
+          properties:
+            apiVersion:
+              description: >-
+                APIVersion defines the versioned schema of this representation
+                of an object.
+
+                Servers should convert recognized schemas to the latest internal
+                value, and
+
+                may reject unrecognized values.
+
+                More info:
+                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: >-
+                Kind is a string value representing the REST resource this
+                object represents.
+
+                Servers may infer this from the endpoint the client submits
+                requests to.
+
+                Cannot be updated.
+
+                In CamelCase.
+
+                More info:
+                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              type: object
+              required:
+                - externalCIDRs
+              properties:
+                externalCIDRs:
+                  description: >-
+                    ExternalCIDRs is a list of CIDRs selecting peers outside the
+                    clusters.
                   type: array
                   minItems: 0
                   items:
@@ -95,3 +165,6 @@ status:
       - cilium
   storedVersions:
     - v2alpha1
+    - v2
+kind: CustomResourceDefinition
+apiVersion: apiextensions.k8s.io/v1
