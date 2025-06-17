@@ -6,61 +6,6 @@ metadata:
   creationTimestamp: '2025-06-17T01:15:27Z'
   labels:
     io.cilium.k8s.crd.schema.version: 1.30.8
-  managedFields:
-    - manager: cilium-operator-generic
-      operation: Update
-      apiVersion: apiextensions.k8s.io/v1
-      time: '2025-06-17T01:15:27Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        f:metadata:
-          f:labels:
-            .: {}
-            f:io.cilium.k8s.crd.schema.version: {}
-        f:spec:
-          f:conversion:
-            .: {}
-            f:strategy: {}
-          f:group: {}
-          f:names:
-            f:categories: {}
-            f:kind: {}
-            f:listKind: {}
-            f:plural: {}
-            f:shortNames: {}
-            f:singular: {}
-          f:scope: {}
-          f:versions: {}
-    - manager: kube-apiserver
-      operation: Update
-      apiVersion: apiextensions.k8s.io/v1
-      time: '2025-06-17T01:15:29Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        f:status:
-          f:acceptedNames:
-            f:categories: {}
-            f:kind: {}
-            f:listKind: {}
-            f:plural: {}
-            f:shortNames: {}
-            f:singular: {}
-          f:conditions:
-            k:{"type":"Established"}:
-              .: {}
-              f:lastTransitionTime: {}
-              f:message: {}
-              f:reason: {}
-              f:status: {}
-              f:type: {}
-            k:{"type":"NamesAccepted"}:
-              .: {}
-              f:lastTransitionTime: {}
-              f:message: {}
-              f:reason: {}
-              f:status: {}
-              f:type: {}
-      subresource: status
 spec:
   group: cilium.io
   names:
@@ -87,31 +32,25 @@ spec:
           properties:
             apiVersion:
               description: >-
-                APIVersion defines the versioned schema of this representation
-                of an object.
+                APIVersion defines the versioned schema of this representation of an object.
 
-                Servers should convert recognized schemas to the latest internal
-                value, and
+                Servers should convert recognized schemas to the latest internal value, and
 
                 may reject unrecognized values.
 
-                More info:
-                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
               type: string
             kind:
               description: >-
-                Kind is a string value representing the REST resource this
-                object represents.
+                Kind is a string value representing the REST resource this object represents.
 
-                Servers may infer this from the endpoint the client submits
-                requests to.
+                Servers may infer this from the endpoint the client submits requests to.
 
                 Cannot be updated.
 
                 In CamelCase.
 
-                More info:
-                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
               type: string
             metadata:
               type: object
@@ -121,8 +60,7 @@ spec:
               properties:
                 controllers:
                   description: >-
-                    Controllers is the list of failing controllers for this
-                    endpoint.
+                    Controllers is the list of failing controllers for this endpoint.
                   type: array
                   items:
                     description: ControllerStatus is the status of a failing controller.
@@ -178,18 +116,15 @@ spec:
                   properties:
                     key:
                       description: >-
-                        Key is the index to the key to use for encryption or 0
-                        if encryption is
+                        Key is the index to the key to use for encryption or 0 if encryption is
 
                         disabled.
                       type: integer
                 external-identifiers:
                   description: >-
-                    ExternalIdentifiers is a set of identifiers to identify the
-                    endpoint
+                    ExternalIdentifiers is a set of identifiers to identify the endpoint
 
-                    apart from the pod name. This includes container runtime
-                    IDs.
+                    apart from the pod name. This includes container runtime IDs.
                   type: object
                   properties:
                     cni-attachment-id:
@@ -197,13 +132,11 @@ spec:
                       type: string
                     container-id:
                       description: >-
-                        ID assigned by container runtime (deprecated, may not be
-                        unique)
+                        ID assigned by container runtime (deprecated, may not be unique)
                       type: string
                     container-name:
                       description: >-
-                        Name assigned to container (deprecated, may not be
-                        unique)
+                        Name assigned to container (deprecated, may not be unique)
                       type: string
                     docker-endpoint-id:
                       description: Docker endpoint ID
@@ -213,18 +146,15 @@ spec:
                       type: string
                     k8s-namespace:
                       description: >-
-                        K8s namespace for this endpoint (deprecated, may not be
-                        unique)
+                        K8s namespace for this endpoint (deprecated, may not be unique)
                       type: string
                     k8s-pod-name:
                       description: >-
-                        K8s pod name for this endpoint (deprecated, may not be
-                        unique)
+                        K8s pod name for this endpoint (deprecated, may not be unique)
                       type: string
                     pod-name:
                       description: >-
-                        K8s pod for this endpoint (deprecated, may not be
-                        unique)
+                        K8s pod for this endpoint (deprecated, may not be unique)
                       type: string
                 health:
                   description: Health is the overall endpoint & subcomponent health.
@@ -248,8 +178,7 @@ spec:
                   format: int64
                 identity:
                   description: >-
-                    Identity is the security identity associated with the
-                    endpoint
+                    Identity is the security identity associated with the endpoint
                   type: object
                   properties:
                     id:
@@ -258,15 +187,13 @@ spec:
                       format: int64
                     labels:
                       description: >-
-                        Labels is the list of labels associated with the
-                        identity
+                        Labels is the list of labels associated with the identity
                       type: array
                       items:
                         type: string
                 log:
                   description: >-
-                    Log is the list of the last few warning and error log
-                    entries
+                    Log is the list of the last few warning and error log entries
                   type: array
                   items:
                     description: |-
@@ -291,8 +218,7 @@ spec:
                         type: string
                 named-ports:
                   description: >-
-                    NamedPorts List of named Layer 4 port and protocol pairs
-                    which will be used in Network
+                    NamedPorts List of named Layer 4 port and protocol pairs which will be used in Network
 
                     Policy specs.
 
@@ -336,24 +262,20 @@ spec:
                             type: string
                     node:
                       description: >-
-                        NodeIP is the IP of the node the endpoint is running on.
-                        The IP must
+                        NodeIP is the IP of the node the endpoint is running on. The IP must
 
                         be reachable between nodes.
                       type: string
                 policy:
                   description: >-
-                    EndpointPolicy represents the endpoint's policy by listing
-                    all allowed
+                    EndpointPolicy represents the endpoint's policy by listing all allowed
 
-                    ingress and egress identities in combination with L4 port
-                    and protocol.
+                    ingress and egress identities in combination with L4 port and protocol.
                   type: object
                   properties:
                     egress:
                       description: >-
-                        EndpointPolicyDirection is the list of allowed
-                        identities per direction.
+                        EndpointPolicyDirection is the list of allowed identities per direction.
                       type: object
                       required:
                         - enforcing
@@ -363,8 +285,7 @@ spec:
                           type: array
                           items:
                             description: >-
-                              IdentityTuple specifies a peer by identity,
-                              destination port and protocol.
+                              IdentityTuple specifies a peer by identity, destination port and protocol.
                             type: object
                             properties:
                               dest-port:
@@ -380,15 +301,13 @@ spec:
                                 type: integer
                         allowed:
                           description: >-
-                            AllowedIdentityList is a list of IdentityTuples that
-                            species peers that are
+                            AllowedIdentityList is a list of IdentityTuples that species peers that are
 
                             allowed.
                           type: array
                           items:
                             description: >-
-                              IdentityTuple specifies a peer by identity,
-                              destination port and protocol.
+                              IdentityTuple specifies a peer by identity, destination port and protocol.
                             type: object
                             properties:
                               dest-port:
@@ -404,15 +323,13 @@ spec:
                                 type: integer
                         denied:
                           description: >-
-                            DenyIdentityList is a list of IdentityTuples that
-                            species peers that are
+                            DenyIdentityList is a list of IdentityTuples that species peers that are
 
                             denied.
                           type: array
                           items:
                             description: >-
-                              IdentityTuple specifies a peer by identity,
-                              destination port and protocol.
+                              IdentityTuple specifies a peer by identity, destination port and protocol.
                             type: object
                             properties:
                               dest-port:
@@ -433,8 +350,7 @@ spec:
                           type: array
                           items:
                             description: >-
-                              IdentityTuple specifies a peer by identity,
-                              destination port and protocol.
+                              IdentityTuple specifies a peer by identity, destination port and protocol.
                             type: object
                             properties:
                               dest-port:
@@ -450,13 +366,11 @@ spec:
                                 type: integer
                         state:
                           description: >-
-                            EndpointPolicyState defines the state of the Policy
-                            mode: "enforcing", "non-enforcing", "disabled"
+                            EndpointPolicyState defines the state of the Policy mode: "enforcing", "non-enforcing", "disabled"
                           type: string
                     ingress:
                       description: >-
-                        EndpointPolicyDirection is the list of allowed
-                        identities per direction.
+                        EndpointPolicyDirection is the list of allowed identities per direction.
                       type: object
                       required:
                         - enforcing
@@ -466,8 +380,7 @@ spec:
                           type: array
                           items:
                             description: >-
-                              IdentityTuple specifies a peer by identity,
-                              destination port and protocol.
+                              IdentityTuple specifies a peer by identity, destination port and protocol.
                             type: object
                             properties:
                               dest-port:
@@ -483,15 +396,13 @@ spec:
                                 type: integer
                         allowed:
                           description: >-
-                            AllowedIdentityList is a list of IdentityTuples that
-                            species peers that are
+                            AllowedIdentityList is a list of IdentityTuples that species peers that are
 
                             allowed.
                           type: array
                           items:
                             description: >-
-                              IdentityTuple specifies a peer by identity,
-                              destination port and protocol.
+                              IdentityTuple specifies a peer by identity, destination port and protocol.
                             type: object
                             properties:
                               dest-port:
@@ -507,15 +418,13 @@ spec:
                                 type: integer
                         denied:
                           description: >-
-                            DenyIdentityList is a list of IdentityTuples that
-                            species peers that are
+                            DenyIdentityList is a list of IdentityTuples that species peers that are
 
                             denied.
                           type: array
                           items:
                             description: >-
-                              IdentityTuple specifies a peer by identity,
-                              destination port and protocol.
+                              IdentityTuple specifies a peer by identity, destination port and protocol.
                             type: object
                             properties:
                               dest-port:
@@ -536,8 +445,7 @@ spec:
                           type: array
                           items:
                             description: >-
-                              IdentityTuple specifies a peer by identity,
-                              destination port and protocol.
+                              IdentityTuple specifies a peer by identity, destination port and protocol.
                             type: object
                             properties:
                               dest-port:
@@ -553,8 +461,7 @@ spec:
                                 type: integer
                         state:
                           description: >-
-                            EndpointPolicyState defines the state of the Policy
-                            mode: "enforcing", "non-enforcing", "disabled"
+                            EndpointPolicyState defines the state of the Policy mode: "enforcing", "non-enforcing", "disabled"
                           type: string
                 state:
                   description: State is the state of the endpoint.
