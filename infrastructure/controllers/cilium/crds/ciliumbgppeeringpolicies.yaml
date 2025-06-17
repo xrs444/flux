@@ -1,3 +1,5 @@
+metadata:
+  name: ciliumbgppeeringpolicies.cilium.io
 spec:
   group: cilium.io
   names:

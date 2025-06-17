@@ -1,3 +1,6 @@
+metadata:
+  name: ciliumnetworkpolicies.cilium.io
+  namespace: cilium
 spec:
   group: cilium.io
   names:
