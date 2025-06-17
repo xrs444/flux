@@ -13,3 +13,11 @@ resources:
   - ./ciliumnetworkpolicies.yaml
   - ./ciliumnodes.yaml
   - ./ciliumpodippools.yaml
+  - ./ciliumbgpnodeconfigoverrides.yaml
+  - ./ciliumclusterwideenvoyconfigs.yaml
+  - ./ciliumendpointslices.yaml
+  - ./ciliumenvoyconfigs.yaml
+  - ./ciliumexternalworkloads.yaml
+  - ./ciliumlocalredirectpolicies.yaml
+  - ./ciliumnodeconfigs.yaml
+  - ./kustomization.yaml

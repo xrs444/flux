@@ -1,94 +1,190 @@
----
-apiVersion: apiextensions.k8s.io/v1
-kind: CustomResourceDefinition
 metadata:
-  annotations:
-    controller-gen.kubebuilder.io/version: v0.16.5
   name: ciliumpodippools.cilium.io
+  uid: bc3d69e6-0f67-4c36-bfaf-8111af0d0c3e
+  resourceVersion: '944795'
+  generation: 1
+  creationTimestamp: '2025-06-17T01:15:27Z'
+  labels:
+    io.cilium.k8s.crd.schema.version: 1.30.8
+  managedFields:
+    - manager: cilium-operator-generic
+      operation: Update
+      apiVersion: apiextensions.k8s.io/v1
+      time: '2025-06-17T01:15:27Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:io.cilium.k8s.crd.schema.version: {}
+        f:spec:
+          f:conversion:
+            .: {}
+            f:strategy: {}
+          f:group: {}
+          f:names:
+            f:categories: {}
+            f:kind: {}
+            f:listKind: {}
+            f:plural: {}
+            f:shortNames: {}
+            f:singular: {}
+          f:scope: {}
+          f:versions: {}
+    - manager: kube-apiserver
+      operation: Update
+      apiVersion: apiextensions.k8s.io/v1
+      time: '2025-06-17T01:15:29Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          f:acceptedNames:
+            f:categories: {}
+            f:kind: {}
+            f:listKind: {}
+            f:plural: {}
+            f:shortNames: {}
+            f:singular: {}
+          f:conditions:
+            k:{"type":"Established"}:
+              .: {}
+              f:lastTransitionTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"NamesAccepted"}:
+              .: {}
+              f:lastTransitionTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+      subresource: status
 spec:
   group: cilium.io
   names:
-    categories:
-    - cilium
+    plural: ciliumpodippools
+    singular: ciliumpodippool
+    shortNames:
+      - cpip
     kind: CiliumPodIPPool
     listKind: CiliumPodIPPoolList
-    plural: ciliumpodippools
-    shortNames:
-    - cpip
-    singular: ciliumpodippool
+    categories:
+      - cilium
   scope: Cluster
   versions:
-  - name: v2alpha1
-    schema:
-      openAPIV3Schema:
-        description: |-
-          CiliumPodIPPool defines an IP pool that can be used for pooled IPAM (i.e. the multi-pool IPAM
-          mode).
-        properties:
-          apiVersion:
-            description: |-
-              APIVersion defines the versioned schema of this representation of an object.
-              Servers should convert recognized schemas to the latest internal value, and
-              may reject unrecognized values.
-              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-            type: string
-          kind:
-            description: |-
-              Kind is a string value representing the REST resource this object represents.
-              Servers may infer this from the endpoint the client submits requests to.
-              Cannot be updated.
-              In CamelCase.
-              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-            type: string
-          metadata:
-            type: object
-          spec:
-            properties:
-              ipv4:
-                description: IPv4 specifies the IPv4 CIDRs and mask sizes of the pool
-                properties:
-                  cidrs:
-                    description: CIDRs is a list of IPv4 CIDRs that are part of the
-                      pool.
-                    items:
-                      description: PoolCIDR is an IP pool CIDR.
-                      format: cidr
-                      type: string
-                    minItems: 1
-                    type: array
-                  maskSize:
-                    description: MaskSize is the mask size of the pool.
-                    maximum: 32
-                    minimum: 1
-                    type: integer
-                required:
-                - cidrs
-                - maskSize
-                type: object
-              ipv6:
-                description: IPv6 specifies the IPv6 CIDRs and mask sizes of the pool
-                properties:
-                  cidrs:
-                    description: CIDRs is a list of IPv6 CIDRs that are part of the
-                      pool.
-                    items:
-                      description: PoolCIDR is an IP pool CIDR.
-                      format: cidr
-                      type: string
-                    minItems: 1
-                    type: array
-                  maskSize:
-                    description: MaskSize is the mask size of the pool.
-                    maximum: 128
-                    minimum: 1
-                    type: integer
-                required:
-                - cidrs
-                - maskSize
-                type: object
-            type: object
-        required:
-        - spec
-        type: object
-    served: true
-    storage: true
+    - name: v2alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          description: >-
+            CiliumPodIPPool defines an IP pool that can be used for pooled IPAM
+            (i.e. the multi-pool IPAM
+
+            mode).
+          type: object
+          required:
+            - spec
+          properties:
+            apiVersion:
+              description: >-
+                APIVersion defines the versioned schema of this representation
+                of an object.
+
+                Servers should convert recognized schemas to the latest internal
+                value, and
+
+                may reject unrecognized values.
+
+                More info:
+                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: >-
+                Kind is a string value representing the REST resource this
+                object represents.
+
+                Servers may infer this from the endpoint the client submits
+                requests to.
+
+                Cannot be updated.
+
+                In CamelCase.
+
+                More info:
+                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              type: object
+              properties:
+                ipv4:
+                  description: IPv4 specifies the IPv4 CIDRs and mask sizes of the pool
+                  type: object
+                  required:
+                    - cidrs
+                    - maskSize
+                  properties:
+                    cidrs:
+                      description: CIDRs is a list of IPv4 CIDRs that are part of the pool.
+                      type: array
+                      minItems: 1
+                      items:
+                        description: PoolCIDR is an IP pool CIDR.
+                        type: string
+                        format: cidr
+                    maskSize:
+                      description: MaskSize is the mask size of the pool.
+                      type: integer
+                      maximum: 32
+                      minimum: 1
+                ipv6:
+                  description: IPv6 specifies the IPv6 CIDRs and mask sizes of the pool
+                  type: object
+                  required:
+                    - cidrs
+                    - maskSize
+                  properties:
+                    cidrs:
+                      description: CIDRs is a list of IPv6 CIDRs that are part of the pool.
+                      type: array
+                      minItems: 1
+                      items:
+                        description: PoolCIDR is an IP pool CIDR.
+                        type: string
+                        format: cidr
+                    maskSize:
+                      description: MaskSize is the mask size of the pool.
+                      type: integer
+                      maximum: 128
+                      minimum: 1
+  conversion:
+    strategy: None
+status:
+  conditions:
+    - type: NamesAccepted
+      status: 'True'
+      lastTransitionTime: '2025-06-17T01:15:29Z'
+      reason: NoConflicts
+      message: no conflicts found
+    - type: Established
+      status: 'True'
+      lastTransitionTime: '2025-06-17T01:15:29Z'
+      reason: InitialNamesAccepted
+      message: the initial names have been accepted
+  acceptedNames:
+    plural: ciliumpodippools
+    singular: ciliumpodippool
+    shortNames:
+      - cpip
+    kind: CiliumPodIPPool
+    listKind: CiliumPodIPPoolList
+    categories:
+      - cilium
+  storedVersions:
+    - v2alpha1
+kind: CustomResourceDefinition
+apiVersion: apiextensions.k8s.io/v1
