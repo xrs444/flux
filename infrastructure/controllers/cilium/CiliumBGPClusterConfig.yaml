@@ -26,8 +26,3 @@ spec:
           peerASN: 65000
           peerConfigRef:
             name: "xsvr-peer"
-      advertisements:
-        - advertisementType: PodCIDR
-          aggregationLength: 24
-        - advertisementType: Service
-          aggregationLength: 32
