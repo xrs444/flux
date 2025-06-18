@@ -30,6 +30,7 @@ spec:
   values:
     identityAllocationMode: crd
     enablePolicy: default
+    policyAuditMode: true
     enableMetrics: true
     enablePolicySecretsSync: true
     policySecretsNamespace: cilium-secrets
