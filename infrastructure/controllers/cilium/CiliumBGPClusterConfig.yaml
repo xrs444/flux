@@ -8,12 +8,12 @@ spec:
     matchLabels:
       kubernetes.io/os: linux
   bgpInstances:
-  - name: xsvr-conn 
+  - name: "xsvr-conn" 
     localASN: 65001
     peers:
-    - name: xsvr-vip
+    - name: "xsvr-vip"
       peerAddress: 172.20.1.101
       peerASN: 65000
       eBGPMultihopTTL: 4
       peerConfigRef:
-        name: xsvr-peer
+        name: "xsvr-peer"
