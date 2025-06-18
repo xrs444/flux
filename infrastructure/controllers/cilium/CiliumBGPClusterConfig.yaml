@@ -1,18 +1,17 @@
 apiVersion: cilium.io/v2alpha1
 kind: CiliumBGPClusterConfig
 metadata:
-  name: bgp-cluster-config
+  name: cluster-bgp-config
   namespace: kube-system
 spec:
-  nodeSelector:
-    matchLabels:
-      kubernetes.io/os: linux
-  bgpInstances:
-    - name: xsvr-conn
-      localASN: 65001
-      peers:
-        - name: lookout-vip
-          peerAddress: "172.20.1.101"
-          peerASN: 65000
-          peerConfigRef:
-            name: "xsvr-peer"
+  nodeASN: 65001
+  virtualRouters:
+  - localASN: 65001
+    podCIDR: true
+    serviceSelector:
+      matchLabels:
+        advertise: bgp
+    neighbors:
+    - peerAddress: 172.20.1.101
+      peerASN: 65000
+      eBGPMultihopTTL: 4
