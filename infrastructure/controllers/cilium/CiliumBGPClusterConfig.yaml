@@ -10,10 +10,10 @@ spec:
   bgpInstances:
   - name: xsvr-conn 
     localASN: 65001
-    serviceSelector:
-      matchLabels:
-        advertise: bgp
-    neighbors:
-    - peerAddress: 172.20.1.101
+    peers:
+    - name: xsvr-vip
+      peerAddress: 172.20.1.101
       peerASN: 65000
       eBGPMultihopTTL: 4
+      peerConfigRef:
+        name: xsvr-peer
