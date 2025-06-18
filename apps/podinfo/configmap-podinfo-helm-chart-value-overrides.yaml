@@ -37,6 +37,8 @@ data:
     service:
       enabled: true
       annotations: {}
+      labels:
+        advertise: bgp
       type: LoadBalancer
       metricsPort: 9797
       httpPort: 9898
