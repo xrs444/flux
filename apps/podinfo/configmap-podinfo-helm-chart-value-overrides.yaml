@@ -39,7 +39,7 @@ data:
       annotations: {}
       labels:
         advertise: bgp
-      type: ExternalIP
+      type: LoadBalancerIP
       metricsPort: 9797
       httpPort: 9898
       externalPort: 9898
