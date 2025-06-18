@@ -7,6 +7,4 @@ spec:
   allowFirstLastIPs: "No"
   blocks:
   - cidr: "172.21.0.0/24"
-  selector:
-    matchLabels:
-      announced: bgp
+
