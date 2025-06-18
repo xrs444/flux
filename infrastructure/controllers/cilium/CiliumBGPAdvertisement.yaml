@@ -4,8 +4,6 @@ metadata:
   name: bgp-advertisements
   namespace: kube-system
 spec:
-  bgpInstances:
-  - name: xsvr-conn
   advertisements:
   - advertisementType: Service
     service:
