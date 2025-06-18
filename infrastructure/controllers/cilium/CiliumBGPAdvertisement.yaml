@@ -12,5 +12,7 @@ spec:
       addresses:
       - ExternalIP
       - LoadBalancerIP
-  - advertisementType: PodCIDR
+      selector:             # <-- select all services
+        matchExpressions:
+         - {key: somekey, operator: NotIn, values: ['never-used-value']}
 
