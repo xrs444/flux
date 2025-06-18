@@ -12,3 +12,4 @@ spec:
         addresses:
           - ExternalIP
           - LoadBalancerIP
+          - ClusterIP
