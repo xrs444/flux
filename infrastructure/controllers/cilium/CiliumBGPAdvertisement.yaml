@@ -11,3 +11,4 @@ spec:
     service:
       addresses:
       - ExternalIP
+      - LoadBalancerIP
