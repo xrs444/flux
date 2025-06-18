@@ -3,8 +3,6 @@ kind: CiliumBGPAdvertisement
 metadata:
   name: bgp-advertisements
   namespace: kube-system
-  labels:
-    advertise: bgp
 spec:
   bgpInstances:
   - name: xsvr-conn
