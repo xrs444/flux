@@ -13,3 +13,6 @@ data:
         enabled: true
     service:
       enabled: true
+      # Add labels to the service
+      labels:
+        advertise: bgp
