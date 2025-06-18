@@ -85,3 +85,5 @@ spec:
         podCIDR: true
     loadBalancer:
       algorithm: maglev
+    externalIPs:
+      enabled: true
