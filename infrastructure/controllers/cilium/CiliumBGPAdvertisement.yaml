@@ -6,10 +6,12 @@ metadata:
   labels:
     advertise: bgp
 spec:
+  bgpInstances:
+  - name: xsvr-conn
   advertisements:
-    - advertisementType: "Service"
-      service:
-        addresses:
-          - ExternalIP
-          - LoadBalancerIP
-          - ClusterIP
+  - advertisementType: Service
+    service:
+      addresses:
+      - ExternalIP
+      - LoadBalancerIP
+      - ClusterIP
