@@ -10,6 +10,4 @@ spec:
   - advertisementType: Service
     service:
       addresses:
-      - ExternalIP
       - LoadBalancerIP
-      - ClusterIP
