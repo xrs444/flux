@@ -47,8 +47,10 @@ rules:
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["cilium.io"]
     resources:
-      - ciliumloadbalancerippools/status
-    verbs: ["patch", "update"]
+      - ciliumbgpclusterconfigs/status
+      - ciliumbgpadvertisements/status
+      - ciliumbgppeerconfigs/status
+    verbs: ["get", "update", "patch"]
   - apiGroups: ["discovery.k8s.io"]
     resources:
       - endpointslices
