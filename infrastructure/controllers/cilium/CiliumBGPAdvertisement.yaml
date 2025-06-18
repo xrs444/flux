@@ -13,3 +13,4 @@ spec:
       - ExternalIP
       - LoadBalancerIP
       - ClusterIP
+      namespaceSelector: {}
