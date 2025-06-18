@@ -4,7 +4,6 @@ metadata:
   name: cluster-bgp-config
   namespace: kube-system
 spec:
-  nodeASN: 65001
   virtualRouters:
   - localASN: 65001
     podCIDR: true
