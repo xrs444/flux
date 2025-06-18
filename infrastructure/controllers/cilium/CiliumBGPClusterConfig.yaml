@@ -4,12 +4,12 @@ metadata:
   name: cluster-bgp-config
   namespace: kube-system
 spec:
-  virtualRouters:
+  nodeSelector:
+    matchLabels:
+      kubernetes.io/os: linux
+  bgpInstances:
   - localASN: 65001
-    podCIDR: true
-    serviceSelector:
-      matchLabels:
-        advertise: bgp
+    exportPodCIDR: true
     neighbors:
     - peerAddress: 172.20.1.101
       peerASN: 65000
