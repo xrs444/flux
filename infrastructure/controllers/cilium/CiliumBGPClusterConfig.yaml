@@ -8,8 +8,12 @@ spec:
     matchLabels:
       kubernetes.io/os: linux
   bgpInstances:
-  - localASN: 65001
+  - name: xsvr-conn 
+    localASN: 65001
     exportPodCIDR: true
+    serviceSelector:
+      matchLabels:
+        advertise: bgp
     neighbors:
     - peerAddress: 172.20.1.101
       peerASN: 65000
