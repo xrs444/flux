@@ -11,8 +11,7 @@ spec:
     service:
       addresses:
       - ExternalIP
-      - LoadBalancerIP
-      selector:             # <-- select all services
+      selector:
         matchExpressions:
-         - {key: somekey, operator: NotIn, values: ['never-used-value']}
+         - {key: ExternalAccess, operator: In, values: ['ExternalIP']}
 
