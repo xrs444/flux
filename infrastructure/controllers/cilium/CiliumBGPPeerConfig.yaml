@@ -16,4 +16,4 @@ spec:
       safi: unicast
       advertisements:
         matchLabels:
-          advertise: "bgp"
+          advertise: bgp
