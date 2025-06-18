@@ -11,7 +11,7 @@ spec:
     service:
       addresses:
       - ExternalIP
-      selector:
-        matchExpressions:
-         - {key: ExternalAccess, operator: In, values: ['ExternalIP']}
+    selector:
+      matchExpressions:
+        - {key: ExternalAccess, operator: In, values: ['ExternalIP']}
 
