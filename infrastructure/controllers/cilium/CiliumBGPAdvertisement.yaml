@@ -12,6 +12,6 @@ spec:
       addresses:
       - ExternalIP
     selector:
-      matchExpressions:
-        - {key: ExternalAccess, operator: In, values: ['ExternalIP']}
+      matchLabels:
+        announced: bgp
 
