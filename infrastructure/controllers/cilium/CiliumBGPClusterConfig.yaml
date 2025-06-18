@@ -15,4 +15,4 @@ spec:
         peerASN: 65000
         peerAddress: 172.20.1.101
         peerConfigRef:
-          name: xsvr-peer  
+          name: xsvr-peer
