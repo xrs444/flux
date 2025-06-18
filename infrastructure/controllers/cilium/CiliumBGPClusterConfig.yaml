@@ -10,7 +10,6 @@ spec:
   bgpInstances:
   - name: xsvr-conn 
     localASN: 65001
-    exportPodCIDR: true
     serviceSelector:
       matchLabels:
         advertise: bgp
