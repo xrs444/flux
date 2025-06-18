@@ -14,5 +14,5 @@ spec:
       - LoadBalancerIP
     selector:
       matchLabels:
-        announced: bgp
+        advertise: bgp
 
