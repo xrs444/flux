@@ -1,10 +1,9 @@
-  apiVersion: cilium.io/v2alpha1
-  kind: CiliumLoadBalancerIPPool
-  metadata:
-    name: "lb-pool"
-    namespace: kube-system
-  spec:
-    allowFirstLastIPs: "No"
-    blocks:
-    - cidr: "172.21.0.0/24"
-      
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: "lb-pool"
+  namespace: kube-system
+spec:
+  allowFirstLastIPs: "No"
+  blocks:
+  - cidr: "172.21.0.0/24"
