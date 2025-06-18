@@ -8,12 +8,6 @@ metadata:
 spec:
   advertisements:
   - advertisementType: Service
-  selector:
-    matchExpressions:
-    - key: somekey  # this is not a placeholder, this is legit
-      operator: NotIn
-      values:
-      - never-used-value
     service:
       addresses:
       - ExternalIP
