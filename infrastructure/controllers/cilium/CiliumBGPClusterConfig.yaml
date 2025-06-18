@@ -14,4 +14,3 @@ spec:
     - name: xsvr-vip
       peerASN: 65000
       peerAddress: 172.20.1.101
-      eBGPMultihopTTL: 4
