@@ -13,16 +13,6 @@ spec:
     peers:
       - name: xsvr1
         peerASN: 65000
-        peerAddress: 172.20.1.10
-        peerConfigRef:
-          name: xsvr-peer
-      - name: xsvr2
-        peerASN: 65000
-        peerAddress: 172.20.1.20
-        peerConfigRef:
-          name: xsvr-peer
-      - name: xsvr3
-        peerASN: 65000
-        peerAddress: 172.20.1.30
+        peerAddress: 172.20.1.101
         peerConfigRef:
           name: xsvr-peer
