@@ -92,5 +92,5 @@ spec:
       enabled: true
     enableSourceIPVerification: false
     autoDirectNodeRoutes: true
-    ipv4NativeRoutingCIDR: "172.20.3.0/24"
+    ipv4NativeRoutingCIDR: "10.244.0.0/16"
     directRoutingSkipUnreachable: true
