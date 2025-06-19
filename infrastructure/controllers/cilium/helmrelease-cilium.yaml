@@ -36,7 +36,11 @@ spec:
     policySecretsNamespace: cilium-secrets
     enableIPv4: true
     enableIPv6: false
-    routingMode: tunnel
+    enableNodePort: true
+    enableExternalIPs: true
+    hostPort:
+      enabled: true
+    routingMode: native
     tunnelProtocol: vxlan
     enableL7Proxy: true
     enableHubble: true
