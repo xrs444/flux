@@ -88,6 +88,7 @@ spec:
         podCIDR: true
     loadBalancer:
       algorithm: maglev
+      mode: hybrid
     externalIPs:
       enabled: true
     enableSourceIPVerification: false
