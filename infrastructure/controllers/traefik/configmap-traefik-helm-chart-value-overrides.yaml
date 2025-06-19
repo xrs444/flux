@@ -656,7 +656,7 @@ data:
         # If you want to access it from outside your cluster,
         # use `kubectl port-forward` or create a secure ingress
         expose:
-          default: false
+          default: true
         # -- The exposed port for this service
         exposedPort: 8080
         # -- The port protocol (TCP/UDP)

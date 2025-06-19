@@ -37,7 +37,6 @@ spec:
     enableIPv4: true
     enableIPv6: false
     enableNodePort: true
-    enableExternalIPs: true
     hostPort:
       enabled: true
     routingMode: native
@@ -92,3 +91,4 @@ spec:
       algorithm: maglev
     externalIPs:
       enabled: true
+    enableSourceIPVerification: false
