@@ -11,8 +11,11 @@ spec:
   - name: xsvr-conn
     localASN: 65001
     peers:
-      - name: xsvr1
+      - name: xsvr-vip
         peerASN: 65000
         peerAddress: 172.20.1.101
         peerConfigRef:
           name: xsvr-peer
+    serviceSelector:
+      matchLabels:
+        app.kubernetes.io/name: traefik
