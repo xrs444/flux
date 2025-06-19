@@ -34,8 +34,6 @@ spec:
     service:
       enabled: true
       externalTrafficPolicy: Local
-    podAnnotations:
-      ExternalAccess: "ExternalIP"
   valuesFrom:
     - kind: ConfigMap
       name: traefik-helm-chart-value-overrides
