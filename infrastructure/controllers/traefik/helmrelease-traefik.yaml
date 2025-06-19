@@ -33,6 +33,7 @@ spec:
         enabled: true
     service:
       enabled: true
+      externalTrafficPolicy: Local
     podAnnotations:
       ExternalAccess: "ExternalIP"
   valuesFrom:
