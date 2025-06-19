@@ -40,7 +40,6 @@ spec:
     hostPort:
       enabled: true
     routingMode: native
-    tunnelProtocol: disabled
     enableL7Proxy: true
     enableHubble: true
     ipam:
