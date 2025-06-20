@@ -21,7 +21,7 @@ data:
       pullPolicy: IfNotPresent
     
     # -- Add additional label to all resources
-    commonLabels: { advertise: bgp}
+    commonLabels: {}
     
     deployment:
       # -- Enable deployment
