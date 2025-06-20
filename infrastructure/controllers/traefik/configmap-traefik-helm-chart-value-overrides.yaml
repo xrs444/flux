@@ -200,7 +200,7 @@ data:
         # -- Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)
         annotations: {}
         # -- Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)
-        labels: { advertise: bgp}
+        labels: { advertise: bgp }
         # -- The router match rule used for the dashboard ingressRoute
         matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
         # -- The internal service used for the dashboard ingressRoute
