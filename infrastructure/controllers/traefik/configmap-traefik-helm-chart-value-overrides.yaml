@@ -55,7 +55,7 @@ data:
       # -- Additional deployment annotations (e.g. for jaeger-operator sidecar injection)
       annotations: {}
       # -- Additional deployment labels (e.g. for filtering deployment by custom labels)
-      labels: {}
+      labels: { advertise: bgp }
       # -- Additional pod annotations (e.g. for mesh injection or prometheus scraping)
       # It supports templating. One can set it with values like traefik/name: '{{ template "traefik.name" . }}'
       podAnnotations: {}
@@ -200,7 +200,7 @@ data:
         # -- Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)
         annotations: {}
         # -- Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)
-        labels: { advertise: bgp }
+        labels: {}
         # -- The router match rule used for the dashboard ingressRoute
         matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
         # -- The internal service used for the dashboard ingressRoute
@@ -798,7 +798,7 @@ data:
       # -- Additional annotations for UDP service only
       annotationsUDP: {}
       # -- Additional service labels (e.g. for filtering Service by custom labels)
-      labels: { advertise: bgp}
+      labels: {}
       # -- Additional entries here will be added to the service spec.
       # -- Cannot contain type, selector or ports entries.
       spec: {}
