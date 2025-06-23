@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
 #  - ./certificate-wildcard-cert-letsencrypt-staging.yaml
   - ./certificate-wildcard-cert-letsencrypt.yaml
-  - ./cluster-issuer-letsencrypt-staging.yaml
+#  - ./cluster-issuer-letsencrypt-staging.yaml
   - ./cluster-issuer-letsencrypt-prod.yaml
   - ./kustomization-letsencrypt-wildcard-cert.yaml
   - ./namespace-letsencrypt-wildcard-cert.yaml
