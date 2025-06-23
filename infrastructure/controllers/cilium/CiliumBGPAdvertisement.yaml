@@ -16,6 +16,4 @@ spec:
       matchLabels:
         advertise: bgp
   - advertisementType: PodCIDR
-    selector:
-      matchLabels:
-        advertise: bgp
+
