@@ -7,7 +7,7 @@ spec:
   # secretName doesn't have to match the certificate name, but it may as well, for simplicity!
   secretName: letsencrypt-wildcard-cert-xrs444.net
   issuerRef:
-    name: letsencrypt-staging
+    name: letsencrypt
     kind: ClusterIssuer
   dnsNames:
     - "xrs444.net"
