@@ -6,3 +6,4 @@ resources:
   - ./helmrepository-jetstack.yaml
   - ./helmrelease-cert-manager.yaml
   - ./kustomization-cert-manager.yaml
+  - ./configmap-cert-manager-helm-chart-value-overrides.yaml
