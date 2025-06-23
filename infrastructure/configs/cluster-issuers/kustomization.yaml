@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ./certificate-wildcard-cert-letsencrypt-staging.yaml
+#  - ./certificate-wildcard-cert-letsencrypt-staging.yaml
   - ./certificate-wildcard-cert-letsencrypt.yaml
   - ./cluster-issuer-letsencrypt-staging.yaml
   - ./cluster-issuer-letsencrypt-prod.yaml
