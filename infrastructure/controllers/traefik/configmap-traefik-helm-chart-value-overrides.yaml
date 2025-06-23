@@ -21,7 +21,7 @@ data:
       pullPolicy: IfNotPresent
     
     # -- Add additional label to all resources
-    commonLabels: {}
+    commonLabels: { advertise: bgp }
     
     deployment:
       # -- Enable deployment
@@ -55,7 +55,7 @@ data:
       # -- Additional deployment annotations (e.g. for jaeger-operator sidecar injection)
       annotations: {}
       # -- Additional deployment labels (e.g. for filtering deployment by custom labels)
-      labels: { advertise: bgp }
+      labels: {}
       # -- Additional pod annotations (e.g. for mesh injection or prometheus scraping)
       # It supports templating. One can set it with values like traefik/name: '{{ template "traefik.name" . }}'
       podAnnotations: {}
