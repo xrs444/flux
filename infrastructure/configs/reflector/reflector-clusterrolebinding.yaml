@@ -2,7 +2,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: reflector
-  namespace: default
+  namespace: reflector
   labels:
     helm.sh/chart: reflector-9.1.11
     app.kubernetes.io/name: reflector
@@ -16,4 +16,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: reflector
-    namespace: default
+    namespace: reflector
