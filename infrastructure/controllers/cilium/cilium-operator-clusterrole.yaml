@@ -50,6 +50,7 @@ rules:
       - ciliumbgpclusterconfigs/status
       - ciliumbgpadvertisements/status
       - ciliumbgppeerconfigs/status
+      - ciliumloadbalancerippools/status
     verbs: ["get", "update", "patch"]
   - apiGroups: ["discovery.k8s.io"]
     resources:
