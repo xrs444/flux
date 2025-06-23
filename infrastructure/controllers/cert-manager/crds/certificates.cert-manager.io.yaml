@@ -47,4 +47,222 @@ spec:
           type: date
       schema:
         openAPIV3Schema:
-          # ...existing code...
+          description: |-
+            A Certificate resource should be created to ensure an up to date and signed
+            X.509 certificate is stored in the Kubernetes Secret resource named in `spec.secretName`.
+            
+            The stored certificate will be renewed before it expires (as configured by `spec.renewBefore`).
+          type: object
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: |-
+                Specification of the desired state of the Certificate resource.
+                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+              type: object
+              required:
+                - issuerRef
+                - secretName
+              properties:
+                issuerRef:
+                  type: object
+                  properties:
+                    group:
+                      type: string
+                    kind:
+                      type: string
+                    name:
+                      type: string
+                  required:
+                    - name
+                    - kind
+                secretName:
+                  type: string
+                renewBefore:
+                  type: string
+                  format: duration
+                commonName:
+                  type: string
+                dnsNames:
+                  type: array
+                  items:
+                    type: string
+                ipAddresses:
+                  type: array
+                  items:
+                    type: string
+                emailAddresses:
+                  type: array
+                  items:
+                    type: string
+                privateKey:
+                  type: object
+                  properties:
+                    algorithm:
+                      type: string
+                    encoding:
+                      type: string
+                    size:
+                      type: integer
+                  required:
+                    - algorithm
+                    - size
+                duration:
+                  type: string
+                  format: duration
+                usages:
+                  type: array
+                  items:
+                    type: string
+                privateKeySecretRef:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    key:
+                      type: string
+                secretTemplate:
+                  type: object
+                  properties:
+                    metadata:
+                      type: object
+                    type:
+                      type: string
+                    data:
+                      type: object
+                    stringData:
+                      type: object
+                    mode:
+                      type: integer
+                      format: int32
+                acme:
+                  type: object
+                  properties:
+                    config:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          http01:
+                            type: object
+                            properties:
+                              ingress:
+                                type: object
+                                properties:
+                                  class:
+                                    type: string
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                required:
+                                  - name
+                                  - namespace
+                          dns01:
+                            type: object
+                            properties:
+                              provider:
+                                type: string
+                              secret:
+                                type: string
+                    email:
+                      type: string
+                    privateKeySecretRef:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        key:
+                          type: string
+                    solvers:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          http01:
+                            type: object
+                            properties:
+                              ingress:
+                                type: object
+                                properties:
+                                  class:
+                                    type: string
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                required:
+                                  - name
+                                  - namespace
+                          dns01:
+                            type: object
+                            properties:
+                              provider:
+                                type: string
+                              secret:
+                                type: string
+            status:
+              description: |-
+                Status of the Certificate.
+                This is set and managed automatically.
+                Read-only.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+              type: object
+              properties:
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      lastTransitionTime:
+                        type: string
+                        format: date-time
+                      message:
+                        type: string
+                      reason:
+                        type: string
+                      status:
+                        type: string
+                        enum:
+                          - "True"
+                          - "False"
+                          - "Unknown"
+                      type:
+                        type: string
+                notAfter:
+                  type: string
+                  format: date-time
+                notBefore:
+                  type: string
+                  format: date-time
+                renewalTime:
+                  type: string
+                  format: date-time
+                secretName:
+                  type: string
+                issuerRef:
+                  type: object
+                  properties:
+                    group:
+                      type: string
+                    kind:
+                      type: string
+                    name:
+                      type: string
+ 
