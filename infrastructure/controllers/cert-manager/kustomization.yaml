@@ -16,3 +16,4 @@ resources:
   - ./webhooks.cert-manager.io.yaml
   - ./users-rbac-cert-manager.yaml
   - ./services.cert-manager.io.yaml
+  - ./sealedsecret-cloudflare-api-token-secret.yaml
