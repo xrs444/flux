@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: cert-manager
-      version: v1.7.x
+      version: v1.18.x
       sourceRef:
         kind: HelmRepository
         name: jetstack
@@ -16,9 +16,7 @@ spec:
   timeout: 5m
   releaseName: cert-manager
   values:
-    installCRDs: true
-    webhook:
-      securePort: 10250
-    global:
-      leaderElection:
-        namespace: cert-manager
+  valuesFrom:
+  - kind: ConfigMap
+    name: cert-manager-helm-chart-value-overrides
+    valuesKey: values.yaml # This

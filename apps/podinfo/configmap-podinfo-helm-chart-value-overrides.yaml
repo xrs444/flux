@@ -122,10 +122,10 @@ data:
           paths:
             - path: /
               pathType: ImplementationSpecific
-      tls: []
-      #  - secretName: chart-example-tls
-      #    hosts:
-      #      - chart-example.local
+      tls:
+        - secretName: letsencrypt-wildcard-cert
+          hosts:
+            - podinfo.xrs444.net
 
     linkerd:
       profile:
