@@ -123,7 +123,7 @@ data:
             - path: /
               pathType: ImplementationSpecific
       tls:
-        - secretName: letsencrypt-wildcard-cert
+        - secretName: letsencrypt-wildcard-cert-xrs444.net
           hosts:
             - podinfo.xrs444.net
 
