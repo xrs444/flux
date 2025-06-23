@@ -1,13 +1,20 @@
+---
+# Source: cert-manager/templates/crds.yaml
+#
+# START crd
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: certificaterequests.cert-manager.io
+  # START annotations
   annotations:
     helm.sh/resource-policy: keep
+  # END annotations
   labels:
     app: 'cert-manager'
     app.kubernetes.io/name: 'cert-manager'
     app.kubernetes.io/instance: 'cert-manager'
+    # Generated labels
     app.kubernetes.io/version: "v1.18.1"
 spec:
   group: cert-manager.io
@@ -24,8 +31,6 @@ spec:
   scope: Namespaced
   versions:
     - name: v1
-      served: true
-      storage: true
       subresources:
         status: {}
       additionalPrinterColumns:
@@ -311,3 +316,7 @@ spec:
                     used to influence garbage collection and back-off.
                   type: string
                   format: date-time
+      served: true
+      storage: true
+
+# END crd
