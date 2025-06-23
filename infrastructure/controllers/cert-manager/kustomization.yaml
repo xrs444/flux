@@ -15,4 +15,4 @@ resources:
   - ./deployments.cert-manager.yaml
   - ./webhooks.cert-manager.io.yaml
   - ./users-rbac-cert-manager.yaml
-  - ./services-cert-manager.io.yaml
+  - ./services.cert-manager.io.yaml
