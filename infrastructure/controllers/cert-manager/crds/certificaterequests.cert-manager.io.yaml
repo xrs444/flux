@@ -24,6 +24,8 @@ spec:
   scope: Namespaced
   versions:
     - name: v1
+      served: true
+      storage: true
       subresources:
         status: {}
       additionalPrinterColumns:
@@ -309,5 +311,3 @@ spec:
                     used to influence garbage collection and back-off.
                   type: string
                   format: date-time
-      served: true
-      storage: true
