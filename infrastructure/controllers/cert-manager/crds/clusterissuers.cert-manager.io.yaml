@@ -23,4 +23,634 @@ spec:
   scope: Cluster
   versions:
     - name: v1
-      # ...existing code...
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - jsonPath: .status.conditions[?(@.type=="Ready")].status
+          name: Ready
+          type: string
+        - jsonPath: .status.conditions[?(@.type=="Ready")].message
+          name: Status
+          type: string
+        - jsonPath: .metadata.creationTimestamp
+          description: CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
+          type: date
+      schema:
+        openAPIV3Schema:
+          description: |-
+            # ClusterIssuer is a cluster level resource that issues certificates
+            # for use within the cluster. It is not responsible for managing the
+            # lifecycle of the certificates it issues.
+            #
+            # ClusterIssuers are not namespaced, and as such, the `metadata.namespace`
+            # field must not be set.
+            #
+            # +kubebuilder:resource:scope=Cluster
+            # +kubebuilder:subresource:status
+            # +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.conditions[?(@.type==\"Ready\")].status"
+            # +kubebuilder:printcolumn:name="Status",type="string",JSONPath=".status.conditions[?(@.type==\"Ready\")].message"
+            # +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+            kind: ClusterIssuer
+            apiVersion: cert-manager.io/v1
+            metadata:
+              # Name must be unique within a cluster
+              name: ""
+            spec:
+              # acme configures an ACME issuer for a given domain
+              acme:
+                # email is the ACME registration email address
+                email: ""
+                # server is the ACME server URL
+                server: ""
+                # privateKeySecretRef is a reference to a secret containing the
+                # ACME account private key
+                privateKeySecretRef:
+                  # name of the secret
+                  name: ""
+                # solvers is a list of solvers to use for this issuer. At least
+                # one solver is required.
+                solvers:
+                  # http01 performs the ACME HTTP-01 challenge
+                  - http01:
+                      # ingressClass is the ingress class to use for the HTTP-01
+                      # challenge. If not set, the default ingress class for the
+                      # cluster will be used.
+                      ingressClass: ""
+                  # dns01 performs the ACME DNS-01 challenge
+                  - dns01:
+                      # provider is the DNS provider to use for the DNS-01
+                      # challenge. This must be set.
+                      provider: ""
+                      # config is a list of configuration options for the DNS
+                      # provider. The options required depend on the provider
+                      # selected.
+                      config:
+                        # apiKey is the API key for the DNS provider. This is
+                        # required for some providers.
+                        apiKey: ""
+                        # apiSecret is the API secret for the DNS provider. This
+                        # is required for some providers.
+                        apiSecret: ""
+                        # region is the region for the DNS provider. This is
+                        # required for some providers.
+                        region: ""
+                        # zone is the DNS zone to use for the DNS-01 challenge.
+                        # This is required for some providers.
+                        zone: ""
+              # vault configures a Vault issuer for a given path
+              vault:
+                # path is the path in Vault where the PKI secrets engine is
+                # mounted
+                path: ""
+                # role is the role to use when requesting a certificate from
+                # Vault
+                role: ""
+                # server is the address of the Vault server
+                server: ""
+                # scheme is the scheme to use when connecting to Vault. This
+                # must be "http" or "https"
+                scheme: ""
+                # caBundle is a PEM encoded CA bundle to use when verifying
+                # the Vault server certificate. This is required if the
+                # scheme is "https" and the Vault server certificate is
+                # not signed by a well-known CA.
+                caBundle: ""
+              # selfSigned configures a self-signed issuer
+              selfSigned: {}
+              # certificate is a reference to a certificate resource that should
+              # be used as the issuer. This can be used to create a certificate
+              # chain where the issuer is a certificate signed by another
+              # certificate.
+              certificate:
+                # name of the certificate resource
+                name: ""
+                # namespace of the certificate resource. This is required if
+                # the certificate resource is in a different namespace than
+                # the issuer.
+                namespace: ""
+                # secretName is the name of the secret where the certificate
+                # is stored. This is required if the certificate resource is
+                # in a different namespace than the issuer.
+                secretName: ""
+                # caBundle is a PEM encoded CA bundle to use when verifying
+                # the certificate. This is required if the certificate is
+                # not signed by a well-known CA.
+                caBundle: ""
+              # keyUsage is a list of key usages that are allowed for the
+              # certificates issued by this issuer. If not set, the default
+              # key usages for the issuer type will be used.
+              keyUsage:
+                - digitalSignature
+                - keyEncipherment
+              # extendedKeyUsage is a list of extended key usages that are
+              # allowed for the certificates issued by this issuer. If not
+              # set, the default extended key usages for the issuer type will
+              # be used.
+              extendedKeyUsage:
+                - serverAuth
+                - clientAuth
+              # issuerRef is a reference to another issuer that should be used
+              # as the issuer for this issuer. This can be used to create a
+              # certificate chain where the issuer is an intermediate CA
+              # signed by a root CA.
+              issuerRef:
+                # name of the issuer
+                name: ""
+                # kind of the issuer. This must be "ClusterIssuer" or
+                # "Issuer"
+                kind: ""
+                # group of the issuer. This must be "cert-manager.io"
+                group: ""
+              # secretName is the name of the secret where the issuer private
+              # key is stored. This is required if the issuer is of type
+              # "selfSigned" or "certificate".
+              secretName: ""
+              # caBundle is a PEM encoded CA bundle to use when verifying
+              # the issuer certificate. This is required if the issuer is of
+              # type "certificate" and the issuer certificate is not signed
+              # by a well-known CA.
+              caBundle: ""
+              # crlDistributionPoints is a list of CRL distribution points
+              # that should be included in the certificates issued by this
+              # issuer. If not set, the default CRL distribution points for
+              # the issuer type will be used.
+              crlDistributionPoints:
+                - http://crl.example.com/crl.pem
+              # ocspServers is a list of OCSP server URLs that should be
+              # included in the certificates issued by this issuer. If not
+              # set, the default OCSP server URLs for the issuer type will
+              # be used.
+              ocspServers:
+                - http://ocsp.example.com
+              # duration is the default duration for certificates issued by
+              # this issuer. If not set, the default duration for the issuer
+              # type will be used.
+              duration: 21600s
+              # renewBefore is the default time before certificate expiration
+              # that cert-manager will begin to renew certificates issued by
+              # this issuer. If not set, the default renew before time for
+              # the issuer type will be used.
+              renewBefore: 3600s
+              # privateKey:
+              #   algorithm: RSA
+              #   size: 2048
+              #   e: 65537
+              #   # PEM encoded PKCS#8 private key
+              #   # This is used only if the issuer is of type "selfSigned"
+              #   # or "certificate".
+              #   key: |
+              #     -----BEGIN PRIVATE KEY-----
+              #     ...
+              #     -----END PRIVATE KEY-----
+              #   # passphrase for the private key. This is used only if the
+              #   # private key is encrypted.
+              #   passphrase: |
+              #     -----BEGIN ENCRYPTED PRIVATE KEY-----
+              #     ...
+              #     -----END ENCRYPTED PRIVATE KEY-----
+              #   # name of the secret where the private key is stored. This is
+              #   # used only if the issuer is of type "selfSigned" or
+              #   # "certificate".
+              #   secretName: ""
+              #   # caBundle is a PEM encoded CA bundle to use when verifying
+              #   # the private key certificate. This is required if the private
+              #   # key is of type "certificate" and the private key certificate
+              #   # is not signed by a well-known CA.
+              #   caBundle: ""
+              #   # crlDistributionPoints is a list of CRL distribution points
+              #   # that should be included in the certificates issued by this
+              #   # issuer. If not set, the default CRL distribution points for
+              #   # the issuer type will be used.
+              #   crlDistributionPoints:
+              #     - http://crl.example.com/crl.pem
+              #   # ocspServers is a list of OCSP server URLs that should be
+              #   # included in the certificates issued by this issuer. If not
+              #   # set, the default OCSP server URLs for the issuer type will
+              #   # be used.
+              #   ocspServers:
+              #     - http://ocsp.example.com
+              #   # duration is the default duration for certificates issued by
+              #   # this issuer. If not set, the default duration for the issuer
+              #   # type will be used.
+              #   duration: 21600s
+              #   # renewBefore is the default time before certificate expiration
+              #   # that cert-manager will begin to renew certificates issued by
+              #   # this issuer. If not set, the default renew before time for
+              #   # the issuer type will be used.
+              #   renewBefore: 3600s
+              #   # privateKey:
+              #   #   algorithm: RSA
+              #   #   size: 2048
+              #   #   e: 65537
+              #   #   # PEM encoded PKCS#8 private key
+              #   #   # This is used only if the issuer is of type "selfSigned"
+              #   #   # or "certificate".
+              #   #   # key: |
+              #   #   #   -----BEGIN PRIVATE KEY-----
+              #   #   #   ...
+              #   #   #   -----END PRIVATE KEY-----
+              #   #   # passphrase for the private key. This is used only if the
+              #   #   # private key is encrypted.
+              #   #   # passphrase: |
+              #   #   #   -----BEGIN ENCRYPTED PRIVATE KEY-----
+              #   #   #   ...
+              #   #   #   -----END ENCRYPTED PRIVATE KEY-----
+              #   #   # name of the secret where the private key is stored. This is
+              #   #   # used only if the issuer is of type "selfSigned" or
+              #   #   # "certificate".
+              #   #   secretName: ""
+              #   #   # caBundle is a PEM encoded CA bundle to use when verifying
+              #   #   # the private key certificate. This is required if the private
+              #   #   # key is of type "certificate" and the private key certificate
+              #   #   # is not signed by a well-known CA.
+              #   #   caBundle: ""
+              #   #   # crlDistributionPoints is a list of CRL distribution points
+              #   #   # that should be included in the certificates issued by this
+              #   #   # issuer. If not set, the default CRL distribution points for
+              #   #   # the issuer type will be used.
+              #   #   crlDistributionPoints:
+              #   #     - http://crl.example.com/crl.pem
+              #   #   # ocspServers is a list of OCSP server URLs that should be
+              #   #   # included in the certificates issued by this issuer. If not
+              #   #   # set, the default OCSP server URLs for the issuer type will
+              #   #   # be used.
+              #   #   ocspServers:
+              #   #     - http://ocsp.example.com
+              #   #   # duration is the default duration for certificates issued by
+              #   #   # this issuer. If not set, the default duration for the issuer
+              #   #   # type will be used.
+              #   #   duration: 21600s
+              #   #   # renewBefore is the default time before certificate expiration
+              #   #   # that cert-manager will begin to renew certificates issued by
+              #   #   # this issuer. If not set, the default renew before time for
+              #   #   # the issuer type will be used.
+              #   #   renewBefore: 3600s
+              #   #   # privateKey:
+              #   #   #   algorithm: RSA
+              #   #   #   size: 2048
+              #   #   #   e: 65537
+              #   #   #   # PEM encoded PKCS#8 private key
+              #   #   #   # This is used only if the issuer is of type "selfSigned"
+              #   #   #   # or "certificate".
+              #   #   #   # key: |
+              #   #   #   #   -----BEGIN PRIVATE KEY-----
+              #   #   #   #   ...
+              #   #   #   #   -----END PRIVATE KEY-----
+              #   #   #   # passphrase for the private key. This is used only if the
+              #   #   #   # private key is encrypted.
+              #   #   #   # passphrase: |
+              #   #   #   #   -----BEGIN ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   ...
+              #   #   #   #   -----END ENCRYPTED PRIVATE KEY-----
+              #   #   #   # name of the secret where the private key is stored. This is
+              #   #   #   # used only if the issuer is of type "selfSigned" or
+              #   #   #   # "certificate".
+              #   #   #   secretName: ""
+              #   #   #   # caBundle is a PEM encoded CA bundle to use when verifying
+              #   #   #   # the private key certificate. This is required if the private
+              #   #   #   # key is of type "certificate" and the private key certificate
+              #   #   #   # is not signed by a well-known CA.
+              #   #   #   caBundle: ""
+              #   #   #   # crlDistributionPoints is a list of CRL distribution points
+              #   #   #   # that should be included in the certificates issued by this
+              #   #   #   # issuer. If not set, the default CRL distribution points for
+              #   #   #   # the issuer type will be used.
+              #   #   #   crlDistributionPoints:
+              #   #   #     - http://crl.example.com/crl.pem
+              #   #   #   # ocspServers is a list of OCSP server URLs that should be
+              #   #   #   # included in the certificates issued by this issuer. If not
+              #   #   #   # set, the default OCSP server URLs for the issuer type will
+              #   #   #   # be used.
+              #   #   #   ocspServers:
+              #   #   #     - http://ocsp.example.com
+              #   #   #   # duration is the default duration for certificates issued by
+              #   #   #   # this issuer. If not set, the default duration for the issuer
+              #   #   #   # type will be used.
+              #   #   #   duration: 21600s
+              #   #   #   # renewBefore is the default time before certificate expiration
+              #   #   #   # that cert-manager will begin to renew certificates issued by
+              #   #   #   # this issuer. If not set, the default renew before time for
+              #   #   #   # the issuer type will be used.
+              #   #   #   renewBefore: 3600s
+              #   #   #   # privateKey:
+              #   #   #   #   algorithm: RSA
+              #   #   #   #   size: 2048
+              #   #   #   #   e: 65537
+              #   #   #   #   # PEM encoded PKCS#8 private key
+              #   #   #   #   # This is used only if the issuer is of type "selfSigned"
+              #   #   #   #   # or "certificate".
+              #   #   #   #   # key: |
+              #   #   #   #   #   -----BEGIN PRIVATE KEY-----
+              #   #   #   #   #   ...
+              #   #   #   #   #   -----END PRIVATE KEY-----
+              #   #   #   #   # passphrase for the private key. This is used only if the
+              #   #   #   #   # private key is encrypted.
+              #   #   #   #   # passphrase: |
+              #   #   #   #   #   -----BEGIN ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   ...
+              #   #   #   #   #   -----END ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   # name of the secret where the private key is stored. This is
+              #   #   #   #   # used only if the issuer is of type "selfSigned" or
+              #   #   #   #   # "certificate".
+              #   #   #   #   secretName: ""
+              #   #   #   #   # caBundle is a PEM encoded CA bundle to use when verifying
+              #   #   #   #   # the private key certificate. This is required if the private
+              #   #   #   #   # key is of type "certificate" and the private key certificate
+              #   #   #   #   # is not signed by a well-known CA.
+              #   #   #   #   caBundle: ""
+              #   #   #   #   # crlDistributionPoints is a list of CRL distribution points
+              #   #   #   #   # that should be included in the certificates issued by this
+              #   #   #   #   # issuer. If not set, the default CRL distribution points for
+              #   #   #   #   # the issuer type will be used.
+              #   #   #   #   crlDistributionPoints:
+              #   #   #   #     - http://crl.example.com/crl.pem
+              #   #   #   #   # ocspServers is a list of OCSP server URLs that should be
+              #   #   #   #   # included in the certificates issued by this issuer. If not
+              #   #   #   #   # set, the default OCSP server URLs for the issuer type will
+              #   #   #   #   # be used.
+              #   #   #   #   ocspServers:
+              #   #   #   #     - http://ocsp.example.com
+              #   #   #   #   # duration is the default duration for certificates issued by
+              #   #   #   #   # this issuer. If not set, the default duration for the issuer
+              #   #   #   #   # type will be used.
+              #   #   #   #   duration: 21600s
+              #   #   #   #   # renewBefore is the default time before certificate expiration
+              #   #   #   #   # that cert-manager will begin to renew certificates issued by
+              #   #   #   #   # this issuer. If not set, the default renew before time for
+              #   #   #   #   # the issuer type will be used.
+              #   #   #   #   renewBefore: 3600s
+              #   #   #   #   # privateKey:
+              #   #   #   #   #   algorithm: RSA
+              #   #   #   #   #   size: 2048
+              #   #   #   #   #   e: 65537
+              #   #   #   #   #   # PEM encoded PKCS#8 private key
+              #   #   #   #   #   # This is used only if the issuer is of type "selfSigned"
+              #   #   #   #   #   # or "certificate".
+              #   #   #   #   #   # key: |
+              #   #   #   #   #   #   -----BEGIN PRIVATE KEY-----
+              #   #   #   #   #   #   ...
+              #   #   #   #   #   #   -----END PRIVATE KEY-----
+              #   #   #   #   #   # passphrase for the private key. This is used only if the
+              #   #   #   #   #   # private key is encrypted.
+              #   #   #   #   #   # passphrase: |
+              #   #   #   #   #   #   -----BEGIN ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   ...
+              #   #   #   #   #   #   -----END ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   # name of the secret where the private key is stored. This is
+              #   #   #   #   #   # used only if the issuer is of type "selfSigned" or
+              #   #   #   #   #   # "certificate".
+              #   #   #   #   #   secretName: ""
+              #   #   #   #   #   # caBundle is a PEM encoded CA bundle to use when verifying
+              #   #   #   #   #   # the private key certificate. This is required if the private
+              #   #   #   #   #   # key is of type "certificate" and the private key certificate
+              #   #   #   #   #   # is not signed by a well-known CA.
+              #   #   #   #   #   caBundle: ""
+              #   #   #   #   #   # crlDistributionPoints is a list of CRL distribution points
+              #   #   #   #   #   # that should be included in the certificates issued by this
+              #   #   #   #   #   # issuer. If not set, the default CRL distribution points for
+              #   #   #   #   #   # the issuer type will be used.
+              #   #   #   #   #   crlDistributionPoints:
+              #   #   #   #   #     - http://crl.example.com/crl.pem
+              #   #   #   #   #   # ocspServers is a list of OCSP server URLs that should be
+              #   #   #   #   #   # included in the certificates issued by this issuer. If not
+              #   #   #   #   #   # set, the default OCSP server URLs for the issuer type will
+              #   #   #   #   #   # be used.
+              #   #   #   #   #   ocspServers:
+              #   #   #   #   #     - http://ocsp.example.com
+              #   #   #   #   #   # duration is the default duration for certificates issued by
+              #   #   #   #   #   # this issuer. If not set, the default duration for the issuer
+              #   #   #   #   #   # type will be used.
+              #   #   #   #   #   duration: 21600s
+              #   #   #   #   #   # renewBefore is the default time before certificate expiration
+              #   #   #   #   #   # that cert-manager will begin to renew certificates issued by
+              #   #   #   #   #   # this issuer. If not set, the default renew before time for
+              #   #   #   #   #   # the issuer type will be used.
+              #   #   #   #   #   renewBefore: 3600s
+              #   #   #   #   #   # privateKey:
+              #   #   #   #   #   #   algorithm: RSA
+              #   #   #   #   #   #   size: 2048
+              #   #   #   #   #   #   e: 65537
+              #   #   #   #   #   #   # PEM encoded PKCS#8 private key
+              #   #   #   #   #   #   # This is used only if the issuer is of type "selfSigned"
+              #   #   #   #   #   #   # or "certificate".
+              #   #   #   #   #   #   # key: |
+              #   #   #   #   #   #   #   -----BEGIN PRIVATE KEY-----
+              #   #   #   #   #   #   #   ...
+              #   #   #   #   #   #   #   -----END PRIVATE KEY-----
+              #   #   #   #   #   #   # passphrase for the private key. This is used only if the
+              #   #   #   #   #   #   # private key is encrypted.
+              #   #   #   #   #   #   # passphrase: |
+              #   #   #   #   #   #   #   -----BEGIN ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   #   ...
+              #   #   #   #   #   #   #   -----END ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   # name of the secret where the private key is stored. This is
+              #   #   #   #   #   #   # used only if the issuer is of type "selfSigned" or
+              #   #   #   #   #   #   # "certificate".
+              #   #   #   #   #   #   secretName: ""
+              #   #   #   #   #   #   # caBundle is a PEM encoded CA bundle to use when verifying
+              #   #   #   #   #   #   # the private key certificate. This is required if the private
+              #   #   #   #   #   #   # key is of type "certificate" and the private key certificate
+              #   #   #   #   #   #   # is not signed by a well-known CA.
+              #   #   #   #   #   #   caBundle: ""
+              #   #   #   #   #   #   # crlDistributionPoints is a list of CRL distribution points
+              #   #   #   #   #   #   # that should be included in the certificates issued by this
+              #   #   #   #   #   #   # issuer. If not set, the default CRL distribution points for
+              #   #   #   #   #   #   # the issuer type will be used.
+              #   #   #   #   #   #   crlDistributionPoints:
+              #   #   #   #   #   #     - http://crl.example.com/crl.pem
+              #   #   #   #   #   #   # ocspServers is a list of OCSP server URLs that should be
+              #   #   #   #   #   #   # included in the certificates issued by this issuer. If not
+              #   #   #   #   #   #   # set, the default OCSP server URLs for the issuer type will
+              #   #   #   #   #   #   # be used.
+              #   #   #   #   #   #   ocspServers:
+              #   #   #   #   #   #     - http://ocsp.example.com
+              #   #   #   #   #   #   # duration is the default duration for certificates issued by
+              #   #   #   #   #   #   # this issuer. If not set, the default duration for the issuer
+              #   #   #   #   #   #   # type will be used.
+              #   #   #   #   #   #   duration: 21600s
+              #   #   #   #   #   #   # renewBefore is the default time before certificate expiration
+              #   #   #   #   #   #   # that cert-manager will begin to renew certificates issued by
+              #   #   #   #   #   #   # this issuer. If not set, the default renew before time for
+              #   #   #   #   #   #   # the issuer type will be used.
+              #   #   #   #   #   #   renewBefore: 3600s
+              #   #   #   #   #   #   # privateKey:
+              #   #   #   #   #   #   #   algorithm: RSA
+              #   #   #   #   #   #   #   size: 2048
+              #   #   #   #   #   #   #   e: 65537
+              #   #   #   #   #   #   #   # PEM encoded PKCS#8 private key
+              #   #   #   #   #   #   #   # This is used only if the issuer is of type "selfSigned"
+              #   #   #   #   #   #   #   # or "certificate".
+              #   #   #   #   #   #   #   # key: |
+              #   #   #   #   #   #   #   #   -----BEGIN PRIVATE KEY-----
+              #   #   #   #   #   #   #   #   ...
+              #   #   #   #   #   #   #   #   -----END PRIVATE KEY-----
+              #   #   #   #   #   #   #   # passphrase for the private key. This is used only if the
+              #   #   #   #   #   #   #   # private key is encrypted.
+              #   #   #   #   #   #   #   # passphrase: |
+              #   #   #   #   #   #   #   #   -----BEGIN ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   #   #   ...
+              #   #   #   #   #   #   #   #   -----END ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   #   # name of the secret where the private key is stored. This is
+              #   #   #   #   #   #   #   # used only if the issuer is of type "selfSigned" or
+              #   #   #   #   #   #   #   # "certificate".
+              #   #   #   #   #   #   #   secretName: ""
+              #   #   #   #   #   #   #   # caBundle is a PEM encoded CA bundle to use when verifying
+              #   #   #   #   #   #   #   # the private key certificate. This is required if the private
+              #   #   #   #   #   #   #   # key is of type "certificate" and the private key certificate
+              #   #   #   #   #   #   #   # is not signed by a well-known CA.
+              #   #   #   #   #   #   #   caBundle: ""
+              #   #   #   #   #   #   #   # crlDistributionPoints is a list of CRL distribution points
+              #   #   #   #   #   #   #   # that should be included in the certificates issued by this
+              #   #   #   #   #   #   #   # issuer. If not set, the default CRL distribution points for
+              #   #   #   #   #   #   #   # the issuer type will be used.
+              #   #   #   #   #   #   #   crlDistributionPoints:
+              #   #   #   #   #   #   #     - http://crl.example.com/crl.pem
+              #   #   #   #   #   #   #   # ocspServers is a list of OCSP server URLs that should be
+              #   #   #   #   #   #   #   # included in the certificates issued by this issuer. If not
+              #   #   #   #   #   #   #   # set, the default OCSP server URLs for the issuer type will
+              #   #   #   #   #   #   #   # be used.
+              #   #   #   #   #   #   #   ocspServers:
+              #   #   #   #   #   #   #     - http://ocsp.example.com
+              #   #   #   #   #   #   #   # duration is the default duration for certificates issued by
+              #   #   #   #   #   #   #   # this issuer. If not set, the default duration for the issuer
+              #   #   #   #   #   #   #   # type will be used.
+              #   #   #   #   #   #   #   duration: 21600s
+              #   #   #   #   #   #   #   # renewBefore is the default time before certificate expiration
+              #   #   #   #   #   #   #   # that cert-manager will begin to renew certificates issued by
+              #   #   #   #   #   #   #   # this issuer. If not set, the default renew before time for
+              #   #   #   #   #   #   #   # the issuer type will be used.
+              #   #   #   #   #   #   #   renewBefore: 3600s
+              #   #   #   #   #   #   #   # privateKey:
+              #   #   #   #   #   #   #   #   algorithm: RSA
+              #   #   #   #   #   #   #   #   size: 2048
+              #   #   #   #   #   #   #   #   e: 65537
+              #   #   #   #   #   #   #   #   # PEM encoded PKCS#8 private key
+              #   #   #   #   #   #   #   #   # This is used only if the issuer is of type "selfSigned"
+              #   #   #   #   #   #   #   #   # or "certificate".
+              #   #   #   #   #   #   #   #   # key: |
+              #   #   #   #   #   #   #   #   #   -----BEGIN PRIVATE KEY-----
+              #   #   #   #   #   #   #   #   #   ...
+              #   #   #   #   #   #   #   #   #   -----END PRIVATE KEY-----
+              #   #   #   #   #   #   #   #   # passphrase for the private key. This is used only if the
+              #   #   #   #   #   #   #   #   # private key is encrypted.
+              #   #   #   #   #   #   #   #   # passphrase: |
+              #   #   #   #   #   #   #   #   #   -----BEGIN ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   #   #   #   ...
+              #   #   #   #   #   #   #   #   #   -----END ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   #   #   # name of the secret where the private key is stored. This is
+              #   #   #   #   #   #   #   #   # used only if the issuer is of type "selfSigned" or
+              #   #   #   #   #   #   #   #   # "certificate".
+              #   #   #   #   #   #   #   #   secretName: ""
+              #   #   #   #   #   #   #   #   # caBundle is a PEM encoded CA bundle to use when verifying
+              #   #   #   #   #   #   #   #   # the private key certificate. This is required if the private
+              #   #   #   #   #   #   #   #   # key is of type "certificate" and the private key certificate
+              #   #   #   #   #   #   #   #   # is not signed by a well-known CA.
+              #   #   #   #   #   #   #   #   caBundle: ""
+              #   #   #   #   #   #   #   #   # crlDistributionPoints is a list of CRL distribution points
+              #   #   #   #   #   #   #   #   # that should be included in the certificates issued by this
+              #   #   #   #   #   #   #   #   # issuer. If not set, the default CRL distribution points for
+              #   #   #   #   #   #   #   #   # the issuer type will be used.
+              #   #   #   #   #   #   #   #   crlDistributionPoints:
+              #   #   #   #   #   #   #   #     - http://crl.example.com/crl.pem
+              #   #   #   #   #   #   #   #   # ocspServers is a list of OCSP server URLs that should be
+              #   #   #   #   #   #   #   #   # included in the certificates issued by this issuer. If not
+              #   #   #   #   #   #   #   #   # set, the default OCSP server URLs for the issuer type will
+              #   #   #   #   #   #   #   #   # be used.
+              #   #   #   #   #   #   #   #   ocspServers:
+              #   #   #   #   #   #   #   #     - http://ocsp.example.com
+              #   #   #   #   #   #   #   #   # duration is the default duration for certificates issued by
+              #   #   #   #   #   #   #   #   # this issuer. If not set, the default duration for the issuer
+              #   #   #   #   #   #   #   #   # type will be used.
+              #   #   #   #   #   #   #   #   duration: 21600s
+              #   #   #   #   #   #   #   #   # renewBefore is the default time before certificate expiration
+              #   #   #   #   #   #   #   #   # that cert-manager will begin to renew certificates issued by
+              #   #   #   #   #   #   #   #   # this issuer. If not set, the default renew before time for
+              #   #   #   #   #   #   #   #   # the issuer type will be used.
+              #   #   #   #   #   #   #   #   renewBefore: 3600s
+              #   #   #   #   #   #   #   #   # privateKey:
+              #   #   #   #   #   #   #   #     algorithm: RSA
+              #   #   #   #   #   #   #   #     size: 2048
+              #   #   #   #   #   #   #   #     e: 65537
+              #   #   #   #   #   #   #   #     # PEM encoded PKCS#8 private key
+              #   #   #   #   #   #   #   #     # This is used only if the issuer is of type "selfSigned"
+              #   #   #   #   #   #   #   #     # or "certificate".
+              #   #   #   #   #   #   #   #     # key: |
+              #   #   #   #   #   #   #   #     #   -----BEGIN PRIVATE KEY-----
+              #   #   #   #   #   #   #   #     #   ...
+              #   #   #   #   #   #   #   #     #   -----END PRIVATE KEY-----
+              #   #   #   #   #   #   #   #     # passphrase for the private key. This is used only if the
+              #   #   #   #   #   #   #   #     # private key is encrypted.
+              #   #   #   #   #   #   #   #     # passphrase: |
+              #   #   #   #   #   #   #   #     #   -----BEGIN ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   #   #     #   ...
+              #   #   #   #   #   #   #   #     #   -----END ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   #   #     # name of the secret where the private key is stored. This is
+              #   #   #   #   #   #   #   #     # used only if the issuer is of type "selfSigned" or
+              #   #   #   #   #   #   #   #     # "certificate".
+              #   #   #   #   #   #   #   #     secretName: ""
+              #   #   #   #   #   #   #   #     # caBundle is a PEM encoded CA bundle to use when verifying
+              #   #   #   #   #   #   #   #     # the private key certificate. This is required if the private
+              #   #   #   #   #   #   #   #     # key is of type "certificate" and the private key certificate
+              #   #   #   #   #   #   #   #     # is not signed by a well-known CA.
+              #   #   #   #   #   #   #   #     caBundle: ""
+              #   #   #   #   #   #   #   #     # crlDistributionPoints is a list of CRL distribution points
+              #   #   #   #   #   #   #   #     # that should be included in the certificates issued by this
+              #   #   #   #   #   #   #   #     # issuer. If not set, the default CRL distribution points for
+              #   #   #   #   #   #   #   #     # the issuer type will be used.
+              #   #   #   #   #   #   #   #     crlDistributionPoints:
+              #   #   #   #   #   #   #   #       - http://crl.example.com/crl.pem
+              #   #   #   #   #   #   #   #     # ocspServers is a list of OCSP server URLs that should be
+              #   #   #   #   #   #   #   #     # included in the certificates issued by this issuer. If not
+              #   #   #   #   #   #   #   #     # set, the default OCSP server URLs for the issuer type will
+              #   #   #   #   #   #   #   #     # be used.
+              #   #   #   #   #   #   #   #     ocspServers:
+              #   #   #   #   #   #   #   #       - http://ocsp.example.com
+              #   #   #   #   #   #   #   #     # duration is the default duration for certificates issued by
+              #   #   #   #   #   #   #   #     # this issuer. If not set, the default duration for the issuer
+              #   #   #   #   #   #   #   #     # type will be used.
+              #   #   #   #   #   #   #   #     duration: 21600s
+              #   #   #   #   #   #   #   #     # renewBefore is the default time before certificate expiration
+              #   #   #   #   #   #   #   #     # that cert-manager will begin to renew certificates issued by
+              #   #   #   #   #   #   #   #     # this issuer. If not set, the default renew before time for
+              #   #   #   #   #   #   #   #     # the issuer type will be used.
+              #   #   #   #   #   #   #   #     renewBefore: 3600s
+              #   #   #   #   #   #   #   #     # privateKey:
+              #   #   #   #   #   #   #   #         algorithm: RSA
+              #   #   #   #   #   #   #   #         size: 2048
+              #   #   #   #   #   #   #   #         e: 65537
+              #   #   #   #   #   #   #   #         # PEM encoded PKCS#8 private key
+              #   #   #   #   #   #   #   #         # This is used only if the issuer is of type "selfSigned"
+              #   #   #   #   #   #   #   #         # or "certificate".
+              #   #   #   #   #   #   #   #         # key: |
+              #   #   #   #   #   #   #   #         #   -----BEGIN PRIVATE KEY-----
+              #   #   #   #   #   #   #   #         #   ...
+              #   #   #   #   #   #   #   #         #   -----END PRIVATE KEY-----
+              #   #   #   #   #   #   #   #         # passphrase for the private key. This is used only if the
+              #   #   #   #   #   #   #   #         # private key is encrypted.
+              #   #   #   #   #   #   #   #         # passphrase: |
+              #   #   #   #   #   #   #   #         #   -----BEGIN ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   #   #         #   ...
+              #   #   #   #   #   #   #   #         #   -----END ENCRYPTED PRIVATE KEY-----
+              #   #   #   #   #   #   #   #         # name of the secret where the private key is stored. This is
+              #   #   #   #   #   #   #   #         # used only if the issuer is of type "selfSigned" or
+              #   #   #   #   #   #   #   #         # "certificate".
+              #   #   #   #   #   #   #   #         secretName: ""
+              #   #   #   #   #   #   #   #         # caBundle is a PEM encoded CA bundle to use when verifying
+              #   #   #   #   #   #   #   #         # the private key certificate. This is required if the private
+              #   #   #   #   #   #   #   #         # key is of type "certificate" and the private key certificate
+              #   #   #   #   #   #   #   #         # is not signed by a well-known CA.
+              #   #   #   #   #   #   #   #         caBundle: ""
+              #   #   #   #   #   #   #   #         # crlDistributionPoints is a list of CRL distribution points
+              #   #   #   #   #   #   #   #         # that should be included in the certificates issued by this
+              #   #   #   #   #   #   #   #         # issuer. If not set, the default CRL distribution points for
+              #   #   #   #   #   #   #   #         # the issuer type will be used.
+              #   #   #   #   #   #   #   #         crlDistributionPoints:
+              #   #   #   #   #   #   #   #           - http://crl.example.com/crl.pem
+              #   #   #   #   #   #   #   #         # ocspServers is a list of OCSP server URLs that should be
+              #   #   #   #   #   #   #   #         # included in the certificates issued by this issuer. If not
+              #   #   #   #   #   #   #   #         # set, the default OCSP server URLs for the issuer type will
+              #   #   #   #   #   #   #   #         # be used.
+              #   #   #   #   #   #   #   #           - http://ocsp.example.com
+              #   #   #   #   #   #   #   #         # duration is the default duration for certificates issued by
+              #   #   #   #   #   #   #   #         # this issuer. If not set, the default duration for the issuer
+              #   #   #   #   #   #   #   #         # type will be used.
