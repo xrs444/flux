@@ -13,6 +13,6 @@ resources:
   - ./helmrelease-cert-manager.yaml
   - ./kustomization-cert-manager.yaml
   - ./deployments.cert-manager.yaml
-  - ./webhooks.cert-manager-webhook.yaml
+  - ./webhooks.cert-manager.io.yaml
   - ./users-rbac-cert-manager.yaml
   - ./services-cert-manager.yaml
