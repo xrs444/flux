@@ -4,9 +4,6 @@ metadata:
   name: reflector
   namespace: kube-system
 spec:
-  dependsOn:
-    - name: cluster-issuers
-      namespace: flux-system
   interval: 5m
   chart:
     spec:
