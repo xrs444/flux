@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: freepbx
+spec:
+  selector:
+    app: freepbx
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
+    - name: sip
+      protocol: UDP
+      port: 5060
+      targetPort: 5060
+    - name: sip-tcp
+      protocol: TCP
+      port: 5060
+      targetPort: 5060
+    - name: sip-alt
+      protocol: UDP
+      port: 5160
+      targetPort: 5160
+    - name: rtp-start
+      protocol: UDP
+      port: 18000
+      targetPort: 18000
+    - name: rtp-end
+      protocol: UDP
+      port: 18001
+      targetPort: 18001
+  type: ClusterIP

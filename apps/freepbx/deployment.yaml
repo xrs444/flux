@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: freepbx
+  labels:
+    app: freepbx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: freepbx
+  template:
+    metadata:
+      labels:
+        app: freepbx
+    spec:
+      containers:
+        - name: freepbx
+          image: tiredofit/freepbx:latest
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+            - containerPort: 5060
+            - containerPort: 5160
+            - containerPort: 18000
+            - containerPort: 18001
+          env:
+            - name: RTP_START
+              value: "18000"
+            - name: RTP_FINISH
+              value: "18001"
+            - name: SIPPROXY_ENABLED
+              value: "false"
+            - name: DB_EMBEDDED
+              value: "true"
+            - name: ADMIN_EMAIL
+              value: "admin@example.com"
+          volumeMounts:
+            - name: freepbx-data
+              mountPath: /data
+      volumes:
+        - name: freepbx-data
+          persistentVolumeClaim:
+            claimName: freepbx-data-pvc

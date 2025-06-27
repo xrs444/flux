@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: omada-controller
+  labels:
+    app: omada-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: omada-controller
+  template:
+    metadata:
+      labels:
+        app: omada-controller
+    spec:
+      containers:
+        - name: omada-controller
+          image: mbentley/omada-controller:latest
+          ports:
+            - containerPort: 8088 # HTTP
+            - containerPort: 8043 # HTTPS
+            - containerPort: 8843 # Portal HTTPS
+            - containerPort: 29810 # Controller Discovery
+            - containerPort: 29811 # Controller Management
+            - containerPort: 29812 # Controller Upgrade
+            - containerPort: 29813 # Controller Discovery
+            - containerPort: 29814 # Controller Management
+          env:
+            - name: TZ
+              value: "UTC"
+          volumeMounts:
+            - name: omada-data
+              mountPath: /opt/tplink/EAPController/data
+            - name: omada-logs
+              mountPath: /opt/tplink/EAPController/logs
+      volumes:
+        - name: omada-data
+          persistentVolumeClaim:
+            claimName: omada-data-pvc
+        - name: omada-logs
+          persistentVolumeClaim:
+            claimName: omada-logs-pvc
