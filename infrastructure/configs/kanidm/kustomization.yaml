@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./helmrelease-kanidm.yaml
+  - ./helmrepository-kanidm.yaml
+  - ./service-kanidm.yaml
+  - ./admin-secret-kanidm.yaml
+  - ./deployment-kanidm.yaml
+  - ./data-pvc-kanidm.yaml
+  - ./namespace-kanidm.yaml
+  
