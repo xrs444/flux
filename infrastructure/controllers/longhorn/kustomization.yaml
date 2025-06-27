@@ -7,3 +7,4 @@ resources:
   - ./helmrepository-longhorn.yaml
   - ./kustomization-longhorn.yaml
   - ./ingress-longhorn.yaml
+  - ./storageclass-longhorn.yaml
