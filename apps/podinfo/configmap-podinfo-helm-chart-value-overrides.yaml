@@ -113,10 +113,9 @@ data:
 
     ingress:
       enabled: true
-      className: ""
-      annotations: {}
-        # kubernetes.io/ingress.class: nginx
-        # kubernetes.io/tls-acme: "true"
+      className: traefik
+      annotations:
+        kubernetes.io/ingress.class: traefik
       hosts:
         - host: podinfo.xrs444.net
           paths:
