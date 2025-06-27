@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - ./helmrelease-kanidm.yaml
-  - ./helmrepository-kanidm.yaml
+#  - ./helmrepository-kanidm.yaml
   - ./service-kanidm.yaml
   - ./admin-secret-kanidm.yaml
   - ./deployment-kanidm.yaml
