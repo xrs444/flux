@@ -1,4 +1,17 @@
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kanidm-server
+  namespace: kandim
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kanidm-server
+  template:
+    metadata:
+      labels:
+        app: kanidm-server
     spec:
       containers:
         - name: kanidm-server
