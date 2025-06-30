@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kanidm-server-config
+  namespace: {{ .Values.namespace }}
+data:
+  server.toml: |
+    [server]
+    domain = "{{ .Values.domain }}"
+    bindaddress = "0.0.0.0:{{ .Values.service.targetPort }}"
+    db_path = "/data/kanidm"
+    tls_chain = "/tls/tls.crt"
+    tls_key = "/tls/tls.key"
