@@ -10,4 +10,3 @@ resources:
   - ./sealedsecrets/
   - ./traefik/
   - ./traefik-crds/
-  - ./charts/
