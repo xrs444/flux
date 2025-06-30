@@ -15,6 +15,7 @@ spec:
       interval: 1m
       version: "0.1.x"
   interval: 5m
+  timeout: 15m
   values:
     namespace: kanidm
     image:
