@@ -24,4 +24,4 @@ spec:
     storageClass: longhorn
     storageSize: 5Gi
     domain: idm.xrs444.net
-    tlsSecretName: kanidm-tls
+    tlsSecretName: letsencrypt-wildcard-cert-xrs444.net
