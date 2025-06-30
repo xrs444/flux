@@ -1,0 +1,42 @@
+# charts/kanidm/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kanidm-server
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kanidm-server
+  template:
+    metadata:
+      labels:
+        app: kanidm-server
+    spec:
+      containers:
+        - name: kanidm-server
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          env:
+            - name: KANIDM_SERVER_DOMAIN
+              value: "{{ .Values.domain }}"
+            - name: KANIDM_SERVER_BINDADDRESS
+              value: "0.0.0.0:{{ .Values.service.targetPort }}"
+            - name: KANIDM_SERVER_DB_PATH
+              value: "/data/kanidm"
+            - name: KANIDM_SERVER_ADMIN_USERNAME
+              value: "admin"
+            - name: KANIDM_SERVER_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kanidm-admin-secret
+                  key: password
+          volumeMounts:
+            - name: kanidm-data
+              mountPath: /data/kanidm
+      volumes:
+        - name: kanidm-data
+          persistentVolumeClaim:
+            claimName: kanidm-data-pvc

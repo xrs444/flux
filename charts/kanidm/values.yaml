@@ -1,0 +1,12 @@
+# charts/kanidm/values.yaml
+namespace: kanidm
+adminPassword: "changeme-admin-password"
+storageClass: longhorn
+storageSize: 5Gi
+domain: kanidm.local
+image:
+  repository: kanidm/server
+  tag: latest
+service:
+  port: 443
+  targetPort: 8443

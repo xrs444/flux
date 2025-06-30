@@ -1,0 +1,26 @@
+# flux/infrastructure/controllers/kanidm/helmrelease-kanidm.yaml
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kanidm
+  namespace: flux-system
+spec:
+  chart:
+    spec:
+      chart: kanidm
+      sourceRef:
+        kind: GitRepository
+        name: homeprod-charts
+        namespace: flux-system
+      interval: 1m
+      version: "0.1.0"
+  interval: 5m
+  values:
+    namespace: kanidm
+    image:
+      repository: kanidm/server
+      tag: latest
+    storageClass: longhorn
+    storageSize: 5Gi
+    adminSecret:
+      value: "changeme-admin-password"
