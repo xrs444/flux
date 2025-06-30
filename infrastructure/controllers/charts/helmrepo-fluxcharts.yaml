@@ -5,9 +5,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
-  url: https://github.com/xrs444/flux.git   # <-- update if needed
+  url: https://github.com/xrs444/flux.git
   ref:
     branch: main
-  # optionally, specify a path if your charts are not at the repo root
-  # ignore: |
-  #   !charts/kanidm
+  ignore: |
+     !charts/
