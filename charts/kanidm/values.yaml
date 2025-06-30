@@ -1,5 +1,3 @@
-# charts/kanidm/values.yaml
-namespace: kanidm
 storageClass: longhorn
 storageSize: 5Gi
 domain: kanidm.local
