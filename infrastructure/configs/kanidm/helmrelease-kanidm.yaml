@@ -10,7 +10,7 @@ spec:
       chart: kanidm
       sourceRef:
         kind: GitRepository
-        name: homeprod-charts
+        name: flux-charts
         namespace: flux-system
       interval: 1m
       version: "0.1.0"

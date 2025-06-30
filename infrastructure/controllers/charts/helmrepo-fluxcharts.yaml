@@ -1,8 +1,7 @@
-# filepath: flux/infrastructure/controllers/kanidm/gitrepository-homeprod-charts.yaml
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: homeprod-charts
+  name: flux-charts
   namespace: flux-system
 spec:
   interval: 1m
