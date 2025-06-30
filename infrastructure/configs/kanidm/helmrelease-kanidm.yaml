@@ -23,3 +23,5 @@ spec:
       tag: latest
     storageClass: longhorn
     storageSize: 5Gi
+    domain: idm.xrs444.net
+    tlsSecretName: kanidm-tls
