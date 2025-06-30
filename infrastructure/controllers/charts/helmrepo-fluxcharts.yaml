@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
-  url: https://github.com/xrs444//flux
+  url: https://github.com/xrs444/flux
   ref:
     branch: main
   ignore: |
