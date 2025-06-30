@@ -4,8 +4,8 @@ metadata:
   name: flux-charts
   namespace: flux-system
 spec:
-  interval: 1m
-  url: https://github.com/xrs444/flux.git
+  interval: 5m
+  url: https://github.com/xrs444//flux
   ref:
     branch: main
   ignore: |
