@@ -8,3 +8,4 @@ resources:
   - ./kustomization-longhorn.yaml
   - ./ingress-longhorn.yaml
   - ./storageclass-longhorn.yaml
+  - ./storageclass-longhorn-ephemeral.yaml
