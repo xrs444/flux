@@ -13,7 +13,7 @@ spec:
         name: flux-charts
         namespace: flux-system
       interval: 1m
-      version: "0.1.0"
+      version: "0.1.x"
   interval: 5m
   values:
     namespace: kanidm
