@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kanidm-server
-  namespace: kandim
+  namespace: kanidm
 spec:
   replicas: 1
   selector:
