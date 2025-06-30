@@ -1,6 +1,5 @@
 # charts/kanidm/values.yaml
 namespace: kanidm
-adminPassword: "changeme-admin-password"
 storageClass: longhorn
 storageSize: 5Gi
 domain: kanidm.local

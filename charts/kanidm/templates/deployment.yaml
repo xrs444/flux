@@ -32,7 +32,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: kanidm-admin-secret
-                  key: password
+                  key: admin
           volumeMounts:
             - name: kanidm-data
               mountPath: /data/kanidm
