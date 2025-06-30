@@ -5,6 +5,7 @@ metadata:
   name: kanidm
   namespace: flux-system
 spec:
+  targetNamespace: kanidm
   chart:
     spec:
       chart: charts/kanidm
