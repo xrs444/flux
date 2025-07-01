@@ -9,3 +9,6 @@ resources:
   - ./ingress-longhorn.yaml
   - ./storageclass-longhorn.yaml
   - ./storageclass-longhorn-ephemeral.yaml
+  - ./oauth2-proxy-sealedsecret.yaml
+  - ./helmrelease-longhorn-oidc2.yaml
+  - ./middleware_traefik_longhorn.yaml
