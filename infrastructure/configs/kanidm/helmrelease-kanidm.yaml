@@ -27,3 +27,6 @@ spec:
     ingress:
       enabled: false
       clusterIssuer: "letsencrypt-wildcard-cert-xrs444.net"
+    tls:
+      enabled: false
+      secretName: "etsencrypt-wildcard-cert-xrs444.net"
