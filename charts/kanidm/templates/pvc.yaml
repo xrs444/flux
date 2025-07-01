@@ -3,7 +3,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: kanidm-data-pvc
-  namespace: {{ .Values.namespace }}
 spec:
   accessModes:
     - ReadWriteOnce

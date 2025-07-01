@@ -1,4 +1,3 @@
-# flux/infrastructure/controllers/kanidm/helmrelease-kanidm.yaml
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
