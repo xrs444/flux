@@ -1,0 +1,9 @@
+apiVersion: v2
+name: kanidm
+type: application
+home: https://kanidm.com/
+icon: https://kanidm.com/images/logo.svg
+sources:
+  - https://github.com/kanidm/kanidm
+version: 0.1.2
+appVersion: "1.4.5"
