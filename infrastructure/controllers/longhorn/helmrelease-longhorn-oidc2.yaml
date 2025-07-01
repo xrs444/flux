@@ -22,7 +22,7 @@ spec:
         - "*"
       upstreams:
         - static://200
-    existingSecret: oauth2-proxy-secret
+    existingSecret: oauth2-proxy
     ingress:
       enabled: false
     service:
