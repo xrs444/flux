@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - ./helmrelease-longhorn.yaml
-  - ./helmrepo-oath2-proxy.yaml
+  - ./helmrepo-oauth2-proxy.yaml
   - ./namespace-longhorn.yaml
   - ./helmrepository-longhorn.yaml
   - ./kustomization-longhorn.yaml
