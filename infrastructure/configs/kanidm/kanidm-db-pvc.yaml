@@ -9,4 +9,4 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: longhorn   # or nfs-client, or your preferred class
+  storageClassName: longhorn
