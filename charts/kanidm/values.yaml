@@ -8,3 +8,12 @@ service:
   port: 443
   targetPort: 8443
 tlsSecretName: ""
+tlsMounts: |
+  - name: tls
+    mountPath: /tls
+    readOnly: true
+    
+tlsVolumes: |
+  - name: tls
+    secret:
+      secretName: my-tls-secret
