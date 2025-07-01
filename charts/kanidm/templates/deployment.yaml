@@ -25,10 +25,41 @@ spec:
                 secretKeyRef:
                   name: kanidm-admin-secret
                   key: admin
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.targetPort }}
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.targetPort }}
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
           volumeMounts:
             - name: config
               mountPath: /data/kanidm
+            {{- if .Values.tlsSecretName }}
+            - name: tls
+              mountPath: /tls
+              readOnly: true
+            {{- end }}
       volumes:
         - name: config
           configMap:
             name: kanidm-server-config
+        {{- if .Values.tlsSecretName }}
+        - name: tls
+          secret:
+            secretName: {{ .Values.tlsSecretName }}
+        {{- end }}
