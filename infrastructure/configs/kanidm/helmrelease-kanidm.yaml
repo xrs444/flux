@@ -33,4 +33,4 @@ spec:
     service:
       type: LoadBalancer
       labels:
-        announce: bgp
+        advertise: bgp
