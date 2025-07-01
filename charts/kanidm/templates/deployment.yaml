@@ -33,7 +33,6 @@ spec:
               mountPath: /tls
               readOnly: true
 {{- end }}
-
       volumes:
         - name: config
           configMap:
