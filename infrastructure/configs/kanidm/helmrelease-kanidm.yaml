@@ -30,3 +30,5 @@ spec:
       enabled: true
       clusterIssuer: "letsencrypt-wildcard-cert-xrs444.net"
       tlsSecretName: letsencrypt-wildcard-cert-xrs444.net
+    service:
+      type: LoadBalancer

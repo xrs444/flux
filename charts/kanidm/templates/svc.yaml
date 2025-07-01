@@ -4,14 +4,15 @@ metadata:
   name: kanidm
   namespace: {{ .Release.Namespace }}
 spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
   ports:
-  - name: https
-    port: 443
-    targetPort: 8443
-    protocol: TCP
-  - name: ldaps
-    port: 636
-    targetPort: 3636
-    protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 8443
+      protocol: TCP
+    - name: ldaps
+      port: 636
+      targetPort: 3636
+      protocol: TCP
   selector:
     app: kanidm
