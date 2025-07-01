@@ -20,9 +20,6 @@ spec:
     image:
       repository: kanidm/server
       tag: latest
-    persistence:
-      storageClass: longhorn
-      size: 5Gi
     kanidm:
       domain: idm.xrs444.net
       tlsSecretName: letsencrypt-wildcard-cert-xrs444.net
