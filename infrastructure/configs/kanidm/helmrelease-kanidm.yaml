@@ -26,4 +26,4 @@ spec:
       adminSecretName: kanidm-admin-secret
     ingress:
       enabled: false
-      clusterIssuer: ""
+      clusterIssuer: "letsencrypt-wildcard-cert-xrs444.net"
