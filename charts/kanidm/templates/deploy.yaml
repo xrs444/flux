@@ -88,3 +88,4 @@ spec:
         seccompProfile:
           type: RuntimeDefault
         runAsNonRoot: true
+        fsGroup: 5000
