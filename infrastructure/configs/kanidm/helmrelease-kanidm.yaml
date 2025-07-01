@@ -34,3 +34,14 @@ spec:
       type: LoadBalancer
       labels:
         advertise: bgp
+      containers:
+      - image: kanidm/server:{{ .Chart.AppVersion }}
+        name: kanidm
+        volumeMounts:
+        - name: admin-secret
+          mountPath: /run/secrets/kanidm
+          readOnly: true
+      volumes:
+      - name: admin-secret
+        secret:
+          secretName: {{ .Values.kanidm.adminSecretName | default "kanidm-admin-secret" }}
