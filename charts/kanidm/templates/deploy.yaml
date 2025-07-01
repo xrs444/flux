@@ -53,6 +53,9 @@ spec:
           readOnly: true
         - name: socket-volume
           mountPath: /var/run
+        - name: admin-secret
+          mountPath: /run/secrets/kanidm
+          readOnly: true
         resources:
           limits:
             cpu: 200m
@@ -82,6 +85,9 @@ spec:
             path: server.toml
       - name: socket-volume
         emptyDir: {}
+      - name: admin-secret
+        secret:
+          secretName: {{ .Values.kanidm.adminSecretName | default "kanidm-admin-secret" }}
       securityContext:
         runAsGroup: 5000
         runAsUser: 5000
