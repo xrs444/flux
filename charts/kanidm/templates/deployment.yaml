@@ -27,8 +27,7 @@ spec:
                   key: admin
           volumeMounts:
             - name: config
-              mountPath: /data/kanidm/server.toml
-              subPath: server.toml
+              mountPath: /data/kanidm
 {{- if .Values.tlsSecretName }}
             - name: tls
               mountPath: /tls
