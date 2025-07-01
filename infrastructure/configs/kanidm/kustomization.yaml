@@ -6,4 +6,3 @@ resources:
   - ./sealedsecret-kanidm.yaml
   - ./kanidm-backup-pvc.yaml
   - ./helmrelease-kanidm.yaml
-  - ./kanidm-db-pvc.yaml
