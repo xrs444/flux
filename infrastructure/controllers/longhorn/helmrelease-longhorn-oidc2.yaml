@@ -15,9 +15,9 @@ spec:
   interval: 5m
   values:
     config:
-      provider: oidc
-      oidcIssuerURL: https://idm.xrs444.net/oidc/
-      redirectURL: https://longhorn.xrs444.net/oauth2/callback
+      provider: "oidc"
+      oidcIssuerURL: "https://idm.xrs444.net/oidc/"
+      redirectURL: "https://longhorn.xrs444.net/oauth2/callback"
       emailDomains:
         - "*"
       upstreams:
