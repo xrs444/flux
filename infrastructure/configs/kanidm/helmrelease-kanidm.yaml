@@ -24,3 +24,6 @@ spec:
       domain: idm.xrs444.net
       tlsSecretName: letsencrypt-wildcard-cert-xrs444.net
       adminSecretName: kanidm-admin-secret
+    ingress:
+      enabled: false
+      clusterIssuer: ""
