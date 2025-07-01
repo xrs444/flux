@@ -1,0 +1,29 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: oauth2-proxy
+  namespace: longhorn-system
+spec:
+  chart:
+    spec:
+      chart: oauth2-proxy
+      version: "7.x.x"
+      sourceRef:
+        kind: HelmRepository
+        name: oauth2-proxy
+        namespace: flux-system
+  interval: 5m
+  values:
+    existingSecret: oauth2-proxy-secret
+    config:
+      provider: oidc
+      oidcIssuerURL: https://idm.xrs444.net/oidc/
+      redirectURL: https://longhorn.xrs444.net/oauth2/callback
+      emailDomains:
+        - "*"
+      upstreams:
+        - static://200
+    ingress:
+      enabled: false
+    service:
+      type: ClusterIP
