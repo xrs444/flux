@@ -3,6 +3,6 @@ kind: Kustomization
 
 resources:
   - ./namespace-kanidm.yaml
-  - ./helmrepository-kanidm.yaml
+  - ./gitrepository-datosh.yaml
   - ./sealedsecret-kanidm.yaml
   - ./helmrelease-kanidm.yaml

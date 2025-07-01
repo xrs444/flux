@@ -1,8 +1,0 @@
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
-  name: datosh
-  namespace: flux-system
-spec:
-  interval: 5m0s
-  url: https://github.com/datosh/kanidm
