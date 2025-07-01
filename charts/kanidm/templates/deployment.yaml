@@ -28,17 +28,17 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /data/kanidm
-{{- if .Values.tlsSecretName }}
+            {{- if .Values.tlsSecretName }}
             - name: tls
               mountPath: /tls
               readOnly: true
-{{- end }}
+            {{- end }}
       volumes:
         - name: config
           configMap:
             name: kanidm-server-config
-{{- if .Values.tlsSecretName }}
+        {{- if .Values.tlsSecretName }}
         - name: tls
           secret:
             secretName: {{ .Values.tlsSecretName | quote }}
-{{- end }}
+        {{- end }}
