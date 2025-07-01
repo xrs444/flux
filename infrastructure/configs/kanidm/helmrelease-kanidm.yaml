@@ -32,3 +32,5 @@ spec:
       tlsSecretName: letsencrypt-wildcard-cert-xrs444.net
     service:
       type: LoadBalancer
+      labels:
+        announce: bgp
