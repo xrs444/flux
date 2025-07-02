@@ -7,4 +7,3 @@ resources:
   - ./namespace-podinfo.yaml
   - ./helmrepository-podinfo.yaml
   - ./kustomization-podinfo.yaml
-  - ./podinfo-secret.yaml
