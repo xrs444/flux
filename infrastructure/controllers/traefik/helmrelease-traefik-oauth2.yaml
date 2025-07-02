@@ -7,21 +7,26 @@ spec:
   chart:
     spec:
       chart: oauth2-proxy
-      version: "7.x.x"
+      version: "7.12.18"
       sourceRef:
         kind: HelmRepository
         name: oauth2-proxy
         namespace: flux-system
   interval: 5m
   values:
+    replicaCount: 1
     config:
       existingSecret: oauth2-proxy-creds
     extraArgs:
       - --provider=oidc
-      - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/
+      - --oidc-issuer-url=https://idm.xrs444.net/oidc/
       - --redirect-url=https://traefik.xrs444.net/oauth2/callback
       - --email-domain=*
       - --upstream=http://traefik.traefik.svc.cluster.local:9000/
       - --scope=openid email profile groups
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 4180
