@@ -22,6 +22,8 @@ spec:
       - --upstream=http://longhorn-frontend.longhorn-system.svc.cluster.local:80/
       - --scope=openid email profile groups
       - --code-challenge-method=S256
+      - --cookie-domain=.xrs444.net
+      - --cookie-secure=true
     config:
       existingSecret: oauth2-proxy-creds
     ingress:
