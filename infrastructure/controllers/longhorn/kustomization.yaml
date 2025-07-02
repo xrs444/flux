@@ -4,9 +4,7 @@ kind: Kustomization
 resources:
   - ./oauth2-proxy-sealedsecret.yaml
   - ./helmrelease-longhorn.yaml
-  - ./helmrepo-oauth2-proxy.yaml
   - ./namespace-longhorn.yaml
-  - ./helmrepository-longhorn.yaml
   - ./kustomization-longhorn.yaml
   - ./ingressroute-longhorn-oauth2.yaml
   - ./ingressroute-longhorn-ui.yaml

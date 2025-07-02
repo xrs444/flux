@@ -4,6 +4,7 @@ metadata:
   name: infra-controllers
   namespace: flux-system
 resources:
+  - ./helmrepositories/
   - ./cert-manager/
   - ./cilium/
   - ./longhorn/
