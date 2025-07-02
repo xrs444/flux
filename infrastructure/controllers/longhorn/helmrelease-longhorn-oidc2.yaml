@@ -22,6 +22,7 @@ spec:
         - "*"
       upstreams:
         - http://longhorn-frontend.longhorn-system.svc.cluster.local:80/
+      scope: "openid email profile groups"
     existingSecret: oauth2-proxy
     ingress:
       enabled: false

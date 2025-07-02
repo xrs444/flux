@@ -11,6 +11,15 @@ spec:
     - host: longhorn.xrs444.net
       http:
         paths:
+          # Allow oauth2-proxy endpoints without middleware
+          - path: /oauth2/
+            pathType: Prefix
+            backend:
+              service:
+                name: oauth2-proxy
+                port:
+                  number: 4180
+          # Protect everything else with middleware
           - path: /
             pathType: Prefix
             backend:
