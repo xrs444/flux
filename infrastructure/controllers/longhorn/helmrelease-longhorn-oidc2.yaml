@@ -14,15 +14,13 @@ spec:
         namespace: flux-system
   interval: 5m
   values:
-    config:
-      provider: "oidc"
-      oidcIssuerURL: "https://idm.xrs444.net/oauth2/openid/x_longhorn/.well-known/openid-configuration"
-      redirectURL: "https://longhorn.xrs444.net/oauth2/callback"
-      emailDomains:
-        - "*"
-      upstreams:
-        - http://longhorn-frontend.longhorn-system.svc.cluster.local:80/
-      scope: "openid email profile groups"
+    extraArgs:
+      - --provider=oidc
+      - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/x_longhorn/.well-known/openid-configuration
+      - --redirect-url=https://longhorn.xrs444.net/oauth2/callback
+      - --email-domain=*
+      - --upstream=http://longhorn-frontend.longhorn-system.svc.cluster.local:80/
+      - --scope=openid email profile groups
     existingSecret: oauth2-proxy
     ingress:
       enabled: false
