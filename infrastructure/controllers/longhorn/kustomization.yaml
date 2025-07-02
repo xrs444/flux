@@ -7,7 +7,8 @@ resources:
   - ./namespace-longhorn.yaml
   - ./helmrepository-longhorn.yaml
   - ./kustomization-longhorn.yaml
-  - ./ingress-longhorn.yaml
+  - ./ingressroute-longhorn-oauth2.yaml
+  - ./ingressroute-longhorn-ui.yaml
   - ./storageclass-longhorn.yaml
   - ./storageclass-longhorn-ephemeral.yaml
   - ./oauth2-proxy-sealedsecret.yaml
