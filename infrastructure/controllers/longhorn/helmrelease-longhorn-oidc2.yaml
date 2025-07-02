@@ -16,7 +16,7 @@ spec:
   values:
     config:
       provider: "oidc"
-      oidcIssuerURL: "https://idm.xrs444.net/oauth2/openid/:x_longhorn:/.well-known/openid-configuration"
+      oidcIssuerURL: "https://idm.xrs444.net/oauth2/openid/x_longhorn/.well-known/openid-configuration"
       redirectURL: "https://longhorn.xrs444.net/oauth2/callback"
       emailDomains:
         - "*"
