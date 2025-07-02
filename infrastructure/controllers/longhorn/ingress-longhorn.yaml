@@ -5,13 +5,11 @@ metadata:
   namespace: longhorn-system
   annotations:
     kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.middlewares: longhorn-system-longhorn-auth@kubernetescrd
 spec:
   rules:
     - host: longhorn.xrs444.net
       http:
         paths:
-          # Allow oauth2-proxy endpoints without middleware
           - path: /oauth2/
             pathType: Prefix
             backend:
@@ -19,7 +17,6 @@ spec:
                 name: oauth2-proxy
                 port:
                   number: 4180
-          # Protect everything else with middleware
           - path: /
             pathType: Prefix
             backend:
@@ -27,7 +24,5 @@ spec:
                 name: longhorn-frontend
                 port:
                   number: 80
-  tls:
-    - hosts:
-        - longhorn.xrs444.net
-      secretName: letsencrypt-wildcard-cert-xrs444.net
+                # Add middleware ONLY to this path
+                # (Traefik CRD IngressRoute is more flexible for this, but with standard Ingress, use Middleware on the service)
