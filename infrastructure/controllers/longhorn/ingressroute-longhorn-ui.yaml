@@ -10,10 +10,7 @@ spec:
     - match: Host(`longhorn.xrs444.net`) && PathPrefix(`/`)
       kind: Rule
       services:
-        - name: longhorn-frontend
-          port: 80
-      middlewares:
-        - name: longhorn-auth
-          namespace: longhorn-system
+        - name: oauth2-proxy
+          port: 4180
   tls:
     secretName: letsencrypt-wildcard-cert-xrs444.net
