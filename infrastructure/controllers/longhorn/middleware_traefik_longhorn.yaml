@@ -10,3 +10,4 @@ spec:
     authResponseHeaders:
       - X-Auth-Request-User
       - X-Auth-Request-Email
+    setXAuthRequest: true
