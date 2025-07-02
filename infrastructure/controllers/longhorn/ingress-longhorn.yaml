@@ -22,3 +22,12 @@ spec:
     - hosts:
         - longhorn.xrs444.net
       secretName: letsencrypt-wildcard-cert-xrs444.net
+  routes:
+    - match: Host(`longhorn.xrs444.net`)
+      kind: Rule
+      services:
+        - name: longhorn-frontend
+          port: 80
+      middlewares:
+        - name: longhorn-auth
+          namespace: longhorn-system
