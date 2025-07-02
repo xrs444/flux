@@ -18,7 +18,7 @@ spec:
       existingSecret: oauth2-proxy-creds
     extraArgs:
       - --provider=oidc
-      - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/<client>
+      - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/
       - --redirect-url=https://traefik.xrs444.net/oauth2/callback
       - --email-domain=*
       - --upstream=http://traefik.traefik.svc.cluster.local:9000/
