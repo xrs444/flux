@@ -30,3 +30,4 @@ spec:
       enabled: true
       type: ClusterIP
       portNumber: 4180
+      
