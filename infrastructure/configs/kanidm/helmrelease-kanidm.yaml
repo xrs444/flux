@@ -37,3 +37,5 @@ spec:
     persistence:
       dbExistingClaim: kanidm-db
       backupExistingClaim: kanidm-backup
+    deploymentStrategy:
+      type: Recreate
