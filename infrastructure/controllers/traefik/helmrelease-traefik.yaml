@@ -34,6 +34,7 @@ spec:
     service:
       enabled: true
       externalTrafficPolicy: Local
+      loadBalancerIP: 172.21.0.2
   valuesFrom:
     - kind: ConfigMap
       name: traefik-helm-chart-value-overrides
