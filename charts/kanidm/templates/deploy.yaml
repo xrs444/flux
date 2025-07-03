@@ -43,9 +43,9 @@ spec:
         - name: tls
           mountPath: /tls
           readOnly: true
-        - name: db
+        - name: kanidm-db
           mountPath: /db
-        - name: backup
+        - name: kanidm-backup
           mountPath: /backups
         - name: config
           mountPath: /data/server.toml
