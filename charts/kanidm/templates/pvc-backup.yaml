@@ -1,12 +1,14 @@
+{{- if not .Values.persistence.backupExistingClaim }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: kanidm-backup
+  name: {{ include "kanidm.fullname" . }}-backup
   namespace: {{ .Release.Namespace }}
 spec:
-  storageClassName: {{ .Values.storageClassName | quote }}
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
+  storageClassName: longhorn
+{{- end }}

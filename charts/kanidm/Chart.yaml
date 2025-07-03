@@ -5,5 +5,5 @@ home: https://kanidm.com/
 icon: https://kanidm.com/images/logo.svg
 sources:
   - https://github.com/kanidm/kanidm
-version: 0.1.12
+version: 0.1.13
 appVersion: "1.6.4"

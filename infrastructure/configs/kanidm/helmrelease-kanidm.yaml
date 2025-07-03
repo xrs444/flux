@@ -34,3 +34,6 @@ spec:
       labels:
         advertise: bgp
       loadBalancerIP: 172.21.0.3
+    persistence:
+      dbExistingClaim: kanidm-db
+      backupExistingClaim: kanidm-backup

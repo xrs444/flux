@@ -65,23 +65,23 @@ spec:
           capabilities:
             drop: ["ALL"]
       volumes:
-      - name: tls
-        secret:
-          secretName: {{ .Values.ingress.tlsSecretName }}
-      - name: db
-        persistentVolumeClaim:
-          claimName: kanidm-db
-      - name: backup
-        persistentVolumeClaim:
-          claimName: kanidm-backup
-      - name: config
-        configMap:
-          name: kanidm-config
-          items:
-          - key: server.toml
-            path: server.toml
-      - name: socket-volume
-        emptyDir: {}
+        - name: kanidm-db
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.dbExistingClaim | default (printf "%s-db" (include "kanidm.fullname" .)) }}
+        - name: kanidm-backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.backupExistingClaim | default (printf "%s-backup" (include "kanidm.fullname" .)) }}
+        - name: tls
+          secret:
+            secretName: {{ .Values.ingress.tlsSecretName }}
+        - name: config
+          configMap:
+            name: kanidm-config
+            items:
+            - key: server.toml
+              path: server.toml
+        - name: socket-volume
+          emptyDir: {}
       securityContext:
         runAsGroup: 5000
         runAsUser: 5000

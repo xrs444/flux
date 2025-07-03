@@ -23,3 +23,5 @@ spec:
 {{- end }}
   selector:
     app: kanidm
+persistence:
+  existingClaim: ""
