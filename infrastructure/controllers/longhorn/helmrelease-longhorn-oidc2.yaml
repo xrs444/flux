@@ -12,6 +12,7 @@ spec:
         kind: HelmRepository
         name: oauth2-proxy
         namespace: flux-system
+  prune: true
   interval: 5m
   values:
     extraArgs:
