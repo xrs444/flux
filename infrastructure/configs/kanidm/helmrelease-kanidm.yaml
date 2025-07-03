@@ -34,4 +34,3 @@ spec:
       labels:
         advertise: bgp
       loadBalancerIP: 172.21.0.3
-      dummy: "value"
