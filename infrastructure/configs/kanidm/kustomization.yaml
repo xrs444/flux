@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - ./namespace-kanidm.yaml
+  - ./kustomization-kanidm.yaml
   - ./kanidm-backup-pvc.yaml
   - ./kanidm-db-pvc.yaml
   - ./helmrelease-kanidm.yaml
