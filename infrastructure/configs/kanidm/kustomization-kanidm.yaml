@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
-  path: ./flux/infrastructure/configs/kanidm
+  path: ./infrastructure/configs/kanidm
   prune: true
   sourceRef:
     kind: GitRepository
