@@ -13,4 +13,4 @@ spec:
         - name: oauth2-proxy
           port: 4180
   tls:
-    certResolver: yourresolver # <-- replace with your cert resolver if needed
+    secretName: letsencrypt-wildcard-cert-xrs444.net
