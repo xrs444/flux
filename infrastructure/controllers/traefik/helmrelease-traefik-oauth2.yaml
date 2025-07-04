@@ -22,10 +22,12 @@ spec:
       - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/x_traefik_dashboard
       - --redirect-url=https://traefik.xrs444.net/oauth2/callback/
       - --email-domain=*
-      - --upstream=http://traefik.traefik.svc.cluster.local:9000/
+      - --upstream=http://traefik.traefik.svc.cluster.local:8080/
       - --scope=openid email profile groups
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
+      - --code-challenge-method=S256
+ 
     service:
       enabled: true
       type: ClusterIP
