@@ -12,7 +12,6 @@ spec:
         kind: HelmRepository
         name: oauth2-proxy
         namespace: flux-system
-  prune: true
   interval: 5m
   values:
     replicaCount: 1
@@ -31,4 +30,3 @@ spec:
       enabled: true
       type: ClusterIP
       portNumber: 4180
-      
