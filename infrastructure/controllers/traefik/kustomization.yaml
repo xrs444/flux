@@ -9,3 +9,5 @@ resources:
   - ./namespace-traefik.yaml
   - ./kustomization-traefik.yaml
   - ./middleware-dashboard-auth.yaml
+  - ./ingressroute-dashboard.yaml
+  - ./ingressroute-oauth2-proxy.yaml
