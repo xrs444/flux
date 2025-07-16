@@ -4,9 +4,12 @@ metadata:
   name: kanidm
   namespace: kanidm
 spec:
+  type: LoadBalancer
+  loadBalancerIP: 172.21.0.3
   ports:
     - port: 443
       targetPort: 443
       protocol: TCP
   selector:
-    app: kanidm
+    app.kubernetes.io/instance: kanidm
+    app.kubernetes.io/name: kanidm
