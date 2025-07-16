@@ -28,5 +28,5 @@ spec:
     defaultSettings:
       enableSPDK: true
     persistence:
-      defaultClass: false
-      createStorageClass: false
+      defaultClass: true
+      createStorageClass: true

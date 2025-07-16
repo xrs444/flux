@@ -9,6 +9,7 @@ resources:
   - ./ingressroute-longhorn-oauth2.yaml
   - ./ingressroute-longhorn-ui.yaml
   - ./storageclass-longhorn.yaml
+  - ./storageclass-longhorn-reclaim.yaml
   - ./storageclass-longhorn-ephemeral.yaml
   - ./helmrelease-longhorn-oidc2.yaml
   - ./middleware_traefik_longhorn.yaml
