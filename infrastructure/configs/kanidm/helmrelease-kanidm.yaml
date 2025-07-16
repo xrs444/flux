@@ -3,8 +3,6 @@ kind: HelmRelease
 metadata:
   name: kanidm
   namespace: flux-system
-  labels:
-    advertise: bgp
 spec:
   targetNamespace: kanidm
   chart:
@@ -40,3 +38,5 @@ spec:
       backupExistingClaim: kanidm-backup
     deploymentStrategy:
       type: Recreate
+    commonLabels:
+      advertise: bgp

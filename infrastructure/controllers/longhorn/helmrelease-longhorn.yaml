@@ -29,3 +29,5 @@ spec:
   values:
     defaultSettings:
       enableSPDK: true
+    commonLabels:
+      advertise: bgp

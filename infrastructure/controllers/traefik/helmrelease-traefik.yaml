@@ -3,6 +3,8 @@ kind: HelmRelease
 metadata:
   name: traefik
   namespace: traefik
+  labels:
+    advertise: bgp
 spec:
   chart:
     spec:
@@ -44,3 +46,5 @@ spec:
       namespace: cert-manager
     - name: traefik-crds
       namespace: traefik-crds
+  commonLabels:
+    advertise: bgp
