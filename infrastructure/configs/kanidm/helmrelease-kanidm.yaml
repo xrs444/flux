@@ -38,12 +38,12 @@ spec:
       backupExistingClaim: kanidm-backup
     deploymentStrategy:
       type: Recreate
-    postRenderers:
-      - kustomize:
-          patchesStrategicMerge:
-            - kind: Deployment
-              apiVersion: apps/v1
-              metadata:
+  postRenderers:
+    - kustomize:
+        patchesStrategicMerge:
+          - kind: Deployment
+            apiVersion: apps/v1
+            metadata:
               name: kanidm
               labels:
                 advertise: bgp
