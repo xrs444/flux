@@ -3,6 +3,8 @@ kind: HelmRelease
 metadata:
   name: kanidm
   namespace: flux-system
+  labels:
+    advertise: bgp
 spec:
   targetNamespace: kanidm
   chart:
@@ -16,6 +18,8 @@ spec:
       version: "0.1.x"
   interval: 5m
   timeout: 15m
+  commonLabels:
+    advertise: bgp
   values:
     fullnameOverride: "kanidm"  # This will make Helm use "kanidm" as the service name
     domain: idm.xrs444.net
@@ -33,17 +37,12 @@ spec:
     service:
       type: LoadBalancer
       loadBalancerIP: 172.21.0.3
+      annotations:
+        metallb.universe.tf/address-pool: default
+      labels:
+        advertise: bgp
     persistence:
       dbExistingClaim: kanidm-db
       backupExistingClaim: kanidm-backup
     deploymentStrategy:
       type: Recreate
-  postRenderers:
-    - kustomize:
-        patchesStrategicMerge:
-          - kind: Deployment
-            apiVersion: apps/v1
-            metadata:
-              name: kanidm
-              labels:
-                advertise: bgp
