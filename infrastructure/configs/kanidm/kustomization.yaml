@@ -7,3 +7,4 @@ resources:
   - ./kanidm-backup-pvc.yaml
   - ./kanidm-db-pvc.yaml
   - ./helmrelease-kanidm.yaml
+  - ./service-kanidm.yaml
