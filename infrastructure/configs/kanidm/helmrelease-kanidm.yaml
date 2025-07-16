@@ -3,6 +3,8 @@ kind: HelmRelease
 metadata:
   name: kanidm
   namespace: flux-system
+  labels:
+    advertise: bgp
 spec:
   targetNamespace: kanidm
   chart:
@@ -32,8 +34,6 @@ spec:
       tlsSecretName: letsencrypt-wildcard-cert-xrs444.net
     service:
       type: LoadBalancer
-      labels:
-        advertise: bgp
       loadBalancerIP: 172.21.0.3
     persistence:
       dbExistingClaim: kanidm-db
