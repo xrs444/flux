@@ -6,3 +6,4 @@ resources:
   - deployment-freepbx.yaml
   - service-freepbx.yaml
   - pvc-freepbx.yaml
+  - namesoace-freepbx.yaml
