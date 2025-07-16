@@ -7,4 +7,4 @@ resources:
   - helmrelease-lubelogger.yaml
   - ingressroute-lubelogger.yaml
   - pvc-lubelogger.yaml
-  - pvc-lubelogger.yaml
+  - pv-lubelogger.yaml
