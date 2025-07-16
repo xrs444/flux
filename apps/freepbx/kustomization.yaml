@@ -3,7 +3,8 @@ kind: Kustomization
 
 namespace: freepbx
 resources:
-  - deployment-freepbx.yaml
-  - service-freepbx.yaml
-  - pvc-freepbx.yaml
-  - namespace-freepbx.yaml
+  - ./deployment-freepbx.yaml
+  - ./service-freepbx.yaml
+  - ./pvc-freepbx.yaml
+  - ./namespace-freepbx.yaml
+  - ./pvc-freepbx.yaml
