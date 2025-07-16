@@ -28,7 +28,7 @@ spec:
       tag: latest
     kanidm:
       domain: idm.xrs444.net
-      storageClassName: longhorn
+      storageClassName: longhorn-static
       tlsSecretName: letsencrypt-wildcard-cert-xrs444.net
     ingress:
       enabled: true

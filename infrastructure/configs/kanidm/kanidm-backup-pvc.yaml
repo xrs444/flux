@@ -9,7 +9,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: longhorn
+  storageClassName: longhorn-static
   volumeName: pvc-2af0bcc1-c1b9-4f2a-b06c-c7f1217d7e46
 
 
