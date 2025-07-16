@@ -3,8 +3,6 @@ kind: HelmRelease
 metadata:
   name: longhorn-release
   namespace: longhorn-system
-  labels:
-    advertise: bgp
 spec:
   chart:
     spec:
@@ -29,5 +27,3 @@ spec:
   values:
     defaultSettings:
       enableSPDK: true
-    commonLabels:
-      advertise: bgp
