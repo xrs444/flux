@@ -18,11 +18,11 @@ spec:
       version: "0.1.x"
   interval: 5m
   timeout: 15m
-  commonLabels:
-    advertise: bgp
   values:
     fullnameOverride: "kanidm"  # This will make Helm use "kanidm" as the service name
     domain: idm.xrs444.net
+    commonLabels:
+      advertise: bgp
     image:
       repository: kanidm/server
       tag: latest
