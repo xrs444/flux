@@ -11,5 +11,4 @@ spec:
       targetPort: 443
       protocol: TCP
   selector:
-    app.kubernetes.io/instance: kanidm
-    app.kubernetes.io/name: kanidm
+    app: kanidm
