@@ -7,3 +7,4 @@ resources:
   - ./service-freepbx.yaml
   - ./pvc-freepbx.yaml
   - ./namespace-freepbx.yaml
+  - ./pvc-freepbx.yaml
