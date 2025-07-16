@@ -8,3 +8,4 @@ resources:
   - ./kanidm-db-pvc.yaml
   - ./helmrelease-kanidm.yaml
   - ./service-kanidm.yaml
+  - ./ingress-kanidm.yaml
