@@ -28,5 +28,4 @@ spec:
     defaultSettings:
       enableSPDK: true
     persistence:
-      defaultClass: true
-      reclaimPolicy: "Retain"  # Set this to match your existing policy (likely "Delete" or "Retain")
+      defaultClass: false
