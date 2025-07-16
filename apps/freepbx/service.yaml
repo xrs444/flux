@@ -34,4 +34,9 @@ spec:
       protocol: UDP
       port: 18001
       targetPort: 18001
-  type: ClusterIP
+  values:
+    service:
+      type: LoadBalancer
+      loadBalancerIP: 172.21.0.3
+      labels:
+        advertise: bgp

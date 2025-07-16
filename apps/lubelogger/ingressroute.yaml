@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lubelogger
+  namespace: lubelogger
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`lubelogger.xrs444.net`)
+      kind: Rule
+      middlewares:
+        - name: traefik-dashboard-auth
+          namespace: traefik
+      services:
+        - name: lubelogger
+          port: 80
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

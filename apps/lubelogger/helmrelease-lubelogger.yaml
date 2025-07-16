@@ -1,0 +1,39 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: lubelogger
+  namespace: lubelogger
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: lubelogger
+      version: "0.1.x"
+      sourceRef:
+        kind: HelmRepository
+        name: anza-charts
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: anzalabs/lubelogger
+      tag: latest
+    
+    service:
+      type: ClusterIP
+      port: 80
+    
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    

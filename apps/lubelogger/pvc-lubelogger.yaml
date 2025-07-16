@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: freepbx-data
-  namespace: freepbx
+  name: lubelogger-data
+  namespace: lubelogger
 spec:
   storageClassName: "longhorn-reclaim"
-  volumeName: freepbx-pv
+  volumeName: lubelogger-pv
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 1Gi

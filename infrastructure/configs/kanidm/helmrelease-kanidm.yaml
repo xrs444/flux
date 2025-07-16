@@ -37,8 +37,6 @@ spec:
     service:
       type: LoadBalancer
       loadBalancerIP: 172.21.0.3
-      annotations:
-        metallb.universe.tf/address-pool: default
       labels:
         advertise: bgp
     persistence:
