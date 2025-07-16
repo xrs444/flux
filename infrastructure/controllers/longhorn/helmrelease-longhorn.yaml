@@ -3,6 +3,8 @@ kind: HelmRelease
 metadata:
   name: longhorn-release
   namespace: longhorn-system
+  labels:
+    advertise: bgp
 spec:
   chart:
     spec:
