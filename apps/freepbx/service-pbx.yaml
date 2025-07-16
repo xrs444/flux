@@ -37,6 +37,6 @@ spec:
   values:
     service:
       type: LoadBalancer
-      loadBalancerIP: 172.21.0.3
+      loadBalancerIP: 172.21.0.4
       labels:
         advertise: bgp

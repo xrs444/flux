@@ -1,8 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: omada-logs-pvc
+  name: omada-logs
+  namespace: omada
 spec:
+  storageClassName: "longhorn-reclaim"
+  volumeName: omada-pv
   accessModes:
     - ReadWriteOnce
   resources:

@@ -38,4 +38,9 @@ spec:
       protocol: TCP
       port: 29814
       targetPort: 29814
-  type: ClusterIP
+  values:
+    service:
+      type: LoadBalancer
+      loadBalancerIP: 172.21.0.7
+      labels:
+        advertise: bgp
