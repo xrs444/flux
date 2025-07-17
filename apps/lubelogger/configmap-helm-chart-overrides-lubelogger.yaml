@@ -126,7 +126,7 @@ config:
     
     secret:
       # -- Specifies whether a secret should be created.
-      create: false
+      create: true
       # -- Specifies name of a secret used to configure the LubeLogger's mail connection.
       # If not filled, uses full name.
       name: ""
