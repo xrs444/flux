@@ -125,7 +125,7 @@ data:
       # -- Specifies whether a secret should be created.
       create: false
       # -- Specifies name of a secret used to configure the LubeLogger's mail connection.
-      name: "email-server-credentials"
+      name: "secret-lubelogger-email"  # Change from "email-server-credentials" to "secret-lubelogger-email"
       # -- Email server for the secret.
       emailServer: "disabled"
       # -- Email from address for the secret.
@@ -136,31 +136,6 @@ data:
       username: "disabled"
       # -- Password for the email server.
       password: "disabled"
-
-    # Add environment variable mappings to redirect the keys
-    env:
-      - name: MailConfig__EmailServer
-        valueFrom:
-          secretKeyRef:
-            name: email-server-credentials
-            key: server
-      - name: MailConfig__Port
-        valueFrom:
-          secretKeyRef:
-            name: email-server-credentials
-            key: port
-      - name: MailConfig__Username
-        valueFrom:
-          secretKeyRef:
-            name: email-server-credentials
-            key: Username
-      - name: MailConfig__Password
-        valueFrom:
-          secretKeyRef:
-            name: email-server-credentials
-            key: Password
-      - name: MailConfig__EmailFrom
-        value: "lubelogger@xrs444.net"
 
     persistence:
       data:

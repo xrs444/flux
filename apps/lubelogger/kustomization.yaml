@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: lubelogger
 resources:
   - ./namespace-lubelogger.yaml
+  - ./secret-lubelogger-email.yaml
   - ./helmrelease-lubelogger.yaml
   - ./ingressroute-lubelogger.yaml
   - ./pvc-lubelogger.yaml
