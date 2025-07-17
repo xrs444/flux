@@ -37,8 +37,8 @@ data:
       # -- Translations defines a list of URLs from which translation files will be fetched.
       # These URLs point to JSON files containing translations for different languages or regions.
       # The files will be downloaded by the init container and stored in the appropriate directory.
-      translations:
-        - https://raw.githubusercontent.com/hargata/lubelog_translations/main/Europe/pl_PL.json
+      translations: []
+      #  - https://raw.githubusercontent.com/hargata/lubelog_translations/main/Europe/pl_PL.json
       userConfig:
         Logging:
           LogLevel:
