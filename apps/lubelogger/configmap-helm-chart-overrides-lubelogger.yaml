@@ -144,7 +144,7 @@ config:
     persistence:
       data:
         # -- Enable/disable PVC creation for data.
-        enabled: true
+        enabled: false
         # -- Use an existing PVC if defined, otherwise create one.
         existingClaim: "lubelogger-data-pvc"
         # -- Specify the StorageClass (if required).
