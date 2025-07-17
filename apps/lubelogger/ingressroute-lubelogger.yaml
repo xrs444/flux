@@ -9,9 +9,6 @@ spec:
   routes:
     - match: Host(`lubelogger.xrs444.net`)
       kind: Rule
-      middlewares:
-        - name: traefik-dashboard-auth
-          namespace: traefik
       services:
         - name: lubelogger
           port: 80
