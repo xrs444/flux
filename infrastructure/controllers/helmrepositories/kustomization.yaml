@@ -5,3 +5,4 @@ resources:
   - ./helmrepository-oauth2-proxy.yaml
   - ./helmrepository-longhorn.yaml
   - ./helmrepository-traefik.yaml
+  - ./helmrepository-anza-charts.yaml
