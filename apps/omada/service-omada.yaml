@@ -2,9 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: omada-controller
+  labels:
+    advertise: bgp
 spec:
   selector:
     app: omada-controller
+    type: LoadBalancer
+    loadBalancerIP: 172.21.0.7
+
   ports:
     - name: http
       protocol: TCP
@@ -38,9 +43,3 @@ spec:
       protocol: TCP
       port: 29814
       targetPort: 29814
-  values:
-    service:
-      type: LoadBalancer
-      loadBalancerIP: 172.21.0.7
-      labels:
-        advertise: bgp
