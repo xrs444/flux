@@ -3,7 +3,8 @@ kind: Kustomization
 
 namespace: lubelogger
 resources:
-  - namespace-lubelogger.yaml
-  - helmrelease-lubelogger.yaml
-  - ingressroute-lubelogger.yaml
-  - pvc-lubelogger.yaml
+  - ./namespace-lubelogger.yaml
+  - ./helmrelease-lubelogger.yaml
+  - ./ingressroute-lubelogger.yaml
+  - ./pvc-lubelogger.yaml
+  - ./configmap-helm-chart-overrides-lubelogger.yaml

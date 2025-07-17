@@ -1,0 +1,321 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lubelogger-helm-chart-value-overrides
+  namespace: traefik
+data:
+  values.yaml: |-  
+
+
+# Default values for lubelogger.
+
+# -- Number of replicas for the deployment.
+replicaCount: 1
+
+updateStrategy:
+  # -- The deployment strategy to use to replace existing pods with new ones. Options: "RollingUpdate" or "OnDelete".
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 100%
+    partition: 0
+
+image:
+  # -- Registry and repository for the lubelogger image.
+  repository: ghcr.io/hargata/lubelogger
+  # -- Tag for the image.
+  tag: "v1.4.9"
+  # -- Image pull policy.
+  pullPolicy: IfNotPresent
+
+config:
+  # -- Locale and Language Settings, this will affect how numbers, currencies, and dates are
+  # formatted.
+  LANG: en_US.UTF-8
+  # -- Same as above. Note that some languages don't have UTF-8 encodings.
+  LC_ALL: en_US.UTF-8
+  # -- Specifies the level of logs. Valid levels are `Trace`, `Debug`, `Information`,
+  # `Warning`, `Error`, `Critical` and `None`. Learn more at:
+  # https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/
+  LOGLEVEL: Information
+  # -- Translations defines a list of URLs from which translation files will be fetched.
+  # These URLs point to JSON files containing translations for different languages or regions.
+  # The files will be downloaded by the init container and stored in the appropriate directory.
+  translations:
+    - https://raw.githubusercontent.com/hargata/lubelog_translations/main/Europe/pl_PL.json
+  userConfig:
+    Logging:
+      LogLevel:
+        # -- Specifies the default log level for all components.
+        # Valid levels are `Trace`, `Debug`, `Information`,
+        # `Warning`, `Error`, `Critical` and `None`. Learn more at:
+        # https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/
+        Default: Information
+        # -- Sets the log level for Microsoft.AspNetCore-related components.
+        # Valid levels are `Trace`, `Debug`, `Information`,
+        # `Warning`, `Error`, `Critical` and `None`. Learn more at:
+        # https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/
+        Microsoft.AspNetCore: Warning
+    # -- Specifies allowed hosts for the application (use "*" to allow all hosts).
+    AllowedHosts: "*"
+    # -- Enables or disables dark mode in the user interface.
+    UseDarkMode: false
+    # -- Enables the ability to import data from CSV files.
+    EnableCsvImports: true
+    # -- Configures whether to use miles per gallon (MPG) as the fuel economy unit.
+    UseMPG: true
+    # -- Determines if lists are ordered in descending order by default.
+    UseDescending: false
+    # -- Enables or disables authentication for the application.
+    EnableAuth: true
+    # -- Determines whether zero values should be hidden in the UI.
+    HideZero: false
+    # -- Automatically refreshes reminders without manual intervention.
+    EnableAutoReminderRefresh: false
+    # -- Automatically inserts odometer readings based on previous data.
+    EnableAutoOdometerInsert: false
+    # -- Enables tracking of shop supplies in transactions.
+    EnableShopSupplies: false
+    # -- Enables additional columns for extra field entries.
+    EnableExtraFieldColumns: false
+    # -- Uses UK miles per gallon (UK MPG) as the fuel economy unit.
+    UseUKMPG: false
+    # -- Enables displaying gas costs with three decimal places for accuracy.
+    UseThreeDecimalGasCost: true
+    # -- Allows saved notes to support markdown formatting.
+    UseMarkDownOnSavedNotes: false
+    # -- Hides vehicles marked as sold from the display.
+    HideSoldVehicles: false
+    # -- Specifies the preferred unit for gas mileage.
+    PreferredGasMileageUnit: ""
+    # -- Stores user preferences for column visibility.
+    UserColumnPreferences: []
+    # -- Specifies the preferred unit for gas volume.
+    PreferredGasUnit: ""
+    # -- Defines the user's language preference (e.g., "en_US").
+    UserLanguage: en_US
+    # -- Specifies which tabs are visible in the user interface.
+    VisibleTabs: [0, 1, 4, 2, 3, 6, 5, 8]
+    # -- Sets the default tab to be shown when the application starts.
+    DefaultTab: 8
+    # -- Stores a hashed version of the user's username.
+    # It is sha256, and can be created using one the following commands:
+    # `python3 -c 'import hashlib; print(hashlib.sha256("admin".encode("utf-8")).hexdigest())'`
+    UserNameHash: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+    # -- Stores a hashed version of the user's password.
+    # It is sha256, and can be created using one the following commands:
+    # `python3 -c 'import hashlib; print(hashlib.sha256("password".encode("utf-8")).hexdigest())'`
+    UserPasswordHash: "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+    
+    # -- Secrets for pulling images.
+    imagePullSecrets: []
+    # -- Override for the name.
+    nameOverride: ""
+    # -- Override for the full name.
+    fullnameOverride: ""
+    
+    serviceAccount:
+      # -- Specifies whether a service account should be created.
+      create: true
+      # -- Automatically mount a ServiceAccount's API credentials.
+      automount: true
+      # -- Annotations to add to the service account.
+      annotations: {}
+      # -- The name of the service account to use.
+      # If not set and create is true, a name is generated using the fullname template.
+      name: ""
+    
+    secret:
+      # -- Specifies whether a secret should be created.
+      create: false
+      # -- Specifies name of a secret used to configure the LubeLogger's mail connection.
+      # If not filled, uses full name.
+      name: ""
+      # -- Email server for the secret.
+      emailServer: ""
+      # -- Email from address for the secret.
+      emailFrom: ""
+      # -- Port for the email server.
+      port: 587
+      # -- Username for the email server.
+      username: ""
+      # -- Password for the email server.
+      password: ""
+    
+    persistence:
+      data:
+        # -- Enable/disable PVC creation for data.
+        enabled: true
+        # -- Use an existing PVC if defined, otherwise create one.
+        existingClaim: "lubelogger-data-pvc"
+        # -- Specify the StorageClass (if required).
+        storageClass: ""
+        # -- Access mode for the PVC.
+        accessMode: ReadWriteOnce
+        # -- Storage size for the PVC.
+        size: 10Gi
+    
+    postgres:
+      # -- Defines if the secret with Postgres connection details should be created.
+      create: false
+      # -- Defines if the LubeLogger should connect to the Postgres backend.
+      # It has no effect when `postgres.create=true`.
+      connect: false
+      # -- Specifies name of a secret used to configure the LubeLogger's Postgres backend.
+      # If not filled, uses full name.
+      name: ""
+      # -- Defines the key under which postgres connection string can be found.
+      # It uses Npgsql connection format.
+      keyRef: "POSTGRES_CONNECTION"
+      # -- Host of the Postgres database.
+      host: "postgres"
+      # -- Port of the Postgres database.
+      port: 5432
+      # -- User used to connect to the Postgres database.
+      user: "postgres"
+      # -- Password for the user used to connect to the Postgres database.
+      password: "postgres"
+      # -- Database name.
+      database: "postgres"
+    
+    oidc:
+      # -- Defines if OpenID Connect configuration should be included.
+      enabled: false
+      # -- Defines if the secret with OIDC connection details should be created.
+      create: false
+      # -- Specifies name of a secret used to configure the OpenID Connect.
+      # If not filled, uses full name.
+      name: ""
+      # -- Name of the OpenID Connect Provider.
+      providerName: ""
+      # -- Client Id to Authenticate with the Provider.
+      clientId: ""
+      # -- Client Secret to Authenticate with the Provider.
+      clientSecret: ""
+      # -- Authorization URL to the Provider's Login Page.
+      authURL: ""
+      # -- URL to retrieve user JWT from the Provider.
+      tokenURL: ""
+      # -- https://<yourlubeloggerdomain.com>/Login/RemoteAuth (must be HTTPS).
+      redirectURL: ""
+      # -- The scope for retrieving the user's email claim (usually it's just 'email').
+      scope: "openid email"
+      # -- Whether LubeLogger should validate state.
+      validateState: false
+      # -- Whether LubeLogger should use PKCE.
+      usePKCE: false
+      # -- Auto re-direct user to OIDC login.
+      disableRegularLogin: false
+      # -- UserInfo URL as an alternative option to retrieve user claims (required for certain OpenID Providers)
+      userInfoURL: ""
+      # -- Log Out URL for OIDC Provider, required if DisableRegularLogin=true.
+      logOutURL: ""
+    
+    curl:
+      image:
+        # -- Registry and repository for the image.
+        repository: docker.io/curlimages/curl
+        # -- Tag for the image.
+        tag: "8.14.1"
+        # -- Image pull policy.
+        pullPolicy: IfNotPresent
+    
+    # -- Annotations to be added to the pods.
+    podAnnotations: {}
+    # -- Labels to be added to the pods.
+    podLabels: {}
+    
+    podSecurityContext: {}
+      # fsGroup: 2000
+    
+    securityContext: {}
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+      # runAsNonRoot: true
+      # runAsUser: 1000
+    
+    service:
+      # -- Service type.
+      type: ClusterIP
+      # -- Service port.
+      port: 80
+    
+    ingress:
+      # -- Specifies whether ingress should be enabled.
+      enabled: false
+      # -- Ingress class name.
+      className: ""
+      # -- Annotations to add to the ingress.
+      annotations: {}
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+      # -- List of ingress hosts.
+      hosts:
+        - host: lubelog.example.local
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      # -- List of TLS configurations for the ingress.
+      tls: []
+      #  - secretName: lubelog-tls
+      #    hosts:
+      #      - lubelog.example.local
+    
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+    
+    livenessProbe:
+      # -- Liveness probe configuration.
+      httpGet:
+        path: /
+        port: http
+    
+    readinessProbe:
+      # -- Readiness probe configuration.
+      httpGet:
+        path: /
+        port: http
+    
+    autoscaling:
+      # -- Specifies whether autoscaling is enabled.
+      enabled: false
+      # -- Minimum number of replicas for autoscaling.
+      minReplicas: 1
+      # -- Maximum number of replicas for autoscaling.
+      maxReplicas: 3
+      # -- Target CPU utilization percentage for autoscaling.
+      targetCPUUtilizationPercentage: 80
+      # -- Target memory utilization percentage for autoscaling.
+      targetMemoryUtilizationPercentage: 80
+    
+    # -- Node selector for the pods.
+    nodeSelector: {}
+    
+    # -- Tolerations for the pods.
+    tolerations: []
+    
+    # -- Affinity settings for the pods.
+    affinity: {}
+      # nodeAffinity:
+      #   requiredDuringSchedulingIgnoredDuringExecution:
+      #     nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: kubernetes.io/arch
+      #           operator: In
+      #           values:
+      #             - amd64
+      #             - arm64
+      #         - key: kubernetes.io/os
+      #           operator: In
+      #           values:
+      #             - linux
