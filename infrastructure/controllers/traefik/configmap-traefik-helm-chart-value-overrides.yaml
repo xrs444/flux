@@ -406,7 +406,7 @@ data:
     
     metrics:
       # -- Enable metrics for internal resources. Default: false
-      addInternals: false
+      addInternals: true
     
       ## Prometheus is enabled by default.
       ## It can be disabled by setting "prometheus: null"
@@ -414,11 +414,11 @@ data:
         # -- Entry point used to expose metrics.
         entryPoint: metrics
         # -- Enable metrics on entry points. Default: true
-        addEntryPointsLabels:  # @schema type:[boolean, null]
+        addEntryPointsLabels: true
         # -- Enable metrics on routers. Default: false
-        addRoutersLabels:  # @schema type:[boolean, null]
+        addRoutersLabels: true
         # -- Enable metrics on services. Default: true
-        addServicesLabels:  # @schema type:[boolean, null]
+        addServicesLabels: true
         # -- Buckets for latency metrics. Default="0.1,0.3,1.2,5.0"
         buckets: ""
         # -- When manualRouting is true, it disables the default internal router in
@@ -779,7 +779,7 @@ data:
         # -- The port protocol (TCP/UDP)
         protocol: TCP
     
-    # -- TLS Options are created as [TLSOption CRDs](https://doc.traefik.io/traefik/https/tls/#tls-options)
+    # -- TLS Options are created as [TLSOption CRD](https://doc.traefik.io/traefik/https/tls/#tls-options)
     # When using `labelSelector`, you'll need to set labels on tlsOption accordingly.
     # See EXAMPLE.md for details.
     tlsOptions: {}
