@@ -5,8 +5,12 @@ metadata:
   namespace: freepbx
 spec:
   storageClassName: "longhorn-retain"
+  volumeName: "pvc-1190686e-9f4c-4bab-87bf-822464fae92a"
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
+
+
+
