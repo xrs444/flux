@@ -9,9 +9,6 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  claimRef:
-    namespace: lubelogger
-    name: lubelogger-data-pvc
   csi:
     driver: driver.longhorn.io
     volumeHandle: lubelogger-volume
