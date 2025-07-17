@@ -6,56 +6,53 @@ metadata:
 data:
   values.yaml: |-  
 
-
-# Default values for lubelogger.
-
-# -- Number of replicas for the deployment.
-replicaCount: 1
-
-updateStrategy:
-  # -- The deployment strategy to use to replace existing pods with new ones. Options: "RollingUpdate" or "OnDelete".
-  type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 100%
-    partition: 0
-
-image:
-  # -- Registry and repository for the lubelogger image.
-  repository: ghcr.io/hargata/lubelogger
-  # -- Tag for the image.
-  tag: "v1.4.9"
-  # -- Image pull policy.
-  pullPolicy: IfNotPresent
-
-config:
-  # -- Locale and Language Settings, this will affect how numbers, currencies, and dates are
-  # formatted.
-  LANG: en_US.UTF-8
-  # -- Same as above. Note that some languages don't have UTF-8 encodings.
-  LC_ALL: en_US.UTF-8
-  # -- Specifies the level of logs. Valid levels are `Trace`, `Debug`, `Information`,
-  # `Warning`, `Error`, `Critical` and `None`. Learn more at:
-  # https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/
-  LOGLEVEL: Information
-  # -- Translations defines a list of URLs from which translation files will be fetched.
-  # These URLs point to JSON files containing translations for different languages or regions.
-  # The files will be downloaded by the init container and stored in the appropriate directory.
-  translations:
-    - https://raw.githubusercontent.com/hargata/lubelog_translations/main/Europe/pl_PL.json
-  userConfig:
-    Logging:
-      LogLevel:
-        # -- Specifies the default log level for all components.
-        # Valid levels are `Trace`, `Debug`, `Information`,
-        # `Warning`, `Error`, `Critical` and `None`. Learn more at:
-        # https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/
-        Default: Information
-        # -- Sets the log level for Microsoft.AspNetCore-related components.
-        # Valid levels are `Trace`, `Debug`, `Information`,
-        # `Warning`, `Error`, `Critical` and `None`. Learn more at:
-        # https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/
-        Microsoft.AspNetCore: Warning
-    # -- Specifies allowed hosts for the application (use "*" to allow all hosts).
+    # -- Number of replicas for the deployment.
+    replicaCount: 1
+    
+    updateStrategy:
+      # -- The deployment strategy to use to replace existing pods with new ones. Options: "RollingUpdate" or "OnDelete".
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 100%
+        partition: 0
+    
+    image:
+      # -- Registry and repository for the lubelogger image.
+      repository: ghcr.io/hargata/lubelogger
+      # -- Tag for the image.
+      tag: "v1.4.9"
+      # -- Image pull policy.
+      pullPolicy: IfNotPresent
+    
+    config:
+      # -- Locale and Language Settings, this will affect how numbers, currencies, and dates are
+      # formatted.
+      LANG: en_US.UTF-8
+      # -- Same as above. Note that some languages don't have UTF-8 encodings.
+      LC_ALL: en_US.UTF-8
+      # -- Specifies the level of logs. Valid levels are `Trace`, `Debug`, `Information`,
+      # `Warning`, `Error`, `Critical` and `None`. Learn more at:
+      # https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/
+      LOGLEVEL: Information
+      # -- Translations defines a list of URLs from which translation files will be fetched.
+      # These URLs point to JSON files containing translations for different languages or regions.
+      # The files will be downloaded by the init container and stored in the appropriate directory.
+      translations:
+        - https://raw.githubusercontent.com/hargata/lubelog_translations/main/Europe/pl_PL.json
+      userConfig:
+        Logging:
+          LogLevel:
+            # -- Specifies the default log level for all components.
+            # Valid levels are `Trace`, `Debug`, `Information`,
+            # `Warning`, `Error`, `Critical` and `None`. Learn more at:
+            # https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/
+            Default: Information
+            # -- Sets the log level for Microsoft.AspNetCore-related components.
+            # Valid levels are `Trace`, `Debug`, `Information`,
+            # `Warning`, `Error`, `Critical` and `None`. Learn more at:
+            # https://learn.microsoft.com/en-us/aspnet/core/fundamentals/logging/
+            Microsoft.AspNetCore: Warning
+        # -- Specifies allowed hosts for the application (use "*" to allow all hosts).
     AllowedHosts: "*"
     # -- Enables or disables dark mode in the user interface.
     UseDarkMode: false
@@ -126,21 +123,21 @@ config:
     
     secret:
       # -- Specifies whether a secret should be created.
-      create: true
+      create: false
       # -- Specifies name of a secret used to configure the LubeLogger's mail connection.
       # If not filled, uses full name.
-      name: ""
+      name: "email-server-credentials"
       # -- Email server for the secret.
-      emailServer: "disabled"  # Change from "" to any non-empty value
+      emailServer: "disabled"
       # -- Email from address for the secret.
-      emailFrom: "noreply@localhost"  # Add a dummy value
+      emailFrom: "lubelogger@xrs444.net"
       # -- Port for the email server.
       port: 587
       # -- Username for the email server.
-      username: "disabled"  # Add a dummy value
+      username: "disabled"
       # -- Password for the email server.
-      password: "disabled"  # Add a dummy value
-    
+      password: "disabled"
+
     persistence:
       data:
         # -- Enable/disable PVC creation for data.
