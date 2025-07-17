@@ -25,14 +25,3 @@ spec:
     - kind: ConfigMap
       name: lubelogger-helm-chart-value-overrides
       valuesKey: values.yaml
-  values:
-    service:
-      type: ClusterIP
-      port: 80
-    resources:
-      limits:
-        cpu: 1000m
-        memory: 1Gi
-      requests:
-        cpu: 100m
-        memory: 256Mi
