@@ -159,6 +159,8 @@ data:
           secretKeyRef:
             name: email-server-credentials
             key: Password
+      - name: MailConfig__EmailFrom
+        value: "lubelogger@xrs444.net"
 
     persistence:
       data:
