@@ -4,7 +4,7 @@ metadata:
   name: lubelogger
   namespace: lubelogger
 spec:
-  interval: 5m
+  interval: 15m
   chart:
     spec:
       chart: lubelogger
@@ -25,16 +25,14 @@ spec:
     - kind: ConfigMap
       name: lubelogger-helm-chart-value-overrides
       valuesKey: values.yaml
-    
-  service:
+  values:
+    service:
       type: ClusterIP
       port: 80
-    
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 1Gi
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
