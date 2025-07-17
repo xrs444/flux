@@ -13,6 +13,7 @@ spec:
         kind: HelmRepository
         name: anza-charts
         namespace: flux-system
+      interval: 15m
   install:
     createNamespace: true
     remediation:
@@ -20,20 +21,20 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  values:
-    image:
-      repository: anzalabs/lubelogger
-      tag: latest
+  valuesFrom:
+    - kind: ConfigMap
+      name: lubelogger-helm-chart-value-overrides
+      valuesKey: values.yaml
     
-    service:
+  service:
       type: ClusterIP
       port: 80
     
-    resources:
-      limits:
-        cpu: 1000m
-        memory: 1Gi
-      requests:
-        cpu: 100m
-        memory: 256Mi
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
     
