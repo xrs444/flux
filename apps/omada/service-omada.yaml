@@ -9,7 +9,6 @@ spec:
     app: omada-controller
     type: LoadBalancer
     loadBalancerIP: 172.21.0.7
-
   ports:
     - name: http
       protocol: TCP
