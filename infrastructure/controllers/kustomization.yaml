@@ -12,3 +12,4 @@ resources:
   - ./traefik/
   - ./traefik-crds/
   - ./charts/
+  - ./shared-secrets/
