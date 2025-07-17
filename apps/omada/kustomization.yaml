@@ -3,7 +3,8 @@ kind: Kustomization
 
 namespace: omada
 resources:
-  - deployment-omada.yaml
-  - service-omada.yaml
-  - pvc-omada-data.yaml
-  - pvc-omada-logs.yaml
+  - ./namespace-omada.yaml
+  - ./deployment-omada.yaml
+  - ./service-omada.yaml
+  - ./pvc-omada-data.yaml
+  - ./pvc-omada-logs.yaml
