@@ -145,7 +145,7 @@ data:
         # -- Use an existing PVC if defined, otherwise create one.
         existingClaim: "lubelogger-data-pvc"
         # -- Specify the StorageClass (if required).
-        storageClass: "longhorn-reclaim"
+        storageClass: "longhorn-retain"
         # -- Access mode for the PVC.
         accessMode: ReadWriteOnce
         # -- Storage size for the PVC.

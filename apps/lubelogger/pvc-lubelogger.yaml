@@ -4,7 +4,7 @@ metadata:
   name: lubelogger-data-pvc
   namespace: lubelogger
 spec:
-  storageClassName: "longhorn-reclaim"
+  storageClassName: "longhorn-retain"
   accessModes:
     - ReadWriteOnce
   resources:

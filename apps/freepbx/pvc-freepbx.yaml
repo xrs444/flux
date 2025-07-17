@@ -4,7 +4,7 @@ metadata:
   name: freepbx-data-pvc
   namespace: freepbx
 spec:
-  storageClassName: "longhorn-reclaim"
+  storageClassName: "longhorn-retain"
   accessModes:
     - ReadWriteOnce
   resources:
