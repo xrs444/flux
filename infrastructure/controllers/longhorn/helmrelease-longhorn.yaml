@@ -27,6 +27,8 @@ spec:
   values:
     defaultSettings:
       enableSPDK: true
+      backupTarget: "nfs://172.20.1.10:/zfs/systembackups/longhorn"
+      backupTargetCredentialSecret: ""
     persistence:
       defaultClass: true
       createStorageClass: true
