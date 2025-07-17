@@ -131,15 +131,15 @@ config:
       # If not filled, uses full name.
       name: ""
       # -- Email server for the secret.
-      emailServer: ""
+      emailServer: "disabled"  # Change from "" to any non-empty value
       # -- Email from address for the secret.
-      emailFrom: ""
+      emailFrom: "noreply@localhost"  # Add a dummy value
       # -- Port for the email server.
       port: 587
       # -- Username for the email server.
-      username: ""
+      username: "disabled"  # Add a dummy value
       # -- Password for the email server.
-      password: ""
+      password: "disabled"  # Add a dummy value
     
     persistence:
       data:
