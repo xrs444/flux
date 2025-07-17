@@ -5,10 +5,10 @@ metadata:
   labels:
     advertise: bgp
 spec:
+  type: LoadBalancer
+  loadBalancerIP: 172.21.0.7
   selector:
     app: omada-controller
-    type: LoadBalancer
-    loadBalancerIP: 172.21.0.7
   ports:
     - name: http
       protocol: TCP
