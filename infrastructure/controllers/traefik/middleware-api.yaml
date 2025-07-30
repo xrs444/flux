@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: dashboard-auth-bypass
+  namespace: traefik
+spec:
+  chain:
+    middlewares:
+      - name: dashboard-auth
+        namespace: traefik
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: api-bypass
+  namespace: traefik
+spec:
+  stripPrefix:
+    prefixes: []
