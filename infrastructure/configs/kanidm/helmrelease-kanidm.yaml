@@ -19,7 +19,8 @@ spec:
   interval: 5m
   timeout: 15m
   values:
-    fullnameOverride: "kanidm"  # This will make Helm use "kanidm" as the service name
+    nameOverride: "kanidm"
+    fullnameOverride: "kanidm"
     domain: idm.xrs444.net
     commonLabels:
       advertise: bgp
