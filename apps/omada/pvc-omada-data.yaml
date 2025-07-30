@@ -9,5 +9,5 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
   volumeName: pvc-05a7a941-bf4b-41d2-9e38-156f75558310
