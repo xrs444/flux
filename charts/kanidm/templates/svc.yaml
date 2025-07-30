@@ -25,6 +25,4 @@ spec:
   loadBalancerIP: {{ .Values.service.loadBalancerIP | quote }}
 {{- end }}
   selector:
-    app: kanidm
-persistence:
-  existingClaim: ""
+    {{- include "kanidm.selectorLabels" . | nindent 4 }}
