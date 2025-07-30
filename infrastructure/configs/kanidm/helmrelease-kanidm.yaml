@@ -19,8 +19,6 @@ spec:
   interval: 5m
   timeout: 15m
   values:
-    nameOverride: "kanidm"
-    fullnameOverride: "kanidm"
     domain: idm.xrs444.net
     commonLabels:
       advertise: bgp
