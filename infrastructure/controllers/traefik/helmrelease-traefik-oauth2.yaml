@@ -20,13 +20,15 @@ spec:
     extraArgs:
       - --provider=oidc
       - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/x_traefik_dashboard
-      - --redirect-url=https://traefik.xrs444.net/oauth2/callback/
+      - --redirect-url=https://traefik.xrs444.net/oauth2/callback
       - --email-domain=*
-      - --upstream=http://kanidm-kanidm-kanidm.kanidm.svc.cluster.local:8080/
+      - --upstream=static://202
       - --scope=openid email profile groups
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
       - --code-challenge-method=S256
+      - --skip-provider-button=false
+      - --set-xauthrequest=true
  
     service:
       enabled: true
