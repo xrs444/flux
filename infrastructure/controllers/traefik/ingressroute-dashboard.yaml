@@ -12,5 +12,16 @@ spec:
       services:
         - name: api@internal
           kind: TraefikService
+      middlewares:
+        - name: dashboard-auth
+          namespace: traefik
+    - match: Host(`traefik.xrs444.net`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+      middlewares:
+        - name: dashboard-auth
+          namespace: traefik
   tls:
     secretName: letsencrypt-wildcard-cert-xrs444.net
