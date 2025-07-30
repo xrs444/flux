@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: "omada-data-pvc"
+  name: omada-data-pvc
   namespace: omada
 spec:
   storageClassName: "longhorn-retain"
@@ -9,4 +9,5 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 5Gi
+  volumeName: pvc-05a7a941-bf4b-41d2-9e38-156f75558310
