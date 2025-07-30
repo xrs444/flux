@@ -5,7 +5,6 @@ metadata:
   namespace: omada
 spec:
   storageClassName: "longhorn-retain"
-  volumeName: "omada-pv-data"
   accessModes:
     - ReadWriteOnce
   resources:
