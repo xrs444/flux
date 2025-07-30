@@ -4,6 +4,9 @@ metadata:
   name: {{ include "kanidm.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+{{- with .Values.commonLabels | default dict }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 {{- with .Values.service.labels | default dict }}
 {{ toYaml . | indent 4 }}
 {{- end }}
