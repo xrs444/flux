@@ -10,3 +10,4 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  volumeName: pvc-2da07999-fbe5-4b69-bbff-0a861df33a42
