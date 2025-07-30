@@ -5,7 +5,6 @@ metadata:
   namespace: lubelogger
 spec:
   storageClassName: "longhorn-retain"
-  volumeName: "lubelogger-pv-static"
   accessModes:
     - ReadWriteOnce
   resources:

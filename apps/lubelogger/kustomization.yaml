@@ -8,5 +8,4 @@ resources:
   - ./helmrelease-lubelogger.yaml
   - ./ingressroute-lubelogger.yaml
   - ./pvc-lubelogger.yaml
-  - ./pv-lubelogger.yaml
   - ./configmap-helm-chart-overrides-lubelogger.yaml
