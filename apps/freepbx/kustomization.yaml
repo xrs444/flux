@@ -6,4 +6,5 @@ resources:
   - ./deployment-freepbx.yaml
   - ./service-freepbx.yaml
   - ./pvc-freepbx.yaml
+  - ./pv-freepbx.yaml
   - ./namespace-freepbx.yaml
