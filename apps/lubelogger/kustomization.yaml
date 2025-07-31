@@ -7,5 +7,4 @@ resources:
   - ./secret-lubelogger-email.yaml
   - ./helmrelease-lubelogger.yaml
   - ./ingressroute-lubelogger.yaml
-  - ./pvc-lubelogger.yaml
   - ./configmap-helm-chart-overrides-lubelogger.yaml

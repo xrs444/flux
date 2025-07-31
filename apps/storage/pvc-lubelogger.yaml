@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: lubelogger-data-pvc
   namespace: lubelogger
+  annotations:
+    kustomize.config.k8s.io/behavior: merge
 spec:
   storageClassName: "longhorn-retain"
   accessModes:

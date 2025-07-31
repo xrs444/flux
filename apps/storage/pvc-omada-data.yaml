@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: omada-data-pvc
   namespace: omada
+  annotations:
+    kustomize.config.k8s.io/behavior: merge
 spec:
   storageClassName: "longhorn-retain"
   accessModes:

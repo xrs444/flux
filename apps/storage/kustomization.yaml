@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./pvc-omada-data.yaml
+  - ./pvc-omada-logs.yaml
+  - ./pvc-lubelogger.yaml
+  - ./pvc-freepbx.yaml

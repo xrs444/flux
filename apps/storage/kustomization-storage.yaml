@@ -1,0 +1,13 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: storage
+  namespace: flux-system
+spec:
+  interval: 24h  # Reconcile less frequently
+  path: ./apps/storage
+  prune: false   # Don't delete storage resources
+  timeout: 10m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
