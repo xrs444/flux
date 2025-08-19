@@ -6,3 +6,5 @@ resources:
   - ./pvc-omada-logs.yaml
   - ./pvc-lubelogger.yaml
   - ./pvc-freepbx.yaml
+  - ./pvc-jellyfin-config.yaml
+  - ./pvc-jellyfin-media.yaml

@@ -25,7 +25,7 @@ spec:
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
     config:
-      existingSecret: oauth2-proxy-creds
+      existingSecret: oauth2-proxy-secret  # Change from oauth2-proxy-creds to oauth2-proxy-secret
     ingress:
       enabled: false
     service:

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jellyfin-media-nfs
+  annotations:
+    kustomize.config.k8s.io/behavior: merge
+spec:
+  capacity:
+    storage: 100Ti  # Set this to a large value since NFS capacity is variable
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: xsvr1 # Replace with your NFS server IP/hostname
+    path: /path/to/your/nfs/share  # Replace with your NFS share path
+  mountOptions:
+    - nfsvers=4.1  # Adjust NFS version as needed
+    - hard
+    - intr

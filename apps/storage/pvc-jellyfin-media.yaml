@@ -1,16 +1,21 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: jellyfin-config
+  name: jellyfin-media
   labels:
     helm.sh/chart: jellyfin-2.3.0
     app.kubernetes.io/name: jellyfin
     app.kubernetes.io/instance: jellyfin
     app.kubernetes.io/version: "10.10.6"
     app.kubernetes.io/managed-by: Helm
+  annotations:
+    kustomize.config.k8s.io/behavior: merge
 spec:
   accessModes:
-    - "ReadWriteOnce"
+    - "ReadWriteMany"
+  storageClassName: ""  # Empty string to prevent dynamic provisioning
+  volumeName: jellyfin-media-nfs  # Bind to specific PV
   resources:
     requests:
-      storage: "5Gi"
+      storage: 100Ti  # Must match PV capacity
+
