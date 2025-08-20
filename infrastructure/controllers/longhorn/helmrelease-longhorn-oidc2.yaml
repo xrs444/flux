@@ -26,26 +26,6 @@ spec:
       - --cookie-secure=true
     config:
       existingSecret: oauth2-proxy-secret
-      configFile: |-
-        client_id = "$(OAUTH2_PROXY_CLIENT_ID)"
-        client_secret = "$(OAUTH2_PROXY_CLIENT_SECRET)"
-        cookie_secret = "$(OAUTH2_PROXY_COOKIE_SECRET)"
-    extraEnv:
-      - name: OAUTH2_PROXY_CLIENT_ID
-        valueFrom:
-          secretKeyRef:
-            name: oauth2-proxy-secret
-            key: clientID
-      - name: OAUTH2_PROXY_CLIENT_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: oauth2-proxy-secret
-            key: clientSecret
-      - name: OAUTH2_PROXY_COOKIE_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: oauth2-proxy-secret
-            key: cookieSecret
     ingress:
       enabled: false
     service:
