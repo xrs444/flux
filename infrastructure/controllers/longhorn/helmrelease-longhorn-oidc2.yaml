@@ -27,7 +27,7 @@ spec:
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
     config:
-      existingSecret: oauth2-proxy-secret
+      existingSecret: oauth2-proxy-secret-longhorn
     ingress:
       enabled: false
     service:
