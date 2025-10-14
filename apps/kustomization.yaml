@@ -8,3 +8,4 @@ resources:
   - ./lubelogger
   - ./freepbx
   - ./omada
+  - ./craftycontroller

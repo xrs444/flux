@@ -1,0 +1,20 @@
+charts/craftycontroller/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "craftycontroller.fullname" . }}
+  labels:
+    {{- include "craftycontroller.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.ports.web.port }}
+      targetPort: {{ .Values.service.ports.web.targetPort }}
+      protocol: TCP
+      name: web
+    - port: {{ .Values.service.ports.minecraft.port }}
+      targetPort: {{ .Values.service.ports.minecraft.targetPort }}
+      protocol: TCP
+      name: minecraft
+  selector:
+    {{- include "craftycontroller.selectorLabels" . | nindent 4 }}
