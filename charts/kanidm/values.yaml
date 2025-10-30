@@ -1,6 +1,0 @@
-storageClassName: longhorn
-service:
-  loadBalancerIP: ""
-persistence:
-  dbExistingClaim: ""
-  backupExistingClaim: ""
