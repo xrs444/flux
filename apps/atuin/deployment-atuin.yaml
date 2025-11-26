@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atuin-server
+  namespace: atuin
+  labels:
+    app: atuin-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: atuin-server
+  template:
+    metadata:
+      labels:
+        app: atuin-server
+    spec:
+      containers:
+        - name: atuin-server
+          image: ghcr.io/atuinsh/atuin:latest
+          ports:
+            - containerPort: 8888
+          env:
+            - name: ATUIN_HOST
+              value: "0.0.0.0"
+            - name: ATUIN_PORT
+              value: "8888"
+            # Add other Atuin env vars as needed (e.g., DB connection)
+          volumeMounts:
+            - name: atuin-data
+              mountPath: /data
+      volumes:
+        - name: atuin-data
+          persistentVolumeClaim:
+            claimName: atuin-data-pvc

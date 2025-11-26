@@ -9,3 +9,4 @@ resources:
   - ./freepbx
   - ./omada
   - ./craftycontroller
+  - ./atuin

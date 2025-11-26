@@ -4,18 +4,18 @@ metadata:
   name: lubelogger-helm-chart-value-overrides
   namespace: lubelogger
 data:
-  values.yaml: |-  
+  values.yaml: |-
 
     # -- Number of replicas for the deployment.
     replicaCount: 1
-    
+
     updateStrategy:
       # -- The deployment strategy to use to replace existing pods with new ones. Options: "RollingUpdate" or "OnDelete".
       type: RollingUpdate
       rollingUpdate:
         maxUnavailable: 100%
         partition: 0
-    
+
     image:
       # -- Registry and repository for the lubelogger image.
       repository: ghcr.io/hargata/lubelogger
@@ -23,7 +23,7 @@ data:
       tag: "v1.4.9"
       # -- Image pull policy.
       pullPolicy: IfNotPresent
-    
+
     config:
       # -- Locale and Language Settings, this will affect how numbers, currencies, and dates are
       # formatted.
@@ -102,14 +102,14 @@ data:
         # It is sha256, and can be created using one the following commands:
         # `python3 -c 'import hashlib; print(hashlib.sha256("password".encode("utf-8")).hexdigest())'`
         UserPasswordHash: "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
-    
+
     # -- Secrets for pulling images.
     imagePullSecrets: []
     # -- Override for the name.
     nameOverride: ""
     # -- Override for the full name.
     fullnameOverride: ""
-    
+
     serviceAccount:
       # -- Specifies whether a service account should be created.
       create: true
@@ -120,7 +120,7 @@ data:
       # -- The name of the service account to use.
       # If not set and create is true, a name is generated using the fullname template.
       name: ""
-    
+
     secret:
       # -- Specifies whether a secret should be created.
       create: false
@@ -149,7 +149,7 @@ data:
         accessMode: ReadWriteOnce
         # -- Storage size for the PVC.
         size: 10Gi
-    
+
     postgres:
       # -- Defines if the secret with Postgres connection details should be created.
       create: false
@@ -172,7 +172,7 @@ data:
       password: "postgres"
       # -- Database name.
       database: "postgres"
-    
+
     oidc:
       # -- Defines if OpenID Connect configuration should be included.
       enabled: false
@@ -205,7 +205,7 @@ data:
       userInfoURL: ""
       # -- Log Out URL for OIDC Provider, required if DisableRegularLogin=true.
       logOutURL: ""
-    
+
     curl:
       image:
         # -- Registry and repository for the image.
@@ -214,15 +214,15 @@ data:
         tag: "8.14.1"
         # -- Image pull policy.
         pullPolicy: IfNotPresent
-    
+
     # -- Annotations to be added to the pods.
     podAnnotations: {}
     # -- Labels to be added to the pods.
     podLabels: {}
-    
+
     podSecurityContext: {}
       # fsGroup: 2000
-    
+
     securityContext: {}
       # capabilities:
       #   drop:
@@ -230,13 +230,13 @@ data:
       # readOnlyRootFilesystem: true
       # runAsNonRoot: true
       # runAsUser: 1000
-    
+
     service:
       # -- Service type.
       type: ClusterIP
       # -- Service port.
       port: 80
-    
+
     ingress:
       # -- Specifies whether ingress should be enabled.
       enabled: false
@@ -248,7 +248,7 @@ data:
         # kubernetes.io/tls-acme: "true"
       # -- List of ingress hosts.
       hosts:
-        - host: lubelog.example.local
+        - host: lubelogger.xrs444. net
           paths:
             - path: /
               pathType: ImplementationSpecific
@@ -257,7 +257,7 @@ data:
       #  - secretName: lubelog-tls
       #    hosts:
       #      - lubelog.example.local
-    
+
     resources: {}
       # We usually recommend not to specify default resources and to leave this as a conscious
       # choice for the user. This also increases chances charts run on environments with little
@@ -269,19 +269,19 @@ data:
       # requests:
       #   cpu: 100m
       #   memory: 128Mi
-    
+
     livenessProbe:
       # -- Liveness probe configuration.
       httpGet:
         path: /
         port: http
-    
+
     readinessProbe:
       # -- Readiness probe configuration.
       httpGet:
         path: /
         port: http
-    
+
     autoscaling:
       # -- Specifies whether autoscaling is enabled.
       enabled: false
@@ -293,13 +293,13 @@ data:
       targetCPUUtilizationPercentage: 80
       # -- Target memory utilization percentage for autoscaling.
       targetMemoryUtilizationPercentage: 80
-    
+
     # -- Node selector for the pods.
     nodeSelector: {}
-    
+
     # -- Tolerations for the pods.
     tolerations: []
-    
+
     # -- Affinity settings for the pods.
     affinity: {}
       # nodeAffinity:
