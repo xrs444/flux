@@ -9,7 +9,6 @@ resources:
   - ./crds/clusterissuers.cert-manager.io.yaml
   - ./crds/issuerlist.cert-manager.io.yaml
   - ./crds/orders.cert-manager.io.yaml
-  - ./helmrepository-jetstack.yaml
   - ./helmrelease-cert-manager.yaml
   - ./kustomization-cert-manager.yaml
   - ./deployments.cert-manager.yaml

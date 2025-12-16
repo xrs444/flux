@@ -6,3 +6,7 @@ resources:
   - ./helmrepository-longhorn.yaml
   - ./helmrepository-traefik.yaml
   - ./helmrepository-anza-charts.yaml
+  - ./helmrepository-jetstack.yaml
+  - ./helmrepository-cilium.yaml
+  - ./helmrepository-sealedsecrets.yaml
+  - ./helmrepository-traefik-crds.yaml

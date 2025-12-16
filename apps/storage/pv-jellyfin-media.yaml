@@ -11,9 +11,9 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   nfs:
-    server: xsvr1 # Replace with your NFS server IP/hostname
-    path: /path/to/your/nfs/share  # Replace with your NFS share path
+    server: xsvr1.lan
+    path: /TODO/jellyfin/media  # TODO: Update with actual NFS export path when configured
   mountOptions:
-    - nfsvers=4.1  # Adjust NFS version as needed
+    - nfsvers=4.1
     - hard
     - intr

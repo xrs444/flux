@@ -5,5 +5,4 @@ resources:
   - ./configmap-podinfo-helm-chart-value-overrides.yaml
   - ./helmrelease-podinfo.yaml
   - ./namespace-podinfo.yaml
-  - ./helmrepository-podinfo.yaml
   - ./kustomization-podinfo.yaml

@@ -1,4 +1,4 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: craftycontroller
@@ -13,6 +13,13 @@ spec:
         name: flux-system
         namespace: flux-system
       interval: 15m
+  timeout: 10m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
   values:
     ingress:
       hosts:

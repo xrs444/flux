@@ -8,7 +8,6 @@ resources:
   - ./CiliumBGPAdvertisement.yaml
   - ./CiliumBGPClusterConfig.yaml
   - ./CiliumBGPPeerConfig.yaml
-  - ./helmrepository-cilium.yaml
   - ./helmrelease-cilium.yaml
 
   # Cilium RBAC

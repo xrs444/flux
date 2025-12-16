@@ -3,7 +3,6 @@ kind: Kustomization
 
 resources:
   - ./helmrelease-reflector.yaml
-  - ./helmrepository-reflector.yaml
   - ./kustomization-reflector.yaml
   - ./reflector-clusterrole.yaml
   - ./reflector-clusterrolebinding.yaml
