@@ -12,4 +12,7 @@ resources:
   - ./craftycontroller
   - ./atuin
   - ./jellyfin
+  - ./n8n
+  - ./mealie
+  - ./audiobookshelf
   - ./kube-state-metrics  # Exposes K8s metrics for Prometheus monitoring

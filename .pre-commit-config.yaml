@@ -1,0 +1,29 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.32.0
+    hooks:
+      - id: yamllint
+        files: ".*\\.ya?ml$"
+
+  - repo: local
+    hooks:
+      - id: nix-flake-check
+        name: nix flake check
+        entry: bash -c 'cd nix && nix flake check --all-systems'
+        language: system
+        pass_filenames: false
+        files: "^nix/.*\\.(nix|lock)$"
+
+      - id: flux-validate
+        name: flux validate (full)
+        entry: bash -c 'cd flux && ./scripts/validate.sh'
+        language: system
+        pass_filenames: false
+        files: "^flux/.*\\.ya?ml$"
