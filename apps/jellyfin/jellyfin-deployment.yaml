@@ -51,12 +51,17 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-            - mountPath: /media
-              name: media
+            - mountPath: /media/movies
+              name: movies
+            - mountPath: /media/tvshows
+              name: tvshows
       volumes:
         - name: config
           persistentVolumeClaim:
             claimName: jellyfin-config
-        - name: media
+        - name: movies
           persistentVolumeClaim:
             claimName: jellyfin-media
+        - name: tvshows
+          persistentVolumeClaim:
+            claimName: jellyfin-tvshows
