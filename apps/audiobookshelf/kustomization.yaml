@@ -9,3 +9,4 @@ resources:
   - pvc-audiobookshelf-metadata.yaml
   - deployment-audiobookshelf.yaml
   - service-audiobookshelf.yaml
+  - ingressroute-audiobookshelf.yaml

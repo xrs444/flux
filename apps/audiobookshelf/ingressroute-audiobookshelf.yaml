@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: audiobookshelf
+  namespace: audiobookshelf
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`audiobookshelf.xrs444.net`)
+      kind: Rule
+      services:
+        - name: audiobookshelf
+          port: 80
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

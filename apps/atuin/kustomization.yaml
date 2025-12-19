@@ -7,3 +7,4 @@ resources:
   - namespace.yaml
   - deployment-atuin.yaml
   - service-atuin.yaml
+  - ingressroute-atuin.yaml

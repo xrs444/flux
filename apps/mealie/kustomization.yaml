@@ -9,3 +9,4 @@ resources:
   - pvc-mealie-postgres.yaml
   - deployment-mealie.yaml
   - service-mealie.yaml
+  - ingressroute-mealie.yaml

@@ -11,3 +11,4 @@ resources:
   - ./jellyfin-serviceaccount.yaml
   - ./jellyfin-deployment.yaml
   - ./jellyfin-service.yaml
+  - ./ingressroute-jellyfin.yaml
