@@ -1,14 +1,18 @@
+# Traefik - Ingress controller with OAuth2 authentication
+# Provides HTTP/HTTPS ingress and routing for cluster services
+# Dashboard protected by Kanidm OAuth2 authentication
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ./oauth2-proxy-sealedsecret.yaml
-  - ./helmrelease-traefik.yaml
-  - ./helmrelease-traefik-oauth2.yaml
+  - ./oauth2-proxy-sealedsecret.yaml  # OAuth2 credentials
+  - ./helmrelease-traefik.yaml  # Main Traefik controller
+  - ./helmrelease-traefik-oauth2.yaml  # OAuth2 proxy
   - ./configmap-traefik-helm-chart-value-overrides.yaml
   - ./namespace-traefik.yaml
-  - ./kustomization-traefik.yaml
-  - ./middleware-dashboard-auth.yaml
-  - ./middleware-api.yaml
-  - ./ingressroute-dashboard.yaml
-  - ./ingressroute-oauth2-proxy.yaml
+  - ./kustomization-traefik.yaml  # Flux Kustomization
+  - ./middleware-dashboard-auth.yaml  # Dashboard auth
+  - ./middleware-api.yaml  # API middleware
+  - ./ingressroute-dashboard.yaml  # Dashboard ingress
+  - ./ingressroute-oauth2-proxy.yaml  # OAuth2 proxy

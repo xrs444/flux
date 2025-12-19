@@ -1,15 +1,19 @@
+# Longhorn - Distributed block storage for Kubernetes
+# Provides persistent volumes with replication across cluster nodes
+# Includes OAuth2-protected web UI and multiple storage classes
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ./oauth2-proxy-sealedsecret-longhorn.yaml
-  - ./helmrelease-longhorn.yaml
+  - ./oauth2-proxy-sealedsecret-longhorn.yaml  # OAuth2 credentials for UI
+  - ./helmrelease-longhorn.yaml                 # Main Longhorn deployment
   - ./namespace-longhorn.yaml
-  - ./kustomization-longhorn.yaml
-  - ./ingressroute-longhorn-oauth2.yaml
-  - ./ingressroute-longhorn-ui.yaml
-  - ./storageclass-longhorn.yaml
-  - ./storageclass-longhorn-reclaim.yaml
-  - ./storageclass-longhorn-ephemeral.yaml
-  - ./helmrelease-longhorn-oidc2.yaml
-  - ./middleware_traefik_longhorn.yaml
+  - ./kustomization-longhorn.yaml               # Flux Kustomization
+  - ./ingressroute-longhorn-oauth2.yaml         # OAuth2 proxy ingress
+  - ./ingressroute-longhorn-ui.yaml             # Web UI ingress
+  - ./storageclass-longhorn.yaml                # Standard storage class
+  - ./storageclass-longhorn-reclaim.yaml        # Retain on delete
+  - ./storageclass-longhorn-ephemeral.yaml      # Temporary storage
+  - ./helmrelease-longhorn-oidc2.yaml           # OAuth2 proxy Helm release
+  - ./middleware_traefik_longhorn.yaml          # Traefik middleware

@@ -1,4 +1,8 @@
 ---
+# Infrastructure controllers - Core cluster services
+# (Traefik, Cert-Manager, Longhorn, Cilium, Sealed Secrets)
+# Deployed first with prune:false to prevent accidental deletion
+# 15m interval, 10m timeout, waits for readiness before proceeding
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -15,6 +19,10 @@ spec:
   prune: false
   wait: true
 ---
+# Infrastructure configurations
+# ClusterIssuers, Reflector, and other configs
+# Depends on infra-controllers being ready
+# 15m interval, 5m timeout, auto-pruning enabled
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:

@@ -1,10 +1,14 @@
+# Let's Encrypt ClusterIssuers and wildcard certificate
+# Provides automated TLS certificate management for all ingresses
+# Production issuer configured for *.xrs444.net domain
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-#  - ./certificate-wildcard-cert-letsencrypt-staging.yaml
+  # - ./certificate-wildcard-cert-letsencrypt-staging.yaml
   - ./certificate-wildcard-cert-letsencrypt-prod.yaml
-#  - ./cluster-issuer-letsencrypt-staging.yaml
+  # - ./cluster-issuer-letsencrypt-staging.yaml
   - ./cluster-issuer-letsencrypt-prod.yaml
-  - ./kustomization-letsencrypt-wildcard-cert.yaml
-  - ./namespace-letsencrypt-wildcard-cert.yaml
+  - ./kustomization-letsencrypt-wildcard-cert.yaml         # Flux Kustomization
+  - ./namespace-letsencrypt-wildcard-cert.yaml             # Dedicated namespace

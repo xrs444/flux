@@ -1,18 +1,22 @@
+# Kustomize configuration for all HomeProd applications
+# Each application has its own directory with dedicated namespace
+# Applications deployed after infrastructure (depends on infra-configs)
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ./helmrepositories
-  - ./storage
-  - ./podinfo
-  - ./metrics-server
-  - ./lubelogger
-  - ./freepbx
-  - ./omada
-  - ./craftycontroller
-  - ./atuin
-  - ./jellyfin
-  - ./n8n
-  - ./mealie
-  - ./audiobookshelf
-  - ./kube-state-metrics  # Exposes K8s metrics for Prometheus monitoring
+  - ./helmrepositories      # External Helm chart repositories
+  - ./storage               # Storage class configurations
+  - ./podinfo               # Demo app for testing
+  - ./metrics-server        # Cluster-wide resource metrics
+  - ./lubelogger            # Vehicle maintenance tracking
+  - ./freepbx               # VoIP PBX system
+  - ./omada                 # TP-Link network controller
+  - ./craftycontroller      # Minecraft server management (Helm)
+  - ./atuin                 # Shell history sync server
+  - ./jellyfin              # Media streaming server
+  - ./n8n                   # Workflow automation platform
+  - ./mealie                # Recipe management
+  - ./audiobookshelf        # Audiobook and podcast server
+  - ./kube-state-metrics    # Kubernetes object metrics for monitoring

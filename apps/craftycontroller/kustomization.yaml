@@ -1,3 +1,7 @@
+# CraftyController - Minecraft server management platform
+# Deployed via custom Helm chart with Kanidm OAuth2 authentication
+# Includes NodePort service for Minecraft server access
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: craftycontroller

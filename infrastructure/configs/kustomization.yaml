@@ -1,7 +1,10 @@
+# Infrastructure configurations that depend on controllers being ready
+# Includes certificate issuers, secret replication, and additional configs
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ./helmrepositories
-  - ./cluster-issuers
-  - ./reflector
+  - ./helmrepositories      # Additional Helm repositories for configs
+  - ./cluster-issuers       # Let's Encrypt certificate issuers
+  - ./reflector             # Secret/ConfigMap replication across namespaces
