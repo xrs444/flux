@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manyfold
+  namespace: manyfold
+  labels:
+    app: manyfold
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: manyfold
+  template:
+    metadata:
+      labels:
+        app: manyfold
+    spec:
+      containers:
+        - name: manyfold
+          image: ghcr.io/manyfold3d/manyfold:latest
+          ports:
+            - containerPort: 3214
+              name: http
+          env:
+            - name: TZ
+              value: "America/Phoenix"
+            - name: DATABASE_ADAPTER
+              value: "postgresql"
+            - name: DATABASE_HOST
+              value: "localhost"
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_NAME
+              value: "manyfold"
+            - name: DATABASE_USER
+              value: "manyfold"
+            - name: DATABASE_PASSWORD
+              value: "manyfold"
+            - name: SECRET_KEY_BASE
+              value: "changeme-generate-a-secure-key"
+          volumeMounts:
+            - name: data
+              mountPath: /libraries
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_DB
+              value: "manyfold"
+            - name: POSTGRES_USER
+              value: "manyfold"
+            - name: POSTGRES_PASSWORD
+              value: "manyfold"
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
+          volumeMounts:
+            - name: db
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: manyfold-data
+        - name: db
+          persistentVolumeClaim:
+            claimName: manyfold-db

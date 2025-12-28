@@ -1,0 +1,12 @@
+# Manyfold - Self-hosted digital asset manager for 3D print files
+# Manages STL files with tagging, organization, and visualization
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-manyfold-data.yaml
+  - pvc-manyfold-db.yaml
+  - deployment-manyfold.yaml
+  - service-manyfold.yaml
+  - ingressroute-manyfold.yaml

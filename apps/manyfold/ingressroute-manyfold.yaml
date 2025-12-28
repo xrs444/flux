@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: manyfold
+  namespace: manyfold
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`manyfold.xrs444.net`)
+      kind: Rule
+      services:
+        - name: manyfold
+          port: 3214
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

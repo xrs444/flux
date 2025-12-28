@@ -19,4 +19,5 @@ resources:
   - ./n8n                   # Workflow automation platform
   - ./mealie                # Recipe management
   - ./audiobookshelf        # Audiobook and podcast server
+  - ./manyfold              # 3D print file manager
   - ./kube-state-metrics    # Kubernetes object metrics for monitoring
