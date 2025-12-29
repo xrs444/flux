@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: diskover
+  namespace: diskover
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`diskover.xrs444.net`)
+      kind: Rule
+      services:
+        - name: diskover
+          port: 8000
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

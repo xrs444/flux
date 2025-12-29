@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: linkwarden
+  namespace: linkwarden
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`linkwarden.xrs444.net`)
+      kind: Rule
+      services:
+        - name: linkwarden
+          port: 3000
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

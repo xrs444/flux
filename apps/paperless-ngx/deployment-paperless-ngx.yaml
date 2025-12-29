@@ -1,0 +1,105 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-ngx
+  namespace: paperless-ngx
+  labels:
+    app: paperless-ngx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-ngx
+  template:
+    metadata:
+      labels:
+        app: paperless-ngx
+    spec:
+      containers:
+        - name: paperless-ngx
+          image: ghcr.io/paperless-ngx/paperless-ngx:latest
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: PAPERLESS_URL
+              value: "https://paperless.xrs444.net"
+            - name: PAPERLESS_TIME_ZONE
+              value: "America/Phoenix"
+            - name: PAPERLESS_OCR_LANGUAGE
+              value: "eng"
+            - name: PAPERLESS_REDIS
+              value: "redis://localhost:6379"
+            # TODO: Configure Kanidm OIDC authentication
+            # - name: PAPERLESS_APPS
+            #   value: "allauth.socialaccount.providers.openid_connect"
+            # - name: PAPERLESS_SOCIALACCOUNT_PROVIDERS
+            #   value: |
+            #     {
+            #       "openid_connect": {
+            #         "SERVERS": [{
+            #           "id": "kanidm",
+            #           "name": "Kanidm",
+            #           "server_url":
+            #             "https://idm.xrs444.net/oauth2/openid/paperless
+            #             /.well-known/openid-configuration",
+            #           "token_auth_method": "client_secret_basic"
+            #         }]
+            #       }
+            #     }
+            # TODO: Generate secure secret
+            - name: PAPERLESS_SECRET_KEY
+              value: "change-me-to-random-string"
+          volumeMounts:
+            - name: paperless-data
+              mountPath: /usr/src/paperless/data
+            - name: paperless-media
+              mountPath: /usr/src/paperless/media
+            - name: paperless-consume
+              mountPath: /usr/src/paperless/consume
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+      volumes:
+        - name: paperless-data
+          persistentVolumeClaim:
+            claimName: paperless-data
+        - name: paperless-media
+          persistentVolumeClaim:
+            claimName: paperless-media
+        - name: paperless-consume
+          persistentVolumeClaim:
+            claimName: paperless-consume

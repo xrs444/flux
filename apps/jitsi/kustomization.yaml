@@ -1,0 +1,14 @@
+# Jitsi - Video conferencing platform
+# Complex multi-component deployment
+# TODO: Configure JWT authentication for Kanidm integration
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - configmap-jitsi.yaml
+  - pvc-jitsi-config.yaml
+  - deployment-jitsi.yaml
+  - service-jitsi-web.yaml
+  - service-jitsi-jvb.yaml
+  - ingressroute-jitsi.yaml

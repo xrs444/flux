@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jitsi
+  namespace: jitsi
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`jitsi.xrs444.net`)
+      kind: Rule
+      services:
+        - name: jitsi-web
+          port: 80
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

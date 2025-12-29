@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: nocodb
+  namespace: nocodb
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`nocodb.xrs444.net`)
+      kind: Rule
+      services:
+        - name: nocodb
+          port: 8080
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

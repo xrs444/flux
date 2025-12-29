@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ntfy
+  namespace: ntfy
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`ntfy.xrs444.net`)
+      kind: Rule
+      services:
+        - name: ntfy
+          port: 80
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

@@ -1,0 +1,95 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: diskover
+  namespace: diskover
+  labels:
+    app: diskover
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: diskover
+  template:
+    metadata:
+      labels:
+        app: diskover
+    spec:
+      containers:
+        # Diskover web UI
+        - name: diskover-web
+          image: linuxserver/diskover:latest
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "America/Phoenix"
+            - name: ELASTICSEARCH_HOST
+              value: "localhost"
+            - name: ELASTICSEARCH_PORT
+              value: "9200"
+            # TODO: Configure authentication
+            - name: DISKOVER_PASS
+              value: "changeme"
+          volumeMounts:
+            - name: diskover-data
+              mountPath: /config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+        # Elasticsearch for indexing
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: transport
+          env:
+            - name: discovery.type
+              value: "single-node"
+            - name: ES_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+            - name: xpack.security.enabled
+              value: "false"
+          volumeMounts:
+            - name: diskover-data
+              mountPath: /usr/share/elasticsearch/data
+              subPath: elasticsearch
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+      volumes:
+        - name: diskover-data
+          persistentVolumeClaim:
+            claimName: diskover-data

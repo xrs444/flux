@@ -1,0 +1,11 @@
+# Linkwarden - Bookmark and link management
+# Supports Kanidm OIDC authentication via NextAuth
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-linkwarden-data.yaml
+  - deployment-linkwarden.yaml
+  - service-linkwarden.yaml
+  - ingressroute-linkwarden.yaml

@@ -1,0 +1,171 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jitsi
+  namespace: jitsi
+  labels:
+    app: jitsi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jitsi
+  template:
+    metadata:
+      labels:
+        app: jitsi
+    spec:
+      containers:
+        # Jitsi Web (frontend)
+        - name: web
+          image: jitsi/web:latest
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
+          envFrom:
+            - configMapRef:
+                name: jitsi-config
+          env:
+            - name: XMPP_SERVER
+              value: "localhost"
+            - name: JICOFO_COMPONENT_SECRET
+              value: "jicofo-secret"  # TODO: Generate secure secret
+            - name: JICOFO_AUTH_USER
+              value: "focus"
+            - name: JVB_AUTH_USER
+              value: "jvb"
+            - name: JVB_AUTH_PASSWORD
+              value: "jvb-password"  # TODO: Generate secure secret
+          volumeMounts:
+            - name: jitsi-config
+              mountPath: /config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+        # Prosody XMPP server
+        - name: prosody
+          image: jitsi/prosody:latest
+          ports:
+            - containerPort: 5222
+              name: xmpp-c2s
+            - containerPort: 5347
+              name: xmpp-component
+            - containerPort: 5280
+              name: xmpp-http
+          envFrom:
+            - configMapRef:
+                name: jitsi-config
+          env:
+            - name: XMPP_DOMAIN
+              value: "meet.jitsi"
+            - name: XMPP_AUTH_DOMAIN
+              value: "auth.meet.jitsi"
+            - name: XMPP_MUC_DOMAIN
+              value: "muc.meet.jitsi"
+            - name: XMPP_INTERNAL_MUC_DOMAIN
+              value: "internal-muc.meet.jitsi"
+            - name: JICOFO_COMPONENT_SECRET
+              value: "jicofo-secret"
+            - name: JICOFO_AUTH_PASSWORD
+              value: "jicofo-password"  # TODO: Generate secure secret
+            - name: JVB_AUTH_PASSWORD
+              value: "jvb-password"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+        # Jicofo (conference focus)
+        - name: jicofo
+          image: jitsi/jicofo:latest
+          envFrom:
+            - configMapRef:
+                name: jitsi-config
+          env:
+            - name: XMPP_SERVER
+              value: "localhost"
+            - name: XMPP_DOMAIN
+              value: "meet.jitsi"
+            - name: XMPP_AUTH_DOMAIN
+              value: "auth.meet.jitsi"
+            - name: XMPP_INTERNAL_MUC_DOMAIN
+              value: "internal-muc.meet.jitsi"
+            - name: JICOFO_COMPONENT_SECRET
+              value: "jicofo-secret"
+            - name: JICOFO_AUTH_PASSWORD
+              value: "jicofo-password"
+            - name: JVB_BREWERY_MUC
+              value: "jvbbrewery"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: jitsi-config
+          persistentVolumeClaim:
+            claimName: jitsi-config
+---
+# Separate deployment for JVB (video bridge)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jitsi-jvb
+  namespace: jitsi
+  labels:
+    app: jitsi
+    component: jvb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jitsi
+      component: jvb
+  template:
+    metadata:
+      labels:
+        app: jitsi
+        component: jvb
+    spec:
+      containers:
+        - name: jvb
+          image: jitsi/jvb:latest
+          ports:
+            - containerPort: 10000
+              protocol: UDP
+              name: video-rtp
+          envFrom:
+            - configMapRef:
+                name: jitsi-config
+          env:
+            - name: XMPP_SERVER
+              value: "jitsi-web.jitsi.svc.cluster.local"
+            - name: XMPP_AUTH_DOMAIN
+              value: "auth.meet.jitsi"
+            - name: JVB_AUTH_USER
+              value: "jvb"
+            - name: JVB_AUTH_PASSWORD
+              value: "jvb-password"
+            - name: JVB_BREWERY_MUC
+              value: "jvbbrewery"
+            - name: JVB_PORT
+              value: "10000"
+            - name: JVB_STUN_SERVERS
+              value: "stun.l.google.com:19302"
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi

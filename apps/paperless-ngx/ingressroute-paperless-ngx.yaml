@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: paperless-ngx
+  namespace: paperless-ngx
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`paperless.xrs444.net`)
+      kind: Rule
+      services:
+        - name: paperless-ngx
+          port: 8000
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

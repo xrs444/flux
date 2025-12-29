@@ -21,3 +21,11 @@ resources:
   - ./audiobookshelf        # Audiobook and podcast server
   - ./manyfold              # 3D print file manager
   - ./kube-state-metrics    # Kubernetes object metrics for monitoring
+  - ./loki                  # Log aggregation system
+  - ./nocodb                # No-code database platform
+  - ./paperless-ngx         # Document management system
+  - ./jitsi                 # Video conferencing platform
+  - ./ntfy                  # Push notification service
+  - ./diskover              # File system indexer and search
+  - ./linkwarden            # Bookmark and link management
+  - ./garage                # S3-compatible object storage

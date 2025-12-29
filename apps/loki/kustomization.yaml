@@ -1,0 +1,14 @@
+# Loki - Log aggregation system
+# Centralizes logs from all cluster applications via Promtail
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - configmap-loki.yaml
+  - pvc-loki-data.yaml
+  - deployment-loki.yaml
+  - service-loki.yaml
+  - ingressroute-loki.yaml
+  - configmap-promtail.yaml
+  - daemonset-promtail.yaml

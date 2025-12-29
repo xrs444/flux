@@ -1,0 +1,11 @@
+# Diskover - File system indexer and search
+# Requires Elasticsearch backend
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-diskover-data.yaml
+  - deployment-diskover.yaml
+  - service-diskover.yaml
+  - ingressroute-diskover.yaml

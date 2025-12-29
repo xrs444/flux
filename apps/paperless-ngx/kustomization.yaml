@@ -1,0 +1,13 @@
+# Paperless-ngx - Document management system
+# Supports Kanidm OIDC authentication via PAPERLESS_APPS environment variable
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-paperless-data.yaml
+  - pvc-paperless-media.yaml
+  - pvc-paperless-consume.yaml
+  - deployment-paperless-ngx.yaml
+  - service-paperless-ngx.yaml
+  - ingressroute-paperless-ngx.yaml

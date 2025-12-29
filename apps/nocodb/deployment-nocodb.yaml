@@ -1,0 +1,74 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nocodb
+  namespace: nocodb
+  labels:
+    app: nocodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nocodb
+  template:
+    metadata:
+      labels:
+        app: nocodb
+    spec:
+      containers:
+        - name: nocodb
+          image: nocodb/nocodb:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: NC_DB
+              value: "sqlite3://data/nocodb.db"
+            - name: NC_PUBLIC_URL
+              value: "https://nocodb.xrs444.net"
+            - name: NC_DISABLE_TELE
+              value: "true"
+            # TODO: Configure Kanidm OIDC authentication
+            # - name: NC_OIDC_ISSUER
+            #   value: "https://idm.xrs444.net/oauth2/openid/nocodb"
+            # - name: NC_OIDC_CLIENT_ID
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: nocodb-oidc-secret
+            #       key: client_id
+            # - name: NC_OIDC_CLIENT_SECRET
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: nocodb-oidc-secret
+            #       key: client_secret
+          volumeMounts:
+            - name: nocodb-data
+              mountPath: /usr/app/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: nocodb-data
+          persistentVolumeClaim:
+            claimName: nocodb-data

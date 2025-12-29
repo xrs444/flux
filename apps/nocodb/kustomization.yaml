@@ -1,0 +1,11 @@
+# NocoDB - No-code database platform
+# Supports Kanidm OIDC authentication (configure via NC_AUTH_JWT_SECRET)
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-nocodb-data.yaml
+  - deployment-nocodb.yaml
+  - service-nocodb.yaml
+  - ingressroute-nocodb.yaml

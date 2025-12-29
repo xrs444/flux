@@ -1,0 +1,14 @@
+# Garage - S3-compatible distributed object storage
+# Provides S3 API for application storage
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - configmap-garage.yaml
+  - pvc-garage-data.yaml
+  - statefulset-garage.yaml
+  - service-garage-rpc.yaml
+  - service-garage-s3.yaml
+  - service-garage-web.yaml
+  - ingressroute-garage.yaml
