@@ -7,6 +7,7 @@
 **Location**: `flux/apps/nocodb/deployment-nocodb.yaml`
 
 **Environment Variables Needed**:
+
 ```yaml
 - name: NC_OIDC_ISSUER
   value: "https://idm.xrs444.net/oauth2/openid/nocodb"
@@ -31,6 +32,7 @@
 **Location**: `flux/apps/paperless-ngx/deployment-paperless-ngx.yaml`
 
 **Environment Variables Needed**:
+
 ```yaml
 - name: PAPERLESS_APPS
   value: "allauth.socialaccount.providers.openid_connect"
@@ -57,6 +59,7 @@
 **Location**: `flux/apps/linkwarden/deployment-linkwarden.yaml`
 
 **Environment Variables Needed**:
+
 ```yaml
 - name: OAUTH_PROVIDER
   value: "generic"
@@ -83,11 +86,13 @@
 **Location**: `flux/apps/jitsi/configmap-jitsi.yaml` and `deployment-jitsi.yaml`
 
 **Configuration Needed**:
+
 - Enable JWT authentication in Jitsi
 - Configure Prosody XMPP server with JWT plugin
 - Set up token verification with Kanidm
 
 **Notes**: Jitsi JWT authentication is more complex and requires:
+
 1. Prosody JWT authentication module
 2. Kanidm to issue JWT tokens
 3. Custom integration work
@@ -112,9 +117,9 @@ In your nix configuration (`nix/` directory), you will need to:
    - client_secret
 
 3. **Configure redirect URIs** in Kanidm for each client:
-   - NocoDB: https://nocodb.xrs444.net/auth/callback
-   - Paperless: https://paperless.xrs444.net/accounts/oidc/kanidm/login/callback/
-   - Linkwarden: https://linkwarden.xrs444.net/api/auth/callback/generic
+   - NocoDB: <https://nocodb.xrs444.net/auth/callback>
+   - Paperless: <https://paperless.xrs444.net/accounts/oidc/kanidm/login/callback/>
+   - Linkwarden: <https://linkwarden.xrs444.net/api/auth/callback/generic>
 
 4. **Set appropriate scopes** for each client:
    - openid
