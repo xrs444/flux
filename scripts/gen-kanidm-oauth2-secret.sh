@@ -30,6 +30,9 @@ if [[ -z "$CLIENT_ID" || -z "$CLIENT_SECRET" ]]; then
   exit 3
 fi
 
+# Generate cookie secret for OAuth2 proxy (32 bytes = 256 bits)
+COOKIE_SECRET=$(openssl rand -base64 32 | tr -d '\n')
+
 # Create a temporary Secret manifest
 TMP_SECRET=$(mktemp)
 cat <<EOF > "$TMP_SECRET"
@@ -42,6 +45,7 @@ type: Opaque
 data:
   client-id: $(printf "%s" "$CLIENT_ID" | base64 | tr -d '\n')
   client-secret: $(printf "%s" "$CLIENT_SECRET" | base64 | tr -d '\n')
+  cookie-secret: $(printf "%s" "$COOKIE_SECRET" | base64 | tr -d '\n')
 EOF
 
 # Seal the secret using kubeseal (must have access to the cluster's sealing key)
