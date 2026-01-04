@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tdarr
+  namespace: tdarr
+  labels:
+    app: tdarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: tdarr
+  template:
+    metadata:
+      labels:
+        app: tdarr
+    spec:
+      containers:
+        - name: tdarr
+          image: ghcr.io/haveagitgat/tdarr:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: web
+              containerPort: 8265
+              protocol: TCP
+            - name: server
+              containerPort: 8266
+              protocol: TCP
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "America/Phoenix"
+            - name: serverIP
+              value: "0.0.0.0"
+            - name: serverPort
+              value: "8266"
+            - name: webUIPort
+              value: "8265"
+          volumeMounts:
+            - name: config
+              mountPath: /app/configs
+            - name: server
+              mountPath: /app/server
+            - name: media-ingest
+              mountPath: /media/ingest
+            - name: movies
+              mountPath: /media/movies
+            - name: tvshows
+              mountPath: /media/tvshows
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              memory: 4Gi
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: tdarr-config
+        - name: server
+          persistentVolumeClaim:
+            claimName: tdarr-server
+        - name: media-ingest
+          persistentVolumeClaim:
+            claimName: tdarr-media-ingest
+        - name: movies
+          persistentVolumeClaim:
+            claimName: jellyfin-media
+        - name: tvshows
+          persistentVolumeClaim:
+            claimName: jellyfin-tvshows

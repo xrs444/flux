@@ -1,0 +1,15 @@
+# Tdarr - Automated Media Library Transcoding
+# Watches folders, processes media files, and organizes/transcodes content
+# Includes distributed processing capabilities
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: tdarr
+resources:
+  - ./namespace.yaml
+  - ./pvc-tdarr-config.yaml
+  - ./pvc-tdarr-server.yaml
+  - ./deployment-tdarr.yaml
+  - ./service-tdarr.yaml
+  - ./ingressroute-tdarr.yaml

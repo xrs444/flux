@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: tdarr-media-ingest-nfs
+  annotations:
+    kustomize.config.k8s.io/behavior: merge
+spec:
+  capacity:
+    storage: 100Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: xsvr1
+    path: /zfs/media/ingest
+  mountOptions:
+    - vers=4.1
+    - hard
+    - intr

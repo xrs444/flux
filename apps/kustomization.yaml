@@ -29,3 +29,4 @@ resources:
   - ./diskover              # File system indexer and search
   - ./linkwarden            # Bookmark and link management
   - ./garage                # S3-compatible object storage
+  - ./tdarr                 # Automated media transcoding and organization

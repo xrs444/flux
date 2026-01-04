@@ -12,3 +12,5 @@ resources:
   - ./pvc-jellyfin-media.yaml
   - ./pv-jellyfin-tvshows.yaml
   - ./pvc-jellyfin-tvshows.yaml
+  - ./pv-tdarr-media-ingest.yaml
+  - ./pvc-tdarr-media-ingest.yaml
