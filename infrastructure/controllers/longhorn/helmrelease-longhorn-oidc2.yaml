@@ -18,7 +18,7 @@ spec:
     fullnameOverride: longhorn-oauth2-proxy
     extraArgs:
       - --provider=oidc
-      - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/x_longhorn
+      - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/oauth2_longhorn
       - --redirect-url=https://longhorn.xrs444.net/oauth2/callback
       - --email-domain=*
       - --upstream=http://longhorn-frontend.longhorn-system.svc.cluster.local:80/
