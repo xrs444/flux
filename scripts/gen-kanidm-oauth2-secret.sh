@@ -53,7 +53,7 @@ type: Opaque
 data:
   client-id: $(printf "%s" "$CLIENT_ID" | base64 | tr -d '\n')
   client-secret: $(printf "%s" "$CLIENT_SECRET" | base64 | tr -d '\n')
-  cookie-secret: $(printf "%s" "$COOKIE_SECRET" | base64 | tr -d '\n')
+  cookie-secret: $COOKIE_SECRET
 EOF
 
 # Seal the secret using kubeseal (must have access to the cluster's sealing key)
