@@ -2,12 +2,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: linkwarden-data
-  namespace: linkwarden
+  name: paperless-consume
+  namespace: paperless-ngx
 spec:
+  storageClassName: longhorn-retain
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
-  storageClassName: longhorn
+  volumeName: pvc-c836662f-1f90-4e6a-ad2f-9d449f7b75fc

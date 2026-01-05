@@ -5,9 +5,10 @@ metadata:
   name: jitsi-config
   namespace: jitsi
 spec:
+  storageClassName: longhorn-retain
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
-  storageClassName: longhorn
+  volumeName: pvc-20a54c08-8e97-478d-9939-183cb168b2a3

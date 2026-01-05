@@ -5,9 +5,10 @@ metadata:
   name: paperless-data
   namespace: paperless-ngx
 spec:
+  storageClassName: longhorn-retain
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
-  storageClassName: longhorn
+  volumeName: pvc-fbc49532-4024-43c9-bc5a-40fa0c780f76

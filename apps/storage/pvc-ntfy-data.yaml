@@ -5,9 +5,10 @@ metadata:
   name: ntfy-data
   namespace: ntfy
 spec:
+  storageClassName: longhorn-retain
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
-  storageClassName: longhorn
+  volumeName: pvc-5c77c9ba-0739-4d30-bf77-cab7a09ed007

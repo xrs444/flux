@@ -5,9 +5,10 @@ metadata:
   name: diskover-data
   namespace: diskover
 spec:
+  storageClassName: longhorn-retain
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 20Gi
-  storageClassName: longhorn
+  volumeName: pvc-f442a0ef-7942-404e-8c2c-4dcbad22d4f7

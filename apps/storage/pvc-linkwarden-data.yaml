@@ -2,12 +2,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nocodb-data
-  namespace: nocodb
+  name: linkwarden-data
+  namespace: linkwarden
 spec:
+  storageClassName: longhorn-retain
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
-  storageClassName: longhorn
+  volumeName: pvc-d5b26804-3d85-4811-82ce-9a46730cadb6

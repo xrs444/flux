@@ -1,11 +1,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: audiobookshelf-metadata
+  name: audiobookshelf-config
   namespace: audiobookshelf
 spec:
+  storageClassName: longhorn-retain
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 5Gi
+  volumeName: pvc-726fbcb7-e31d-4cdb-b2aa-9d3fc54f3069

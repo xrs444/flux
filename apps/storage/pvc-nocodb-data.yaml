@@ -2,12 +2,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-consume
-  namespace: paperless-ngx
+  name: nocodb-data
+  namespace: nocodb
 spec:
+  storageClassName: longhorn-retain
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
-  storageClassName: longhorn
+  volumeName: pvc-95d4ebcb-a3c9-4a98-b0be-15b77efc01e5

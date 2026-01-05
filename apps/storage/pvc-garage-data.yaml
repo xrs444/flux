@@ -5,9 +5,10 @@ metadata:
   name: garage-data
   namespace: garage
 spec:
+  storageClassName: longhorn-retain
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 100Gi
-  storageClassName: longhorn
+  volumeName: pvc-6d5ad2d3-69e9-479b-8f02-4b7dc2f861f0

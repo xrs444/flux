@@ -5,9 +5,10 @@ metadata:
   name: loki-data
   namespace: loki
 spec:
+  storageClassName: longhorn-retain
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 50Gi
-  storageClassName: longhorn
+  volumeName: pvc-ea59a8ea-8672-41a9-9bc0-bf6a07657cea
