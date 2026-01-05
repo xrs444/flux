@@ -18,7 +18,9 @@ data:
     rpc_bind_addr = "[::]:3901"
     rpc_public_addr = "garage-rpc.garage.svc.cluster.local:3901"
     # TODO: Generate secure RPC secret
-    rpc_secret = "change-me-to-32-byte-hex-string"    [s3_api]
+    rpc_secret = "change-me-to-32-byte-hex-string"
+
+    [s3_api]
     s3_region = "garage"
     api_bind_addr = "[::]:3900"
     root_domain = ".s3.xrs444.net"
