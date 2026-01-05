@@ -7,7 +7,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - configmap-jitsi.yaml
-  - pvc-jitsi-config.yaml
   - deployment-jitsi.yaml
   - service-jitsi-web.yaml
   - service-jitsi-jvb.yaml

@@ -8,8 +8,6 @@ kind: Kustomization
 namespace: tdarr
 resources:
   - ./namespace.yaml
-  - ./pvc-tdarr-config.yaml
-  - ./pvc-tdarr-server.yaml
   - ./deployment-tdarr.yaml
   - ./service-tdarr.yaml
   - ./ingressroute-tdarr.yaml
