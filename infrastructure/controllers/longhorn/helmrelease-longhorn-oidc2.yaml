@@ -26,7 +26,25 @@ spec:
       - --code-challenge-method=S256
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
-    config:\n      existingSecret: oauth2-proxy-secret-longhorn
+      - --http-address=0.0.0.0:4180
+    config:
+      existingSecret: oauth2-proxy-secret-longhorn
+    probes:
+      liveness:
+        enabled: true
+        initialDelaySeconds: 30
+        timeoutSeconds: 5
+      readiness:
+        enabled: true
+        initialDelaySeconds: 10
+        timeoutSeconds: 5
+        periodSeconds: 10
+      startup:
+        enabled: true
+        initialDelaySeconds: 0
+        timeoutSeconds: 5
+        periodSeconds: 10
+        failureThreshold: 60
     ingress:
       enabled: false
     service:
