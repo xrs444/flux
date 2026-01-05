@@ -38,10 +38,22 @@ if [[ -z "$CLIENT_SECRET" ]]; then
 fi
 
 # Generate cookie secret for OAuth2 proxy (32 bytes = 256 bits)
-# The cookie secret needs to be base64-encoded for OAuth2 proxy environment variable
-# Generate 32 random bytes, base64-encode them, then base64-encode again for K8s secret
-COOKIE_SECRET_BASE64=$(openssl rand 32 | base64 | tr -d '\n')
-COOKIE_SECRET=$(printf "%s" "$COOKIE_SECRET_BASE64" | base64 | tr -d '\n')
+# OAuth2 proxy accepts the secret as a hex string (64 chars) or base64 string (44 chars).
+# When reading from environment variable, it will NOT decode - it expects the raw secret value.
+# The secret must be exactly 32 bytes when stored. Since K8s secrets are base64-encoded,
+# we need to store the 32 raw bytes, then base64-encode for the K8s secret data field.
+# However, raw bytes cause UTF-8 errors in env vars.
+# Solution: use python or dd to generate exactly 32 bytes, or accept that we need hex/base64.
+#
+# According to OAuth2 Proxy docs: cookie secret can be generated with:
+#   `openssl rand -base64 32 | head -c 32`  (32 chars, NOT 32 bytes!)
+# OR  `openssl rand -hex 16` (32 hex chars = 16 bytes)
+# OR  `openssl rand 32 | base64` (44 chars base64 of 32 bytes)
+#
+# The OAUTH2_PROXY_COOKIE_SECRET environment variable should contain the base64 or hex string.
+# Let's use: openssl rand -base64 32 | head -c 32 (generates a 32-character base64 string)
+COOKIE_SECRET_RAW=$(openssl rand -base64 32 | tr -d '\n=' | head -c 32)
+COOKIE_SECRET=$(printf "%s" "$COOKIE_SECRET_RAW" | base64 | tr -d '\n')
 
 # Create a temporary Secret manifest
 TMP_SECRET=$(mktemp)
