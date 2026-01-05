@@ -13,7 +13,7 @@ spec:
         kind: HelmRepository
         name: longhorn-repo
         namespace: flux-system
-      version: "1.8.x"  # Latest stable as of Jan 2026
+      version: "1.9.3"  # Step 1: Upgrade from 1.8.x to 1.9.x first
   interval: 5m30s
   install:
     createNamespace: true
