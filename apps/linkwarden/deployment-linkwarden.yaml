@@ -33,21 +33,27 @@ spec:
                 postgresql://linkwarden:linkwarden@localhost:5432/linkwarden
             - name: NEXT_PUBLIC_DISABLE_REGISTRATION
               value: "true"
-            # TODO: Configure Kanidm OIDC authentication
-            # - name: OAUTH_PROVIDER
-            #   value: "generic"
-            # - name: OAUTH_ID
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: linkwarden-oidc-secret
-            #       key: client_id
-            # - name: OAUTH_SECRET
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: linkwarden-oidc-secret
-            #       key: client_secret
-            # - name: OAUTH_ISSUER
-            #   value: "https://idm.xrs444.net/oauth2/openid/linkwarden"
+            - name: OAUTH_PROVIDER
+              value: "generic"
+            - name: OAUTH_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-linkwarden
+                  key: client-id
+            - name: OAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-linkwarden
+                  key: client-secret
+            - name: OAUTH_ISSUER
+              value: "https://idm.xrs444.net/oauth2/openid/oauth2_linkwarden"
+            - name: OAUTH_AUTHORIZATION_URL
+              value: "https://idm.xrs444.net/ui/oauth2"
+            - name: OAUTH_TOKEN_URL
+              value: "https://idm.xrs444.net/oauth2/token"
+            - name: OAUTH_USERINFO_URL
+              value: >
+                https://idm.xrs444.net/oauth2/openid/oauth2_linkwarden/userinfo
           volumeMounts:
             - name: linkwarden-data
               mountPath: /data/data

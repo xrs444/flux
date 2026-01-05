@@ -29,19 +29,18 @@ spec:
               value: "https://nocodb.xrs444.net"
             - name: NC_DISABLE_TELE
               value: "true"
-            # TODO: Configure Kanidm OIDC authentication
-            # - name: NC_OIDC_ISSUER
-            #   value: "https://idm.xrs444.net/oauth2/openid/nocodb"
-            # - name: NC_OIDC_CLIENT_ID
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: nocodb-oidc-secret
-            #       key: client_id
-            # - name: NC_OIDC_CLIENT_SECRET
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: nocodb-oidc-secret
-            #       key: client_secret
+            - name: NC_OIDC_ISSUER
+              value: "https://idm.xrs444.net/oauth2/openid/oauth2_nocodb"
+            - name: NC_OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-nocodb
+                  key: client-id
+            - name: NC_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-nocodb
+                  key: client-secret
           volumeMounts:
             - name: nocodb-data
               mountPath: /usr/app/data
