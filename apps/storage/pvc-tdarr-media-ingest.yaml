@@ -1,7 +1,9 @@
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: tdarr-media-ingest
+  namespace: tdarr
   annotations:
     kustomize.config.k8s.io/behavior: merge
 spec:

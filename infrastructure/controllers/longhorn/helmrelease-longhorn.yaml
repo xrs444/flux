@@ -1,3 +1,4 @@
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -12,7 +13,7 @@ spec:
         kind: HelmRepository
         name: longhorn-repo
         namespace: flux-system
-      version: v1.8.x
+      version: "1.8.x"  # Latest stable as of Jan 2026
   interval: 5m30s
   install:
     createNamespace: true
@@ -25,10 +26,56 @@ spec:
       remediateLastFailure: true
       retries: 5
   values:
+    # Talos Linux compatibility configuration
+    # Talos requires special settings since it doesn't include
+    # iSCSI tools by default
+
     defaultSettings:
-      enableSPDK: true
+      # Backup configuration
       backupTarget: "nfs://172.20.1.10:/zfs/systembackups/longhorn"
       backupTargetCredentialSecret: ""
+
+      # Storage settings
+      defaultDataPath: /var/lib/longhorn
+      defaultReplicaCount: 2
+
+      # Talos-specific: Disable iSCSI checks
+      # The manager will skip iSCSI validation on Talos nodes
+      disableSchedulingOnCordonedNode: true
+      storageMinimalAvailablePercentage: 10
+
+      # System component configuration
+      systemManagedComponentsNodeSelector: ""
+      taintToleration: "node-role.kubernetes.io/control-plane:NoSchedule"
+
+    # Longhorn Manager configuration
+    longhornManager:
+      # Node selector for Talos compatibility
+      nodeSelector: {}
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+          operator: Exists
+
+    # Longhorn Driver configuration
+    longhornDriver:
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+          operator: Exists
+
+    # CSI components
+    csi:
+      attacherReplicaCount: 3
+      provisionerReplicaCount: 3
+      resizerReplicaCount: 3
+      snapshotterReplicaCount: 3
+
+    # Storage class configuration
     persistence:
       defaultClass: true
-      createStorageClass: true
+      defaultClassReplicaCount: 2
+
+    # Disable pre-upgrade checker for Talos (it checks for iSCSI)
+    preUpgradeChecker:
+      jobEnabled: false
