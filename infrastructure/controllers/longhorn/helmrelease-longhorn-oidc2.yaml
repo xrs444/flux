@@ -27,6 +27,12 @@ spec:
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
       - --http-address=0.0.0.0:4180
+      - --skip-oidc-discovery=true
+      - --oidc-jwks-url=https://idm.xrs444.net/oauth2/openid/oauth2_longhorn/discovery/keys.jwk
+      - --login-url=https://idm.xrs444.net/ui/oauth2
+      - --redeem-url=https://idm.xrs444.net/oauth2/token
+      - --oidc-email-claim=email
+      - --oidc-groups-claim=groups
     config:
       existingSecret: oauth2-proxy-secret-longhorn
     probes:
