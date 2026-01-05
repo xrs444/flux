@@ -23,15 +23,10 @@ spec:
       - --email-domain=*
       - --upstream=http://longhorn-frontend.longhorn-system.svc.cluster.local:80/
       - --scope=openid email profile groups
-      - --code-challenge-method=S256
-      - --allowed-group=longhorn-admins  # Replace with your Kanidm group name
+      - --allowed-group=longhorn-admins
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
       - --http-address=0.0.0.0:4180
-      - --skip-oidc-discovery=true
-      - --oidc-jwks-url=https://idm.xrs444.net/oauth2/openid/oauth2_longhorn/discovery/keys.jwk
-      - --login-url=https://idm.xrs444.net/ui/oauth2
-      - --redeem-url=https://idm.xrs444.net/oauth2/token
       - --oidc-email-claim=email
       - --oidc-groups-claim=groups
     config:
