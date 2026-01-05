@@ -32,6 +32,11 @@ spec:
           env:
             - name: RUST_LOG
               value: "garage=info"
+            - name: GARAGE_RPC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: garage-rpc-secret
+                  key: rpc_secret
           volumeMounts:
             - name: garage-config
               mountPath: /etc/garage.toml

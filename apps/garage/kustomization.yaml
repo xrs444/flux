@@ -6,6 +6,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - configmap-garage.yaml
+  - sealedsecret-garage-rpc.yaml
   - statefulset-garage.yaml
   - service-garage-rpc.yaml
   - service-garage-s3.yaml
