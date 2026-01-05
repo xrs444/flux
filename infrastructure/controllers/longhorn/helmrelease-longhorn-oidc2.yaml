@@ -26,8 +26,7 @@ spec:
       - --code-challenge-method=S256
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
-    config:
-      existingSecret: oauth2-proxy-sealedsecret-longhorn
+    config:\n      existingSecret: oauth2-proxy-secret-longhorn
     ingress:
       enabled: false
     service:
