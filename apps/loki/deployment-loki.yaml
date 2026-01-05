@@ -20,6 +20,19 @@ spec:
         fsGroup: 10001
         runAsUser: 10001
         runAsNonRoot: true
+      initContainers:
+        - name: fix-permissions
+          image: busybox:latest
+          command: ['sh', '-c']
+          args:
+            - |
+              chown -R 10001:10001 /loki
+              chmod -R 755 /loki
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: loki-data
+              mountPath: /loki
       containers:
         - name: loki
           image: grafana/loki:latest
