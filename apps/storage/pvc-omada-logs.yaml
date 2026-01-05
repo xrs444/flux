@@ -12,4 +12,3 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  volumeName: pvc-1c3e6faa-fdd1-4a55-9439-5f377541875c
