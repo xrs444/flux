@@ -17,9 +17,30 @@ spec:
       labels:
         app: garage
     spec:
+      initContainers:
+        - name: config-init
+          image: busybox:latest
+          command: ['sh', '-c']
+          args:
+            - |
+              envsubst < /config-template/garage.toml > /config/garage.toml
+              cat /config/garage.toml
+          env:
+            - name: GARAGE_RPC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: garage-rpc-secret
+                  key: rpc_secret
+          volumeMounts:
+            - name: garage-config-template
+              mountPath: /config-template
+            - name: garage-config-processed
+              mountPath: /config
       containers:
         - name: garage
           image: dxflrs/garage:v1.0.1
+          command: ['/garage']
+          args: ['-c', '/config/garage.toml', 'server']
           ports:
             - containerPort: 3900
               name: s3-api
@@ -32,15 +53,9 @@ spec:
           env:
             - name: RUST_LOG
               value: "garage=info"
-            - name: GARAGE_RPC_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: garage-rpc-secret
-                  key: rpc_secret
           volumeMounts:
-            - name: garage-config
-              mountPath: /etc/garage.toml
-              subPath: garage.toml
+            - name: garage-config-processed
+              mountPath: /config
             - name: garage-data
               mountPath: /var/lib/garage
           resources:
@@ -67,9 +82,11 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
       volumes:
-        - name: garage-config
+        - name: garage-config-template
           configMap:
             name: garage-config
+        - name: garage-config-processed
+          emptyDir: {}
         - name: garage-data
           persistentVolumeClaim:
             claimName: garage-data
