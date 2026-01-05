@@ -11,3 +11,4 @@ resources:
   - deployment-paperless-ngx.yaml
   - service-paperless-ngx.yaml
   - ingressroute-paperless-ngx.yaml
+  - oauth2-sealedsecret-paperless.yaml

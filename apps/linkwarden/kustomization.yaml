@@ -9,3 +9,4 @@ resources:
   - deployment-linkwarden.yaml
   - service-linkwarden.yaml
   - ingressroute-linkwarden.yaml
+  - oauth2-sealedsecret-linkwarden.yaml

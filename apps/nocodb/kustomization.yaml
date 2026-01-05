@@ -9,3 +9,4 @@ resources:
   - deployment-nocodb.yaml
   - service-nocodb.yaml
   - ingressroute-nocodb.yaml
+  - oauth2-sealedsecret-nocodb.yaml
