@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: garage
-          image: dxflrs/garage:latest
+          image: dxflrs/garage:v1.0.1
           ports:
             - containerPort: 3900
               name: s3-api
