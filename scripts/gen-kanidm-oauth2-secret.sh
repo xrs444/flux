@@ -6,6 +6,8 @@
 set -euo pipefail
 
 KANIDM_CLI="kanidm"
+KANIDM_URL="${KANIDM_URL:-https://idm.xrs444.net}"
+KANIDM_USER="${KANIDM_USER:-idm_admin}"
 APP_NAME="${1:-}"
 NAMESPACE="${2:-default}"
 SECRET_NAME="${3:-oauth2-secret-$APP_NAME}"
@@ -16,17 +18,22 @@ if [[ -z "$APP_NAME" ]]; then
 fi
 
 # Fetch client credentials from kanidm (requires kanidm CLI to be authenticated)
-CLIENT_JSON="$($KANIDM_CLI client get "$APP_NAME" --json 2>/dev/null)"
+CLIENT_JSON="$($KANIDM_CLI --url "$KANIDM_URL" system oauth2 get "$APP_NAME" --name "$KANIDM_USER" --output json 2>/dev/null)"
 if [[ -z "$CLIENT_JSON" ]]; then
   echo "Error: Could not fetch client details for '$APP_NAME' from kanidm." >&2
   exit 2
 fi
 
-CLIENT_ID=$(echo "$CLIENT_JSON" | jq -r '.uuid // .id // .client_id // .clientId // .client_id')
-CLIENT_SECRET=$(echo "$CLIENT_JSON" | jq -r '.secret // .client_secret // .clientSecret // .client_secret')
+CLIENT_ID=$(echo "$CLIENT_JSON" | jq -r '.attrs.uuid[0] // .uuid // empty')
+if [[ -z "$CLIENT_ID" ]]; then
+  echo "Error: Could not extract client_id (uuid) from kanidm response." >&2
+  exit 3
+fi
 
-if [[ -z "$CLIENT_ID" || -z "$CLIENT_SECRET" ]]; then
-  echo "Error: Missing client_id or client_secret in kanidm response." >&2
+# Get the basic secret separately
+CLIENT_SECRET="$($KANIDM_CLI --url "$KANIDM_URL" system oauth2 show-basic-secret "$APP_NAME" --name "$KANIDM_USER" 2>/dev/null | grep -v '^$' | tail -1)"
+if [[ -z "$CLIENT_SECRET" ]]; then
+  echo "Error: Could not fetch client_secret from kanidm." >&2
   exit 3
 fi
 
@@ -55,7 +62,7 @@ if ! command -v kubeseal >/dev/null 2>&1; then
   exit 4
 fi
 
-kubeseal --format yaml < "$TMP_SECRET"
+kubeseal --format yaml --controller-name sealed-secrets --controller-namespace sealed-secrets < "$TMP_SECRET"
 
 rm -f "$TMP_SECRET"
 
