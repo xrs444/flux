@@ -19,11 +19,12 @@ spec:
     spec:
       initContainers:
         - name: config-init
-          image: busybox:latest
+          image: bhgedigital/envsubst:latest
           command: ['sh', '-c']
           args:
             - |
               envsubst < /config-template/garage.toml > /config/garage.toml
+              echo "Processed config:"
               cat /config/garage.toml
           env:
             - name: GARAGE_RPC_SECRET
