@@ -22,6 +22,10 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /usr/local/bin/python3
+          args:
+            - /crafty/main.py
           ports:
             - name: web
               containerPort: {{ .Values.service.ports.web.targetPort }}
