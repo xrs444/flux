@@ -4,7 +4,6 @@ metadata:
   name: longhorn-oauth2-proxy
   namespace: longhorn-system
 spec:
-  suspend: true
   chart:
     spec:
       chart: oauth2-proxy
