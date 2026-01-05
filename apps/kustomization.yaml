@@ -7,7 +7,6 @@ kind: Kustomization
 
 resources:
   - ./helmrepositories      # External Helm chart repositories
-  - ./storage               # Storage class configurations
   - ./podinfo               # Demo app for testing
   - ./metrics-server        # Cluster-wide resource metrics
   - ./lubelogger            # Vehicle maintenance tracking
@@ -31,3 +30,4 @@ resources:
   - ./garage                # S3-compatible object storage
   - ./tdarr                 # Automated media transcoding and organization
   - ./dashy                 # Unified dashboard for all services
+  - ./storage               # Storage PVCs (applied last after namespaces exist)
