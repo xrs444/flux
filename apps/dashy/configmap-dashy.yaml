@@ -1,0 +1,244 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dashy-config
+  namespace: dashy
+data:
+  conf.yml: |
+    pageInfo:
+      title: HomeProd Dashboard
+      description: Central dashboard for all HomeProd services
+      navLinks:
+        - title: Nix GitHub
+          path: https://github.com/xrs444/nix
+        - title: Flux GitHub
+          path: https://github.com/xrs444/flux
+        - title: Traefik Dashboard
+          path: https://traefik.xrs444.net
+        - title: Longhorn Dashboard
+          path: https://longhorn.xrs444.net
+      footerText: 'HomeProd K8s Cluster'
+
+    appConfig:
+      theme: nord-frost
+      layout: auto
+      iconSize: medium
+      language: en
+      statusCheck: true
+      statusCheckInterval: 300
+      faviconApi: local
+      routingMode: history
+      enableMultiTasking: false
+      webSearch:
+        disableWebSearch: false
+        searchEngine: duckduckgo
+      hideComponents:
+        hideHeading: false
+        hideNav: false
+        hideSearch: false
+        hideSettings: false
+        hideFooter: false
+
+    sections:
+      - name: Media Services
+        icon: fas fa-photo-video
+        displayData:
+          collapsed: false
+          rows: 2
+        items:
+          - title: Jellyfin
+            description: Media streaming server
+            icon: hl-jellyfin
+            url: https://jellyfin.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 0_1_jellyfin
+
+          - title: Audiobookshelf
+            description: Audiobook and podcast server
+            icon: hl-audiobookshelf
+            url: https://audiobookshelf.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 0_2_audiobookshelf
+
+          - title: Tdarr
+            description: Media transcoding automation
+            icon: hl-tdarr
+            url: https://tdarr.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 0_3_tdarr
+
+      - name: Productivity & Organisation
+        icon: fas fa-tasks
+        displayData:
+          collapsed: false
+          rows: 2
+        items:
+          - title: Mealie
+            description: Recipe management
+            icon: hl-mealie
+            url: https://mealie.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 1_1_mealie
+
+          - title: Paperless-NGX
+            description: Document management
+            icon: hl-paperless
+            url: https://paperless.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 1_2_paperless
+
+          - title: NocoDB
+            description: No-code database platform
+            icon: hl-nocodb
+            url: https://nocodb.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 1_3_nocodb
+
+          - title: Linkwarden
+            description: Bookmark management
+            icon: hl-linkwarden
+            url: https://linkwarden.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 1_4_linkwarden
+
+          - title: n8n
+            description: Workflow automation
+            icon: hl-n8n
+            url: https://n8n.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 1_5_n8n
+
+      - name: Development & Tools
+        icon: fas fa-code
+        displayData:
+          collapsed: false
+          rows: 2
+        items:
+          - title: Atuin
+            description: Shell history sync
+            icon: fas fa-terminal
+            url: https://atuin.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 2_1_atuin
+
+          - title: Garage
+            description: S3-compatible storage
+            icon: fas fa-warehouse
+            url: https://garage.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 2_2_garage
+
+          - title: Diskover
+            description: File system indexer
+            icon: fas fa-hdd
+            url: https://diskover.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 2_3_diskover
+
+      - name: Communication & Collaboration
+        icon: fas fa-comments
+        displayData:
+          collapsed: false
+          rows: 1
+        items:
+          - title: Jitsi
+            description: Video conferencing
+            icon: hl-jitsi
+            url: https://jitsi.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 3_1_jitsi
+
+          - title: Ntfy
+            description: Push notifications
+            icon: fas fa-bell
+            url: https://ntfy.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 3_2_ntfy
+
+      - name: Infrastructure & Network
+        icon: fas fa-network-wired
+        displayData:
+          collapsed: false
+          rows: 2
+        items:
+          - title: FreePBX
+            description: VoIP PBX system
+            icon: fas fa-phone
+            url: https://freepbx.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_1_freepbx
+
+          - title: Omada Controller
+            description: Network management
+            icon: hl-omada
+            url: https://omada.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_2_omada
+
+          - title: Traefik Dashboard
+            description: Ingress controller
+            icon: hl-traefik
+            url: https://traefik.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_3_traefik
+
+          - title: Longhorn Dashboard
+            description: Storage management
+            icon: hl-longhorn
+            url: https://longhorn.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_4_longhorn
+
+      - name: Gaming & Entertainment
+        icon: fas fa-gamepad
+        displayData:
+          collapsed: false
+          rows: 1
+        items:
+          - title: CraftyController
+            description: Minecraft server management
+            icon: hl-minecraft
+            url: https://crafty.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 5_1_craftycontroller
+
+      - name: Personal & Hobbies
+        icon: fas fa-user
+        displayData:
+          collapsed: false
+          rows: 1
+        items:
+          - title: LubeLogger
+            description: Vehicle maintenance tracking
+            icon: fas fa-car
+            url: https://lubelogger.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 6_1_lubelogger
+
+          - title: Manyfold
+            description: 3D print file manager
+            icon: fas fa-cube
+            url: https://manyfold.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 6_2_manyfold

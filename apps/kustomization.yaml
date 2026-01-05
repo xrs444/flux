@@ -30,3 +30,4 @@ resources:
   - ./linkwarden            # Bookmark and link management
   - ./garage                # S3-compatible object storage
   - ./tdarr                 # Automated media transcoding and organization
+  - ./dashy                 # Unified dashboard for all services

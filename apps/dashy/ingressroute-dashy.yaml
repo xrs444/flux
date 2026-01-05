@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dashy
+  namespace: dashy
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`home.xrs444.net`)
+      kind: Rule
+      services:
+        - name: dashy
+          port: 8080
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net
