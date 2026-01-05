@@ -38,10 +38,8 @@ if [[ -z "$CLIENT_SECRET" ]]; then
 fi
 
 # Generate cookie secret for OAuth2 proxy (32 bytes = 256 bits)
-# OAuth2 proxy expects a 32-byte value, encoded as hex (64 chars) or base64 (44 chars)
-# Using hex for clarity
-COOKIE_SECRET_RAW=$(openssl rand -hex 32 | tr -d '\n')
-COOKIE_SECRET=$(printf "%s" "$COOKIE_SECRET_RAW" | base64 | tr -d '\n')
+# OAuth2 proxy expects exactly 32 raw bytes, base64-encoded for K8s secret storage
+COOKIE_SECRET=$(openssl rand 32 | base64 | tr -d '\n')
 
 # Create a temporary Secret manifest
 TMP_SECRET=$(mktemp)
