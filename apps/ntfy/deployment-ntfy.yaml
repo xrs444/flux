@@ -50,6 +50,8 @@ spec:
           command:
             - ntfy
             - serve
+            - --config
+            - /etc/ntfy/server.yml
           ports:
             - containerPort: 80
               name: http
@@ -71,6 +73,8 @@ spec:
             - name: ntfy-data
               mountPath: /var/lib/ntfy
               subPath: lib
+            - name: config
+              mountPath: /etc/ntfy
           resources:
             requests:
               cpu: 50m
@@ -98,3 +102,6 @@ spec:
         - name: ntfy-data
           persistentVolumeClaim:
             claimName: ntfy-data
+        - name: config
+          configMap:
+            name: ntfy-config

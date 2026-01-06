@@ -5,6 +5,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
+  - configmap-ntfy.yaml
   - deployment-ntfy.yaml
   - service-ntfy.yaml
   - ingressroute-ntfy.yaml

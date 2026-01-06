@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ntfy-config
+  namespace: ntfy
+data:
+  server.yml: |
+    # Base configuration
+    base-url: https://ntfy.xrs444.net
+    cache-file: /var/cache/ntfy/cache.db
+    auth-file: /var/lib/ntfy/user.db
+    auth-default-access: deny-all
+    behind-proxy: true
+
+    # Access Control List
+    # Format: topic permissions username
+    # Permissions: deny-all
+    acl:
+      # Monitoring topics
+      - topic: "alerts"
+        permission: "write-only"
+        username: "prometheus"
+      - topic: "alerts"
+        permission: "write-only"
+        username: "loki"
+      - topic: "alerts"
+        permission: "read-only"
+        username: "xrs444"
+      - topic: "alerts"
+        permission: "read-only"
+        username: "dog"
+
+      # Home Assistant
+      - topic: "homeassistant"
+        permission: "write-only"
+        username: "hass"
+      - topic: "homeassistant"
+        permission: "read-only"
+        username: "xrs444"
+      - topic: "homeassistant"
+        permission: "read-only"
+        username: "dog"
+
+      # N8N workflows
+      - topic: "workflows"
+        permission: "write-only"
+        username: "n8n"
+      - topic: "workflows"
+        permission: "read-only"
+        username: "xrs444"
+
+      # Paperless
+      - topic: "documents"
+        permission: "write-only"
+        username: "paperless"
+      - topic: "documents"
+        permission: "read-only"
+        username: "xrs444"
+      - topic: "documents"
+        permission: "read-only"
+        username: "dog"
+
+      # Immich
+      - topic: "photos"
+        permission: "write-only"
+        username: "immich"
+      - topic: "photos"
+        permission: "read-only"
+        username: "xrs444"
+      - topic: "photos"
+        permission: "read-only"
+        username: "dog"
+
+      # Admin has full access to everything
+      - topic: "*"
+        permission: "read-write"
+        username: "dog"
