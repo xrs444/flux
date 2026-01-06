@@ -8,3 +8,4 @@ resources:
   - deployment-ntfy.yaml
   - service-ntfy.yaml
   - ingressroute-ntfy.yaml
+  - sealedsecret-ntfy-users.yaml

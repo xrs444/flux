@@ -16,6 +16,34 @@ spec:
       labels:
         app: ntfy
     spec:
+      initContainers:
+        - name: setup-users
+          image: binwiederhier/ntfy:latest
+          command:
+            - sh
+            - -c
+            - |
+              # Create users from environment variables
+              # Format: USERNAME:PASSWORD (one per line in NTFY_USERS)
+              echo "$NTFY_USERS" | while IFS=: read -r username password; do
+                if [ -n "$username" ] && [ -n "$password" ]; then
+                  echo "Creating user: $username"
+                  ntfy user add --ignore-exists "$username"
+                  echo "$password" | ntfy user change-pass "$username"
+                fi
+              done
+          env:
+            - name: NTFY_AUTH_FILE
+              value: "/var/lib/ntfy/user.db"
+            - name: NTFY_USERS
+              valueFrom:
+                secretKeyRef:
+                  name: ntfy-users
+                  key: users
+          volumeMounts:
+            - name: ntfy-data
+              mountPath: /var/lib/ntfy
+              subPath: lib
       containers:
         - name: ntfy
           image: binwiederhier/ntfy:latest
