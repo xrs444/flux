@@ -102,3 +102,10 @@ spec:
     bpf:
       masquerade: true
     enableIPv4Masquerade: true
+    ipMasqAgent:
+      enabled: false
+    # Masquerade all traffic EXCEPT these CIDRs
+    # This ensures pod traffic to 172.20.x.x uses node IP as source
+    nonMasqueradeCIDRs:
+      - 10.244.0.0/16     # Pod network
+      - 172.21.0.0/16     # LoadBalancer IPs
