@@ -34,6 +34,7 @@ spec:
       - --redeem-url=https://idm.xrs444.net/oauth2/token
       - --profile-url=https://idm.xrs444.net/oauth2/openid/oauth2_longhorn/userinfo
       - --login-url=https://idm.xrs444.net/ui/oauth2
+      - --force-code-challenge-method=""
     config:
       existingSecret: oauth2-proxy-secret-longhorn
     probes:
