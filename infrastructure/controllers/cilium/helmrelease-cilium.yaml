@@ -99,9 +99,5 @@ spec:
     autoDirectNodeRoutes: true
     ipv4NativeRoutingCIDR: "10.244.0.0/16"
     directRoutingSkipUnreachable: true
-    bpfMasquerade: false
-    enableIPMasqAgent: true
-    ipMasqAgent:
-      configMap:
-        name: ip-masq-agent-config
-        namespace: kube-system
+    bpfMasquerade: true
+    enableIPv4Masquerade: true
