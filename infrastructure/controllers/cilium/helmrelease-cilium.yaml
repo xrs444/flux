@@ -100,3 +100,10 @@ spec:
     ipv4NativeRoutingCIDR: "10.244.0.0/16"
     directRoutingSkipUnreachable: true
     bpfMasquerade: true
+    ipMasqAgent:
+      enabled: true
+      config:
+        nonMasqueradeCIDRs:
+          - 10.244.0.0/16
+          - 172.21.0.0/16
+        masqLinkLocal: false
