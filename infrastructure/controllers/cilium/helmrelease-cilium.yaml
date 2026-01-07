@@ -99,6 +99,7 @@ spec:
     autoDirectNodeRoutes: true
     ipv4NativeRoutingCIDR: "10.244.0.0/16"
     directRoutingSkipUnreachable: true
-    bpfMasquerade: true
+    bpf:
+      masquerade: true
     enableIPv4Masquerade: true
     egressMasqueradeInterfaces: enp5s0
