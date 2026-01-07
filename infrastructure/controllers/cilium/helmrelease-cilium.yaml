@@ -101,3 +101,4 @@ spec:
     directRoutingSkipUnreachable: true
     bpfMasquerade: true
     enableIPv4Masquerade: true
+    egressMasqueradeInterfaces: enp5s0
