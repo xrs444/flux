@@ -102,4 +102,3 @@ spec:
     bpf:
       masquerade: true
     enableIPv4Masquerade: true
-    egressMasqueradeInterfaces: enp5s0
