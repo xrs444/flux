@@ -29,7 +29,10 @@ spec:
       - --http-address=0.0.0.0:4180
       - --oidc-email-claim=email
       - --oidc-groups-claim=groups
-      - --skip-oidc-discovery=false
+      - --skip-oidc-discovery=true
+      - --oidc-jwks-url=https://idm.xrs444.net/oauth2/openid/oauth2_longhorn/discovery/keys
+      - --login-url=https://idm.xrs444.net/ui/oauth2
+      - --redeem-url=https://idm.xrs444.net/oauth2/token
     config:
       existingSecret: oauth2-proxy-secret-longhorn
     probes:
