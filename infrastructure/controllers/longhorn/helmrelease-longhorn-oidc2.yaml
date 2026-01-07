@@ -31,7 +31,7 @@ spec:
       - --oidc-groups-claim=groups
       - --skip-oidc-discovery=true
       - --oidc-jwks-url=https://idm.xrs444.net/oauth2/openid/oauth2_longhorn/discovery/keys
-      - --login-url=https://idm.xrs444.net/ui/oauth2
+      - --login-url=https://idm.xrs444.net/oauth2/openid/oauth2_longhorn/authorize
       - --redeem-url=https://idm.xrs444.net/oauth2/openid/oauth2_longhorn/token
     config:
       existingSecret: oauth2-proxy-secret-longhorn
