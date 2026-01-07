@@ -57,3 +57,5 @@ spec:
     service:
       type: ClusterIP
       portNumber: 4180
+    hostNetwork: true
+    dnsPolicy: ClusterFirstWithHostNet
