@@ -39,6 +39,8 @@ spec:
                 secretKeyRef:
                   name: oauth2-secret-nocodb
                   key: client-secret
+            - name: NC_OIDC_BUTTON_TEXT
+              value: "Sign in with Kanidm"
           volumeMounts:
             - name: nocodb-data
               mountPath: /usr/app/data
