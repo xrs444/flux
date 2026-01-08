@@ -16,3 +16,5 @@ spec:
   timeout: 5m
   releaseName: cert-manager
   values:
+    global:
+      revisionHistoryLimit: 3

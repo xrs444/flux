@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/version: "10.10.6"
     app.kubernetes.io/managed-by: Helm
 spec:
+  revisionHistoryLimit: 3
   strategy:
     type: RollingUpdate
   replicas: 1

@@ -6,6 +6,7 @@ metadata:
   labels:
     app: tdarr
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   strategy:
     type: Recreate

@@ -32,6 +32,10 @@ spec:
     # upgradeCompatibility set to 1.17 for smooth upgrade to 1.18
     # This minimizes datapath disruption during the upgrade
     upgradeCompatibility: "1.17"
+
+    operator:
+      revisionHistoryLimit: 3
+
     identityAllocationMode: crd
     enablePolicy: default
     policyAuditMode: true

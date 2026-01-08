@@ -15,6 +15,7 @@ spec:
   interval: 5m
   values:
     replicaCount: 1
+    revisionHistoryLimit: 3
     config:
       existingSecret: oauth2-proxy-creds
     extraArgs:
@@ -29,7 +30,7 @@ spec:
       - --code-challenge-method=S256
       - --skip-provider-button=false
       - --set-xauthrequest=true
- 
+
     service:
       enabled: true
       type: ClusterIP
