@@ -33,6 +33,8 @@ spec:
               value: "admin"
             - name: CUPS_WEBINTERFACE
               value: "yes"
+            - name: CUPS_REMOTE_ADMIN
+              value: "yes"
           volumeMounts:
             - name: cups-data
               mountPath: /config
