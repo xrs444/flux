@@ -23,7 +23,7 @@ resources:
   - ./loki                  # Log aggregation system
   - ./nocodb                # No-code database platform
   - ./paperless-ngx         # Document management system
-  - ./papercut-ng           # Print management system (free version)
+  - ./cups                  # Print server with web management
   - ./jitsi                 # Video conferencing platform
   - ./ntfy                  # Push notification service
   - ./diskover              # File system indexer and search
