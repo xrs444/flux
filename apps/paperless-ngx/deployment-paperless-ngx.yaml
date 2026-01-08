@@ -43,8 +43,8 @@ spec:
                       "client_id": "$(OIDC_CLIENT_ID)",
                       "secret": "$(OIDC_CLIENT_SECRET)",
                       "settings": {
-                        "server_url": >
-                          https://idm.xrs444.net/oauth2/openid/oauth2_paperless/.well-known/openid-configuration
+                        "server_url":
+                          "https://idm.xrs444.net/oauth2/openid/oauth2_paperless/.well-known/openid-configuration"
                       }
                     }]
                   }
