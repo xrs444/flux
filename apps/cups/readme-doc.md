@@ -36,7 +36,7 @@ CUPS (Common Unix Printing System) is the standard open-source printing system f
 
 ## Configuration
 
-The deployment uses the `olbat/cupsd` Docker image which provides a containerized CUPS server.
+The deployment uses the `ydkn/cups` Docker image which provides a containerized CUPS server with web interface enabled.
 
 ### Adding Printers
 
@@ -99,5 +99,5 @@ lpadmin -p printer-name -E -v ipp://cups.xrs444.net:631/printers/printer-name
 
 ## Links
 
-- CUPS Documentation: https://www.cups.org/documentation.html
-- Container Image: https://hub.docker.com/r/olbat/cupsd
+- CUPS Documentation: <https://www.cups.org/documentation.html>
+- Container Image: <https://hub.docker.com/r/ydkn/cups>

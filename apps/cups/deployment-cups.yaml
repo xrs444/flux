@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: cups
-          image: olbat/cupsd:latest
+          image: ydkn/cups:latest
           ports:
             - containerPort: 631
               name: http
@@ -27,20 +27,19 @@ spec:
           env:
             - name: TZ
               value: "America/Phoenix"
-            - name: CUPSADMIN
+            - name: CUPS_ADMIN_USER
               value: "admin"
-            - name: CUPSPASSWORD
+            - name: CUPS_ADMIN_PASSWORD
               value: "admin"
+            - name: CUPS_WEBINTERFACE
+              value: "yes"
           volumeMounts:
             - name: cups-data
-              mountPath: /etc/cups
+              mountPath: /config
               subPath: config
             - name: cups-data
-              mountPath: /var/log/cups
-              subPath: logs
-            - name: cups-data
-              mountPath: /var/spool/cups
-              subPath: spool
+              mountPath: /services
+              subPath: services
           resources:
             requests:
               cpu: 100m
