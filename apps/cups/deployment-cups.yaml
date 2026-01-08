@@ -37,9 +37,13 @@ spec:
               value: "yes"
           volumeMounts:
             - name: cups-data
-              mountPath: /var/spool/cups
+              mountPath: /config
+              subPath: config
+            - name: cups-data
+              mountPath: /services
+              subPath: services
             - name: cupsd-conf
-              mountPath: /etc/cups/cupsd.conf
+              mountPath: /config/cupsd.conf
               subPath: cupsd.conf
           resources:
             requests:
