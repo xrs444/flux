@@ -9,3 +9,4 @@ resources:
   - deployment-cups.yaml
   - service-cups.yaml
   - ingressroute-cups.yaml
+  - cupsd-conf-configmap.yaml

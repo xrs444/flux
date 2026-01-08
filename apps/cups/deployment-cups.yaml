@@ -42,6 +42,9 @@ spec:
             - name: cups-data
               mountPath: /services
               subPath: services
+            - name: cupsd-conf
+              mountPath: /config/cupsd.conf
+              subPath: cupsd.conf
           resources:
             requests:
               cpu: 100m
@@ -69,3 +72,9 @@ spec:
         - name: cups-data
           persistentVolumeClaim:
             claimName: cups-data
+        - name: cupsd-conf
+          configMap:
+            name: cupsd-conf
+            items:
+              - key: cupsd.conf
+                path: cupsd.conf
