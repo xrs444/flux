@@ -1,0 +1,11 @@
+# PaperCut NG - Print management system
+# Free version of PaperCut for print tracking and management
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-papercut-ng-data.yaml
+  - deployment-papercut-ng.yaml
+  - service-papercut-ng.yaml
+  - ingressroute-papercut-ng.yaml

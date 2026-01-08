@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: papercut-ng
+  namespace: papercut-ng
+  labels:
+    app: papercut-ng
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: papercut-ng
+  template:
+    metadata:
+      labels:
+        app: papercut-ng
+    spec:
+      containers:
+        - name: papercut-ng
+          image: papercut/papercut-ng:latest
+          ports:
+            - containerPort: 9191
+              name: http
+            - containerPort: 9192
+              name: https
+          env:
+            - name: TZ
+              value: "America/Phoenix"
+          volumeMounts:
+            - name: papercut-ng-data
+              mountPath: /app/data
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: papercut-ng-data
+          persistentVolumeClaim:
+            claimName: papercut-ng-data

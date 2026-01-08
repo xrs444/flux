@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: papercut-ng
+  namespace: papercut-ng
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`papercut.xrs444.net`)
+      kind: Rule
+      services:
+        - name: papercut-ng
+          port: 9191
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net
