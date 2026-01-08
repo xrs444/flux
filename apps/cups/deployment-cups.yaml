@@ -38,10 +38,8 @@ spec:
           volumeMounts:
             - name: cups-data
               mountPath: /config
-              subPath: config
             - name: cups-data
               mountPath: /services
-              subPath: services
             - name: cupsd-conf
               mountPath: /config/cupsd.conf
               subPath: cupsd.conf
