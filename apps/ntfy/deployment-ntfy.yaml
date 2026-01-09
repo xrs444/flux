@@ -25,12 +25,16 @@ spec:
             - -c
             - |
               # Create users from environment variables
-              # Format: USERNAME:PASSWORD (one per line in NTFY_USERS)
-              echo "$NTFY_USERS" | while IFS=: read -r username password; do
+              # Format: USERNAME: PASSWORD (one per line in NTFY_USERS)
+              echo "$NTFY_USERS" | while read -r line; do
+                username=$(echo "$line" | cut -d':' -f1 | tr -d ' ')
+                password=$(echo "$line" | cut -d':' -f2- | sed 's/^ *//')
                 if [ -n "$username" ] && [ -n "$password" ]; then
                   echo "Creating user: $username"
                   ntfy user add --ignore-exists "$username"
-                  ntfy user change-pass --password="$password" "$username"
+                  # Use NTFY_PASSWORD environment variable as documented
+                  export NTFY_PASSWORD="$password"
+                  ntfy user change-pass "$username"
                 fi
               done
           env:
