@@ -30,7 +30,7 @@ spec:
                 if [ -n "$username" ] && [ -n "$password" ]; then
                   echo "Creating user: $username"
                   ntfy user add --ignore-exists "$username"
-                  echo "$password" | ntfy user change-pass "$username"
+                  ntfy user change-pass --password="$password" "$username"
                 fi
               done
           env:
