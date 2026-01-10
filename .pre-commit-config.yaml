@@ -12,6 +12,7 @@ repos:
     hooks:
       - id: yamllint
         files: ".*\\.ya?ml$"
+        exclude: "charts/.*/templates/.*\\.ya?ml$"
 
   - repo: local
     hooks:

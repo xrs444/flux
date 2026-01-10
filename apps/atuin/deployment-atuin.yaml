@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,7 +53,10 @@ spec:
               value: "0.0.0.0"
             - name: ATUIN_PORT
               value: "8888"
-            # Add other Atuin env vars as needed (e.g., DB connection)
+            - name: ATUIN_DB_URI
+              value: "sqlite:///data/atuin.db"
+            - name: ATUIN_OPEN_REGISTRATION
+              value: "true"
           volumeMounts:
             - name: atuin-data
               mountPath: /data
