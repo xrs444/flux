@@ -5,7 +5,7 @@ metadata:
   name: nfs-server
   namespace: nfs-mounter
   annotations:
-    io.cilium/lb-ipam-ips: "172.21.0.10"
+    io.cilium/lb-ipam-ips: "172.21.0.11"
 spec:
   type: LoadBalancer
   ports:
