@@ -13,8 +13,6 @@ spec:
       labels:
         app: nfs-mounter
     spec:
-      hostNetwork: true
-      hostPID: true
       containers:
         - name: nfs-mounter
           image: alpine:latest
@@ -27,16 +25,16 @@ spec:
               mkdir -p /host/var/mnt/nfs/tvshows
               mkdir -p /host/var/mnt/nfs/longhorn
               mount -t nfs -o nfsvers=4 \
-                172.20.1.10:/export/zfs/media/movies \
+                172.21.0.10:/export/zfs/media/movies \
                 /host/var/mnt/nfs/movies || echo "Failed to mount movies"
               mount -t nfs -o nfsvers=4 \
-                172.20.1.10:/export/zfs/media/tvshows \
+                172.21.0.10:/export/zfs/media/tvshows \
                 /host/var/mnt/nfs/tvshows || echo "Failed to mount tvshows"
               mount -t nfs -o nfsvers=4 \
-                172.20.1.10:/export/zfs/systembackups/longhorn \
+                172.21.0.10:/export/zfs/systembackups/longhorn \
                 /host/var/mnt/nfs/longhorn || \
                 echo "Failed to mount longhorn"
-              mount | grep 172.20.1.10
+              mount | grep 172.21.0.10
               sleep infinity
           securityContext:
             privileged: true

@@ -39,5 +39,5 @@ spec:
     auth:
       kanidm:
         enabled: true
-        url: "https://auth.xrs444.net"
+        url: "https://idm.xrs444.net"
         realm: "xrs444.net"
