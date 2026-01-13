@@ -7,10 +7,10 @@ metadata:
     kustomize.config.k8s.io/behavior: merge
 spec:
   capacity:
-    storage: 100Ti  # Set this to a large value since NFS capacity is variable
+    storage: 100Ti
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /var/mnt/nfs/movies
-    type: Directory
+  nfs:
+    server: xsvr1
+    path: /zfs/media/movies

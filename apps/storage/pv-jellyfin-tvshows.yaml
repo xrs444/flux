@@ -11,6 +11,6 @@ spec:
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /var/mnt/nfs/tvshows
-    type: Directory
+  nfs:
+    server: xsvr1
+    path: /zfs/media/tvshows
