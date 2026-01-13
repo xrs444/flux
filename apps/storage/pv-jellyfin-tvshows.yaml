@@ -12,5 +12,5 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: /mnt/nfs/tvshows
+    path: /var/mnt/nfs/tvshows
     type: Directory

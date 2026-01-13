@@ -22,16 +22,16 @@ spec:
           args:
             - -c
             - |
-              mkdir -p /host/mnt/nfs/{movies,tvshows,longhorn}
+              mkdir -p /host/var/mnt/nfs/{movies,tvshows,longhorn}
               mount -t nfs -o nfsvers=4 \
                 172.20.1.10:/export/zfs/media/movies \
-                /host/mnt/nfs/movies || true
+                /host/var/mnt/nfs/movies || true
               mount -t nfs -o nfsvers=4 \
                 172.20.1.10:/export/zfs/media/tvshows \
-                /host/mnt/nfs/tvshows || true
+                /host/var/mnt/nfs/tvshows || true
               mount -t nfs -o nfsvers=4 \
                 172.20.1.10:/export/zfs/systembackups/longhorn \
-                /host/mnt/nfs/longhorn || true
+                /host/var/mnt/nfs/longhorn || true
               sleep infinity
           securityContext:
             privileged: true
