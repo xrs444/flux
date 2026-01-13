@@ -34,22 +34,6 @@ spec:
               value: "redis://localhost:6379"
             - name: PAPERLESS_APPS
               value: "allauth.socialaccount.providers.openid_connect"
-            - name: PAPERLESS_SOCIALACCOUNT_PROVIDERS
-              value: |
-                {
-                  "openid_connect": {
-                    "APPS": [{
-                      "provider_id": "kanidm",
-                      "name": "Kanidm",
-                      "client_id": "$(OIDC_CLIENT_ID)",
-                      "secret": "$(OIDC_CLIENT_SECRET)",
-                      "settings": {
-                        "server_url":
-                          "https://idm.xrs444.net/oauth2/openid/oauth2_paperless/.well-known/openid-configuration"
-                      }
-                    }]
-                  }
-                }
             - name: OIDC_CLIENT_ID
               valueFrom:
                 secretKeyRef:
@@ -60,6 +44,23 @@ spec:
                 secretKeyRef:
                   name: oauth2-secret-paperless
                   key: client-secret
+            - name: PAPERLESS_SOCIALACCOUNT_PROVIDERS
+              value: |
+                {
+                  "openid_connect": {
+                    "APPS": [{
+                      "provider_id": "kanidm",
+                      "name": "Kanidm",
+                      "client_id": "oauth2_paperless",
+                      "secret":
+                        "6b25d8775f430c2affebb739420e49c5e3ae635871fd7b3dda68f5f8d0892181",
+                      "settings": {
+                        "server_url":
+                          "https://idm.xrs444.net/oauth2/openid/oauth2_paperless/.well-known/openid-configuration"
+                      }
+                    }]
+                  }
+                }
             - name: PAPERLESS_SECRET_KEY
               value: "change-me-to-random-string"
           volumeMounts:
