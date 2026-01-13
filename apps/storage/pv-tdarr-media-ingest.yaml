@@ -11,7 +11,7 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   nfs:
-    server: xsvr1
+    server: 172.20.3.201
     path: /zfs/media/ingest
   mountOptions:
     - vers=4.1
