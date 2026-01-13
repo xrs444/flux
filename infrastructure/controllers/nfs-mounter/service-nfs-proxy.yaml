@@ -6,7 +6,6 @@ metadata:
   namespace: nfs-mounter
 spec:
   type: ClusterIP
-  clusterIP: None
   ports:
     - name: nfs
       port: 2049
