@@ -112,4 +112,5 @@ spec:
         nonMasqueradeCIDRs:
           - 10.244.0.0/16   # Pod CIDR - no masquerade for pod-to-pod
           - 10.96.0.0/12    # Service CIDR - no masquerade for pod-to-service
+          - 172.16.0.0/12   # Internal networks - BGP routed via FFR
         masqLinkLocal: false
