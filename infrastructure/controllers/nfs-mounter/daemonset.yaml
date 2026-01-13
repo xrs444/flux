@@ -22,7 +22,9 @@ spec:
           args:
             - -c
             - |
-              mkdir -p /host/var/mnt/nfs/{movies,tvshows,longhorn}
+              mkdir -p /host/var/mnt/nfs/movies
+              mkdir -p /host/var/mnt/nfs/tvshows
+              mkdir -p /host/var/mnt/nfs/longhorn
               mount -t nfs -o nfsvers=4 \
                 172.20.1.10:/export/zfs/media/movies \
                 /host/var/mnt/nfs/movies || true
