@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nfs-mounter
+  namespace: nfs-mounter
+spec:
+  selector:
+    matchLabels:
+      app: nfs-mounter
+  template:
+    metadata:
+      labels:
+        app: nfs-mounter
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+        - name: nfs-mounter
+          image: busybox:latest
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - |
+              mkdir -p /host/mnt/nfs/{movies,tvshows,longhorn}
+              mount -t nfs -o nfsvers=4 \
+                172.20.1.10:/export/zfs/media/movies \
+                /host/mnt/nfs/movies || true
+              mount -t nfs -o nfsvers=4 \
+                172.20.1.10:/export/zfs/media/tvshows \
+                /host/mnt/nfs/tvshows || true
+              mount -t nfs -o nfsvers=4 \
+                172.20.1.10:/export/zfs/systembackups/longhorn \
+                /host/mnt/nfs/longhorn || true
+              sleep infinity
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: host
+              mountPath: /host
+      volumes:
+        - name: host
+          hostPath:
+            path: /
+            type: Directory

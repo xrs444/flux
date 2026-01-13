@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -10,10 +11,6 @@ spec:
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  nfs:
-    server: xsvr1
-    path: /zfs/media/tvshows
-  mountOptions:
-    - vers=4.1
-    - hard
-    - intr
+  hostPath:
+    path: /mnt/nfs/tvshows
+    type: Directory

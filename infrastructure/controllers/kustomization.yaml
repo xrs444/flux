@@ -12,6 +12,7 @@ resources:
   - ./cert-manager/         # TLS certificate management
   - ./cilium/               # CNI and network policies
   - ./longhorn/             # Distributed block storage
+  - ./nfs-mounter/          # NFS mounter for external storage on nodes
   - ./sealedsecrets/        # Encrypted secrets for GitOps
   - ./traefik/              # Ingress controller with OAuth2
   - ./traefik-crds/         # Traefik Custom Resource Definitions
