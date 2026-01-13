@@ -23,7 +23,7 @@ spec:
       - --email-domain=*
       - --upstream=http://longhorn-frontend.longhorn-system.svc.cluster.local:80/
       - --scope=openid email profile groups
-      - --allowed-group=longhorn-admin
+      - --allowed-group=longhorn-admin@idm.xrs444.net
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
       - --cookie-samesite=lax
