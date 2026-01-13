@@ -31,6 +31,7 @@ spec:
       - --oidc-groups-claim=groups
       - --skip-oidc-discovery=false
       - --force-code-challenge-method=plain
+      - --reverse-proxy=true
     config:
       existingSecret: oauth2-proxy-secret-longhorn
     probes:
