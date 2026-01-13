@@ -11,5 +11,5 @@ resources:
   - ./deployment-tdarr.yaml
   - ./service-tdarr.yaml
   - ./ingressroute-tdarr.yaml
-  - ./pvc-jellyfin-media.yaml
-  - ./pvc-jellyfin-tvshows.yaml
+  - ../storage/pvc-tdarr-jellyfin-media.yaml
+  - ../storage/pvc-tdarr-jellyfin-tvshows.yaml
