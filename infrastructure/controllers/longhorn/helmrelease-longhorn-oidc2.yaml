@@ -30,7 +30,6 @@ spec:
       - --oidc-email-claim=email
       - --oidc-groups-claim=groups
       - --skip-oidc-discovery=false
-      - --force-code-challenge-method=plain
       - --reverse-proxy=true
       - --skip-provider-button=true
     config:
