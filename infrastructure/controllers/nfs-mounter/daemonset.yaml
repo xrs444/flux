@@ -17,23 +17,26 @@ spec:
       hostPID: true
       containers:
         - name: nfs-mounter
-          image: busybox:latest
+          image: alpine:latest
           command: ["/bin/sh"]
           args:
             - -c
             - |
+              apk add --no-cache nfs-utils
               mkdir -p /host/var/mnt/nfs/movies
               mkdir -p /host/var/mnt/nfs/tvshows
               mkdir -p /host/var/mnt/nfs/longhorn
               mount -t nfs -o nfsvers=4 \
                 172.20.1.10:/export/zfs/media/movies \
-                /host/var/mnt/nfs/movies || true
+                /host/var/mnt/nfs/movies || echo "Failed to mount movies"
               mount -t nfs -o nfsvers=4 \
                 172.20.1.10:/export/zfs/media/tvshows \
-                /host/var/mnt/nfs/tvshows || true
+                /host/var/mnt/nfs/tvshows || echo "Failed to mount tvshows"
               mount -t nfs -o nfsvers=4 \
                 172.20.1.10:/export/zfs/systembackups/longhorn \
-                /host/var/mnt/nfs/longhorn || true
+                /host/var/mnt/nfs/longhorn || \
+                echo "Failed to mount longhorn"
+              mount | grep 172.20.1.10
               sleep infinity
           securityContext:
             privileged: true
