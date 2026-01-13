@@ -32,7 +32,7 @@ spec:
 
     defaultSettings:
       # Backup configuration
-      backupTarget: "nfs://172.20.1.10:/zfs/systembackups/longhorn"
+      backupTarget: "nfs://172.20.1.10:/export/zfs/systembackups/longhorn"
       backupTargetCredentialSecret: ""
 
       # Storage settings
