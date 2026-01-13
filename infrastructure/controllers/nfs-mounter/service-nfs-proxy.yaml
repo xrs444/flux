@@ -4,10 +4,9 @@ kind: Service
 metadata:
   name: nfs-server
   namespace: nfs-mounter
-  annotations:
-    io.cilium/lb-ipam-ips: "172.21.0.11"
 spec:
-  type: LoadBalancer
+  type: ClusterIP
+  clusterIP: None
   ports:
     - name: nfs
       port: 2049

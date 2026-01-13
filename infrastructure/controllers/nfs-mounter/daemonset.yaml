@@ -25,16 +25,16 @@ spec:
               mkdir -p /host/var/mnt/nfs/tvshows
               mkdir -p /host/var/mnt/nfs/longhorn
               mount -t nfs -o nfsvers=4 \
-                172.21.0.11:/export/zfs/media/movies \
+                nfs-server.nfs-mounter.svc:/export/zfs/media/movies \
                 /host/var/mnt/nfs/movies || echo "Failed to mount movies"
               mount -t nfs -o nfsvers=4 \
-                172.21.0.11:/export/zfs/media/tvshows \
+                nfs-server.nfs-mounter.svc:/export/zfs/media/tvshows \
                 /host/var/mnt/nfs/tvshows || echo "Failed to mount tvshows"
               mount -t nfs -o nfsvers=4 \
-                172.21.0.11:/export/zfs/systembackups/longhorn \
+                nfs-server.nfs-mounter.svc:/export/zfs/systembackups/longhorn \
                 /host/var/mnt/nfs/longhorn || \
                 echo "Failed to mount longhorn"
-              mount | grep 172.21.0.11
+              mount | grep nfs-server
               sleep infinity
           securityContext:
             privileged: true
