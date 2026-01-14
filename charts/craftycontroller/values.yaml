@@ -64,11 +64,3 @@ env:
     value: "0.0.0.0"
   - name: CRAFTY_WEB_PORT
     value: "8000"
-  - name: HTTPS
-    value: "false"
-
-auth:
-  kanidm:
-    enabled: true
-    url: "https://auth.xrs444.net"
-    realm: "xrs444.net"

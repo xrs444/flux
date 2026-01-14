@@ -36,8 +36,3 @@ spec:
       requests:
         cpu: 500m
         memory: 1Gi
-    auth:
-      kanidm:
-        enabled: true
-        url: "https://idm.xrs444.net"
-        realm: "xrs444.net"
