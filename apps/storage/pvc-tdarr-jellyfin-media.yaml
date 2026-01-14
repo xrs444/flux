@@ -5,9 +5,10 @@ metadata:
   name: jellyfin-media
   namespace: tdarr
 spec:
+  storageClassName: ""
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 100Ti
-  volumeName: jellyfin-media-nfs
+  volumeName: tdarr-jellyfin-media-nfs

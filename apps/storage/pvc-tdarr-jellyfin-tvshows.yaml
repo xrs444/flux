@@ -5,9 +5,10 @@ metadata:
   name: jellyfin-tvshows
   namespace: tdarr
 spec:
+  storageClassName: ""
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 100Ti
-  volumeName: jellyfin-tvshows-nfs
+  volumeName: tdarr-jellyfin-tvshows-nfs
