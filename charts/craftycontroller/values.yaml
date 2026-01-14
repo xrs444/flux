@@ -29,6 +29,8 @@ ingress:
     traefik.ingress.kubernetes.io/router.middlewares: >
       craftycontroller-auth-crafty@kubernetescrd
     traefik.ingress.kubernetes.io/service.serversscheme: https
+    traefik.ingress.kubernetes.io/service.serverstransport: >
+      craftycontroller-transport@kubernetescrd
   hosts:
     - host: crafty.xrs444.net
       paths:
