@@ -28,6 +28,7 @@ ingress:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.middlewares: >
       craftycontroller-auth-crafty@kubernetescrd
+    traefik.ingress.kubernetes.io/service.serversscheme: https
   hosts:
     - host: crafty.xrs444.net
       paths:
