@@ -3,8 +3,8 @@ replicaCount: 1
 
 image:
   repository: registry.gitlab.com/crafty-controller/crafty-4
-  pullPolicy: IfNotPresent
-  tag: "4.4.2"
+  pullPolicy: Always
+  tag: "latest"
 
 nameOverride: ""
 fullnameOverride: ""

@@ -3,5 +3,5 @@ apiVersion: v2
 name: craftycontroller
 description: A Helm chart for Crafty Controller Minecraft server management
 type: application
-version: 0.1.5
-appVersion: "4.4.2"
+version: 0.1.6
+appVersion: "latest"
