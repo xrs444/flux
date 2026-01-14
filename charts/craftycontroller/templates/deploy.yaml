@@ -34,8 +34,7 @@ spec:
               containerPort: {{.Values.service.ports.web.targetPort}}
               protocol: TCP
             - name: minecraft
-              containerPort: >-
-                {{.Values.service.ports.minecraft.targetPort}}
+              containerPort: {{.Values.service.ports.minecraft.targetPort}}
               protocol: TCP
           env:
 {{- toYaml .Values.env | nindent 12}}
