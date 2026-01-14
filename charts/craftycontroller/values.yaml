@@ -14,7 +14,7 @@ service:
   ports:
     web:
       port: 8000
-      targetPort: 8000
+      targetPort: 8443
     minecraft:
       port: 25565
       targetPort: 25565
@@ -64,6 +64,8 @@ env:
     value: "0.0.0.0"
   - name: CRAFTY_WEB_PORT
     value: "8000"
+  - name: HTTPS
+    value: "false"
 
 auth:
   kanidm:
