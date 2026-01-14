@@ -13,8 +13,8 @@ service:
   type: ClusterIP
   ports:
     web:
-      port: 8443
-      targetPort: 8443
+      port: 8000
+      targetPort: 8000
     minecraft:
       port: 25565
       targetPort: 25565
@@ -26,7 +26,6 @@ ingress:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    traefik.ingress.kubernetes.io/service.serversscheme: https
   hosts:
     - host: crafty.xrs444.net
       paths:
@@ -63,3 +62,5 @@ env:
     value: "0.0.0.0"
   - name: CRAFTY_WEB_PORT
     value: "8000"
+  - name: HTTPS
+    value: "false"

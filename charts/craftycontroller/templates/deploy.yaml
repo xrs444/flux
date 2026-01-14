@@ -43,14 +43,12 @@ spec:
             httpGet:
               path: /
               port: web
-              scheme: HTTPS
             initialDelaySeconds: 60
             periodSeconds: 30
           readinessProbe:
             httpGet:
               path: /
               port: web
-              scheme: HTTPS
             initialDelaySeconds: 30
             periodSeconds: 10
       volumes:
