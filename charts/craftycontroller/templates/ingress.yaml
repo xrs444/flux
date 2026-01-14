@@ -3,6 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "craftycontroller.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "craftycontroller.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
