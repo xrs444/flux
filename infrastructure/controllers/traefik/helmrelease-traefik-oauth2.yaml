@@ -24,15 +24,33 @@ spec:
       - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/oauth2_traefik
       - --redirect-url=https://traefik.xrs444.net/oauth2/callback
       - --email-domain=*
-      - --upstream=static://202
+      - --upstream=http://traefik.traefik.svc.cluster.local:8080/
       - --scope=openid email profile groups
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
       - --code-challenge-method=S256
       - --skip-provider-button=false
-      - --set-xauthrequest=true
-
+      - --reverse-proxy=true
+      - --skip-oidc-discovery=false
+    probes:
+      liveness:
+        enabled: true
+        initialDelaySeconds: 30
+        timeoutSeconds: 5
+      readiness:
+        enabled: true
+        initialDelaySeconds: 10
+        timeoutSeconds: 5
+        periodSeconds: 10
+      startup:
+        enabled: true
+        initialDelaySeconds: 0
+        timeoutSeconds: 5
+        periodSeconds: 10
+        failureThreshold: 60
     service:
       enabled: true
       type: ClusterIP
       portNumber: 4180
+    hostNetwork: true
+    dnsPolicy: ClusterFirstWithHostNet

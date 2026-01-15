@@ -1,6 +1,12 @@
+# This Flux repo is in flux!
+
+The configurations in this repo are still under development, and so are not guaranteed to be correct, working or anything other than a possibly interesting example. I will try run a list of what is working, what is not and what is yet to do, but don't expect to be able to deploy this verbatim and have it all work out the box.
+
 # HomeProd Flux GitOps Repository
 
 This repository contains the Flux GitOps configuration for the HomeProd Talos cluster, managing infrastructure controllers and applications using a GitOps workflow. All Kubernetes resources are declaratively managed and automatically reconciled by Flux.
+
+It is the sister repo to https://github.com/xrs444/nix, which covers configuration of the hosts, clients and VMs.
 
 ## Repository Structure
 
@@ -110,3 +116,10 @@ flux reconcile kustomization flux-system --with-source
 - Set up storage for Manyfold
 - Migrate Freepbx from existing VM
 - Build Dashy dashboard
+- Add Apprise to feed to Ntfy
+- BorgWarehouse for Borg backups
+- Immich
+- Configure Garage
+- Audiobookshelf
+- NoCoDB Auth proxy for oauth2
+- Configure Jitsi
