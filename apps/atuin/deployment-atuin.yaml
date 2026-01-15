@@ -9,6 +9,8 @@ metadata:
 spec:
   revisionHistoryLimit: 3
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: atuin-server
@@ -17,6 +19,10 @@ spec:
       labels:
         app: atuin-server
     spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsNonRoot: true
       containers:
         - name: atuin-server
           image: ghcr.io/atuinsh/atuin:latest
