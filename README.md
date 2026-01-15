@@ -98,6 +98,15 @@ flux reconcile kustomization flux-system --with-source
 ./scripts/validate.sh
 \`\`\`
 
----
 
-**Note**: This GitOps repository is continuously reconciled. All changes must be committed to Git; manual kubectl changes will be reverted by Flux.
+*** Todo
+- Add ROMm for retro gaming fun
+- Finish SSO for everything that can use it
+- Migrate Omada from existing VM
+- Use Ntfy for Github action alerts
+- Move PV/PVCs from storage folder to the relevant app folder.
+- Configure Longhorn groups for backup
+- Confgure Atuin backup to NFS
+- Set up storage for Manyfold
+- Migrate Freepbx from existing VM
+- Build Dashy dashboard
