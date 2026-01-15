@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - ./helmrepository-podinfo.yaml
   - ./helmrepository-metrics-server.yaml
+  - ./helmrepository-rm3l.yaml
