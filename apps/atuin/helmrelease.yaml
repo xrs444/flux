@@ -24,6 +24,9 @@ spec:
   values:
     replicaCount: 1
 
+    podSecurityContext:
+      fsGroup: 65534
+
     atuin:
       openRegistration: true
 
