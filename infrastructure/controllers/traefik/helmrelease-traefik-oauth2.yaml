@@ -24,13 +24,13 @@ spec:
       - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/oauth2_traefik
       - --redirect-url=https://traefik.xrs444.net/oauth2/callback
       - --email-domain=*
-      - --upstream=http://traefik.traefik.svc.cluster.local:8080
+      - --upstream=static://202
       - --scope=openid email profile groups
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
       - --code-challenge-method=S256
       - --skip-provider-button=false
-      - --pass-host-header=true
+      - --set-xauthrequest=true
 
     service:
       enabled: true
