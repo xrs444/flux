@@ -1,3 +1,4 @@
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -23,13 +24,13 @@ spec:
       - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/oauth2_traefik
       - --redirect-url=https://traefik.xrs444.net/oauth2/callback
       - --email-domain=*
-      - --upstream=static://202
+      - --upstream=http://traefik.traefik.svc.cluster.local:8080
       - --scope=openid email profile groups
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
       - --code-challenge-method=S256
       - --skip-provider-button=false
-      - --set-xauthrequest=true
+      - --pass-host-header=true
 
     service:
       enabled: true

@@ -99,7 +99,7 @@ flux reconcile kustomization flux-system --with-source
 \`\`\`
 
 
-*** Todo
+### Todo
 - Add ROMm for retro gaming fun
 - Finish SSO for everything that can use it
 - Migrate Omada from existing VM
