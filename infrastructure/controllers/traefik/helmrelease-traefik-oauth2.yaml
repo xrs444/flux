@@ -29,9 +29,8 @@ spec:
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
       - --code-challenge-method=S256
-      - --skip-provider-button=false
+      - --skip-provider-button=true
       - --reverse-proxy=true
-      - --skip-oidc-discovery=false
     probes:
       liveness:
         enabled: true
