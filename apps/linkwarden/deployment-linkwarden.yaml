@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -22,18 +23,26 @@ spec:
       containers:
         - name: linkwarden
           image: ghcr.io/linkwarden/linkwarden:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - >-
+              export DATABASE_URL="postgresql://linkwarden:${POSTGRES_PASSWORD}@localhost:5432/linkwarden" && exec node server.js
           ports:
             - containerPort: 3000
               name: http
           env:
             - name: NEXTAUTH_URL
               value: "https://linkwarden.xrs444.net"
-            # TODO: Generate secure secret
             - name: NEXTAUTH_SECRET
-              value: "change-me-to-random-string"
-            - name: DATABASE_URL
-              value: >
-                postgresql://linkwarden:linkwarden@localhost:5432/linkwarden
+              valueFrom:
+                secretKeyRef:
+                  name: linkwarden-secrets
+                  key: nextauth-secret
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: linkwarden-secrets
+                  key: postgres-password
             - name: NEXT_PUBLIC_DISABLE_REGISTRATION
               value: "true"
             - name: OAUTH_PROVIDER
@@ -69,19 +78,19 @@ spec:
               memory: 1Gi
           livenessProbe:
             httpGet:
-              path: /api/health
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /
               port: http
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /api/health
-              port: http
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 3
             failureThreshold: 3
         - name: postgres
           image: postgres:15-alpine
@@ -92,7 +101,10 @@ spec:
             - name: POSTGRES_USER
               value: "linkwarden"
             - name: POSTGRES_PASSWORD
-              value: "linkwarden"  # TODO: Use secure password
+              valueFrom:
+                secretKeyRef:
+                  name: linkwarden-secrets
+                  key: postgres-password
             - name: POSTGRES_DB
               value: "linkwarden"
             - name: PGDATA
