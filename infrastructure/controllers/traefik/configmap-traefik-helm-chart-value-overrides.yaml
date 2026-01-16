@@ -322,7 +322,6 @@ data:
         # -- Array of namespaces to watch. If left empty, Traefik watches all namespaces. . When using `rbac.namespaced`, it will watch helm release namespace and namespaces listed in this array.
         namespaces: []
         # -- A label selector can be defined to filter on specific GatewayClass objects only.
-        labelselector: ""
         # -- Defines whether to use Native Kubernetes load-balancing mode by default.
         nativeLBByDefault: false
         statusAddress:

@@ -1,12 +1,14 @@
-# This Flux repo is in flux!
+# HomeProd Flux GitOps Repository
+
+## CAUTION! This Flux repo is in flux
 
 The configurations in this repo are still under development, and so are not guaranteed to be correct, working or anything other than a possibly interesting example. I will try run a list of what is working, what is not and what is yet to do, but don't expect to be able to deploy this verbatim and have it all work out the box.
 
-# HomeProd Flux GitOps Repository
+## About this repo
 
 This repository contains the Flux GitOps configuration for the HomeProd Talos cluster, managing infrastructure controllers and applications using a GitOps workflow. All Kubernetes resources are declaratively managed and automatically reconciled by Flux.
 
-It is the sister repo to https://github.com/xrs444/nix, which covers configuration of the hosts, clients and VMs.
+It is the sister repo to <https://github.com/xrs444/nix>, which covers configuration of the hosts, clients and VMs.
 
 ## Repository Structure
 
@@ -31,6 +33,7 @@ This Flux deployment follows a layered approach with clear dependency management
 ## Key Components
 
 ### Infrastructure Controllers
+
 - **Traefik**: Ingress controller with OAuth2 authentication
 - **Cert-Manager**: Automated TLS certificate management
 - **Longhorn**: Distributed block storage for persistent volumes
@@ -38,6 +41,7 @@ This Flux deployment follows a layered approach with clear dependency management
 - **Sealed Secrets**: Encrypted secrets management
 
 ### Applications
+
 - **Atuin**: Shell history sync server
 - **Audiobookshelf**: Audiobook and podcast server
 - **CraftyController**: Minecraft server management (custom Helm chart)
@@ -79,6 +83,7 @@ cluster/apps.yaml
 ## Documentation
 
 See individual \`readme-doc.md\` files in each directory for detailed component documentation:
+
 - [cluster/readme-doc.md](cluster/readme-doc.md) - Flux system and top-level Kustomizations
 - [infrastructure/readme-doc.md](infrastructure/readme-doc.md) - Infrastructure controllers and configs
 - [apps/readme-doc.md](apps/readme-doc.md) - Application deployments
@@ -88,6 +93,7 @@ See individual \`readme-doc.md\` files in each directory for detailed component 
 ## Quick Reference
 
 ### Check Flux Status
+
 \`\`\`bash
 flux check
 flux get kustomizations
@@ -95,17 +101,19 @@ flux get helmreleases -A
 \`\`\`
 
 ### Manual Reconciliation
+
 \`\`\`bash
 flux reconcile kustomization flux-system --with-source
 \`\`\`
 
 ### Validation
+
 \`\`\`bash
 ./scripts/validate.sh
 \`\`\`
 
-
 ### Todo
+
 - Add ROMm for retro gaming fun
 - Finish SSO for everything that can use it
 - Migrate Omada from existing VM
