@@ -1,3 +1,4 @@
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -7,7 +8,7 @@ spec:
   chart:
     spec:
       chart: traefik
-      version: "36.3.0"
+      version: "38.0.2"
       sourceRef:
         kind: HelmRepository
         name: traefik
@@ -17,10 +18,12 @@ spec:
   releaseName: traefik
   install:
     timeout: 10m
+    crds: Create
     remediation:
       retries: 5
   upgrade:
     timeout: 5m
+    crds: CreateReplace
     remediation:
       retries: 5
       remediateLastFailure: true
@@ -42,5 +45,3 @@ spec:
   dependsOn:
     - name: cert-manager
       namespace: cert-manager
-    - name: traefik-crds
-      namespace: traefik-crds

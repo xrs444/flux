@@ -13,8 +13,7 @@ Core infrastructure controllers that provide essential cluster services. These a
 - **longhorn/** - Distributed block storage system with web UI and OAuth2 protection
 - **sealedsecrets/** - Encrypted secrets management for GitOps workflows
 - **shared-secrets/** - Secrets shared across namespaces via Reflector
-- **traefik/** - Ingress controller with OAuth2 proxy integration
-- **traefik-crds/** - Traefik Custom Resource Definitions
+- **traefik/** - Ingress controller with OAuth2 proxy integration (v38+, CRDs managed by chart)
 
 ## Files
 
@@ -27,7 +26,7 @@ Core infrastructure controllers that provide essential cluster services. These a
 2. Cilium - CNI must be running for pod networking
 3. Cert-Manager - TLS management before ingress
 4. Sealed Secrets - Secret management infrastructure
-5. Traefik (CRDs then controller) - Ingress after networking is ready
+5. Traefik - Ingress after networking is ready (CRDs managed by chart v38+)
 6. Longhorn - Storage after basic services are running
 7. Shared Secrets - After secret management is ready
 
@@ -41,24 +40,29 @@ Core infrastructure controllers that provide essential cluster services. These a
 ## Controller Details
 
 ### Traefik
+
+- Ingress controller v38+ with Helm-managed CRDs
 - Includes OAuth2 proxy for authentication
 - Dashboard protected by OAuth2
 - Middleware for API and dashboard access
 - Kanidm integration for SSO
 
 ### Longhorn
+
 - Multiple storage classes (standard, reclaim, ephemeral)
 - Web UI with OAuth2 protection
 - Backup and snapshot capabilities
 - Distributed across cluster nodes
 
 ### Cert-Manager
+
 - Automated certificate lifecycle
 - Let's Encrypt integration
 - Wildcard certificate support
 - Automatic renewal
 
 ### Cilium
+
 - CNI plugin for pod networking
 - Network policy enforcement
 - Service mesh capabilities

@@ -1,6 +1,7 @@
 # Core infrastructure controllers for the HomeProd K3s cluster
 # These services are deployed before applications and configs
 # Order: Helm repos → CNI → Cert-Manager → Ingress → Storage
+# Note: Traefik CRDs now managed by main Traefik chart (v38+)
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -13,7 +14,6 @@ resources:
   - ./cilium/               # CNI and network policies
   - ./longhorn/             # Distributed block storage
   - ./sealedsecrets/        # Encrypted secrets for GitOps
-  - ./traefik/              # Ingress controller with OAuth2
-  - ./traefik-crds/         # Traefik Custom Resource Definitions
+  - ./traefik/              # Ingress with OAuth2, CRDs managed by chart
   - ./charts/               # Infrastructure Helm charts
   - ./shared-secrets/       # Secrets for cross-namespace sharing

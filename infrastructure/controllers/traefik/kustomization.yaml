@@ -1,6 +1,7 @@
 # Traefik - Ingress controller with OAuth2 authentication
 # Provides HTTP/HTTPS ingress and routing for cluster services
 # Dashboard protected by Kanidm OAuth2 authentication
+# CRDs are now managed directly by the Traefik Helm chart (v38+)
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
