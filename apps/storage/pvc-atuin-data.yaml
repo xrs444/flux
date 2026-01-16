@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: atuin-data-pvc
   namespace: atuin
+  labels:
+    longhorn.io/backup-group: default
 spec:
   accessModes:
     - ReadWriteOnce

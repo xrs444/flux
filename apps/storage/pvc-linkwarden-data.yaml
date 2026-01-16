@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: linkwarden-data
   namespace: linkwarden
+  labels:
+    longhorn.io/backup-group: default
 spec:
   storageClassName: longhorn-retain
   accessModes:

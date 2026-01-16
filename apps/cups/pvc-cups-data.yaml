@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: cups-data
   namespace: cups
+  labels:
+    longhorn.io/backup-group: default
 spec:
   accessModes:
     - ReadWriteOnce

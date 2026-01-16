@@ -10,6 +10,7 @@ metadata:
     app.kubernetes.io/instance: jellyfin
     app.kubernetes.io/version: "10.10.6"
     app.kubernetes.io/managed-by: Helm
+    longhorn.io/backup-group: default
   annotations:
     kustomize.config.k8s.io/behavior: merge
 spec:

@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: garage-data
   namespace: garage
+  labels:
+    longhorn.io/backup-group: default
 spec:
   storageClassName: longhorn-retain
   accessModes:

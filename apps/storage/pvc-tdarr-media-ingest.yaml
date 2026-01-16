@@ -6,6 +6,8 @@ metadata:
   namespace: tdarr
   annotations:
     kustomize.config.k8s.io/behavior: merge
+  labels:
+    longhorn.io/backup-group: default
 spec:
   accessModes:
     - ReadWriteMany

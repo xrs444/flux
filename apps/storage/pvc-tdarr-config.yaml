@@ -5,6 +5,7 @@ metadata:
   namespace: tdarr
   labels:
     app: tdarr
+    longhorn.io/backup-group: default
 spec:
   accessModes:
     - ReadWriteOnce

@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: paperless-media
   namespace: paperless-ngx
+  labels:
+    longhorn.io/backup-group: default
 spec:
   storageClassName: longhorn-retain
   accessModes:

@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: n8n-data-pvc
   namespace: n8n
+  labels:
+    longhorn.io/backup-group: default
 spec:
   storageClassName: longhorn-retain
   accessModes:
