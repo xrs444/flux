@@ -34,6 +34,7 @@ spec:
       - --skip-oidc-discovery=false
       - --reverse-proxy=true
       - --skip-provider-button=true
+      - --code-challenge-method=S256
     config:
       existingSecret: oauth2-proxy-secret-longhorn
     probes:
