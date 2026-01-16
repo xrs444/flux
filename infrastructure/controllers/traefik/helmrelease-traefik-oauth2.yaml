@@ -51,5 +51,5 @@ spec:
       enabled: true
       type: ClusterIP
       portNumber: 4180
-    hostNetwork: true
-    dnsPolicy: ClusterFirstWithHostNet
+    nodeSelector:
+      kubernetes.io/hostname: talos-mpp-bzt
