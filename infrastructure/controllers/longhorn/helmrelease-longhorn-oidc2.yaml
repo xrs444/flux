@@ -26,6 +26,7 @@ spec:
       - --allowed-group=longhorn-admin@idm.xrs444.net
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
+      - --cookie-samesite=lax
       - --whitelist-domain=.xrs444.net
       - --http-address=0.0.0.0:4180
       - --oidc-email-claim=email
@@ -34,8 +35,6 @@ spec:
       - --reverse-proxy=true
       - --skip-provider-button=true
       - --code-challenge-method=S256
-      - --skip-auth-strip-headers=false
-      - --session-cookie-minimal=true
     config:
       existingSecret: oauth2-proxy-secret-longhorn
     probes:
