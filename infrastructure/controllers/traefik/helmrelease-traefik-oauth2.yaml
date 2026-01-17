@@ -28,9 +28,11 @@ spec:
       - --scope=openid email profile groups
       - --cookie-domain=.xrs444.net
       - --cookie-secure=true
+      - --cookie-samesite=lax
       - --code-challenge-method=S256
       - --skip-provider-button=true
       - --reverse-proxy=true
+      - --set-xauthrequest=true
     probes:
       liveness:
         enabled: true
