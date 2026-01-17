@@ -12,10 +12,8 @@ spec:
         Host(`traefik.xrs444.net`) &&
         (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
       kind: Rule
-      middlewares:
-        - name: dashboard-auth
       services:
-        - name: api@internal
-          kind: TraefikService
+        - name: oauth2-proxy
+          port: 4180
   tls:
     secretName: letsencrypt-wildcard-cert-xrs444.net
