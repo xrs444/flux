@@ -1,0 +1,19 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-root-redirect
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`traefik.xrs444.net`) && Path(`/`)
+      kind: Rule
+      middlewares:
+        - name: dashboard-redirect
+      services:
+        - name: oauth2-proxy
+          port: 4180
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net
