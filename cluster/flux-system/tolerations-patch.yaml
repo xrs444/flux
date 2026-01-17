@@ -1,0 +1,16 @@
+---
+# Patch to add toleration for memory-constrained node to flux-system
+# This allows Flux system pods to be scheduled on memory-constrained node
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: placeholder
+  namespace: flux-system
+spec:
+  template:
+    spec:
+      tolerations:
+        - key: memory-constrained
+          operator: Equal
+          value: "true"
+          effect: NoSchedule

@@ -17,3 +17,9 @@ resources:
   - ./traefik/              # Ingress with OAuth2, CRDs managed by chart
   - ./charts/               # Infrastructure Helm charts
   - ./shared-secrets/       # Secrets for cross-namespace sharing
+
+patches:
+  # Allow infrastructure pods to run on memory-constrained node
+  - path: tolerations-patch.yaml
+    target:
+      kind: Deployment|StatefulSet|DaemonSet
