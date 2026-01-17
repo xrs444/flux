@@ -14,6 +14,7 @@ spec:
       kind: Rule
       middlewares:
         - name: dashboard-auth
+        - name: dashboard-errors
       services:
         - name: api@internal
           kind: TraefikService

@@ -14,6 +14,7 @@ resources:
   - ./namespace-traefik.yaml
   - ./kustomization-traefik.yaml  # Flux Kustomization
   - ./middleware-dashboard-auth.yaml  # Dashboard auth
+  - ./middleware-dashboard-errors.yaml  # Dashboard error handling
   - ./middleware-api.yaml  # API middleware
   - ./ingressroute-dashboard.yaml  # Dashboard ingress
   - ./ingressroute-oauth2-proxy.yaml  # OAuth2 proxy

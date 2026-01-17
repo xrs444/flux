@@ -1,0 +1,14 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: dashboard-errors
+  namespace: traefik
+spec:
+  errors:
+    status:
+      - "401-403"
+    query: "/oauth2/sign_in?rd={url}"
+    service:
+      name: oauth2-proxy
+      port: 4180
