@@ -29,6 +29,9 @@ spec:
       - --code-challenge-method=S256
       - --skip-provider-button=true
       - --reverse-proxy=true
+      - --pass-host-header=true
+      - --pass-access-token=true
+      - --set-authorization-header=true
     config:
       existingSecret: oauth2-proxy-secret-longhorn
     probes:
