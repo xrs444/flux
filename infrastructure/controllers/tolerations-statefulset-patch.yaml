@@ -1,9 +1,7 @@
 ---
-# Patch to add toleration for memory-constrained node
-# Allows infrastructure pods to schedule on memory-constrained node
-# while preventing regular application pods from using it
+# Patch to add toleration for memory-constrained node to StatefulSets
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: not-used
 spec:

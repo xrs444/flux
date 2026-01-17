@@ -22,4 +22,10 @@ patches:
   # Allow infrastructure pods to run on memory-constrained node
   - path: tolerations-patch.yaml
     target:
-      kind: Deployment|StatefulSet|DaemonSet
+      kind: Deployment
+  - path: tolerations-statefulset-patch.yaml
+    target:
+      kind: StatefulSet
+  - path: tolerations-daemonset-patch.yaml
+    target:
+      kind: DaemonSet
