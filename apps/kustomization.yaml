@@ -7,7 +7,6 @@ kind: Kustomization
 
 resources:
   - ./helmrepositories      # External Helm chart repositories
-  - ./podinfo               # Demo app for testing
   - ./metrics-server        # Cluster-wide resource metrics
   - ./lubelogger            # Vehicle maintenance tracking
   - ./omada                 # TP-Link network controller
