@@ -47,7 +47,10 @@ spec:
 
       # System component configuration
       systemManagedComponentsNodeSelector: ""
-      taintToleration: "node-role.kubernetes.io/control-plane:NoSchedule"
+      # Semicolon-separated list of taints to tolerate
+      taintToleration: >-
+        node-role.kubernetes.io/control-plane:NoSchedule;
+        memory-constrained=true:NoSchedule
 
     # Longhorn Manager configuration
     longhornManager:
@@ -57,6 +60,10 @@ spec:
         - key: node-role.kubernetes.io/control-plane
           effect: NoSchedule
           operator: Exists
+        - key: memory-constrained
+          effect: NoSchedule
+          operator: Equal
+          value: "true"
 
     # Longhorn Driver configuration
     longhornDriver:
@@ -64,6 +71,10 @@ spec:
         - key: node-role.kubernetes.io/control-plane
           effect: NoSchedule
           operator: Exists
+        - key: memory-constrained
+          effect: NoSchedule
+          operator: Equal
+          value: "true"
 
     # CSI components
     csi:
