@@ -1,0 +1,10 @@
+# Apprise - Multi-platform notification service
+# Universal notification API for ntfy, email, Slack, etc.
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - deployment-apprise.yaml
+  - service-apprise.yaml
+  - sealedsecret-apprise-config.yaml
