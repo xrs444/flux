@@ -64,6 +64,8 @@ spec:
             - name: OAUTH_USERINFO_URL
               value: >
                 https://idm.xrs444.net/oauth2/openid/oauth2_linkwarden/userinfo
+            - name: OAUTH_WELLKNOWN
+              value: "https://idm.xrs444.net/oauth2/openid/oauth2_linkwarden/.well-known/openid-configuration"
           volumeMounts:
             - name: linkwarden-data
               mountPath: /data/data
