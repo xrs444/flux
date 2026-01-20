@@ -24,13 +24,9 @@ spec:
         - name: diskover-web
           image: linuxserver/diskover:latest
           ports:
-            - containerPort: 8000
-              name: http
+            - containerPort: 80
+              name: web
           env:
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
             - name: TZ
               value: "America/Phoenix"
             - name: ELASTICSEARCH_HOST
@@ -45,15 +41,15 @@ spec:
               mountPath: /config
           resources:
             requests:
-              cpu: 100m
+              cpu: 50m
               memory: 256Mi
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 1Gi
           livenessProbe:
             httpGet:
               path: /
-              port: http
+              port: web
             initialDelaySeconds: 120
             periodSeconds: 30
             timeoutSeconds: 10
@@ -61,7 +57,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: http
+              port: web
             initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 5
@@ -87,11 +83,11 @@ spec:
               subPath: elasticsearch
           resources:
             requests:
-              cpu: 500m
-              memory: 1Gi
+              cpu: 250m
+              memory: 512Mi
             limits:
-              cpu: 2000m
-              memory: 2Gi
+              cpu: 1000m
+              memory: 1Gi
       volumes:
         - name: diskover-data
           persistentVolumeClaim:
