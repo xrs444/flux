@@ -48,6 +48,8 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /libraries
+            - name: store
+              mountPath: /store
           resources:
             requests:
               cpu: 100m
@@ -111,3 +113,6 @@ spec:
         - name: db
           persistentVolumeClaim:
             claimName: manyfold-db
+        - name: store
+          persistentVolumeClaim:
+            claimName: manyfold-store

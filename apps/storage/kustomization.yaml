@@ -5,6 +5,7 @@ resources:
   # Persistent Volumes (NFS)
   - ./pv-jellyfin-media.yaml
   - ./pv-jellyfin-tvshows.yaml
+  - ./pv-manyfold-store.yaml
   - ./pv-tdarr-media-ingest.yaml
 
   # Persistent Volume Claims
@@ -21,6 +22,7 @@ resources:
   - ./pvc-lubelogger.yaml
   - ./pvc-manyfold-data.yaml
   - ./pvc-manyfold-db.yaml
+  - ./pvc-manyfold-store.yaml
   - ./pvc-mealie-data.yaml
   - ./pvc-mealie-postgres.yaml
   - ./pvc-n8n-data.yaml
