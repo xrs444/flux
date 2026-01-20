@@ -32,7 +32,9 @@ spec:
 
     defaultSettings:
       # Backup configuration
-      backupTarget: "nfs://172.20.3.201:/zfs/systembackups/longhorn"
+      # Using local path mounted from NFS PVC (managed by kubelet)
+      # This works around Talos limitation where pods cannot mount NFS directly
+      backupTarget: "/var/lib/longhorn-backup"
       backupTargetCredentialSecret: ""
       backupExecutionTimeout: "900"  # 15 minutes in seconds for system backups
 
@@ -69,6 +71,14 @@ spec:
           effect: NoSchedule
           operator: Equal
           value: "true"
+      # Mount NFS backup target via Kubernetes PVC (kubelet handles NFS mount)
+      additionalVolumeMounts:
+        - name: longhorn-backup-nfs
+          mountPath: /var/lib/longhorn-backup
+      additionalVolumes:
+        - name: longhorn-backup-nfs
+          persistentVolumeClaim:
+            claimName: longhorn-backup-nfs
 
     # Longhorn Driver configuration
     longhornDriver:

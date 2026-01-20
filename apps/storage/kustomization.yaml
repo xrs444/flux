@@ -5,6 +5,7 @@ resources:
   # Persistent Volumes (NFS)
   - ./pv-jellyfin-media.yaml
   - ./pv-jellyfin-tvshows.yaml
+  - ./pv-longhorn-backup-nfs.yaml
   - ./pv-manyfold-store.yaml
   - ./pv-tdarr-media-ingest.yaml
 
@@ -19,6 +20,7 @@ resources:
   - ./pvc-jitsi-config.yaml
   - ./pvc-linkwarden-data.yaml
   - ./pvc-loki-data.yaml
+  - ./pvc-longhorn-backup-nfs.yaml
   - ./pvc-lubelogger.yaml
   - ./pvc-manyfold-data.yaml
   - ./pvc-manyfold-db.yaml

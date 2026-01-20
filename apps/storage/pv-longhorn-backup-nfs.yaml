@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: longhorn-backup-nfs
+  annotations:
+    kustomize.config.k8s.io/behavior: merge
+spec:
+  capacity:
+    storage: 10Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  mountOptions:
+    - nfsvers=4.2
+    - actimeo=1
+    - soft
+    - timeo=300
+    - retry=2
+  nfs:
+    server: 172.20.3.201
+    path: /zfs/systembackups/longhorn

@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: longhorn-backup-nfs
+  namespace: longhorn-system
+  labels:
+    longhorn.io/backup-group: default
+  annotations:
+    kustomize.config.k8s.io/behavior: merge
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: longhorn-backup-nfs
+  resources:
+    requests:
+      storage: 10Ti
