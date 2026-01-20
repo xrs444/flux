@@ -19,6 +19,16 @@ spec:
       labels:
         app: diskover
     spec:
+      securityContext:
+        fsGroup: 1000
+      initContainers:
+        - name: fix-permissions
+          image: busybox:latest
+          command: ['sh', '-c', 'chown -R 1000:1000 /data']
+          volumeMounts:
+            - name: diskover-data
+              mountPath: /data
+              subPath: elasticsearch
       containers:
         # Diskover web UI
         - name: diskover-web
@@ -81,6 +91,9 @@ spec:
             - name: diskover-data
               mountPath: /usr/share/elasticsearch/data
               subPath: elasticsearch
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
           resources:
             requests:
               cpu: 250m
