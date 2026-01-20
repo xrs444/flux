@@ -11,7 +11,6 @@ resources:
   - ./pvc-atuin-data.yaml
   - ./pvc-audiobookshelf-config.yaml
   - ./pvc-audiobookshelf-metadata.yaml
-  - ./pvc-freepbx.yaml
   - ./pvc-garage-data.yaml
   - ./pvc-jellyfin-config.yaml
   - ./pvc-jellyfin-media.yaml

@@ -10,7 +10,6 @@ resources:
   - ./podinfo               # Demo app for testing
   - ./metrics-server        # Cluster-wide resource metrics
   - ./lubelogger            # Vehicle maintenance tracking
-  - ./freepbx               # VoIP PBX system
   - ./omada                 # TP-Link network controller
   - ./craftycontroller      # Minecraft server management (Helm)
   - ./atuin                 # Shell history sync server
