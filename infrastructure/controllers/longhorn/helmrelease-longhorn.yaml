@@ -50,6 +50,7 @@ spec:
       # Semicolon-separated list of taints to tolerate
       taintToleration: >-
         node-role.kubernetes.io/control-plane:NoSchedule;
+        node-role.kubernetes.io/ha-only=reserved:NoSchedule;
         memory-constrained=true:NoSchedule
 
     # Longhorn Manager configuration
@@ -60,6 +61,10 @@ spec:
         - key: node-role.kubernetes.io/control-plane
           effect: NoSchedule
           operator: Exists
+        - key: node-role.kubernetes.io/ha-only
+          effect: NoSchedule
+          operator: Equal
+          value: reserved
         - key: memory-constrained
           effect: NoSchedule
           operator: Equal
@@ -71,6 +76,10 @@ spec:
         - key: node-role.kubernetes.io/control-plane
           effect: NoSchedule
           operator: Exists
+        - key: node-role.kubernetes.io/ha-only
+          effect: NoSchedule
+          operator: Equal
+          value: reserved
         - key: memory-constrained
           effect: NoSchedule
           operator: Equal
