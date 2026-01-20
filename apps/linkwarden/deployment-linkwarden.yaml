@@ -23,14 +23,12 @@ spec:
       containers:
         - name: linkwarden
           image: ghcr.io/linkwarden/linkwarden:latest
-          command: ["/bin/sh", "-c"]
-          args:
-            - >-
-              export DATABASE_URL="postgresql://linkwarden:${POSTGRES_PASSWORD}@localhost:5432/linkwarden" && exec node server.js
           ports:
             - containerPort: 3000
               name: http
           env:
+            - name: DATABASE_URL
+              value: "postgresql://linkwarden:$(POSTGRES_PASSWORD)@localhost:5432/linkwarden"
             - name: NEXTAUTH_URL
               value: "https://linkwarden.xrs444.net"
             - name: NEXTAUTH_SECRET
