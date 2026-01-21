@@ -32,6 +32,8 @@ spec:
               chmod 700 /home/borgwarehouse/.ssh
               chown -R 1001:1001 /home/borgwarehouse/app/config
               chown -R 1001:1001 /home/borgwarehouse/logs
+              chown -R 1001:1001 /home/borgwarehouse/repos || true
+              chmod 755 /home/borgwarehouse/repos || true
           volumeMounts:
             - name: borgwarehouse-config
               mountPath: /home/borgwarehouse/app/config
@@ -39,6 +41,8 @@ spec:
               mountPath: /home/borgwarehouse/.ssh
             - name: borgwarehouse-logs
               mountPath: /home/borgwarehouse/logs
+            - name: borgwarehouse-repos
+              mountPath: /home/borgwarehouse/repos
           securityContext:
             runAsUser: 0
             runAsNonRoot: false
