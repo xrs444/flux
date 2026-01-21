@@ -57,13 +57,32 @@ spec:
               value: "America/Phoenix"
           volumeMounts:
             - name: borgwarehouse-config
-              mountPath: /app/data
+              mountPath: /home/borgwarehouse/app/config
+            - name: borgwarehouse-ssh
+              mountPath: /home/borgwarehouse/.ssh
+            - name: borgwarehouse-ssh-host
+              mountPath: /etc/ssh
             - name: borgwarehouse-repos
-              mountPath: /repos
+              mountPath: /home/borgwarehouse/repos
+            - name: borgwarehouse-tmp
+              mountPath: /home/borgwarehouse/tmp
+            - name: borgwarehouse-logs
+              mountPath: /home/borgwarehouse/logs
       volumes:
         - name: borgwarehouse-config
           persistentVolumeClaim:
             claimName: borgwarehouse-config-pvc
+        - name: borgwarehouse-ssh
+          persistentVolumeClaim:
+            claimName: borgwarehouse-ssh-pvc
+        - name: borgwarehouse-ssh-host
+          persistentVolumeClaim:
+            claimName: borgwarehouse-ssh-host-pvc
         - name: borgwarehouse-repos
           persistentVolumeClaim:
             claimName: borgwarehouse-devicebackups-pvc
+        - name: borgwarehouse-tmp
+          emptyDir: {}
+        - name: borgwarehouse-logs
+          persistentVolumeClaim:
+            claimName: borgwarehouse-logs-pvc
