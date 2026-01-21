@@ -12,7 +12,7 @@ spec:
   storageClassName: nfs
   nfs:
     path: /zfs/devicebackups
-    server: xsvr1.lan
+    server: 72.20.3.201
   mountOptions:
     - nfsvers=4
     - hard
