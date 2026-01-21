@@ -12,6 +12,7 @@ resources:
   - ./omada                 # TP-Link network controller
   - ./craftycontroller      # Minecraft server management (Helm)
   - ./atuin                 # Shell history sync server
+  - ./borgwarehouse         # Borg backup repository manager
   - ./jellyfin              # Media streaming server
   - ./n8n                   # Workflow automation platform
   - ./mealie                # Recipe management

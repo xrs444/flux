@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: borgwarehouse
+  namespace: borgwarehouse
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`borgwarehouse.xrs444.net`)
+      kind: Rule
+      services:
+        - name: borgwarehouse
+          port: 3000
+  tls:
+    certResolver: cloudflare

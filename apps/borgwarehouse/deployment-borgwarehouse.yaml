@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: borgwarehouse
+  namespace: borgwarehouse
+  labels:
+    app: borgwarehouse
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: borgwarehouse
+  template:
+    metadata:
+      labels:
+        app: borgwarehouse
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsNonRoot: true
+      containers:
+        - name: borgwarehouse
+          image: ghcr.io/borgwarehouse/borgwarehouse:latest
+          ports:
+            - containerPort: 3000
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          env:
+            - name: TZ
+              value: "America/Phoenix"
+          volumeMounts:
+            - name: borgwarehouse-config
+              mountPath: /app/data
+            - name: borgwarehouse-repos
+              mountPath: /repos
+      volumes:
+        - name: borgwarehouse-config
+          persistentVolumeClaim:
+            claimName: borgwarehouse-config-pvc
+        - name: borgwarehouse-repos
+          persistentVolumeClaim:
+            claimName: borgwarehouse-devicebackups-pvc
