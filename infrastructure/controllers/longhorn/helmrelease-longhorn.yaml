@@ -25,24 +25,6 @@ spec:
     remediation:
       remediateLastFailure: true
       retries: 5
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: DaemonSet
-              name: longhorn-manager
-            patch: |
-              - op: add
-                path: /spec/template/spec/volumes/-
-                value:
-                  name: longhorn-backup-nfs
-                  persistentVolumeClaim:
-                    claimName: longhorn-backup-nfs
-              - op: add
-                path: /spec/template/spec/containers/0/volumeMounts/-
-                value:
-                  name: longhorn-backup-nfs
-                  mountPath: /var/lib/longhorn-backup
   values:
     # Talos Linux compatibility configuration
     # Talos requires special settings since it doesn't include
