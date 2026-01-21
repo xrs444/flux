@@ -50,10 +50,10 @@ spec:
 
     defaultSettings:
       # Backup configuration
-      # Using local path mounted from NFS PVC (managed by kubelet)
-      # This works around Talos limitation where pods cannot mount NFS directly
-      backupTarget: "/var/lib/longhorn-backup"
-      backupTargetCredentialSecret: ""
+      # Using CIFS/SMB to work around Talos NFSv4.1/4.2 mounting restrictions
+      # CIFS mounts work reliably on Talos where NFS direct mounts fail
+      backupTarget: "cifs://172.20.3.201/longhorn-backups"
+      backupTargetCredentialSecret: "cifs-secret"
       backupExecutionTimeout: "900"  # 15 minutes in seconds for system backups
 
       # Storage settings
