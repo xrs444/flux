@@ -50,6 +50,8 @@ spec:
           resources:
             requests:
               storage: 50Mi
+        labels:
+          recurring-job-group.longhorn.io/default: enabled
 
     postgresql:
       enabled: true
@@ -61,6 +63,8 @@ spec:
         persistence:
           enabled: true
           size: 1Gi
+          labels:
+            recurring-job-group.longhorn.io/default: enabled
         resources:
           requests:
             cpu: 100m

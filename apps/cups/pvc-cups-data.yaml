@@ -4,7 +4,7 @@ metadata:
   name: cups-data
   namespace: cups
   labels:
-    longhorn.io/backup-group: default
+    recurring-job-group.longhorn.io/default: enabled
 spec:
   accessModes:
     - ReadWriteOnce

@@ -45,6 +45,8 @@ persistence:
   accessMode: ReadWriteOnce
   size: 20Gi
   mountPath: /crafty_web
+  labels:
+    recurring-job-group.longhorn.io/default: enabled
 
 resources:
   limits:

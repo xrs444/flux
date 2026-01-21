@@ -1,6 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+# Apply Longhorn backup label to all PVCs for daily backups
+commonLabels:
+  recurring-job-group.longhorn.io/default: enabled
+
 resources:
   # Persistent Volumes (NFS)
   - ./pv-jellyfin-media.yaml
