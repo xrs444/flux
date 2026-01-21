@@ -21,8 +21,27 @@ spec:
     spec:
       securityContext:
         fsGroup: 1001
-        runAsUser: 1001
-        runAsNonRoot: true
+      initContainers:
+        - name: fix-permissions
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              chown -R 1001:1001 /home/borgwarehouse/.ssh
+              chmod 700 /home/borgwarehouse/.ssh
+              chown -R 1001:1001 /home/borgwarehouse/app/config
+              chown -R 1001:1001 /home/borgwarehouse/logs
+          volumeMounts:
+            - name: borgwarehouse-config
+              mountPath: /home/borgwarehouse/app/config
+            - name: borgwarehouse-ssh
+              mountPath: /home/borgwarehouse/.ssh
+            - name: borgwarehouse-logs
+              mountPath: /home/borgwarehouse/logs
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
       containers:
         - name: borgwarehouse
           image: borgwarehouse/borgwarehouse:latest
