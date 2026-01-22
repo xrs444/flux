@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,7 +37,7 @@ spec:
             - name: WEB_CONCURRENCY
               value: "1"
             - name: BASE_URL
-              value: "http://mealie.local"
+              value: "https://mealie.xrs444.net"
             - name: DB_ENGINE
               value: "postgres"
             - name: POSTGRES_USER
@@ -49,6 +50,27 @@ spec:
               value: "5432"
             - name: POSTGRES_DB
               value: "mealie"
+            # OIDC Authentication
+            - name: OIDC_AUTH_ENABLED
+              value: "true"
+            - name: OIDC_CONFIGURATION_URL
+              value: "https://idm.xrs444.net/oauth2/openid/oauth2_mealie/.well-known/openid-configuration"  # yamllint disable-line rule:line-length
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-mealie
+                  key: client-id
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-mealie
+                  key: client-secret
+            - name: OIDC_SIGNUP_ENABLED
+              value: "true"
+            - name: OIDC_USER_GROUP
+              value: "mealie"
+            - name: OIDC_ADMIN_GROUP
+              value: "mealie-admin"
           volumeMounts:
             - name: mealie-data
               mountPath: /app/data

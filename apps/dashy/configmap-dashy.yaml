@@ -32,7 +32,7 @@ data:
       enableMultiTasking: false
       webSearch:
         disableWebSearch: false
-        searchEngine: duckduckgo
+        searchEngine: google
       hideComponents:
         hideHeading: false
         hideNav: false
@@ -194,7 +194,7 @@ data:
           - title: Traefik Dashboard
             description: Ingress controller
             icon: hl-traefik
-            url: https://traefik.xrs444.net
+            url: https://traefik.xrs444.net/dashboard/
             target: newtab
             statusCheck: true
             id: 4_3_traefik

@@ -8,3 +8,4 @@ resources:
   - deployment-mealie.yaml
   - service-mealie.yaml
   - ingressroute-mealie.yaml
+  - oauth2-sealedsecret-mealie.yaml
