@@ -13,4 +13,8 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 172.20.3.201
-    path: /zfs/documents/manyfold
+    path: /export/zfs/documents/manyfold
+  mountOptions:
+    - vers=4.1
+    - hard
+    - intr
