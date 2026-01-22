@@ -8,7 +8,7 @@ metadata:
     metallb.universe.tf/allow-shared-ip: minecraft
 spec:
   type: LoadBalancer
-  loadBalancerIP: 172.20.3.210  # Adjust to your available IP range
+  loadBalancerIP: 172.21.0.8  # Adjust to your available IP range
   ports:
     - port: 25565
       targetPort: 25565
