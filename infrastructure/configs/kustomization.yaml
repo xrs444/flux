@@ -8,3 +8,4 @@ resources:
   - ./helmrepositories      # Additional Helm repositories for configs
   - ./cluster-issuers       # Let's Encrypt certificate issuers
   - ./reflector             # Secret/ConfigMap replication across namespaces
+  - ./coredns               # CoreDNS custom configuration for idm.xrs444.net

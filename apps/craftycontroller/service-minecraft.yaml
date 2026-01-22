@@ -26,7 +26,7 @@ metadata:
 spec:
   forwardAuth:
     address: >-
-      http://kanidm-oauth2-proxy.kanidm.svc.cluster.local:4180/oauth2/auth
+      http://oauth2-proxy.traefik.svc.cluster.local:4180/oauth2/auth
     trustForwardHeader: true
     authResponseHeaders:
       - X-Auth-Request-User
