@@ -71,6 +71,12 @@ spec:
               value: "mealie"
             - name: OIDC_ADMIN_GROUP
               value: "mealie-admin"
+            - name: OIDC_AUTO_REDIRECT
+              value: "false"
+            - name: OIDC_PROVIDER_NAME
+              value: "Kanidm"
+            - name: OIDC_REMEMBER_ME
+              value: "true"
           volumeMounts:
             - name: mealie-data
               mountPath: /app/data
