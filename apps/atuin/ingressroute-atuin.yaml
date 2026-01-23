@@ -10,7 +10,7 @@ spec:
     - match: Host(`atuin.xrs444.net`)
       kind: Rule
       services:
-        - name: atuin-server
+        - name: atuin
           port: 8888
   tls:
     secretName: letsencrypt-wildcard-cert-xrs444.net
