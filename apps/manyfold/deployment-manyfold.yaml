@@ -52,8 +52,8 @@ spec:
               mountPath: /store
           resources:
             requests:
-              cpu: 500m
-              memory: 1Gi
+              cpu: 2500m
+              memory: 3Gi
             # limits:
             #   cpu: 2000m
             #   memory: 4Gi  # Temporarily removed for one-off processing
@@ -70,9 +70,9 @@ spec:
               path: /health
               port: http
             initialDelaySeconds: 30
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 5
         - name: postgres
           image: postgres:16-alpine
           env:
