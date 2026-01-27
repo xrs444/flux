@@ -10,6 +10,9 @@ spec:
   routes:
     - match: Host(`nocodb.xrs444.net`)
       kind: Rule
+      middlewares:
+        - name: nocodb-oauth2
+          namespace: nocodb
       services:
         - name: nocodb
           port: 8080

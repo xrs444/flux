@@ -1,5 +1,5 @@
 # NocoDB - No-code database platform
-# Supports Kanidm OIDC authentication (configure via NC_AUTH_JWT_SECRET)
+# Auth shim bridges oauth2-proxy SSO to NocoDB local authentication
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -8,4 +8,7 @@ resources:
   - deployment-nocodb.yaml
   - service-nocodb.yaml
   - ingressroute-nocodb.yaml
-  - oauth2-sealedsecret-nocodb.yaml
+  - configmap-auth-shim.yaml
+  - middleware-nocodb-auth.yaml
+  # Uncomment after creating sealed secret:
+  - user-mapping-sealedsecret-nocodb.yaml
