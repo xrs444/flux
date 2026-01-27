@@ -54,9 +54,9 @@ spec:
             requests:
               cpu: 100m
               memory: 256Mi
-            limits:
-              cpu: 2000m
-              memory: 2Gi
+            # limits:
+            #   cpu: 2000m
+            #   memory: 2Gi  # Temporarily removed for one-off processing
           livenessProbe:
             httpGet:
               path: /health
@@ -105,7 +105,7 @@ spec:
               memory: 64Mi
             limits:
               cpu: 500m
-              memory: 256Mi
+              memory: 512Mi
       volumes:
         - name: data
           persistentVolumeClaim:
