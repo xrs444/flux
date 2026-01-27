@@ -52,7 +52,7 @@ spec:
               mountPath: /store
           resources:
             requests:
-              cpu: 1500m
+              cpu: 1000m
               memory: 2Gi
             # limits:
             #   cpu: 2000m
