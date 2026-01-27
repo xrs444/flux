@@ -52,11 +52,11 @@ spec:
               mountPath: /store
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 500m
+              memory: 1Gi
             # limits:
             #   cpu: 2000m
-            #   memory: 2Gi  # Temporarily removed for one-off processing
+            #   memory: 4Gi  # Temporarily removed for one-off processing
           livenessProbe:
             httpGet:
               path: /health
@@ -101,11 +101,11 @@ spec:
               name: redis
           resources:
             requests:
-              cpu: 50m
-              memory: 64Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
+              cpu: 100m
+              memory: 256Mi
+            # limits:
+            #   cpu: 500m
+            #   memory: 1Gi  # Temporarily removed for one-off processing
       volumes:
         - name: data
           persistentVolumeClaim:
