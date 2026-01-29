@@ -40,7 +40,10 @@ spec:
             - name: DATABASE_USER
               value: "manyfold"
             - name: DATABASE_PASSWORD
-              value: "manyfold"
+              valueFrom:
+                secretKeyRef:
+                  name: manyfold-db-password
+                  key: password
             - name: SECRET_KEY_BASE
               value: "changeme-generate-a-secure-key"
             - name: REDIS_URL
@@ -53,10 +56,10 @@ spec:
           resources:
             requests:
               cpu: 1000m
-              memory: 2Gi
+              memory: 4Gi
             # limits:
             #   cpu: 2000m
-            #   memory: 4Gi  # Temporarily removed for one-off processing
+            #   memory: 8Gi  # Temporarily removed for one-off processing
           livenessProbe:
             httpGet:
               path: /health
@@ -81,7 +84,10 @@ spec:
             - name: POSTGRES_USER
               value: "manyfold"
             - name: POSTGRES_PASSWORD
-              value: "manyfold"
+              valueFrom:
+                secretKeyRef:
+                  name: manyfold-db-password
+                  key: password
             - name: PGDATA
               value: "/var/lib/postgresql/data/pgdata"
           volumeMounts:
