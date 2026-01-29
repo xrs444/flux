@@ -1,0 +1,31 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus-external
+  labels:
+    app: prometheus
+    component: external-scraper
+rules:
+  # Allow reading nodes and node metrics
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/metrics
+      - nodes/stats
+      - nodes/proxy
+    verbs: ["get", "list", "watch"]
+
+  # Allow reading services and endpoints
+  - apiGroups: [""]
+    resources:
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+
+  # Allow reading non-resource URLs (API server metrics)
+  - nonResourceURLs:
+      - /metrics
+      - /metrics/cadvisor
+    verbs: ["get"]
