@@ -1,0 +1,227 @@
+# yamllint disable rule:line-length
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbox
+  namespace: netbox
+  labels:
+    app: netbox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netbox
+  template:
+    metadata:
+      labels:
+        app: netbox
+    spec:
+      containers:
+        # NetBox main container
+        - name: netbox
+          image: netboxcommunity/netbox:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            # Basic configuration
+            - name: SKIP_SUPERUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: SKIP_SUPERUSER
+            # Database configuration
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: netbox-secret
+                  key: DB_PASSWORD
+            # Redis configuration
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: REDIS_HOST
+            - name: REDIS_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: REDIS_DATABASE
+            - name: REDIS_CACHE_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: REDIS_CACHE_DATABASE
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: netbox-secret
+                  key: REDIS_PASSWORD
+            # Django secret key
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: netbox-secret
+                  key: SECRET_KEY
+            # OIDC Authentication
+            - name: REMOTE_AUTH_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: REMOTE_AUTH_ENABLED
+            - name: REMOTE_AUTH_BACKEND
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: REMOTE_AUTH_BACKEND
+            - name: SOCIAL_AUTH_OIDC_OIDC_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: SOCIAL_AUTH_OIDC_OIDC_ENDPOINT
+            - name: SOCIAL_AUTH_OIDC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-netbox
+                  key: client-id
+            - name: SOCIAL_AUTH_OIDC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-netbox
+                  key: client-secret
+            - name: REMOTE_AUTH_AUTO_CREATE_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: REMOTE_AUTH_AUTO_CREATE_USER
+            - name: REMOTE_AUTH_DEFAULT_GROUPS
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: REMOTE_AUTH_DEFAULT_GROUPS
+            - name: REMOTE_AUTH_DEFAULT_PERMISSIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: REMOTE_AUTH_DEFAULT_PERMISSIONS
+          volumeMounts:
+            - name: media
+              mountPath: /opt/netbox/netbox/media
+            - name: reports
+              mountPath: /opt/netbox/netbox/reports
+            - name: scripts
+              mountPath: /opt/netbox/netbox/scripts
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 5
+
+        # PostgreSQL sidecar
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: DB_NAME
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: netbox-secret
+                  key: DB_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+
+        # Redis sidecar
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          command:
+            - redis-server
+            - --appendonly
+            - "yes"
+            - --requirepass
+            - "$(REDIS_PASSWORD)"
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: netbox-secret
+                  key: REDIS_PASSWORD
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: netbox-media
+        - name: reports
+          persistentVolumeClaim:
+            claimName: netbox-reports
+        - name: scripts
+          persistentVolumeClaim:
+            claimName: netbox-scripts
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-data
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-data

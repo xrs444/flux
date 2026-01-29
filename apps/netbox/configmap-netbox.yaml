@@ -1,0 +1,26 @@
+# yamllint disable rule:line-length
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netbox-config
+  namespace: netbox
+data:
+  SKIP_SUPERUSER: "true"
+  DB_HOST: "localhost"
+  DB_NAME: "netbox"
+  DB_USER: "netbox"
+  REDIS_HOST: "localhost"
+  REDIS_DATABASE: "0"
+  REDIS_CACHE_DATABASE: "1"
+  # OIDC Configuration for Kanidm
+  REMOTE_AUTH_ENABLED: "true"
+  REMOTE_AUTH_BACKEND: >-
+    social_core.backends.open_id_connect.OpenIdConnectAuth
+  SOCIAL_AUTH_OIDC_OIDC_ENDPOINT: >-
+    https://idm.xrs444.net/oauth2/openid/oauth2_netbox
+  SOCIAL_AUTH_OIDC_KEY: "oauth2_netbox"
+  # Auto-create users from OIDC
+  REMOTE_AUTH_AUTO_CREATE_USER: "true"
+  REMOTE_AUTH_DEFAULT_GROUPS: ""
+  REMOTE_AUTH_DEFAULT_PERMISSIONS: "{}"
