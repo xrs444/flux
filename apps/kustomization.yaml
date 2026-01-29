@@ -20,6 +20,7 @@ resources:
   - ./manyfold              # 3D print file manager
   - ./kube-state-metrics    # Kubernetes object metrics for monitoring
   - ./loki                  # Log aggregation system
+  - ./prometheus-sa         # Prometheus ServiceAccount for external scraping
   - ./apprise               # Multi-platform notification service
   - ./nocodb                # No-code database platform
   - ./paperless-ngx         # Document management system
