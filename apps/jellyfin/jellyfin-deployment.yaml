@@ -48,7 +48,12 @@ spec:
             tcpSocket:
               port: http
           resources:
-            {}
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 2000m
+              memory: 1Gi
           volumeMounts:
             - mountPath: /config
               name: config

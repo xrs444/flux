@@ -51,10 +51,10 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 1Gi
+              memory: 2Gi
             limits:
               cpu: 1000m
-              memory: 2Gi
+              memory: 3Gi
           env:
             - name: TZ
               value: "UTC"
