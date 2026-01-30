@@ -3,6 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: manyfold-db
   namespace: manyfold
+  annotations:
+    # Prevent Flux from trying to update immutable PVC fields
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
 spec:
   accessModes:
     - ReadWriteOnce
