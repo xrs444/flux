@@ -10,3 +10,5 @@ resources:
   - service-linkwarden.yaml
   - ingressroute-linkwarden.yaml
   - oauth2-sealedsecret-linkwarden.yaml
+  # Storage resources
+  - pvc-linkwarden-data.yaml

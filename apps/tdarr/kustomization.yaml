@@ -11,5 +11,12 @@ resources:
   - ./deployment-tdarr.yaml
   - ./service-tdarr.yaml
   - ./ingressroute-tdarr.yaml
-  - ../storage/pvc-tdarr-jellyfin-media.yaml
-  - ../storage/pvc-tdarr-jellyfin-tvshows.yaml
+  # Storage resources
+  - ./pv-tdarr-jellyfin-media.yaml
+  - ./pv-tdarr-jellyfin-tvshows.yaml
+  - ./pv-tdarr-media-ingest.yaml
+  - ./pvc-tdarr-config.yaml
+  - ./pvc-tdarr-jellyfin-media.yaml
+  - ./pvc-tdarr-jellyfin-tvshows.yaml
+  - ./pvc-tdarr-media-ingest.yaml
+  - ./pvc-tdarr-server.yaml

@@ -9,3 +9,6 @@ resources:
   - service-mealie.yaml
   - ingressroute-mealie.yaml
   - oauth2-sealedsecret-mealie.yaml
+  # Storage resources
+  - pvc-mealie-data.yaml
+  - pvc-mealie-postgres.yaml

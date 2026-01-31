@@ -11,3 +11,5 @@ resources:
   - ingressroute-loki.yaml
   - configmap-promtail.yaml
   - daemonset-promtail.yaml
+  # Storage resources
+  - pvc-loki-data.yaml

@@ -1,3 +1,4 @@
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
@@ -7,4 +8,5 @@ resources:
   - ./secret-lubelogger-email.yaml
   - ./helmrelease-lubelogger.yaml
   - ./ingressroute-lubelogger.yaml
-  - ./configmap-helm-chart-overrides-lubelogger.yaml
+  - ./configmap-helm-chart-overrides-lubelogger.yaml  # Storage resources
+  - pvc-lubelogger.yaml

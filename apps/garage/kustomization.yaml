@@ -12,3 +12,5 @@ resources:
   - service-garage-s3.yaml
   - service-garage-web.yaml
   - ingressroute-garage.yaml
+  # Storage resources
+  - pvc-garage-data.yaml

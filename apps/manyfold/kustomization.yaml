@@ -8,3 +8,7 @@ resources:
   - deployment-manyfold.yaml
   - service-manyfold.yaml
   - ingressroute-manyfold.yaml
+  # Storage resources
+  - pv-manyfold-store.yaml
+  - pvc-manyfold-data.yaml
+  - pvc-manyfold-store.yaml

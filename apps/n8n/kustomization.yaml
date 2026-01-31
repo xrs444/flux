@@ -8,3 +8,5 @@ resources:
   - deployment-n8n.yaml
   - service-n8n.yaml
   - ingressroute-n8n.yaml
+  # Storage resources
+  - pvc-n8n-data.yaml

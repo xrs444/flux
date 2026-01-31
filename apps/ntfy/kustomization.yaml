@@ -10,3 +10,5 @@ resources:
   - service-ntfy.yaml
   - ingressroute-ntfy.yaml
   - sealedsecret-ntfy-users.yaml
+  # Storage resources
+  - pvc-ntfy-data.yaml

@@ -8,3 +8,6 @@ resources:
   - deployment-audiobookshelf.yaml
   - service-audiobookshelf.yaml
   - ingressroute-audiobookshelf.yaml
+  # Storage resources
+  - pvc-audiobookshelf-config.yaml
+  - pvc-audiobookshelf-metadata.yaml

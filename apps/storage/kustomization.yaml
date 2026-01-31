@@ -2,43 +2,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Apply Longhorn backup label to all PVCs for daily backups
-commonLabels:
-  recurring-job-group.longhorn.io/default: enabled
+# NOTE: All PV/PVC resources moved to respective app folders
+# This kustomization kept for historical reference and backup label config
+# The commonLabels below applied Longhorn backup labels to all PVCs
 
-resources:
-  # Persistent Volumes (NFS)
-  - ./pv-jellyfin-media.yaml
-  - ./pv-jellyfin-tvshows.yaml
-  - ./pv-manyfold-store.yaml
-  - ./pv-tdarr-media-ingest.yaml
+# Legacy backup configuration (now handled per-app):
+# commonLabels:
+#   recurring-job-group.longhorn.io/default: enabled
 
-  # Persistent Volume Claims
-  - ./pvc-atuin-data.yaml
-  - ./pvc-audiobookshelf-config.yaml
-  - ./pvc-audiobookshelf-metadata.yaml
-  - ./pvc-garage-data.yaml
-  - ./pvc-jellyfin-config.yaml
-  - ./pvc-jellyfin-media.yaml
-  - ./pvc-jellyfin-tvshows.yaml
-  - ./pvc-jitsi-config.yaml
-  - ./pvc-linkwarden-data.yaml
-  - ./pvc-loki-data.yaml
-  - ./pvc-lubelogger.yaml
-  - ./pvc-manyfold-data.yaml
-  # pvc-manyfold-db.yaml disabled - already deployed
-  # immutable fields cause Flux errors
-  - ./pvc-manyfold-store.yaml
-  - ./pvc-mealie-data.yaml
-  - ./pvc-mealie-postgres.yaml
-  - ./pvc-n8n-data.yaml
-  - ./pvc-nocodb-data.yaml
-  - ./pvc-ntfy-data.yaml
-  - ./pvc-omada-data.yaml
-  - ./pvc-omada-logs.yaml
-  - ./pvc-paperless-consume.yaml
-  - ./pvc-paperless-data.yaml
-  - ./pvc-paperless-media.yaml
-  - ./pvc-tdarr-config.yaml
-  - ./pvc-tdarr-media-ingest.yaml
-  - ./pvc-tdarr-server.yaml
+resources: []

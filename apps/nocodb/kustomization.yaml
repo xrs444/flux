@@ -12,3 +12,5 @@ resources:
   - middleware-nocodb-auth.yaml
   # Uncomment after creating sealed secret:
   - user-mapping-sealedsecret-nocodb.yaml
+  # Storage resources
+  - pvc-nocodb-data.yaml

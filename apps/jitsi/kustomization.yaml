@@ -11,3 +11,5 @@ resources:
   - service-jitsi-web.yaml
   - service-jitsi-jvb.yaml
   - ingressroute-jitsi.yaml
+  # Storage resources
+  - pvc-jitsi-config.yaml

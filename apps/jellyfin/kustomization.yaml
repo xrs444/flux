@@ -12,3 +12,9 @@ resources:
   - ./jellyfin-deployment.yaml
   - ./jellyfin-service.yaml
   - ./ingressroute-jellyfin.yaml
+  # Storage resources
+  - ./pv-jellyfin-media.yaml
+  - ./pv-jellyfin-tvshows.yaml
+  - ./pvc-jellyfin-config.yaml
+  - ./pvc-jellyfin-media.yaml
+  - ./pvc-jellyfin-tvshows.yaml
