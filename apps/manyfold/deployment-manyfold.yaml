@@ -17,10 +17,11 @@ spec:
       labels:
         app: manyfold
     spec:
+      # TODO: Re-enable after Phase 2 (VM resource increase)
       # Schedule on talos-mpp-bzt (xsvr3) - lighter loaded node,
       # away from Dashy traffic
-      nodeSelector:
-        kubernetes.io/hostname: talos-mpp-bzt
+      # nodeSelector:
+      #   kubernetes.io/hostname: talos-mpp-bzt
       containers:
         - name: manyfold
           image: ghcr.io/manyfold3d/manyfold:latest
