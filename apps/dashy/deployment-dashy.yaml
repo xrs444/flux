@@ -17,6 +17,9 @@ spec:
       labels:
         app: dashy
     spec:
+      # Schedule on talos-mpp-bzt (xsvr3) - the least loaded node
+      nodeSelector:
+        kubernetes.io/hostname: talos-mpp-bzt
       containers:
         - name: dashy
           image: lissy93/dashy:3.1.0
@@ -36,11 +39,11 @@ spec:
               readOnly: true
           resources:
             requests:
-              cpu: 500m
-              memory: 512Mi
+              cpu: 100m  # Reduced from 500m since status checks are disabled
+              memory: 256Mi
             limits:
-              cpu: 2000m
-              memory: 2Gi
+              cpu: 500m  # Reduced from 2000m to prevent monopolizing resources
+              memory: 1Gi
           startupProbe:
             httpGet:
               path: /

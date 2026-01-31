@@ -25,8 +25,9 @@ data:
       layout: auto
       iconSize: medium
       language: en
-      statusCheck: true
-      statusCheckInterval: 300
+      # Disabled to prevent excessive CPU usage from health checks
+      statusCheck: false
+      statusCheckInterval: 3600  # Increased to 1 hour if re-enabled
       faviconApi: local
       routingMode: history
       enableMultiTasking: false

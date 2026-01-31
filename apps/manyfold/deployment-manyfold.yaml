@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,6 +17,10 @@ spec:
       labels:
         app: manyfold
     spec:
+      # Schedule on talos-mpp-bzt (xsvr3) - lighter loaded node,
+      # away from Dashy traffic
+      nodeSelector:
+        kubernetes.io/hostname: talos-mpp-bzt
       containers:
         - name: manyfold
           image: ghcr.io/manyfold3d/manyfold:latest
