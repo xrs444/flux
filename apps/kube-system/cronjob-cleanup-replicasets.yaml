@@ -1,0 +1,83 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-replicasets
+  namespace: kube-system
+spec:
+  # Run weekly on Sunday at 2 AM
+  schedule: "0 2 * * 0"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: cleanup-replicasets
+          restartPolicy: OnFailure
+          containers:
+            - name: kubectl
+              image: bitnami/kubectl:latest
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  echo "Starting orphaned replicaset cleanup..."
+
+                  # Get all replicasets with 0 replicas across all namespaces
+                  ORPHANED=$(kubectl get replicasets -A -o json | \
+                    jq -r '.items[] |
+                      select(.spec.replicas == 0 and .status.replicas == 0) |
+                      "\(.metadata.namespace) \(.metadata.name)"')
+
+                  if [ -z "$ORPHANED" ]; then
+                    echo "No orphaned replicasets found."
+                    exit 0
+                  fi
+
+                  COUNT=$(echo "$ORPHANED" | wc -l)
+                  echo "Found $COUNT orphaned replicasets to delete"
+
+                  # Delete each orphaned replicaset
+                  echo "$ORPHANED" | while read namespace name; do
+                    echo "Deleting $namespace/$name"
+                    kubectl delete replicaset \
+                      -n "$namespace" "$name" --wait=false
+                  done
+
+                  echo "Cleanup complete!"
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cleanup-replicasets
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cleanup-replicasets
+rules:
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cleanup-replicasets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cleanup-replicasets
+subjects:
+  - kind: ServiceAccount
+    name: cleanup-replicasets
+    namespace: kube-system

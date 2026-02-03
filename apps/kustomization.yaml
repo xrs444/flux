@@ -7,6 +7,7 @@ kind: Kustomization
 
 resources:
   - ./helmrepositories      # External Helm chart repositories
+  - ./kube-system           # Cluster maintenance jobs (replicaset cleanup)
   - ./metrics-server        # Cluster-wide resource metrics
   - ./lubelogger            # Vehicle maintenance tracking
   - ./omada                 # TP-Link network controller
