@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -10,9 +11,9 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 spec:
   revisionHistoryLimit: 3
-  strategy:
-    type: RollingUpdate
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: jellyfin
