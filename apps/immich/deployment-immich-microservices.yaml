@@ -31,10 +31,10 @@ spec:
                   name: immich-db
                   key: password
           volumeMounts:
-            - name: library
-              mountPath: /usr/src/app/upload/library
             - name: upload
               mountPath: /usr/src/app/upload
+            - name: library
+              mountPath: /mnt/media/library
           resources:
             requests:
               cpu: 200m

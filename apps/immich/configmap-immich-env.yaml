@@ -11,6 +11,8 @@ data:
   DB_PORT: "5432"
   REDIS_HOSTNAME: immich-redis
   REDIS_PORT: "6379"
+  # Storage configuration
+  EXTERNAL_PATH: "/mnt/media/library"
   # OIDC Configuration for Kanidm
   OAUTH_ENABLED: "true"
   OAUTH_ISSUER_URL: "https://idm.xrs444.net/oauth2/openid/oauth2_immich"

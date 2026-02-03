@@ -39,10 +39,10 @@ spec:
                   name: immich-oauth2
                   key: client-secret
           volumeMounts:
-            - name: library
-              mountPath: /usr/src/app/upload/library
             - name: upload
               mountPath: /usr/src/app/upload
+            - name: library
+              mountPath: /mnt/media/library
           livenessProbe:
             httpGet:
               path: /api/server-info/ping
