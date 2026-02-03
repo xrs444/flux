@@ -42,7 +42,7 @@ spec:
             - name: library
               mountPath: /usr/src/app/upload/library
             - name: upload
-              mountPath: /usr/src/app/upload/upload
+              mountPath: /usr/src/app/upload
           livenessProbe:
             httpGet:
               path: /api/server-info/ping
