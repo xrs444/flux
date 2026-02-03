@@ -5,8 +5,8 @@ metadata:
   name: cleanup-replicasets
   namespace: kube-system
 spec:
-  # Run weekly on Sunday at 2 AM
-  schedule: "0 2 * * 0"
+  # Run nightly at 2 AM
+  schedule: "0 2 * * *"
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   jobTemplate:
