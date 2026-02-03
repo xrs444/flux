@@ -59,7 +59,10 @@ spec:
       auth:
         database: atuin
         username: atuin
-        password: "atuin-postgres-password-changeme"
+        existingSecret: atuin-postgresql
+        secretKeys:
+          adminPasswordKey: password
+          userPasswordKey: password
       primary:
         persistence:
           enabled: true
