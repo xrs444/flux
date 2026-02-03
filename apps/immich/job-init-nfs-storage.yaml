@@ -1,0 +1,36 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: immich-init-nfs-storage
+  namespace: immich
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: init
+          image: busybox:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              # Create required subdirectories
+              mkdir -p /storage/upload /storage/thumbs /storage/profile \
+                       /storage/video /storage/encoded-video /storage/backups \
+                       /storage/library
+              # Create .immich marker files
+              touch /storage/upload/.immich /storage/thumbs/.immich \
+                    /storage/profile/.immich /storage/video/.immich \
+                    /storage/encoded-video/.immich /storage/backups/.immich \
+                    /storage/library/.immich
+              echo "Initialized Immich storage structure:"
+              ls -la /storage/
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: immich-photos
