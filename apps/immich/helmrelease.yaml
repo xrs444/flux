@@ -67,8 +67,8 @@ spec:
         cache:
           enabled: true
           size: 10Gi
-          type: persistentVolumeClaim
-          storageClass: longhorn
+          # Use emptyDir for ML cache (will re-download models on restart)
+          type: emptyDir
 
     # Use external PostgreSQL
     postgresql:
