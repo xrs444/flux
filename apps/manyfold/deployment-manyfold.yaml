@@ -9,6 +9,8 @@ metadata:
 spec:
   revisionHistoryLimit: 3
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: manyfold
@@ -61,8 +63,8 @@ spec:
               mountPath: /store
           resources:
             requests:
-              cpu: 1000m
-              memory: 4Gi
+              cpu: 500m
+              memory: 2Gi
             limits:
               cpu: 2000m
               memory: 6Gi
@@ -101,10 +103,10 @@ spec:
               mountPath: /var/lib/postgresql/data
           resources:
             requests:
-              cpu: 100m
+              cpu: 50m
               memory: 128Mi
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 512Mi
         - name: redis
           image: redis:7-alpine
@@ -113,11 +115,11 @@ spec:
               name: redis
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 128Mi
             limits:
               cpu: 500m
-              memory: 1Gi
+              memory: 512Mi
       volumes:
         - name: data
           persistentVolumeClaim:
