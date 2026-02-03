@@ -17,7 +17,10 @@ spec:
       containers:
         - name: immich-microservices
           image: ghcr.io/immich-app/immich-server:release
-          command: ["/bin/sh", "-c", "/usr/src/app/start-microservices.sh"]
+          command:
+            - /bin/sh
+            - -c
+            - /usr/src/app/server/bin/start.sh microservices
           envFrom:
             - configMapRef:
                 name: immich-env
