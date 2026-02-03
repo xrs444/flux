@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - ./helmrepository-reflector.yaml
+  - ./helmrepository-immich.yaml

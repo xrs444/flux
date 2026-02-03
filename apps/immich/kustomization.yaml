@@ -4,20 +4,20 @@ kind: Kustomization
 namespace: immich
 resources:
   - namespace.yaml
+  # NFS persistent volume for photos
   - pv-immich-photos.yaml
   - pvc-immich-photos.yaml
-  - pvc-immich-upload.yaml
-  - pvc-immich-db.yaml
-  - configmap-immich-env.yaml
+  # Sealed secrets
   - sealedsecret-immich-oauth2.yaml
   - sealedsecret-immich-db.yaml
+  # PostgreSQL (external, not managed by Helm chart)
+  - pvc-immich-db.yaml
   - deployment-immich-postgres.yaml
-  - deployment-immich-redis.yaml
-  - deployment-immich-server.yaml
-  - deployment-immich-microservices.yaml
-  - deployment-immich-machine-learning.yaml
   - service-immich-postgres.yaml
+  # Redis (external, not managed by Helm chart)
+  - deployment-immich-redis.yaml
   - service-immich-redis.yaml
-  - service-immich-server.yaml
-  - service-immich-machine-learning.yaml
+  # Helm release
+  - helmrelease.yaml
+  # Ingress
   - ingressroute-immich.yaml
