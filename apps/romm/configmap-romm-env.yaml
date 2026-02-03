@@ -13,12 +13,13 @@ data:
   # ROMM configuration
   ROMM_HOST: "0.0.0.0"
   ROMM_PORT: "8080"
-  # OIDC Configuration for Kanidm
-  ENABLE_EXPERIMENTAL_REDIS: "false"
+  # Features - keep all defaults
   ENABLE_SCHEDULED_RESCAN: "true"
-  ENABLE_SCHEDULED_UPDATE_MAME_XML: "true"
+  ENABLE_SCHEDULED_UPDATE_SWITCH_TITLEDB: "false"
+  ENABLE_SCHEDULED_UPDATE_LAUNCHBOX_METADATA: "false"
+  ENABLE_RESCAN_ON_FILESYSTEM_CHANGE: "false"
+  # Authentication
   ROMM_AUTH_ENABLED: "true"
-  ROMM_AUTH_SECRET_KEY: "change-this-to-a-random-secret-key"
   # OAuth2/OIDC
   OAUTH_ENABLED: "true"
   OAUTH_PROVIDER: "generic"
