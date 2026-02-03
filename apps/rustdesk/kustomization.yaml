@@ -1,0 +1,12 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: rustdesk
+resources:
+  - namespace.yaml
+  - pvc-rustdesk-data.yaml
+  - deployment-rustdesk-hbbs.yaml
+  - deployment-rustdesk-hbbr.yaml
+  - service-rustdesk-hbbs.yaml
+  - service-rustdesk-hbbr.yaml
+  - ingressroute-rustdesk.yaml

@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: romm-mariadb
+  namespace: romm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: romm-mariadb
+  template:
+    metadata:
+      labels:
+        app: romm-mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:11
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: romm-db
+                  key: root-password
+            - name: MYSQL_DATABASE
+              value: romm
+            - name: MYSQL_USER
+              value: romm
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: romm-db
+                  key: password
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/mysql
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: romm-db

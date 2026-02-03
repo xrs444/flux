@@ -17,6 +17,11 @@ data:
     # Format: topic permissions username
     # Permissions: deny-all
     acl:
+      # Apprise - central notification router with access to all topics
+      - topic: "*"
+        permission: "write-only"
+        username: "apprise"
+
       # Monitoring topics
       - topic: "alerts"
         permission: "write-only"
@@ -41,14 +46,6 @@ data:
       - topic: "homeassistant"
         permission: "read-only"
         username: "dog"
-
-      # N8N workflows
-      - topic: "workflows"
-        permission: "write-only"
-        username: "n8n"
-      - topic: "workflows"
-        permission: "read-only"
-        username: "xrs444"
 
       # Paperless
       - topic: "documents"

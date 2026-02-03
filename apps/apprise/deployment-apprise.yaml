@@ -26,12 +26,13 @@ spec:
             - containerPort: 8000
               name: http
           env:
+            # Stateless URLs for default notification endpoints
+            # All webhooks to /notify will use these URLs
             - name: APPRISE_STATELESS_URLS
               valueFrom:
                 secretKeyRef:
                   name: apprise-config
                   key: ntfy-url
-                  optional: true
           resources:
             requests:
               cpu: 50m

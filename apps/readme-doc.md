@@ -16,7 +16,6 @@ Application deployments for the HomeProd K3s cluster. Each application is organi
 - **lubelogger/** - Vehicle maintenance and fuel tracking application
 - **mealie/** - Recipe management and meal planning
 - **metrics-server/** - Cluster-wide resource usage metrics
-- **n8n/** - Workflow automation platform (self-hosted Zapier alternative)
 - **omada/** - TP-Link Omada network controller for managing APs and switches
 - **podinfo/** - Demo application for testing deployments and GitOps
 - **storage/** - Storage class configurations and policies

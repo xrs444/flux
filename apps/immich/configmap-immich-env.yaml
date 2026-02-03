@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: immich-env
+  namespace: immich
+data:
+  DB_HOSTNAME: immich-postgres
+  DB_USERNAME: immich
+  DB_DATABASE_NAME: immich
+  DB_PORT: "5432"
+  REDIS_HOSTNAME: immich-redis
+  REDIS_PORT: "6379"
+  # OIDC Configuration for Kanidm
+  OAUTH_ENABLED: "true"
+  OAUTH_ISSUER_URL: "https://idm.xrs444.net/oauth2/openid/oauth2_immich"
+  OAUTH_CLIENT_ID: "oauth2_immich"
+  OAUTH_SCOPE: "openid email profile"
+  OAUTH_BUTTON_TEXT: "Login with Kanidm"
+  OAUTH_AUTO_REGISTER: "true"
+  OAUTH_AUTO_LAUNCH: "false"

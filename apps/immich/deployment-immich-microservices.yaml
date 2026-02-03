@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immich-microservices
+  namespace: immich
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: immich-microservices
+  template:
+    metadata:
+      labels:
+        app: immich-microservices
+    spec:
+      containers:
+        - name: immich-microservices
+          image: ghcr.io/immich-app/immich-server:release
+          command: ["/bin/sh"]
+          args: ["./start-microservices.sh"]
+          envFrom:
+            - configMapRef:
+                name: immich-env
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: immich-db
+                  key: password
+          volumeMounts:
+            - name: library
+              mountPath: /usr/src/app/upload/library
+            - name: upload
+              mountPath: /usr/src/app/upload/upload
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 4000m
+              memory: 8Gi
+      volumes:
+        - name: library
+          persistentVolumeClaim:
+            claimName: immich-photos
+        - name: upload
+          persistentVolumeClaim:
+            claimName: immich-upload

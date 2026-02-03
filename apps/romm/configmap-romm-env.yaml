@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: romm-env
+  namespace: romm
+data:
+  # Database configuration
+  DB_HOST: romm-mariadb
+  DB_PORT: "3306"
+  DB_NAME: romm
+  DB_USER: romm
+  # ROMM configuration
+  ROMM_HOST: "0.0.0.0"
+  ROMM_PORT: "8080"
+  # OIDC Configuration for Kanidm
+  ENABLE_EXPERIMENTAL_REDIS: "false"
+  ENABLE_SCHEDULED_RESCAN: "true"
+  ENABLE_SCHEDULED_UPDATE_MAME_XML: "true"
+  ROMM_AUTH_ENABLED: "true"
+  ROMM_AUTH_SECRET_KEY: "change-this-to-a-random-secret-key"
+  # OAuth2/OIDC
+  OAUTH_ENABLED: "true"
+  OAUTH_PROVIDER: "generic"
+  OAUTH_CLIENT_ID: "oauth2_romm"
+  OAUTH_AUTHORIZATION_URL: "https://idm.xrs444.net/oauth2/authorise"
+  OAUTH_TOKEN_URL: "https://idm.xrs444.net/oauth2/token"
+  OAUTH_USERINFO_URL: >-
+    https://idm.xrs444.net/oauth2/openid/oauth2_romm/userinfo
+  OAUTH_REDIRECT_URI: "https://romm.xrs444.net/oauth/callback"
+  OAUTH_SCOPES: "openid email profile"

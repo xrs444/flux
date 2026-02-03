@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rustdesk
+  namespace: rustdesk
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`rustdesk.xrs444.net`)
+      kind: Rule
+      services:
+        - name: rustdesk-hbbs
+          port: 21118
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

@@ -35,7 +35,9 @@ data:
             period: 24h
 
     ruler:
-      alertmanager_url: http://localhost:9093
+      # Send alerts to Prometheus Alertmanager on xsvr1
+      # Alertmanager will then forward to Apprise → ntfy
+      alertmanager_url: http://xsvr1.lan:9093
 
     # TODO: Configure retention policy for log cleanup
     limits_config:

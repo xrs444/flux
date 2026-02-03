@@ -49,7 +49,6 @@ This Flux deployment follows a layered approach with clear dependency management
 - **Jellyfin**: Media streaming server
 - **LubeLogger**: Vehicle maintenance tracking
 - **Mealie**: Recipe management
-- **n8n**: Workflow automation platform
 - **Omada**: TP-Link network controller
 - **Metrics Server**: Cluster-wide resource metrics
 - **Kube-State-Metrics**: Kubernetes object metrics for monitoring
@@ -90,6 +89,34 @@ See individual \`readme-doc.md\` files in each directory for detailed component 
 - [charts/readme-doc.md](charts/readme-doc.md) - Custom Helm charts
 - [scripts/readme-doc.md](scripts/readme-doc.md) - Utility scripts
 
+### Operational Guides
+
+**Alerting & Notifications:**
+
+- [docs/APPRISE_DEPLOYMENT_SUMMARY.md](docs/APPRISE_DEPLOYMENT_SUMMARY.md) - Apprise deployment overview and status
+- [docs/APPRISE_SETUP.md](docs/APPRISE_SETUP.md) - Centralized notification architecture with Apprise
+- [docs/APPRISE_MIGRATION_GUIDE.md](docs/APPRISE_MIGRATION_GUIDE.md) - Step-by-step service migration to Apprise
+- [docs/APPRISE_QUICK_REFERENCE.md](docs/APPRISE_QUICK_REFERENCE.md) - Quick reference for Apprise API usage
+
+**Monitoring & Observability:**
+
+- [docs/MONITORING_SETUP.md](docs/MONITORING_SETUP.md) - Complete monitoring stack setup guide
+- [docs/TELEMETRY-AUDIT-IMPLEMENTATION.md](docs/TELEMETRY-AUDIT-IMPLEMENTATION.md) - Telemetry and logging implementation summary
+
+**Performance & Resources:**
+
+- [docs/RESOURCE_OPTIMIZATION_SUMMARY.md](docs/RESOURCE_OPTIMIZATION_SUMMARY.md) - Cluster resource optimization guide
+
+**Authentication & Storage:**
+
+- [docs/kanidm-oidc-integration.md](docs/kanidm-oidc-integration.md) - Kanidm OIDC integration
+- [docs/storage-management-guide.md](docs/storage-management-guide.md) - Storage management and recovery
+- [docs/storage-recovery-2026-01-04.md](docs/storage-recovery-2026-01-04.md) - Storage recovery incident report
+
+**Application Deployments:**
+
+- [docs/new-apps-summary.md](docs/new-apps-summary.md) - New applications summary
+
 ## Quick Reference
 
 ### Check Flux Status
@@ -124,7 +151,7 @@ flux reconcile kustomization flux-system --with-source
 - Set up storage for Manyfold
 - Migrate Freepbx from existing VM
 - Build Dashy dashboard
-- Add Apprise to feed to Ntfy
+- ~~Add Apprise to feed to Ntfy~~ ✅ Done - see [docs/APPRISE_SETUP.md](docs/APPRISE_SETUP.md)
 - BorgWarehouse for Borg backups
 - Immich
 - Configure Garage

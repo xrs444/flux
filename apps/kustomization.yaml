@@ -14,7 +14,6 @@ resources:
   - ./atuin                 # Shell history sync server
   - ./borgwarehouse         # Borg backup repository manager
   - ./jellyfin              # Media streaming server
-  - ./n8n                   # Workflow automation platform
   - ./mealie                # Recipe management
   - ./audiobookshelf        # Audiobook and podcast server
   - ./manyfold              # 3D print file manager
@@ -31,4 +30,7 @@ resources:
   - ./garage                # S3-compatible object storage
   - ./tdarr                 # Automated media transcoding and organization
   - ./dashy                 # Unified dashboard for all services
+  - ./immich                # Photo and video management platform
+  - ./romm                  # ROM collection manager
+  - ./rustdesk              # Remote desktop solution
   - ./storage               # Storage PVCs (applied last after namespaces exist)

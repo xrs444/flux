@@ -1,0 +1,23 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: immich
+resources:
+  - namespace.yaml
+  - pv-immich-photos.yaml
+  - pvc-immich-photos.yaml
+  - pvc-immich-upload.yaml
+  - pvc-immich-db.yaml
+  - configmap-immich-env.yaml
+  - sealedsecret-immich-oauth2.yaml
+  - sealedsecret-immich-db.yaml
+  - deployment-immich-postgres.yaml
+  - deployment-immich-redis.yaml
+  - deployment-immich-server.yaml
+  - deployment-immich-microservices.yaml
+  - deployment-immich-machine-learning.yaml
+  - service-immich-postgres.yaml
+  - service-immich-redis.yaml
+  - service-immich-server.yaml
+  - service-immich-machine-learning.yaml
+  - ingressroute-immich.yaml

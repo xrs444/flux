@@ -8,3 +8,4 @@ resources:
   - deployment-apprise.yaml
   - service-apprise.yaml
   - sealedsecret-apprise-config.yaml
+  - ingressroute-apprise.yaml
