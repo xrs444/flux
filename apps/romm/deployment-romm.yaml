@@ -36,6 +36,11 @@ spec:
                 secretKeyRef:
                   name: romm-oauth2
                   key: client-secret
+            - name: ROMM_AUTH_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: romm-auth
+                  key: secret-key
           volumeMounts:
             - name: library
               mountPath: /romm/library

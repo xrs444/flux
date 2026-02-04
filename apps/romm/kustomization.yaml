@@ -12,6 +12,7 @@ resources:
   - configmap-romm-env.yaml
   - sealedsecret-romm-oauth2.yaml
   - sealedsecret-romm-db.yaml
+  - sealedsecret-romm-auth.yaml
   - deployment-romm-mariadb.yaml
   - deployment-romm.yaml
   - service-romm-mariadb.yaml
