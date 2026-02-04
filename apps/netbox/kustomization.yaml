@@ -17,3 +17,6 @@ resources:
   # Helm Releases
   - helmrelease-netbox.yaml
   - helmrelease-diode.yaml
+
+  # Ingress
+  - ingressroute-netbox.yaml

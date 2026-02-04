@@ -118,21 +118,9 @@ spec:
     superuser:
       enabled: false
 
-    # Ingress configuration
+    # Ingress configuration (disabled - using IngressRoute instead)
     ingress:
-      enabled: true
-      className: traefik
-      annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-prod"
-      hosts:
-        - host: netbox.xrs444.net
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - secretName: netbox-tls
-          hosts:
-            - netbox.xrs444.net
+      enabled: false
 
     # Health checks
     livenessProbe:
