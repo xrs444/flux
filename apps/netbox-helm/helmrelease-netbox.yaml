@@ -1,0 +1,154 @@
+# yamllint disable rule:line-length
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: netbox
+  namespace: netbox
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: netbox
+      version: '>=5.0.0 <6.0.0'
+      sourceRef:
+        kind: HelmRepository
+        name: netbox
+        namespace: netbox
+      interval: 12h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # NetBox image configuration
+    image:
+      repository: netboxcommunity/netbox
+      tag: latest
+      pullPolicy: IfNotPresent
+
+    # Replicas
+    replicaCount: 1
+
+    # Resources
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "2Gi"
+        cpu: "1000m"
+
+    # Persistence for media files
+    persistence:
+      enabled: true
+      storageClass: ""
+      size: 5Gi
+
+    # PostgreSQL configuration
+    postgresql:
+      enabled: true
+      auth:
+        username: netbox
+        database: netbox
+        existingSecret: netbox-secret
+        secretKeys:
+          adminPasswordKey: DB_PASSWORD
+          userPasswordKey: DB_PASSWORD
+      primary:
+        persistence:
+          enabled: true
+          size: 10Gi
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+    # Redis configuration
+    redis:
+      enabled: true
+      auth:
+        existingSecret: netbox-secret
+        existingSecretPasswordKey: REDIS_PASSWORD
+      master:
+        persistence:
+          enabled: true
+          size: 5Gi
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+    # NetBox configuration
+    secretKey:
+      existingSecret: netbox-secret
+      secretKey: SECRET_KEY
+
+    # OIDC Authentication with Kanidm
+    remoteAuth:
+      enabled: true
+      backend: social_core.backends.open_id_connect.OpenIdConnectAuth
+      autoCreateUser: true
+      defaultGroups: []
+      defaultPermissions: {}
+
+    # OIDC specific configuration
+    extraEnvs:
+      - name: SOCIAL_AUTH_OIDC_OIDC_ENDPOINT
+        value: "https://idm.xrs444.net/oauth2/openid/oauth2_netbox"
+      - name: SOCIAL_AUTH_OIDC_KEY
+        valueFrom:
+          secretKeyRef:
+            name: oauth2-secret-netbox
+            key: client-id
+      - name: SOCIAL_AUTH_OIDC_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: oauth2-secret-netbox
+            key: client-secret
+
+    # Skip superuser creation (using OIDC)
+    superuser:
+      enabled: false
+
+    # Ingress configuration
+    ingress:
+      enabled: true
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      hosts:
+        - host: netbox.xrs444.net
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: netbox-tls
+          hosts:
+            - netbox.xrs444.net
+
+    # Health checks
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 10
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 5
+
+  # Wait for secrets to exist before installing
+  valuesFrom:
+    - kind: Secret
+      name: netbox-secret
+      valuesKey: DB_PASSWORD
+      targetPath: postgresql.auth.password
+      optional: false

@@ -1,0 +1,12 @@
+# Prevent committing unsealed secrets
+*-secret.yaml
+!sealedsecret-*.yaml
+
+# Temporary files
+/tmp/
+*.tmp
+
+# Build artifacts
+*.pyc
+__pycache__/
+.pytest_cache/

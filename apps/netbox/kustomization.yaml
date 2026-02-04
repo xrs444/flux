@@ -15,3 +15,6 @@ resources:
   - deployment-netbox.yaml
   - service-netbox.yaml
   - ingressroute-netbox.yaml
+  - service-diode.yaml
+  # Uncomment the line below to expose Diode externally
+  # - ingressroute-diode.yaml

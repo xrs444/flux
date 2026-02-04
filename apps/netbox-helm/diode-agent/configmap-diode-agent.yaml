@@ -1,0 +1,41 @@
+# yamllint disable rule:line-length
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: diode-agent-config
+  namespace: diode-agent
+data:
+  # Diode Server connection (Helm deployment)
+  # Note: Helm chart creates service with format: <release-name>-diode-server
+  DIODE_SERVER_URL: "diode-diode-server.netbox.svc.cluster.local:8081"
+  DIODE_USE_TLS: "false"
+
+  # Discovery settings
+  DISCOVERY_ENABLED_METHODS: "snmp,nmap,kubernetes,lldp"
+
+  # Network scanning ranges (comma-separated CIDR ranges)
+  NETWORK_SCAN_RANGES: "192.168.1.0/24,10.0.0.0/24"
+
+  # SNMP settings
+  SNMP_VERSION: "2c"
+  SNMP_PORT: "161"
+  SNMP_TIMEOUT: "5"
+  SNMP_RETRIES: "2"
+
+  # LLDP/CDP settings (requires SSH access to network devices)
+  LLDP_ENABLED: "true"
+  LLDP_SSH_PORT: "22"
+
+  # Kubernetes discovery settings
+  K8S_DISCOVERY_ENABLED: "true"
+  K8S_NODE_DEVICE_ROLE: "server"
+  K8S_NODE_SITE: "homelab"
+
+  # Logging
+  LOG_LEVEL: "info"
+
+  # Device defaults for discovered items
+  DEFAULT_SITE: "homelab"
+  DEFAULT_TENANT: ""
+  DEFAULT_DEVICE_ROLE: "network-device"

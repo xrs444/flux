@@ -1,0 +1,94 @@
+# yamllint disable rule:line-length
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: diode
+  namespace: netbox
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: diode
+      version: '>=1.13.0'
+      sourceRef:
+        kind: HelmRepository
+        name: diode
+        namespace: netbox
+      interval: 12h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  # Wait for NetBox to be ready
+  dependsOn:
+    - name: netbox
+  values:
+    # Diode Server configuration
+    diode-server:
+      enabled: true
+      replicaCount: 1
+
+      image:
+        repository: netboxlabs/diode-server
+        tag: latest
+        pullPolicy: IfNotPresent
+
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "100m"
+        limits:
+          memory: "1Gi"
+          cpu: "500m"
+
+      service:
+        type: ClusterIP
+        port: 8081
+        protocol: TCP
+
+      # NetBox connection configuration
+      config:
+        netbox:
+          # Connect to NetBox service in same namespace
+          apiUrl: "http://netbox:8080"
+          # API token from secret
+          apiTokenSecret:
+            name: netbox-secret
+            key: DIODE_API_TOKEN
+
+        # Logging
+        logLevel: info
+
+      # Health checks
+      livenessProbe:
+        enabled: true
+        tcpSocket:
+          port: 8081
+        initialDelaySeconds: 30
+        periodSeconds: 10
+
+      readinessProbe:
+        enabled: true
+        tcpSocket:
+          port: 8081
+        initialDelaySeconds: 10
+        periodSeconds: 5
+
+    # Optional: Diode Ingress for external access
+    ingress:
+      enabled: false
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      hosts:
+        - host: diode.xrs444.net
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: diode-tls
+          hosts:
+            - diode.xrs444.net

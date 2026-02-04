@@ -209,6 +209,44 @@ spec:
               memory: "512Mi"
               cpu: "500m"
 
+        # Diode Server sidecar
+        - name: diode-server
+          image: netboxlabs/diode-server:latest
+          ports:
+            - containerPort: 8081
+              name: diode-grpc
+          env:
+            - name: DIODE_NETBOX_API_URL
+              value: "http://localhost:8080"
+            - name: DIODE_NETBOX_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: netbox-secret
+                  key: DIODE_API_TOKEN
+            - name: DIODE_LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: netbox-config
+                  key: DIODE_LOG_LEVEL
+                  optional: true
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
       volumes:
         - name: media
           persistentVolumeClaim:
