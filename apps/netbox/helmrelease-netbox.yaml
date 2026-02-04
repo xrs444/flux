@@ -88,9 +88,8 @@ spec:
             cpu: "500m"
 
     # NetBox configuration
-    secretKey:
-      existingSecret: netbox-secret
-      secretKey: SECRET_KEY
+    # Use existing secret for SECRET_KEY
+    existingSecret: netbox-secret
 
     # OIDC Authentication with Kanidm
     remoteAuth:
