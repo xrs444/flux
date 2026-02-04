@@ -34,4 +34,5 @@ resources:
   - ./immich                # Photo and video management platform
   - ./romm                  # ROM collection manager
   - ./rustdesk              # Remote desktop solution
+  - ./netbox                # Network source of truth and IPAM/DCIM platform
   - ./storage               # Storage PVCs (applied last after namespaces exist)
