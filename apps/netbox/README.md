@@ -86,7 +86,7 @@ After NetBox is deployed, you need to:
 
 ```bash
 # Deploy the Helm releases
-kubectl apply -k flux/apps/netbox-helm/
+kubectl apply -k flux/apps/netbox/
 
 # Or use Flux
 flux reconcile kustomization flux-system --with-source
@@ -95,7 +95,7 @@ flux reconcile kustomization flux-system --with-source
 ### Step 3: Build Discovery Agent
 
 ```bash
-cd flux/apps/netbox-helm/diode-agent/
+cd flux/apps/netbox/diode-agent/
 
 # Build container
 export CONTAINER_REGISTRY="your-registry.example.com"
@@ -125,7 +125,7 @@ kubeseal --format=yaml --cert=<your-cert> \
 
 3. Deploy agent:
 ```bash
-kubectl apply -k flux/apps/netbox-helm/diode-agent/
+kubectl apply -k flux/apps/netbox/diode-agent/
 ```
 
 ### Step 5: Verify
@@ -225,7 +225,7 @@ data:
 version: '>=5.1.0 <6.0.0'
 
 # Commit and push
-git add flux/apps/netbox-helm/helmrelease-netbox.yaml
+git add flux/apps/netbox/helmrelease-netbox.yaml
 git commit -m "Upgrade NetBox chart to 5.1"
 git push
 
@@ -278,7 +278,7 @@ If you're migrating from the old `flux/apps/netbox/` directory:
 ## File Structure
 
 ```
-flux/apps/netbox-helm/
+flux/apps/netbox/
 ├── namespace-netbox.yaml              # Namespace definition
 ├── helmrepository-netbox.yaml         # NetBox chart repo
 ├── helmrepository-diode.yaml          # Diode chart repo (OCI)

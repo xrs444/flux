@@ -6,8 +6,9 @@ metadata:
   name: diode-agent-config
   namespace: diode-agent
 data:
-  # Diode Server connection
-  DIODE_SERVER_URL: "diode-server.netbox.svc.cluster.local:8081"
+  # Diode Server connection (Helm deployment)
+  # Note: Helm chart creates service with format: <release-name>-diode-server
+  DIODE_SERVER_URL: "diode-diode-server.netbox.svc.cluster.local:8081"
   DIODE_USE_TLS: "false"
 
   # Discovery settings

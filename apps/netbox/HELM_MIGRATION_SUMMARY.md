@@ -106,7 +106,7 @@ flux/apps/
 │   ├── diode-agent/                 #    ⬇️ Copied to new location
 │   └── ...
 │
-└── netbox-helm/                     # ✨ NEW - Helm-based deployment
+└── netbox/                     # ✨ NEW - Helm-based deployment
     ├── namespace-netbox.yaml        # Namespace
     ├── helmrepository-netbox.yaml   # NetBox chart repo
     ├── helmrepository-diode.yaml    # Diode chart repo (OCI)
@@ -205,7 +205,7 @@ data:
 
 ### Option 1: Fresh Deployment (Recommended)
 
-1. **Deploy new Helm-based stack** to `netbox-helm/`
+1. **Deploy new Helm-based stack** to `netbox/`
 2. **Verify** everything works
 3. **Archive old deployment** (`flux/apps/netbox/`)
 4. **Update Flux kustomization** to reference new path
@@ -246,7 +246,7 @@ data:
 
 4. **Deploy**
    - [ ] Choose migration strategy (fresh, in-place, or side-by-side)
-   - [ ] Apply kustomization: `kubectl apply -k flux/apps/netbox-helm/`
+   - [ ] Apply kustomization: `kubectl apply -k flux/apps/netbox/`
    - [ ] Verify: `flux get helmreleases -n netbox`
 
 ### Post-Deployment
@@ -254,7 +254,7 @@ data:
 5. **Configure Discovery Agent**
    - [ ] Edit network ranges in `diode-agent/configmap-diode-agent.yaml`
    - [ ] Create sealed credentials
-   - [ ] Deploy agent: `kubectl apply -k flux/apps/netbox-helm/diode-agent/`
+   - [ ] Deploy agent: `kubectl apply -k flux/apps/netbox/diode-agent/`
 
 6. **Test Discovery**
    - [ ] Run manual discovery job

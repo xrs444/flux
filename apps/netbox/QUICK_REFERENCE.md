@@ -4,7 +4,7 @@
 
 ```bash
 # 1. Deploy NetBox + Diode (Helm)
-kubectl apply -k flux/apps/netbox-helm/
+kubectl apply -k flux/apps/netbox/
 
 # 2. Check status
 flux get helmreleases -n netbox
@@ -112,7 +112,7 @@ kubectl run -it --rm test --image=busybox --restart=Never -- \
 version: '>=5.1.0 <6.0.0'
 
 # 2. Commit and push
-git add flux/apps/netbox-helm/
+git add flux/apps/netbox/
 git commit -m "Upgrade NetBox chart"
 git push
 
@@ -227,7 +227,7 @@ kubectl patch cronjob diode-discovery-agent -n diode-agent \
 ## 🎯 Important Paths
 
 ```
-flux/apps/netbox-helm/
+flux/apps/netbox/
 ├── README.md                    # Full documentation
 ├── HELM_MIGRATION_SUMMARY.md    # Migration guide
 ├── QUICK_REFERENCE.md           # This file
@@ -251,14 +251,14 @@ flux/apps/netbox-helm/
 Initial Setup:
 - [ ] Review Helm values in helmrelease files
 - [ ] Verify sealed secrets exist
-- [ ] Deploy: `kubectl apply -k flux/apps/netbox-helm/`
+- [ ] Deploy: `kubectl apply -k flux/apps/netbox/`
 - [ ] Check pods: `kubectl get pods -n netbox`
 - [ ] Access NetBox UI: https://netbox.xrs444.net
 - [ ] Create API token with write permissions
 - [ ] Add DIODE_API_TOKEN to sealedsecret-netbox.yaml
 - [ ] Build discovery agent container
 - [ ] Configure network ranges in agent ConfigMap
-- [ ] Deploy agent: `kubectl apply -k flux/apps/netbox-helm/diode-agent/`
+- [ ] Deploy agent: `kubectl apply -k flux/apps/netbox/diode-agent/`
 - [ ] Test discovery: manual job run
 - [ ] Verify devices in NetBox
 
