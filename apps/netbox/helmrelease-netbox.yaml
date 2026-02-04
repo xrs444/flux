@@ -50,8 +50,6 @@ spec:
     # PostgreSQL configuration
     postgresql:
       enabled: true
-      image:
-        tag: "16"  # Use PostgreSQL 16 (stable)
       auth:
         username: netbox
         database: netbox
@@ -71,11 +69,9 @@ spec:
             memory: "1Gi"
             cpu: "500m"
 
-    # Redis configuration
-    redis:
+    # Valkey (Redis-compatible) configuration
+    valkey:
       enabled: true
-      image:
-        tag: "7.2"  # Use Redis 7.2 (stable)
       auth:
         existingSecret: netbox-secret
         existingSecretPasswordKey: REDIS_PASSWORD
