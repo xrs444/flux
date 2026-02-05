@@ -55,8 +55,8 @@ spec:
         database: netbox
         existingSecret: netbox-secret
         secretKeys:
-          adminPasswordKey: DB_PASSWORD
-          userPasswordKey: DB_PASSWORD
+          adminPasswordKey: db_password
+          userPasswordKey: db_password
       primary:
         persistence:
           enabled: true
@@ -74,7 +74,7 @@ spec:
       enabled: true
       auth:
         existingSecret: netbox-secret
-        existingSecretPasswordKey: REDIS_PASSWORD
+        existingSecretPasswordKey: redis_password
       master:
         persistence:
           enabled: true
