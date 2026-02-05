@@ -136,6 +136,6 @@ spec:
   valuesFrom:
     - kind: Secret
       name: netbox-secret
-      valuesKey: DB_PASSWORD
+      valuesKey: db_password
       targetPath: postgresql.auth.password
       optional: false
