@@ -7,6 +7,7 @@ metadata:
   namespace: netbox
 spec:
   interval: 30m
+  timeout: 15m
   chart:
     spec:
       chart: netbox
@@ -16,7 +17,6 @@ spec:
         name: netbox
         namespace: netbox
       interval: 12h
-  timeout: 15m
   install:
     remediation:
       retries: 3
@@ -24,23 +24,25 @@ spec:
     remediation:
       retries: 3
   values:
-    # Replicas
+    # Basic configuration
     replicaCount: 1
 
-    # Resources
-    resources:
-      requests:
-        memory: "512Mi"
-        cpu: "250m"
-      limits:
-        memory: "2Gi"
-        cpu: "1000m"
-
-    # Persistence for media files
-    persistence:
+    # Superuser configuration (using existing secret)
+    superuser:
       enabled: true
-      storageClass: ""
-      size: 5Gi
+      name: admin
+      email: admin@xrs444.net
+      existingSecret: netbox-superuser
+      existingSecretPasswordKey: password
+      existingSecretApiTokenKey: api_token
+
+    # Use existing secret for Django secret key
+    existingSecret: netbox-secret
+
+    # Network configuration
+    allowedHosts:
+      - netbox.xrs444.net
+      - "*"
 
     # PostgreSQL configuration
     postgresql:
@@ -56,43 +58,29 @@ spec:
         persistence:
           enabled: true
           size: 10Gi
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
 
     # Valkey (Redis-compatible) configuration
     valkey:
       enabled: true
       auth:
+        enabled: true
         existingSecret: netbox-secret
         existingSecretPasswordKey: redis_password
-      master:
-        persistence:
-          enabled: true
-          size: 5Gi
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
 
-    # NetBox configuration
-    # Use existing secret for SECRET_KEY
-    existingSecret: netbox-secret
+    # Persistence for media files
+    persistence:
+      enabled: true
+      size: 5Gi
+
+    # Disable built-in ingress (using Traefik IngressRoute)
+    ingress:
+      enabled: false
 
     # OIDC Authentication with Kanidm
     remoteAuth:
       enabled: true
       backend: social_core.backends.open_id_connect.OpenIdConnectAuth
       autoCreateUser: true
-      defaultGroups: []
-      defaultPermissions: {}
 
     # OIDC specific configuration
     extraEnvs:
@@ -108,27 +96,3 @@ spec:
           secretKeyRef:
             name: oauth2-secret-netbox
             key: client-secret
-
-    # Skip superuser creation (using OIDC)
-    superuser:
-      enabled: false
-
-    # Ingress configuration (disabled - using IngressRoute instead)
-    ingress:
-      enabled: false
-
-    # Health checks - disable default nginx status probes
-    startupProbe:
-      enabled: false
-    livenessProbe:
-      enabled: false
-    readinessProbe:
-      enabled: false
-
-  # Wait for secrets to exist before installing
-  valuesFrom:
-    - kind: Secret
-      name: netbox-secret
-      valuesKey: db_password
-      targetPath: postgresql.auth.password
-      optional: false
