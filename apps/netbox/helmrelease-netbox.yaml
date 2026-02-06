@@ -16,6 +16,7 @@ spec:
         name: netbox
         namespace: netbox
       interval: 12h
+  timeout: 15m
   install:
     remediation:
       retries: 3
