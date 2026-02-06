@@ -123,14 +123,23 @@ spec:
       initialDelaySeconds: 30
       periodSeconds: 10
       failureThreshold: 60
+      httpGet:
+        path: /login/
+        port: http
     livenessProbe:
       enabled: true
       initialDelaySeconds: 60
       periodSeconds: 10
+      httpGet:
+        path: /login/
+        port: http
     readinessProbe:
       enabled: true
       initialDelaySeconds: 30
       periodSeconds: 5
+      httpGet:
+        path: /login/
+        port: http
 
   # Wait for secrets to exist before installing
   valuesFrom:
