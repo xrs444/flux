@@ -27,7 +27,7 @@ spec:
     # NetBox image configuration
     image:
       repository: netboxcommunity/netbox
-      tag: latest
+      tag: v4.1-3.0.3
       pullPolicy: IfNotPresent
 
     # Replicas
