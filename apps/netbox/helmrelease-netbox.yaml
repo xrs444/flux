@@ -117,29 +117,13 @@ spec:
     ingress:
       enabled: false
 
-    # Health checks
+    # Health checks - disable default nginx status probes
     startupProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 10
-      failureThreshold: 60
-      httpGet:
-        path: /login/
-        port: http
+      enabled: false
     livenessProbe:
-      enabled: true
-      initialDelaySeconds: 60
-      periodSeconds: 10
-      httpGet:
-        path: /login/
-        port: http
+      enabled: false
     readinessProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 5
-      httpGet:
-        path: /login/
-        port: http
+      enabled: false
 
   # Wait for secrets to exist before installing
   valuesFrom:
