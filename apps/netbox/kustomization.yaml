@@ -6,8 +6,9 @@ resources:
   # Namespace
   - namespace-netbox.yaml
 
-  # Secrets (from old deployment)
+  # Secrets
   - sealedsecret-netbox.yaml
+  - sealedsecret-superuser.yaml
   - oauth2-sealedsecret-netbox.yaml
 
   # Helm Repositories
