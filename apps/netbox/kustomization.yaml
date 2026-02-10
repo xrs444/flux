@@ -10,6 +10,7 @@ resources:
   - sealedsecret-netbox.yaml
   - sealedsecret-superuser.yaml
   - oauth2-sealedsecret-netbox.yaml
+  - sealedsecret-oidc-config.yaml
 
   # Helm Repositories
   - helmrepository-netbox.yaml

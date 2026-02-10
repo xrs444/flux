@@ -108,17 +108,13 @@ spec:
         - social_core.backends.open_id_connect.OpenIdConnectAuth
       autoCreateUser: true
 
-    # OIDC specific configuration
-    extraEnvs:
-      - name: SOCIAL_AUTH_OIDC_OIDC_ENDPOINT
-        value: "https://idm.xrs444.net/oauth2/openid/oauth2_netbox"
-      - name: SOCIAL_AUTH_OIDC_KEY
-        valueFrom:
-          secretKeyRef:
-            name: oauth2-secret-netbox
-            key: client-id
-      - name: SOCIAL_AUTH_OIDC_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: oauth2-secret-netbox
-            key: client-secret
+    # OIDC settings injected as Django settings via extraConfig
+    # (env vars alone are not loaded into Django settings by NetBox)
+    extraConfig:
+      - values:
+          SOCIAL_AUTH_OIDC_OIDC_ENDPOINT: "https://idm.xrs444.net/oauth2/openid/oauth2_netbox"
+      - secret:
+          secretName: netbox-oidc-config
+          items:
+            - key: oidc.yaml
+              path: oidc.yaml
