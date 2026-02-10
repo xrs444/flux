@@ -107,6 +107,8 @@ spec:
       backends:
         - social_core.backends.open_id_connect.OpenIdConnectAuth
       autoCreateUser: true
+      superusers:
+        - xrs444
 
     # OIDC settings injected as Django settings via extraConfig
     # (env vars alone are not loaded into Django settings by NetBox)
