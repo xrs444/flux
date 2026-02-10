@@ -43,6 +43,8 @@ spec:
     allowedHosts:
       - netbox.xrs444.net
       - "*"
+    csrfTrustedOrigins:
+      - https://netbox.xrs444.net
 
     # PostgreSQL configuration
     postgresql:
@@ -102,7 +104,8 @@ spec:
     # OIDC Authentication with Kanidm
     remoteAuth:
       enabled: true
-      backend: social_core.backends.open_id_connect.OpenIdConnectAuth
+      backends:
+        - social_core.backends.open_id_connect.OpenIdConnectAuth
       autoCreateUser: true
 
     # OIDC specific configuration
