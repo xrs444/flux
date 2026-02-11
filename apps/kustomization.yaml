@@ -35,4 +35,5 @@ resources:
   - ./romm                  # ROM collection manager
   - ./rustdesk              # Remote desktop solution
   - ./netbox                # Network source of truth and IPAM/DCIM platform
+  - ./spegel                 # Peer-to-peer container image caching
   - ./storage               # Storage PVCs (applied last after namespaces exist)
