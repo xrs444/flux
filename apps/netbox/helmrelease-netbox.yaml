@@ -75,10 +75,18 @@ spec:
         existingSecret: netbox-secret
         existingSecretPasswordKey: redis_password
 
-    # Persistence for media files
+    # Persistence for media files (RWO — requires Recreate strategy)
     persistence:
       enabled: true
       size: 5Gi
+
+    # Use Recreate strategy because the media PVC is RWO (Longhorn)
+    # and cannot be mounted by multiple pods simultaneously
+    updateStrategy:
+      type: Recreate
+    worker:
+      updateStrategy:
+        type: Recreate
 
     # Override probes — chart defaults target NGINX Unit (port 8081) which
     # no longer exists in NetBox v4.x (now uses Granian on port 8080)
