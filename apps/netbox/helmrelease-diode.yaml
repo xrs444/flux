@@ -32,9 +32,11 @@ spec:
       config:
         netboxDiodePluginApiBaseUrl: "http://netbox.netbox.svc.cluster.local/api/plugins/diode"
 
-    # Disable ingress-nginx — using Traefik externally, Diode only needs internal access
+    # Internal ingress-nginx routes /auth and gRPC between Diode services
     ingressNginx:
-      enabled: false
+      controller:
+        service:
+          type: ClusterIP
 
     # Cert-manager already deployed cluster-wide
     certManager:
