@@ -6,5 +6,4 @@ metadata:
   namespace: netbox
 spec:
   interval: 1h
-  type: oci
-  url: oci://ghcr.io/netboxlabs/diode
+  url: https://netboxlabs.github.io/diode/charts

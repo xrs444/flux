@@ -7,10 +7,11 @@ metadata:
   namespace: netbox
 spec:
   interval: 30m
+  timeout: 15m
   chart:
     spec:
       chart: diode
-      version: '>=1.13.0'
+      version: '>=1.13.0 <2.0.0'
       sourceRef:
         kind: HelmRepository
         name: diode
@@ -26,69 +27,15 @@ spec:
   dependsOn:
     - name: netbox
   values:
-    # Diode Server configuration
-    diode-server:
-      enabled: true
-      replicaCount: 1
-
-      image:
-        repository: netboxlabs/diode-server
-        tag: latest
-        pullPolicy: IfNotPresent
-
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "100m"
-        limits:
-          memory: "1Gi"
-          cpu: "500m"
-
-      service:
-        type: ClusterIP
-        port: 8081
-        protocol: TCP
-
-      # NetBox connection configuration
+    # Reconciler connects to NetBox's Diode plugin API
+    diodeReconciler:
       config:
-        netbox:
-          # Connect to NetBox service in same namespace
-          apiUrl: "http://netbox:8080"
-          # API token from secret
-          apiTokenSecret:
-            name: netbox-secret
-            key: DIODE_API_TOKEN
+        netboxDiodePluginApiBaseUrl: "http://netbox.netbox.svc.cluster.local/api/plugins/diode"
 
-        # Logging
-        logLevel: info
-
-      # Health checks
-      livenessProbe:
-        enabled: true
-        tcpSocket:
-          port: 8081
-        initialDelaySeconds: 30
-        periodSeconds: 10
-
-      readinessProbe:
-        enabled: true
-        tcpSocket:
-          port: 8081
-        initialDelaySeconds: 10
-        periodSeconds: 5
-
-    # Optional: Diode Ingress for external access
-    ingress:
+    # Disable ingress-nginx — using Traefik externally, Diode only needs internal access
+    ingressNginx:
       enabled: false
-      className: traefik
-      annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-prod"
-      hosts:
-        - host: diode.xrs444.net
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - secretName: diode-tls
-          hosts:
-            - diode.xrs444.net
+
+    # Cert-manager already deployed cluster-wide
+    certManager:
+      enabled: false

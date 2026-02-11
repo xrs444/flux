@@ -6,11 +6,20 @@ resources:
   # Namespace
   - namespace-netbox.yaml
 
-  # Secrets
+  # Secrets — NetBox
   - sealedsecret-netbox.yaml
   - sealedsecret-superuser.yaml
   - oauth2-sealedsecret-netbox.yaml
   - sealedsecret-oidc-config.yaml
+  - sealedsecret-diode-plugin-config.yaml
+
+  # Secrets — Diode
+  - sealedsecret-diode-postgresql-secret.yaml
+  - sealedsecret-diode-redis-secret.yaml
+  - sealedsecret-diode-hydra-secret.yaml
+  - sealedsecret-diode-auth-oauth2-secret.yaml
+  - sealedsecret-diode-ingester-secret.yaml
+  - sealedsecret-diode-reconciler-secret.yaml
 
   # Helm Repositories
   - helmrepository-netbox.yaml

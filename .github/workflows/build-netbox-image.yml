@@ -1,0 +1,57 @@
+# yamllint disable rule:line-length rule:truthy
+---
+name: Build NetBox Custom Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      netbox_version:
+        description: 'NetBox version tag (e.g. v4.5.2)'
+        required: true
+        default: 'v4.5.2'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/netbox/custom-image/**'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/netbox-custom
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set NetBox version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VER="${{ github.event.inputs.netbox_version }}"
+            echo "netbox_version=${VER}" >> "$GITHUB_OUTPUT"
+          else
+            echo "netbox_version=v4.5.2" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: apps/netbox/custom-image
+          push: true
+          build-args: |
+            NETBOX_VERSION=${{ steps.version.outputs.netbox_version }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.netbox_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
