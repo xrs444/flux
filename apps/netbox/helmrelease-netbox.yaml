@@ -87,6 +87,17 @@ spec:
     worker:
       updateStrategy:
         type: Recreate
+      # Co-locate worker with main pod (shared RWO media PVC)
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                      - netbox
+              topologyKey: kubernetes.io/hostname
 
     # Override probes — chart defaults target NGINX Unit (port 8081) which
     # no longer exists in NetBox v4.x (now uses Granian on port 8080)
