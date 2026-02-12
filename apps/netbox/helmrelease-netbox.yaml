@@ -154,3 +154,8 @@ spec:
           items:
             - key: diode-plugin.yaml
               path: diode-plugin.yaml
+      - secret:
+          secretName: netbox-api-token-peppers
+          items:
+            - key: api-token-peppers.yaml
+              path: api-token-peppers.yaml

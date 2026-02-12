@@ -12,6 +12,7 @@ resources:
   - oauth2-sealedsecret-netbox.yaml
   - sealedsecret-oidc-config.yaml
   - sealedsecret-diode-plugin-config.yaml
+  - sealedsecret-api-token-peppers.yaml
 
   # Secrets — Diode
   - sealedsecret-diode-postgresql-secret.yaml
