@@ -64,14 +64,6 @@ data:
             statusCheck: true
             id: 0_2_audiobookshelf
 
-          - title: Tdarr
-            description: Media transcoding automation
-            icon: hl-tdarr
-            url: https://tdarr.xrs444.net
-            target: newtab
-            statusCheck: true
-            id: 0_3_tdarr
-
       - name: Productivity & Organisation
         icon: fas fa-tasks
         displayData:
@@ -110,36 +102,6 @@ data:
             statusCheck: true
             id: 1_4_linkwarden
 
-      - name: Development & Tools
-        icon: fas fa-code
-        displayData:
-          collapsed: false
-          rows: 2
-        items:
-          - title: Atuin
-            description: Shell history sync
-            icon: fas fa-terminal
-            url: https://atuin.xrs444.net
-            target: newtab
-            statusCheck: true
-            id: 2_1_atuin
-
-          - title: Garage
-            description: S3-compatible storage
-            icon: fas fa-warehouse
-            url: https://garage.xrs444.net
-            target: newtab
-            statusCheck: true
-            id: 2_2_garage
-
-          - title: Diskover
-            description: File system indexer
-            icon: fas fa-hdd
-            url: https://diskover.xrs444.net
-            target: newtab
-            statusCheck: true
-            id: 2_3_diskover
-
       - name: Communication & Collaboration
         icon: fas fa-comments
         displayData:
@@ -154,15 +116,7 @@ data:
             statusCheck: true
             id: 3_1_jitsi
 
-          - title: Ntfy
-            description: Push notifications
-            icon: fas fa-bell
-            url: https://ntfy.xrs444.net
-            target: newtab
-            statusCheck: true
-            id: 3_2_ntfy
-
-      - name: Infrastructure & Network
+      - name: Infrastructure
         icon: fas fa-network-wired
         displayData:
           collapsed: false
@@ -199,6 +153,39 @@ data:
             target: newtab
             statusCheck: true
             id: 4_4_longhorn
+
+          - title: Ntfy
+            description: Push notifications
+            icon: fas fa-bell
+            url: https://ntfy.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 3_2_ntfy
+
+          - title: Atuin
+            description: Shell history sync
+            icon: fas fa-terminal
+            url: https://atuin.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 2_1_atuin
+
+          - title: Garage
+            description: S3-compatible storage
+            icon: fas fa-warehouse
+            url: https://garage.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 2_2_garage
+
+          - title: Tdarr
+            description: Media transcoding automation
+            icon: hl-tdarr
+            url: https://tdarr.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 0_3_tdarr
+
 
       - name: Gaming & Entertainment
         icon: fas fa-gamepad

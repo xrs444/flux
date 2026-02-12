@@ -13,7 +13,7 @@ repos:
     hooks:
       - id: yamllint
         files: ".*\\.ya?ml$"
-        exclude: "charts/.*/templates/.*\\.ya?ml$"
+        exclude: "(charts/.*/templates/.*\\.ya?ml$|gotk-components\\.yaml$)"
 
   - repo: local
     hooks:

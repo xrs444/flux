@@ -1,4 +1,4 @@
-// filepath: /Users/xrs444/Repositories/HomeProd/flux/apps/craftycontroller/namespace.yaml
+---
 apiVersion: v1
 kind: Namespace
 metadata:
