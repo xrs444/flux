@@ -4,19 +4,14 @@ FROM python:3.11-slim
 RUN apt-get update && apt-get install -y \
     nmap \
     iputils-ping \
-    netcat-openbsd \
-    openssh-client \
-    lldpd \
     snmp \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 RUN pip install --no-cache-dir \
-    grpcio \
-    grpcio-tools \
+    netboxlabs-diode-sdk \
     kubernetes \
-    pysnmp \
-    requests
+    pysnmp
 
 # Copy discovery script
 COPY discovery-script.py /usr/local/bin/discover
@@ -28,4 +23,4 @@ RUN useradd -m -u 1000 diode && \
 
 USER diode
 
-ENTRYPOINT ["/usr/local/bin/discover"]
+ENTRYPOINT ["python", "/usr/local/bin/discover"]

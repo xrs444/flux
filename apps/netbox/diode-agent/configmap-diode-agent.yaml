@@ -6,26 +6,20 @@ metadata:
   name: diode-agent-config
   namespace: diode-agent
 data:
-  # Diode Server connection (Helm deployment)
-  # Note: Helm chart creates service with format: <release-name>-diode-server
-  DIODE_SERVER_URL: "diode-diode-server.netbox.svc.cluster.local:8081"
-  DIODE_USE_TLS: "false"
+  # Diode Server connection (via ingress-nginx controller in netbox namespace)
+  DIODE_TARGET: "grpc://diode-ingress-nginx-controller.netbox.svc.cluster.local:80/diode"
 
-  # Discovery settings
-  DISCOVERY_ENABLED_METHODS: "snmp,nmap,kubernetes,lldp"
+  # Discovery settings (LLDP/SSH skipped for now)
+  DISCOVERY_ENABLED_METHODS: "snmp,nmap,kubernetes"
 
-  # Network scanning ranges (comma-separated CIDR ranges)
-  NETWORK_SCAN_RANGES: "192.168.1.0/24,10.0.0.0/24"
+  # Network scanning ranges
+  NETWORK_SCAN_RANGES: "172.18.0.0/16,172.19.0.0/16,172.20.0.0/16,172.21.0.0/16,192.168.0.0/16"
 
   # SNMP settings
   SNMP_VERSION: "2c"
   SNMP_PORT: "161"
   SNMP_TIMEOUT: "5"
   SNMP_RETRIES: "2"
-
-  # LLDP/CDP settings (requires SSH access to network devices)
-  LLDP_ENABLED: "true"
-  LLDP_SSH_PORT: "22"
 
   # Kubernetes discovery settings
   K8S_DISCOVERY_ENABLED: "true"
@@ -37,5 +31,4 @@ data:
 
   # Device defaults for discovered items
   DEFAULT_SITE: "homelab"
-  DEFAULT_TENANT: ""
   DEFAULT_DEVICE_ROLE: "network-device"

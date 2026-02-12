@@ -23,9 +23,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: discovery
-              # Build this image from the Dockerfile in this directory
-              # Example: docker build -t your-registry/diode-discovery-agent:latest .
-              image: your-registry.example.com/diode-discovery-agent:latest
+              image: ghcr.io/xrs444/diode-discovery-agent:latest
               imagePullPolicy: Always
               envFrom:
                 - configMapRef:

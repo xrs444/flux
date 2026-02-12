@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 NetBox Diode Discovery Agent
-Discovers network devices and pushes them to NetBox via Diode
+Discovers network devices and pushes them to NetBox via Diode SDK
 """
 
 import os
@@ -9,359 +9,287 @@ import sys
 import json
 import logging
 import subprocess
-from typing import List, Dict, Any
-from datetime import datetime
+from typing import List
 
-# Third-party imports (installed in container)
-try:
-    import grpc
+from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Device,
+    DeviceType,
+    Entity,
+    Interface,
+    IPAddress,
+    Platform,
+    Site,
+)
+
+logger = logging.getLogger("diode-agent")
+
+
+def discover_kubernetes(site: str, device_role: str) -> List[Entity]:
+    """Discover Kubernetes nodes and return Diode entities."""
     from kubernetes import client, config
+
+    entities = []
+    try:
+        config.load_incluster_config()
+        v1 = client.CoreV1Api()
+    except Exception as e:
+        logger.error(f"Failed to load Kubernetes config: {e}")
+        return entities
+
+    try:
+        nodes = v1.list_node()
+        for node in nodes.items:
+            name = node.metadata.name
+            labels = node.metadata.labels or {}
+            info = node.status.node_info
+
+            # Determine role from labels
+            if any(k in labels for k in [
+                "node-role.kubernetes.io/master",
+                "node-role.kubernetes.io/control-plane",
+            ]):
+                role = "kubernetes-control-plane"
+            else:
+                role = device_role
+
+            # Check readiness
+            status = "active"
+            for condition in node.status.conditions or []:
+                if condition.type == "Ready" and condition.status != "True":
+                    status = "offline"
+
+            device = Device(
+                name=name,
+                device_type=DeviceType(model=info.os_image),
+                platform=Platform(name=f"kubernetes-{info.kubelet_version}"),
+                site=Site(name=site),
+                role=role,
+                serial=info.machine_id[:16] if info.machine_id else "",
+                status=status,
+                tags=["kubernetes", "auto-discovered"],
+            )
+            entities.append(Entity(device=device))
+
+            # Add IP addresses
+            for addr in node.status.addresses or []:
+                if addr.type in ("InternalIP", "ExternalIP"):
+                    ip = IPAddress(
+                        address=f"{addr.address}/32",
+                        interface=Interface(
+                            name="eth0",
+                            device=device,
+                        ),
+                    )
+                    entities.append(Entity(ip_address=ip))
+
+            logger.info(f"Discovered K8s node: {name}")
+
+    except Exception as e:
+        logger.error(f"Error discovering Kubernetes nodes: {e}")
+
+    return entities
+
+
+def discover_nmap(ranges: List[str], site: str, device_role: str) -> List[dict]:
+    """Scan network ranges with nmap and return host info dicts."""
+    hosts = []
+
+    for network_range in ranges:
+        logger.info(f"Scanning network range: {network_range}")
+        try:
+            result = subprocess.run(
+                ["nmap", "-sn", "-oG", "-", network_range],
+                capture_output=True,
+                text=True,
+                timeout=600,
+            )
+            for line in result.stdout.split("\n"):
+                if "Host:" in line and "Status: Up" in line:
+                    parts = line.split()
+                    ip = parts[1]
+                    hostname = parts[2].strip("()") if len(parts) > 2 and parts[2] != "()" else None
+                    hosts.append({"ip": ip, "hostname": hostname or ip})
+                    logger.info(f"Discovered host: {hostname or ip} ({ip})")
+        except subprocess.TimeoutExpired:
+            logger.error(f"Timeout scanning {network_range}")
+        except Exception as e:
+            logger.error(f"Error scanning {network_range}: {e}")
+
+    return hosts
+
+
+def discover_snmp(hosts: List[dict], community: str, site: str, device_role: str) -> List[Entity]:
+    """Query discovered hosts via SNMP and return Diode entities."""
     from pysnmp.hlapi import (
         getCmd, SnmpEngine, CommunityData, UdpTransportTarget,
-        ContextData, ObjectType, ObjectIdentity
+        ContextData, ObjectType, ObjectIdentity,
     )
-except ImportError as e:
-    print(f"Warning: Some dependencies not available: {e}")
-    print("Some discovery methods may not work")
 
+    entities = []
+    oids = {
+        "sysDescr": "1.3.6.1.2.1.1.1.0",
+        "sysName": "1.3.6.1.2.1.1.5.0",
+        "sysLocation": "1.3.6.1.2.1.1.6.0",
+        "sysContact": "1.3.6.1.2.1.1.4.0",
+    }
 
-class DiodeClient:
-    """Client for pushing data to Diode Server"""
-
-    def __init__(self, server_url: str, use_tls: bool = False):
-        self.server_url = server_url
-        self.use_tls = use_tls
-        self.logger = logging.getLogger(__name__)
-
-    def ingest_device(self, device_data: Dict[str, Any]) -> bool:
-        """
-        Ingest a device into NetBox via Diode
-        For now, using REST API fallback until gRPC client is fully implemented
-        """
-        self.logger.info(f"Would ingest device: {device_data.get('name')}")
-        # TODO: Implement actual gRPC client for Diode
-        # For now, log the device data
-        self.logger.debug(f"Device data: {json.dumps(device_data, indent=2)}")
-        return True
-
-
-class KubernetesDiscovery:
-    """Discover Kubernetes nodes and services"""
-
-    def __init__(self, site: str, device_role: str):
-        self.site = site
-        self.device_role = device_role
-        self.logger = logging.getLogger(__name__)
-        try:
-            config.load_incluster_config()
-            self.v1 = client.CoreV1Api()
-        except Exception as e:
-            self.logger.error(f"Failed to load Kubernetes config: {e}")
-            self.v1 = None
-
-    def discover(self) -> List[Dict[str, Any]]:
-        """Discover Kubernetes nodes"""
-        devices = []
-
-        if not self.v1:
-            self.logger.warning("Kubernetes client not initialized")
-            return devices
-
-        try:
-            nodes = self.v1.list_node()
-            for node in nodes.items:
-                device = {
-                    'name': node.metadata.name,
-                    'device_type': self._get_node_type(node),
-                    'device_role': self.device_role,
-                    'site': self.site,
-                    'status': 'active' if self._is_node_ready(node) else 'offline',
-                    'platform': node.status.node_info.os_image,
-                    'serial': node.status.node_info.machine_id[:16],  # Truncate
-                    'tags': ['kubernetes', 'auto-discovered'],
-                    'custom_fields': {
-                        'kubernetes_version': node.status.node_info.kubelet_version,
-                        'kernel_version': node.status.node_info.kernel_version,
-                        'container_runtime': node.status.node_info.container_runtime_version,
-                    }
-                }
-
-                # Add IP addresses
-                addresses = []
-                for addr in node.status.addresses:
-                    if addr.type in ['InternalIP', 'ExternalIP']:
-                        addresses.append(addr.address)
-                device['primary_ip4'] = addresses[0] if addresses else None
-
-                devices.append(device)
-                self.logger.info(f"Discovered K8s node: {device['name']}")
-
-        except Exception as e:
-            self.logger.error(f"Error discovering Kubernetes nodes: {e}")
-
-        return devices
-
-    def _get_node_type(self, node) -> str:
-        """Determine node type from labels"""
-        labels = node.metadata.labels
-        if 'node-role.kubernetes.io/master' in labels or 'node-role.kubernetes.io/control-plane' in labels:
-            return 'kubernetes-master'
-        return 'kubernetes-worker'
-
-    def _is_node_ready(self, node) -> bool:
-        """Check if node is ready"""
-        for condition in node.status.conditions:
-            if condition.type == 'Ready':
-                return condition.status == 'True'
-        return False
-
-
-class NetworkScanner:
-    """Scan network ranges for devices"""
-
-    def __init__(self, ranges: List[str], site: str, device_role: str):
-        self.ranges = ranges
-        self.site = site
-        self.device_role = device_role
-        self.logger = logging.getLogger(__name__)
-
-    def discover(self) -> List[Dict[str, Any]]:
-        """Scan network ranges and discover devices"""
-        devices = []
-
-        for network_range in self.ranges:
-            self.logger.info(f"Scanning network range: {network_range}")
-
-            try:
-                # Use nmap for host discovery
-                result = subprocess.run(
-                    ['nmap', '-sn', '-oG', '-', network_range],
-                    capture_output=True,
-                    text=True,
-                    timeout=300
-                )
-
-                # Parse nmap output
-                for line in result.stdout.split('\n'):
-                    if 'Host:' in line and 'Status: Up' in line:
-                        parts = line.split()
-                        ip = parts[1]
-                        hostname = parts[2].strip('()') if len(parts) > 2 and parts[2] != '()' else ip
-
-                        device = {
-                            'name': hostname,
-                            'device_type': 'generic-device',
-                            'device_role': self.device_role,
-                            'site': self.site,
-                            'status': 'active',
-                            'primary_ip4': ip,
-                            'tags': ['network-scan', 'auto-discovered'],
-                        }
-                        devices.append(device)
-                        self.logger.info(f"Discovered device: {hostname} ({ip})")
-
-            except subprocess.TimeoutExpired:
-                self.logger.error(f"Timeout scanning {network_range}")
-            except Exception as e:
-                self.logger.error(f"Error scanning {network_range}: {e}")
-
-        return devices
-
-
-class SNMPDiscovery:
-    """Discover devices via SNMP"""
-
-    def __init__(self, targets: List[str], community: str, site: str, device_role: str):
-        self.targets = targets
-        self.community = community
-        self.site = site
-        self.device_role = device_role
-        self.logger = logging.getLogger(__name__)
-
-    def discover(self) -> List[Dict[str, Any]]:
-        """Query devices via SNMP"""
-        devices = []
-
-        for target in self.targets:
-            self.logger.info(f"Querying SNMP on {target}")
-
-            try:
-                device_info = self._query_device(target)
-                if device_info:
-                    device = {
-                        'name': device_info.get('hostname', target),
-                        'device_type': self._map_device_type(device_info.get('sysDescr', '')),
-                        'device_role': self.device_role,
-                        'site': self.site,
-                        'status': 'active',
-                        'primary_ip4': target,
-                        'serial': device_info.get('serial'),
-                        'tags': ['snmp', 'auto-discovered'],
-                        'custom_fields': {
-                            'system_description': device_info.get('sysDescr'),
-                            'system_location': device_info.get('sysLocation'),
-                            'system_contact': device_info.get('sysContact'),
-                        }
-                    }
-                    devices.append(device)
-                    self.logger.info(f"Discovered SNMP device: {device['name']}")
-
-            except Exception as e:
-                self.logger.error(f"Error querying {target}: {e}")
-
-        return devices
-
-    def _query_device(self, target: str) -> Dict[str, Any]:
-        """Query device via SNMP"""
-        # OIDs for common system information
-        oids = {
-            'sysDescr': '1.3.6.1.2.1.1.1.0',
-            'sysName': '1.3.6.1.2.1.1.5.0',
-            'sysLocation': '1.3.6.1.2.1.1.6.0',
-            'sysContact': '1.3.6.1.2.1.1.4.0',
-        }
-
+    for host in hosts:
+        ip = host["ip"]
         info = {}
 
         for name, oid in oids.items():
             try:
-                errorIndication, errorStatus, errorIndex, varBinds = next(
+                error_indication, error_status, _, var_binds = next(
                     getCmd(
                         SnmpEngine(),
-                        CommunityData(self.community),
-                        UdpTransportTarget((target, 161), timeout=5, retries=2),
+                        CommunityData(community),
+                        UdpTransportTarget((ip, 161), timeout=5, retries=2),
                         ContextData(),
-                        ObjectType(ObjectIdentity(oid))
+                        ObjectType(ObjectIdentity(oid)),
                     )
                 )
+                if not error_indication and not error_status:
+                    info[name] = str(var_binds[0][1])
+            except Exception:
+                pass
 
-                if not errorIndication and not errorStatus:
-                    info[name] = str(varBinds[0][1])
+        if not info:
+            # No SNMP response — create a basic device from nmap data
+            device = Device(
+                name=host["hostname"],
+                device_type=DeviceType(model="Generic Device"),
+                site=Site(name=site),
+                role=device_role,
+                status="active",
+                tags=["nmap", "auto-discovered"],
+            )
+        else:
+            device_name = info.get("sysName", host["hostname"])
+            device = Device(
+                name=device_name,
+                device_type=DeviceType(model=_map_device_type(info.get("sysDescr", ""))),
+                site=Site(name=site),
+                role=device_role,
+                status="active",
+                tags=["snmp", "auto-discovered"],
+            )
 
-            except Exception as e:
-                self.logger.debug(f"Error querying {name} from {target}: {e}")
+        entities.append(Entity(device=device))
 
-        if 'sysName' in info:
-            info['hostname'] = info['sysName']
+        # Add primary IP
+        ip_entity = IPAddress(
+            address=f"{ip}/32",
+            interface=Interface(name="mgmt", device=device),
+        )
+        entities.append(Entity(ip_address=ip_entity))
+        logger.info(f"Prepared device: {device.name} ({ip})")
 
-        return info
+    return entities
 
-    def _map_device_type(self, sys_descr: str) -> str:
-        """Map SNMP sysDescr to device type"""
-        sys_descr_lower = sys_descr.lower()
 
-        if 'cisco' in sys_descr_lower:
-            if 'switch' in sys_descr_lower:
-                return 'cisco-switch'
-            elif 'router' in sys_descr_lower:
-                return 'cisco-router'
-            return 'cisco-device'
-        elif 'juniper' in sys_descr_lower:
-            return 'juniper-device'
-        elif 'aruba' in sys_descr_lower:
-            return 'aruba-device'
-
-        return 'generic-device'
+def _map_device_type(sys_descr: str) -> str:
+    """Map SNMP sysDescr to a device type model name."""
+    lower = sys_descr.lower()
+    if "cisco" in lower:
+        return "Cisco Switch" if "switch" in lower else "Cisco Device"
+    if "juniper" in lower:
+        return "Juniper Device"
+    if "aruba" in lower:
+        return "Aruba Device"
+    if "ubiquiti" in lower or "unifi" in lower:
+        return "Ubiquiti Device"
+    if "mikrotik" in lower:
+        return "MikroTik Device"
+    return "Generic Device"
 
 
 def main():
-    """Main discovery routine"""
-    # Setup logging
-    log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
+    log_level = os.getenv("LOG_LEVEL", "INFO").upper()
     logging.basicConfig(
         level=getattr(logging, log_level),
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-    logger = logging.getLogger(__name__)
 
     logger.info("Starting NetBox Diode Discovery Agent")
 
-    # Read configuration
-    diode_url = os.getenv('DIODE_SERVER_URL', 'localhost:8081')
-    use_tls = os.getenv('DIODE_USE_TLS', 'false').lower() == 'true'
-    enabled_methods = os.getenv('DISCOVERY_ENABLED_METHODS', '').split(',')
+    diode_target = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+    enabled_methods = [m.strip() for m in os.getenv("DISCOVERY_ENABLED_METHODS", "").split(",") if m.strip()]
+    site = os.getenv("DEFAULT_SITE", "homelab")
+    device_role = os.getenv("DEFAULT_DEVICE_ROLE", "network-device")
 
-    site = os.getenv('DEFAULT_SITE', 'default')
-    device_role = os.getenv('DEFAULT_DEVICE_ROLE', 'network-device')
-
-    # Initialize Diode client
-    diode = DiodeClient(diode_url, use_tls)
-
-    all_devices = []
+    all_entities: List[Entity] = []
 
     # Kubernetes discovery
-    if 'kubernetes' in enabled_methods:
+    if "kubernetes" in enabled_methods:
         logger.info("Running Kubernetes discovery")
-        k8s_discovery = KubernetesDiscovery(
-            site=os.getenv('K8S_NODE_SITE', site),
-            device_role=os.getenv('K8S_NODE_DEVICE_ROLE', 'server')
+        k8s_entities = discover_kubernetes(
+            site=os.getenv("K8S_NODE_SITE", site),
+            device_role=os.getenv("K8S_NODE_DEVICE_ROLE", "server"),
         )
-        devices = k8s_discovery.discover()
-        all_devices.extend(devices)
-        logger.info(f"Kubernetes discovery found {len(devices)} nodes")
+        all_entities.extend(k8s_entities)
+        logger.info(f"Kubernetes discovery produced {len(k8s_entities)} entities")
 
-    # Network scanning
-    if 'nmap' in enabled_methods:
+    # Network scan + SNMP enrichment
+    nmap_hosts = []
+    if "nmap" in enabled_methods:
         logger.info("Running network scan")
-        scan_ranges = os.getenv('NETWORK_SCAN_RANGES', '').split(',')
-        scan_ranges = [r.strip() for r in scan_ranges if r.strip()]
-
+        scan_ranges = [r.strip() for r in os.getenv("NETWORK_SCAN_RANGES", "").split(",") if r.strip()]
         if scan_ranges:
-            scanner = NetworkScanner(scan_ranges, site, device_role)
-            devices = scanner.discover()
-            all_devices.extend(devices)
-            logger.info(f"Network scan found {len(devices)} devices")
-        else:
-            logger.warning("No network ranges configured for scanning")
+            nmap_hosts = discover_nmap(scan_ranges, site, device_role)
+            logger.info(f"Network scan found {len(nmap_hosts)} hosts")
 
-    # SNMP discovery
-    if 'snmp' in enabled_methods:
-        logger.info("Running SNMP discovery")
-        # For SNMP, use discovered IPs from network scan
-        targets = [d['primary_ip4'] for d in all_devices if d.get('primary_ip4')]
+    if "snmp" in enabled_methods and nmap_hosts:
+        logger.info("Running SNMP discovery on discovered hosts")
+        community = os.getenv("SNMP_COMMUNITY", "public")
+        snmp_entities = discover_snmp(nmap_hosts, community, site, device_role)
+        all_entities.extend(snmp_entities)
+    elif nmap_hosts:
+        # No SNMP — create basic entities from nmap results
+        for host in nmap_hosts:
+            device = Device(
+                name=host["hostname"],
+                device_type=DeviceType(model="Generic Device"),
+                site=Site(name=site),
+                role=device_role,
+                status="active",
+                tags=["nmap", "auto-discovered"],
+            )
+            all_entities.append(Entity(device=device))
+            ip_entity = IPAddress(
+                address=f"{host['ip']}/32",
+                interface=Interface(name="mgmt", device=device),
+            )
+            all_entities.append(Entity(ip_address=ip_entity))
 
-        if targets:
-            community = os.getenv('SNMP_COMMUNITY', 'public')
-            snmp_discovery = SNMPDiscovery(targets, community, site, device_role)
-            devices = snmp_discovery.discover()
+    if not all_entities:
+        logger.warning("No entities discovered")
+        return 0
 
-            # Merge SNMP data with existing devices
-            for snmp_dev in devices:
-                # Update existing device or add new one
-                existing = next((d for d in all_devices if d['primary_ip4'] == snmp_dev['primary_ip4']), None)
-                if existing:
-                    existing.update(snmp_dev)
-                else:
-                    all_devices.append(snmp_dev)
+    # Push to Diode
+    logger.info(f"Ingesting {len(all_entities)} entities into Diode")
 
-            logger.info(f"SNMP discovery enhanced {len(devices)} devices")
+    with DiodeClient(
+        target=diode_target,
+        app_name="diode-discovery-agent",
+        app_version="1.0.0",
+    ) as client:
+        response = client.ingest(entities=all_entities)
+        if response.errors:
+            for error in response.errors:
+                logger.error(f"Ingest error: {error}")
+            logger.error(f"Ingestion completed with {len(response.errors)} errors")
+            return 1
 
-    # Push devices to Diode
-    logger.info(f"Pushing {len(all_devices)} devices to Diode")
-    success_count = 0
+    logger.info("Ingestion completed successfully")
 
-    for device in all_devices:
-        try:
-            if diode.ingest_device(device):
-                success_count += 1
-        except Exception as e:
-            logger.error(f"Failed to ingest {device['name']}: {e}")
-
-    logger.info(f"Discovery complete. Successfully ingested {success_count}/{len(all_devices)} devices")
-
-    # Write summary
     summary = {
-        'timestamp': datetime.utcnow().isoformat(),
-        'total_discovered': len(all_devices),
-        'successfully_ingested': success_count,
-        'failed': len(all_devices) - success_count,
-        'methods_used': enabled_methods,
+        "total_entities": len(all_entities),
+        "methods_used": enabled_methods,
     }
-
     print(json.dumps(summary, indent=2))
+    return 0
 
-    return 0 if success_count == len(all_devices) else 1
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())
