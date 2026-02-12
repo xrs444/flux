@@ -16,7 +16,6 @@ from netboxlabs.diode.sdk.ingester import (
     Device,
     DeviceType,
     Entity,
-    Interface,
     IPAddress,
     Platform,
     Site,
@@ -74,13 +73,7 @@ def discover_kubernetes(site: str, device_role: str) -> List[Entity]:
             # Add IP addresses
             for addr in node.status.addresses or []:
                 if addr.type in ("InternalIP", "ExternalIP"):
-                    ip = IPAddress(
-                        address=f"{addr.address}/32",
-                        interface=Interface(
-                            name="eth0",
-                            device=device,
-                        ),
-                    )
+                    ip = IPAddress(address=f"{addr.address}/32")
                     entities.append(Entity(ip_address=ip))
 
             logger.info(f"Discovered K8s node: {name}")
@@ -178,10 +171,7 @@ def discover_snmp(hosts: List[dict], community: str, site: str, device_role: str
         entities.append(Entity(device=device))
 
         # Add primary IP
-        ip_entity = IPAddress(
-            address=f"{ip}/32",
-            interface=Interface(name="mgmt", device=device),
-        )
+        ip_entity = IPAddress(address=f"{ip}/32")
         entities.append(Entity(ip_address=ip_entity))
         logger.info(f"Prepared device: {device.name} ({ip})")
 
@@ -256,10 +246,7 @@ def main():
                 tags=["nmap", "auto-discovered"],
             )
             all_entities.append(Entity(device=device))
-            ip_entity = IPAddress(
-                address=f"{host['ip']}/32",
-                interface=Interface(name="mgmt", device=device),
-            )
+            ip_entity = IPAddress(address=f"{host['ip']}/32")
             all_entities.append(Entity(ip_address=ip_entity))
 
     if not all_entities:
