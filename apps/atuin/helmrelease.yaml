@@ -21,6 +21,11 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  valuesFrom:
+    - kind: Secret
+      name: atuin-postgresql
+      valuesKey: password
+      targetPath: postgresql.auth.password
   values:
     replicaCount: 1
 
