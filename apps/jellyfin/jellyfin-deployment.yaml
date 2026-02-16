@@ -40,14 +40,23 @@ spec:
             - name: http
               containerPort: 8096
               protocol: TCP
+          startupProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
           livenessProbe:
-            initialDelaySeconds: 10
             tcpSocket:
               port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
           readinessProbe:
-            initialDelaySeconds: 10
             tcpSocket:
               port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
           resources:
             requests:
               cpu: 100m
