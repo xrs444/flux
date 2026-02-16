@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 RUN pip install --no-cache-dir \
     netboxlabs-diode-sdk \
     kubernetes \
-    "pysnmp-lextudio>=5,<6"
+    "pysnmp>=6.2,<7"
 
 # Copy discovery script
 COPY discovery-script.py /usr/local/bin/discover

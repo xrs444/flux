@@ -4,6 +4,7 @@ NetBox Diode Discovery Agent
 Discovers network devices and pushes them to NetBox via Diode SDK
 """
 
+import asyncio
 import os
 import sys
 import json
@@ -114,7 +115,12 @@ def discover_nmap(ranges: List[str], site: str, device_role: str) -> List[dict]:
 
 def discover_snmp(hosts: List[dict], community: str, site: str, device_role: str) -> List[Entity]:
     """Query discovered hosts via SNMP and return Diode entities."""
-    from pysnmp.hlapi import (
+    return asyncio.run(_discover_snmp_async(hosts, community, site, device_role))
+
+
+async def _discover_snmp_async(hosts: List[dict], community: str, site: str, device_role: str) -> List[Entity]:
+    """Async SNMP discovery using pysnmp 6.x API."""
+    from pysnmp.hlapi.asyncio import (
         getCmd, SnmpEngine, CommunityData, UdpTransportTarget,
         ContextData, ObjectType, ObjectIdentity,
     )
@@ -127,20 +133,20 @@ def discover_snmp(hosts: List[dict], community: str, site: str, device_role: str
         "sysContact": "1.3.6.1.2.1.1.4.0",
     }
 
+    engine = SnmpEngine()
+
     for host in hosts:
         ip = host["ip"]
         info = {}
 
         for name, oid in oids.items():
             try:
-                error_indication, error_status, _, var_binds = next(
-                    getCmd(
-                        SnmpEngine(),
-                        CommunityData(community),
-                        UdpTransportTarget((ip, 161), timeout=5, retries=2),
-                        ContextData(),
-                        ObjectType(ObjectIdentity(oid)),
-                    )
+                error_indication, error_status, _, var_binds = await getCmd(
+                    engine,
+                    CommunityData(community),
+                    UdpTransportTarget((ip, 161), timeout=5, retries=2),
+                    ContextData(),
+                    ObjectType(ObjectIdentity(oid)),
                 )
                 if not error_indication and not error_status:
                     info[name] = str(var_binds[0][1])
