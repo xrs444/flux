@@ -48,18 +48,25 @@ spec:
               mountPath: /romm/resources
             - name: config
               mountPath: /romm/config
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 5
-          readinessProbe:
+          startupProbe:
             httpGet:
               path: /
               port: http
             initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
             periodSeconds: 5
             timeoutSeconds: 3
           resources:
