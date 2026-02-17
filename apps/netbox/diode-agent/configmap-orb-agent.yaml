@@ -61,6 +61,8 @@ data:
             config:
               schedule: "0 * * * *"
               timeout: 3600
+              snmp_probe_timeout: 5
+              snmp_timeout: 30
               defaults:
                 site: homelab
                 role: network-device
