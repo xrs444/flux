@@ -1,3 +1,4 @@
+# SNMP discovery uses snmpget CLI (net-snmp package), not Python pysnmp
 FROM python:3.11-slim
 
 # Install system dependencies

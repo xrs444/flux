@@ -36,5 +36,6 @@ jobs:
         with:
           context: apps/netbox/diode-agent
           push: true
+          no-cache: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
