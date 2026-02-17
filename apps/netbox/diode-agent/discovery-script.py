@@ -4,7 +4,6 @@ NetBox Diode Discovery Agent
 Discovers network devices and pushes them to NetBox via Diode SDK
 """
 
-import asyncio
 import os
 import sys
 import json
@@ -114,26 +113,12 @@ def discover_nmap(ranges: List[str], site: str, device_role: str) -> List[dict]:
 
 
 def discover_snmp(hosts: List[dict], community: str, site: str, device_role: str) -> List[Entity]:
-    """Query discovered hosts via SNMP and return Diode entities."""
-    return asyncio.run(_discover_snmp_async(hosts, community, site, device_role))
-
-
-async def _discover_snmp_async(hosts: List[dict], community: str, site: str, device_role: str) -> List[Entity]:
-    """Async SNMP discovery using pysnmp 6.x API."""
-    from pysnmp.hlapi.v3arch.asyncio import (
-        getCmd, SnmpEngine, CommunityData, UdpTransportTarget,
-        ContextData, ObjectType, ObjectIdentity,
-    )
-
+    """Query discovered hosts via snmpget CLI and return Diode entities."""
     entities = []
     oids = {
         "sysDescr": "1.3.6.1.2.1.1.1.0",
         "sysName": "1.3.6.1.2.1.1.5.0",
-        "sysLocation": "1.3.6.1.2.1.1.6.0",
-        "sysContact": "1.3.6.1.2.1.1.4.0",
     }
-
-    engine = SnmpEngine()
 
     for host in hosts:
         ip = host["ip"]
@@ -141,20 +126,20 @@ async def _discover_snmp_async(hosts: List[dict], community: str, site: str, dev
 
         for name, oid in oids.items():
             try:
-                error_indication, error_status, _, var_binds = await getCmd(
-                    engine,
-                    CommunityData(community),
-                    UdpTransportTarget((ip, 161), timeout=5, retries=2),
-                    ContextData(),
-                    ObjectType(ObjectIdentity(oid)),
+                result = subprocess.run(
+                    ["snmpget", "-v", "2c", "-c", community, "-t", "5", "-r", "2", "-Oqv", ip, oid],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
                 )
-                if not error_indication and not error_status:
-                    info[name] = str(var_binds[0][1])
-            except Exception:
+                if result.returncode == 0:
+                    value = result.stdout.strip().strip('"')
+                    if value:
+                        info[name] = value
+            except (subprocess.TimeoutExpired, Exception):
                 pass
 
         if not info:
-            # No SNMP response — create a basic device from nmap data
             device = Device(
                 name=host["hostname"],
                 device_type=DeviceType(model="Generic Device"),
@@ -176,7 +161,6 @@ async def _discover_snmp_async(hosts: List[dict], community: str, site: str, dev
 
         entities.append(Entity(device=device))
 
-        # Add primary IP
         ip_entity = IPAddress(address=f"{ip}/32")
         entities.append(Entity(ip_address=ip_entity))
         logger.info(f"Prepared device: {device.name} ({ip})")

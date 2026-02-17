@@ -10,8 +10,7 @@ RUN apt-get update && apt-get install -y \
 # Install Python dependencies
 RUN pip install --no-cache-dir \
     netboxlabs-diode-sdk \
-    kubernetes \
-    "pysnmp>=6.2,<7"
+    kubernetes
 
 # Copy discovery script
 COPY discovery-script.py /usr/local/bin/discover
