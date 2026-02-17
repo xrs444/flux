@@ -1,0 +1,57 @@
+# yamllint disable rule:line-length
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orb-agent
+  namespace: diode-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orb-agent
+  template:
+    metadata:
+      labels:
+        app: orb-agent
+    spec:
+      # hostNetwork required for nmap/SNMP to reach LAN subnets directly
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: orb-agent
+          image: netboxlabs/orb-agent:latest
+          imagePullPolicy: Always
+          args: ["run", "-c", "/opt/orb/agent.yaml"]
+          env:
+            - name: DIODE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: diode-agent-secret
+                  key: DIODE_CLIENT_ID
+            - name: DIODE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: diode-agent-secret
+                  key: DIODE_CLIENT_SECRET
+            - name: SNMP_COMMUNITY
+              valueFrom:
+                secretKeyRef:
+                  name: diode-agent-secret
+                  key: SNMP_COMMUNITY
+          volumeMounts:
+            - name: orb-config
+              mountPath: /opt/orb/agent.yaml
+              subPath: agent.yaml
+              readOnly: true
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+      volumes:
+        - name: orb-config
+          configMap:
+            name: orb-agent-config

@@ -1,0 +1,95 @@
+# yamllint disable rule:line-length
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orb-agent-config
+  namespace: diode-agent
+data:
+  agent.yaml: |
+    orb:
+      config_manager:
+        active: local
+
+      backends:
+        common:
+          diode:
+            target: grpc://diode-ingress-nginx-controller.netbox.svc.cluster.local:80/diode
+            client_id: ${DIODE_CLIENT_ID}
+            client_secret: ${DIODE_CLIENT_SECRET}
+            agent_name: homelab-orb-agent
+        network_discovery:
+        snmp_discovery:
+
+      policies:
+        network_discovery:
+          scan_homelab:
+            config:
+              schedule: "0 * * * *"
+              timeout: 60
+              defaults:
+                tags: [auto-discovered, orb-agent]
+            scope:
+              targets:
+                - 172.18.4.0/24
+                - 172.18.5.0/24
+                - 172.18.6.0/24
+                - 172.18.7.0/24
+                - 172.18.9.0/24
+                - 172.18.10.0/24
+                - 172.18.11.0/24
+                - 172.18.100.0/24
+                - 172.19.111.0/24
+                - 172.19.112.0/24
+                - 172.19.113.0/24
+                - 172.19.114.0/24
+                - 172.20.1.0/24
+                - 172.20.2.0/24
+                - 172.20.3.0/24
+                - 172.20.4.0/24
+                - 172.25.1.0/24
+                - 172.25.2.0/24
+                - 172.25.4.0/24
+                - 172.25.5.0/24
+                - 192.168.0.0/24
+                - 192.168.1.0/24
+                - 192.168.6.0/24
+              ping_scan: true
+
+        snmp_discovery:
+          snmp_homelab:
+            config:
+              schedule: "0 * * * *"
+              timeout: 3600
+              defaults:
+                site: homelab
+                role: network-device
+                tags: [auto-discovered, orb-agent]
+            scope:
+              targets:
+                - host: 172.18.4.0/24
+                - host: 172.18.5.0/24
+                - host: 172.18.6.0/24
+                - host: 172.18.7.0/24
+                - host: 172.18.9.0/24
+                - host: 172.18.10.0/24
+                - host: 172.18.11.0/24
+                - host: 172.18.100.0/24
+                - host: 172.19.111.0/24
+                - host: 172.19.112.0/24
+                - host: 172.19.113.0/24
+                - host: 172.19.114.0/24
+                - host: 172.20.1.0/24
+                - host: 172.20.2.0/24
+                - host: 172.20.3.0/24
+                - host: 172.20.4.0/24
+                - host: 172.25.1.0/24
+                - host: 172.25.2.0/24
+                - host: 172.25.4.0/24
+                - host: 172.25.5.0/24
+                - host: 192.168.0.0/24
+                - host: 192.168.1.0/24
+                - host: 192.168.6.0/24
+              authentication:
+                protocol_version: SNMPv2c
+                community: "${SNMP_COMMUNITY}"

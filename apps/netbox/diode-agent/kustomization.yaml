@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: diode-agent
 resources:
   - namespace-diode-agent.yaml
-  - serviceaccount-diode-agent.yaml
-  - configmap-diode-agent.yaml
   - sealedsecret-diode-agent.yaml
-  - cronjob-discovery.yaml
+  - configmap-orb-agent.yaml
+  - deployment-orb-agent.yaml
