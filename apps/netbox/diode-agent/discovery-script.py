@@ -120,7 +120,7 @@ def discover_snmp(hosts: List[dict], community: str, site: str, device_role: str
 
 async def _discover_snmp_async(hosts: List[dict], community: str, site: str, device_role: str) -> List[Entity]:
     """Async SNMP discovery using pysnmp 6.x API."""
-    from pysnmp.hlapi.asyncio import (
+    from pysnmp.hlapi.v3arch.asyncio import (
         getCmd, SnmpEngine, CommunityData, UdpTransportTarget,
         ContextData, ObjectType, ObjectIdentity,
     )
