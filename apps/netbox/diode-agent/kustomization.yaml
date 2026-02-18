@@ -7,3 +7,5 @@ resources:
   - sealedsecret-diode-agent.yaml
   - configmap-orb-agent.yaml
   - deployment-orb-agent.yaml
+  - configmap-device-list.yaml
+  - cronjob-device-ingest.yaml

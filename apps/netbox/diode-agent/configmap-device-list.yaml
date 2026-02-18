@@ -1,0 +1,220 @@
+# yamllint disable rule:line-length
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: diode-device-list
+  namespace: diode-agent
+data:
+  # -----------------------------------------------------------------------
+  # devices.yaml - Authoritative device list
+  #
+  # Devices listed here are ingested into Diode on each run. This ensures
+  # NetBox records retain their corrected names even when SNMP/network
+  # scans report different hostnames (e.g. sysName mismatches).
+  #
+  # Diode's reconciler matches by primary IP as a fallback, so once the
+  # correct name + IP is in NetBox, subsequent scans mapping to that IP
+  # will update the existing record rather than create a duplicate.
+  #
+  # Fields:
+  #   name          (required) Canonical device name in NetBox
+  #   site          (optional) NetBox site slug, default: xrs444
+  #   role          (optional) Device role slug, default: network-device
+  #   manufacturer  (optional) Manufacturer name
+  #   model         (optional) Device type/model name
+  #   platform      (optional) Platform/OS name (e.g. "Cisco IOS")
+  #   tags          (optional) List of tags; 'authoritative' is always added
+  #   interfaces    (optional) List of interfaces with IP addresses
+  #     - name      Interface name
+  #       type      Interface type (default: other)
+  #       ips       List of IP addresses in CIDR notation (e.g. 192.168.1.1/24)
+  # -----------------------------------------------------------------------
+  devices.yaml: |
+    devices: []
+    # Example entries — replace [] above with actual devices:
+    #
+    # devices:
+    #   - name: core-sw-1
+    #     site: xrs444
+    #     role: network-device
+    #     manufacturer: Cisco
+    #     model: Catalyst 9300
+    #     interfaces:
+    #       - name: Vlan1
+    #         type: virtual
+    #         ips:
+    #           - 172.18.10.10/24
+    #
+    #   - name: core-router
+    #     site: xrs444
+    #     role: network-device
+    #     manufacturer: Mikrotik
+    #     model: CCR2004
+    #     interfaces:
+    #       - name: ether1
+    #         ips:
+    #           - 172.18.4.1/24
+    #       - name: ether2
+    #         ips:
+    #           - 172.19.111.1/24
+    #
+    #   - name: ap-floor1
+    #     site: xrs444
+    #     role: access-point
+    #     manufacturer: Ubiquiti
+    #     model: UniFi AP AC Pro
+    #     interfaces:
+    #       - name: eth0
+    #         ips:
+    #           - 172.18.5.10/24
+
+  # -----------------------------------------------------------------------
+  # ingest.py - Pushes the device list to the Diode ingester via gRPC.
+  # Runs as a CronJob; see cronjob-device-ingest.yaml.
+  # -----------------------------------------------------------------------
+  ingest.py: |
+    #!/usr/bin/env python3
+    """Authoritative device ingest for Diode.
+
+    Reads devices.yaml from /data and pushes each device (with interfaces
+    and IP addresses) to the Diode ingester so NetBox records maintain
+    their corrected canonical names regardless of what SNMP scans report.
+    """
+    import os
+    import sys
+    import yaml
+
+    try:
+        from netboxlabs.diode.sdk import DiodeClient
+        from netboxlabs.diode.sdk.ingester.v1 import (
+            Device,
+            DeviceType,
+            Entity,
+            Interface,
+            IPAddress,
+            Manufacturer,
+            Role,
+            Site,
+            Tag,
+        )
+    except ImportError:
+        # Fallback for older SDK versions that use a flat ingester module
+        from netboxlabs.diode.sdk import DiodeClient
+        from netboxlabs.diode.sdk.ingester import (  # type: ignore[no-redef]
+            Device,
+            DeviceType,
+            Entity,
+            Interface,
+            IPAddress,
+            Manufacturer,
+            Role,
+            Site,
+            Tag,
+        )
+
+
+    def build_entities(devices_list):
+        entities = []
+        for dev in devices_list:
+            name = dev.get("name")
+            if not name:
+                print(f"Skipping entry with no name: {dev}", file=sys.stderr)
+                continue
+
+            site_name = dev.get("site", "xrs444")
+            role_name = dev.get("role", "network-device")
+            base_tags = list(dev.get("tags", []))
+            if "authoritative" not in base_tags:
+                base_tags.append("authoritative")
+
+            device_kwargs = dict(
+                name=name,
+                site=Site(name=site_name),
+                role=Role(name=role_name),
+                tags=[Tag(name=t) for t in base_tags],
+            )
+            if dev.get("manufacturer") or dev.get("model"):
+                device_kwargs["device_type"] = DeviceType(
+                    model=dev.get("model", "Unknown"),
+                    manufacturer=Manufacturer(name=dev.get("manufacturer", "Unknown")),
+                )
+
+            entities.append(Entity(device=Device(**device_kwargs)))
+
+            for iface in dev.get("interfaces", []):
+                iface_name = iface.get("name")
+                if not iface_name:
+                    continue
+                entities.append(
+                    Entity(
+                        interface=Interface(
+                            name=iface_name,
+                            device=Device(name=name),
+                            type=iface.get("type", "other"),
+                            enabled=iface.get("enabled", True),
+                        )
+                    )
+                )
+                for ip_str in iface.get("ips", []):
+                    entities.append(
+                        Entity(
+                            ip_address=IPAddress(
+                                address=ip_str,
+                                interface=Interface(
+                                    name=iface_name,
+                                    device=Device(name=name),
+                                ),
+                            )
+                        )
+                    )
+
+        return entities
+
+
+    def main():
+        data_file = "/data/devices.yaml"
+        try:
+            with open(data_file) as f:
+                data = yaml.safe_load(f)
+        except FileNotFoundError:
+            print(f"Device list not found: {data_file}", file=sys.stderr)
+            sys.exit(1)
+
+        devices_list = (data or {}).get("devices") or []
+        if not devices_list:
+            print("No devices configured in devices.yaml — nothing to ingest.")
+            return
+
+        target = os.environ["DIODE_TARGET"]
+        client_id = os.environ["DIODE_CLIENT_ID"]
+        client_secret = os.environ["DIODE_CLIENT_SECRET"]
+
+        entities = build_entities(devices_list)
+        if not entities:
+            print("No valid entities built from device list.")
+            return
+
+        print(
+            f"Ingesting {len(entities)} entities for {len(devices_list)} devices "
+            f"into {target} ..."
+        )
+
+        with DiodeClient(
+            target=target,
+            client_id=client_id,
+            client_secret=client_secret,
+            app_name="device-authoritative-ingest",
+            app_version="1.0.0",
+        ) as client:
+            response = client.ingest(entities=entities)
+
+        if response.errors:
+            print(f"Ingest errors: {response.errors}", file=sys.stderr)
+            sys.exit(1)
+
+        print(f"Done. {len(entities)} entities ingested successfully.")
+
+
+    if __name__ == "__main__":
+        main()

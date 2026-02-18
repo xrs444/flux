@@ -1,0 +1,73 @@
+# yamllint disable rule:line-length
+---
+# Runs the authoritative device ingest on the same schedule as the Orb agent.
+# Pushes the device list from configmap-device-list.yaml into Diode so that
+# NetBox records keep their corrected canonical names regardless of what
+# SNMP/network discovery reports.
+#
+# The Diode reconciler matches by primary IP as a fallback, so once a device
+# with the correct name + IP exists in NetBox, subsequent scans that report a
+# different hostname (e.g. stale sysName) will update the existing record
+# instead of creating a duplicate.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: diode-device-ingest
+  namespace: diode-agent
+spec:
+  # Same schedule as the Orb agent scan policies (hourly)
+  schedule: "10 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: device-ingest
+              image: python:3.12-slim
+              imagePullPolicy: IfNotPresent
+              command:
+                - sh
+                - -c
+                - |
+                  pip install --quiet --no-cache-dir netboxlabs-diode-sdk pyyaml && \
+                  python /scripts/ingest.py
+              env:
+                - name: DIODE_TARGET
+                  # Must match the target in the Orb agent config (nginx ingress
+                  # in front of Diode services); strip the grpc:// scheme.
+                  value: "diode-ingress-nginx-controller.netbox.svc.cluster.local:80"
+                - name: DIODE_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: diode-agent-secret
+                      key: DIODE_CLIENT_ID
+                - name: DIODE_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: diode-agent-secret
+                      key: DIODE_CLIENT_SECRET
+              volumeMounts:
+                - name: device-list
+                  mountPath: /data/devices.yaml
+                  subPath: devices.yaml
+                  readOnly: true
+                - name: device-list
+                  mountPath: /scripts/ingest.py
+                  subPath: ingest.py
+                  readOnly: true
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "512Mi"
+                  cpu: "500m"
+          volumes:
+            - name: device-list
+              configMap:
+                name: diode-device-list
