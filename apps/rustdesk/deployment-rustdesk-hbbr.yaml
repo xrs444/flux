@@ -14,6 +14,16 @@ spec:
       labels:
         app: rustdesk-hbbr
     spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - rustdesk-hbbs
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: hbbr
           image: rustdesk/rustdesk-server:latest

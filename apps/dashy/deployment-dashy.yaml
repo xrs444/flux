@@ -19,9 +19,9 @@ spec:
       labels:
         app: dashy
     spec:
-      # Schedule on talos-mpp-bzt (xsvr3) - the least loaded node
+      # Schedule on v-k8s-xsvr1 (xsvr1) - the least loaded node
       nodeSelector:
-        kubernetes.io/hostname: talos-mpp-bzt
+        kubernetes.io/hostname: v-k8s-xsvr1
       containers:
         - name: dashy
           image: lissy93/dashy:3.1.0
