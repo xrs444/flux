@@ -13,6 +13,8 @@ spec:
       middlewares:
         - name: nocodb-oauth2
           namespace: nocodb
+        - name: dashboard-errors
+          namespace: traefik
       services:
         - name: nocodb
           port: 8080

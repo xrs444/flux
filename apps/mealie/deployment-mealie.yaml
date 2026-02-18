@@ -70,9 +70,9 @@ spec:
             - name: OIDC_SIGNUP_ENABLED
               value: "true"
             - name: OIDC_USER_GROUP
-              value: "mealie"
+              value: "mealie@idm.xrs444.net"
             - name: OIDC_ADMIN_GROUP
-              value: "mealie-admin"
+              value: "mealie-admin@idm.xrs444.net"
             - name: OIDC_AUTO_REDIRECT
               value: "false"
             - name: OIDC_PROVIDER_NAME
