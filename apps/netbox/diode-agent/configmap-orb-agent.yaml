@@ -55,6 +55,7 @@ data:
                 - 192.168.1.0/24
                 - 192.168.6.0/24
               ping_scan: true
+              dns_servers: [172.18.10.250]
 
         snmp_discovery:
           snmp_homelab:
@@ -64,7 +65,7 @@ data:
               snmp_probe_timeout: 5
               snmp_timeout: 30
               defaults:
-                site: homelab
+                site: xrs444
                 role: network-device
                 tags: [auto-discovered, orb-agent]
             scope:
@@ -90,6 +91,8 @@ data:
                 - host: 172.25.4.0/24
                 - host: 172.25.5.0/24
                 - host: 192.168.0.0/24
+                  override_defaults:
+                    site: CMR
                 - host: 192.168.1.0/24
                 - host: 192.168.6.0/24
               authentication:
