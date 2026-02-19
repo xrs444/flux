@@ -16,14 +16,14 @@ spec:
     spec:
       containers:
         - name: rustdesk-web
-          image: pmietlicki/docker-rustdesk-web-client:v1.1.10
+          image: pmietlicki/rustdesk-web-client:v1
           ports:
             - containerPort: 5000
               protocol: TCP
               name: http
           env:
             - name: CUSTOM_RENDEZVOUS_SERVER
-              value: "rustdesk.xrs444.net"
+              value: "rustdesk.xrs444.net:21116"
             - name: KEY
               value: "Yd4HrJOXx1brNuyeLxJtpc9G6r+KyOSe57zymdkCOsM="
           resources:
