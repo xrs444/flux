@@ -64,6 +64,14 @@ data:
             statusCheck: true
             id: 0_2_audiobookshelf
 
+          - title: Immich
+            description: Photo and video backup
+            icon: hl-immich
+            url: https://immich.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 0_4_immich
+
       - name: Productivity & Organisation
         icon: fas fa-tasks
         displayData:
@@ -101,6 +109,14 @@ data:
             target: newtab
             statusCheck: true
             id: 1_4_linkwarden
+
+          - title: NetBox
+            description: Network documentation and IP management
+            icon: hl-netbox
+            url: https://netbox.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 1_5_netbox
 
       - name: Communication & Collaboration
         icon: fas fa-comments
@@ -186,6 +202,61 @@ data:
             statusCheck: true
             id: 0_3_tdarr
 
+          - title: Kanidm
+            description: Identity and access management
+            icon: hl-kanidm
+            url: https://idm.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_5_kanidm
+
+          - title: Borgwarehouse
+            description: BorgBackup repository management
+            icon: hl-borgbackup
+            url: https://borgwarehouse.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_6_borgwarehouse
+
+          - title: Rustdesk
+            description: Remote desktop access
+            icon: hl-rustdesk
+            url: https://rustdesk.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_7_rustdesk
+
+          - title: Apprise
+            description: Notification routing
+            icon: fas fa-bell-slash
+            url: https://apprise.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_8_apprise
+
+          - title: Grafana
+            description: Metrics and observability dashboards
+            icon: hl-grafana
+            url: http://xsvr1.lan:3000
+            target: newtab
+            statusCheck: true
+            id: 4_9_grafana
+
+          - title: Prometheus
+            description: Metrics collection and alerting
+            icon: hl-prometheus
+            url: http://xsvr1.lan:9090
+            target: newtab
+            statusCheck: true
+            id: 4_10_prometheus
+
+          - title: Cockpit
+            description: Server web console
+            icon: hl-cockpit
+            url: http://xsvr1.lan:9091
+            target: newtab
+            statusCheck: true
+            id: 4_11_cockpit
 
       - name: Gaming & Entertainment
         icon: fas fa-gamepad
@@ -200,6 +271,14 @@ data:
             target: newtab
             statusCheck: true
             id: 5_1_craftycontroller
+
+          - title: RoMM
+            description: ROM and game library manager
+            icon: hl-romm
+            url: https://romm.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 5_2_romm
 
       - name: Personal & Hobbies
         icon: fas fa-user
@@ -222,3 +301,17 @@ data:
             target: newtab
             statusCheck: true
             id: 6_2_manyfold
+
+      - name: Smart Home
+        icon: fas fa-home
+        displayData:
+          collapsed: false
+          rows: 1
+        items:
+          - title: Home Assistant
+            description: Home automation platform
+            icon: hl-homeassistant
+            url: http://xsvr1.lan:8123
+            target: newtab
+            statusCheck: true
+            id: 7_1_homeassistant
