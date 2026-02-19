@@ -31,7 +31,7 @@ spec:
                 secretKeyRef:
                   name: romm-db
                   key: password
-            - name: OAUTH_CLIENT_SECRET
+            - name: OIDC_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: romm-oauth2

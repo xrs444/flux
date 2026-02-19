@@ -18,15 +18,10 @@ data:
   ENABLE_SCHEDULED_UPDATE_SWITCH_TITLEDB: "false"
   ENABLE_SCHEDULED_UPDATE_LAUNCHBOX_METADATA: "false"
   ENABLE_RESCAN_ON_FILESYSTEM_CHANGE: "false"
-  # Authentication
-  ROMM_AUTH_ENABLED: "true"
-  # OAuth2/OIDC
-  OAUTH_ENABLED: "true"
-  OAUTH_PROVIDER: "generic"
-  OAUTH_CLIENT_ID: "oauth2_romm"
-  OAUTH_AUTHORIZATION_URL: "https://idm.xrs444.net/ui/oauth2"
-  OAUTH_TOKEN_URL: "https://idm.xrs444.net/oauth2/token"
-  OAUTH_USERINFO_URL: >-
-    https://idm.xrs444.net/oauth2/openid/oauth2_romm/userinfo
-  OAUTH_REDIRECT_URI: "https://romm.xrs444.net/oauth/callback"
-  OAUTH_SCOPES: "openid email profile"
+  # OIDC
+  OIDC_ENABLED: "true"
+  OIDC_PROVIDER: "Kanidm"
+  OIDC_CLIENT_ID: "oauth2_romm"
+  OIDC_REDIRECT_URI: "https://romm.xrs444.net/oauth/callback"
+  OIDC_SERVER_APPLICATION_URL: >-
+    https://idm.xrs444.net/oauth2/openid/oauth2_romm
