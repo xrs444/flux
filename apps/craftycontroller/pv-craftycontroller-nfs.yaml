@@ -1,0 +1,66 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: craftycontroller-servers-pv
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    path: /zfs/system/crafty
+    server: 172.20.3.201
+  mountOptions:
+    - nfsvers=4
+    - hard
+    - intr
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: craftycontroller-servers-pvc
+  namespace: craftycontroller
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs
+  resources:
+    requests:
+      storage: 1Ti
+  volumeName: craftycontroller-servers-pv
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: craftycontroller-backups-pv
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    path: /zfs/systembackups/crafty
+    server: 172.20.3.201
+  mountOptions:
+    - nfsvers=4
+    - hard
+    - intr
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: craftycontroller-backups-pvc
+  namespace: craftycontroller
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs
+  resources:
+    requests:
+      storage: 1Ti
+  volumeName: craftycontroller-backups-pv

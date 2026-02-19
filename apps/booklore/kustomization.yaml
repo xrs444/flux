@@ -1,0 +1,21 @@
+# Booklore - Self-hosted book library manager
+# Supports EPUB, PDF, CBZ/CBR with OIDC auth and NFS-backed libraries
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - deployment-booklore.yaml
+  - service-booklore.yaml
+  - ingressroute-booklore.yaml
+  - oauth2-sealedsecret-booklore.yaml
+  # Longhorn storage
+  - pvc-booklore-config.yaml
+  - pvc-booklore-postgres.yaml
+  # NFS library storage
+  - pv-booklore-books-fiction.yaml
+  - pvc-booklore-books-fiction.yaml
+  - pv-booklore-books-nonfiction.yaml
+  - pvc-booklore-books-nonfiction.yaml
+  - pv-booklore-books-adult.yaml
+  - pvc-booklore-books-adult.yaml

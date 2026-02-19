@@ -32,6 +32,18 @@ spec:
               pathType: Prefix
     persistence:
       size: 50Gi
+    extraVolumeMounts:
+      - name: crafty-servers
+        mountPath: /crafty/servers
+      - name: crafty-backups
+        mountPath: /crafty/backups
+    extraVolumes:
+      - name: crafty-servers
+        persistentVolumeClaim:
+          claimName: craftycontroller-servers-pvc
+      - name: crafty-backups
+        persistentVolumeClaim:
+          claimName: craftycontroller-backups-pvc
     resources:
       limits:
         cpu: 2000m

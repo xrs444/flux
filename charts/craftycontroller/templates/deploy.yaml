@@ -39,6 +39,9 @@ spec:
           volumeMounts:
             - name: crafty-data
               mountPath: {{.Values.persistence.mountPath}}
+{{- with .Values.extraVolumeMounts}}
+{{- toYaml . | nindent 12}}
+{{- end}}
           resources:
 {{- toYaml .Values.resources | nindent 12}}
           livenessProbe:
@@ -59,6 +62,9 @@ spec:
         - name: crafty-data
           persistentVolumeClaim:
             claimName: {{include "craftycontroller.fullname" .}}-pvc
+{{- with .Values.extraVolumes}}
+{{- toYaml . | nindent 8}}
+{{- end}}
 {{- with .Values.nodeSelector}}
       nodeSelector:
 {{- toYaml . | nindent 8}}
