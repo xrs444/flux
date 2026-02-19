@@ -24,7 +24,7 @@ data:
   OAUTH_ENABLED: "true"
   OAUTH_PROVIDER: "generic"
   OAUTH_CLIENT_ID: "oauth2_romm"
-  OAUTH_AUTHORIZATION_URL: "https://idm.xrs444.net/oauth2/authorise"
+  OAUTH_AUTHORIZATION_URL: "https://idm.xrs444.net/ui/oauth2"
   OAUTH_TOKEN_URL: "https://idm.xrs444.net/oauth2/token"
   OAUTH_USERINFO_URL: >-
     https://idm.xrs444.net/oauth2/openid/oauth2_romm/userinfo
