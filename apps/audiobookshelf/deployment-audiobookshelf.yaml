@@ -37,6 +37,12 @@ spec:
               mountPath: /config
             - name: metadata
               mountPath: /metadata
+            - name: fiction
+              mountPath: /audiobooks/fiction
+            - name: nonfiction
+              mountPath: /audiobooks/non-fiction
+            - name: adult
+              mountPath: /audiobooks/adult
           resources:
             requests:
               cpu: 100m
@@ -73,3 +79,12 @@ spec:
         - name: metadata
           persistentVolumeClaim:
             claimName: audiobookshelf-metadata
+        - name: fiction
+          persistentVolumeClaim:
+            claimName: audiobookshelf-fiction
+        - name: nonfiction
+          persistentVolumeClaim:
+            claimName: audiobookshelf-nonfiction
+        - name: adult
+          persistentVolumeClaim:
+            claimName: audiobookshelf-adult

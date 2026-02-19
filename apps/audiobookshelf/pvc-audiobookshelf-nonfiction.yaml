@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audiobookshelf-nonfiction
+  namespace: audiobookshelf
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: audiobookshelf-nonfiction-nfs
+  resources:
+    requests:
+      storage: 10Ti

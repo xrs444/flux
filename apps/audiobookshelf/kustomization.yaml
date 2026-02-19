@@ -11,3 +11,12 @@ resources:
   # Storage resources
   - pvc-audiobookshelf-config.yaml
   - pvc-audiobookshelf-metadata.yaml
+  # NFS library volumes
+  - pv-audiobookshelf-fiction.yaml
+  - pv-audiobookshelf-nonfiction.yaml
+  - pv-audiobookshelf-adult.yaml
+  - pvc-audiobookshelf-fiction.yaml
+  - pvc-audiobookshelf-nonfiction.yaml
+  - pvc-audiobookshelf-adult.yaml
+  # Auth
+  - oauth2-sealedsecret-audiobookshelf.yaml

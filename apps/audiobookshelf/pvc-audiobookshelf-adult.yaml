@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audiobookshelf-adult
+  namespace: audiobookshelf
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: audiobookshelf-adult-nfs
+  resources:
+    requests:
+      storage: 10Ti
