@@ -8,10 +8,17 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`rustdesk.xrs444.net`)
+    - match: >-
+        Host(`rustdesk.xrs444.net`) &&
+        HeadersRegexp(`Upgrade`, `websocket`)
       kind: Rule
       services:
         - name: rustdesk-hbbs
           port: 21118
+    - match: Host(`rustdesk.xrs444.net`)
+      kind: Rule
+      services:
+        - name: rustdesk-web
+          port: 5000
   tls:
     secretName: letsencrypt-wildcard-cert-xrs444.net

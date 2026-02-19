@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rustdesk-web
+  namespace: rustdesk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rustdesk-web
+  template:
+    metadata:
+      labels:
+        app: rustdesk-web
+    spec:
+      containers:
+        - name: rustdesk-web
+          image: pmietlicki/docker-rustdesk-web-client:v1.1.10
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+              name: http
+          env:
+            - name: CUSTOM_RENDEZVOUS_SERVER
+              value: "rustdesk.xrs444.net"
+            - name: KEY
+              value: "Yd4HrJOXx1brNuyeLxJtpc9G6r+KyOSe57zymdkCOsM="
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi

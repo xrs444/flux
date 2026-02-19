@@ -7,6 +7,8 @@ resources:
   - pvc-rustdesk-data.yaml
   - deployment-rustdesk-hbbs.yaml
   - deployment-rustdesk-hbbr.yaml
+  - deployment-rustdesk-web.yaml
   - service-rustdesk-hbbs.yaml
   - service-rustdesk-hbbr.yaml
+  - service-rustdesk-web.yaml
   - ingressroute-rustdesk.yaml
