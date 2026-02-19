@@ -1,0 +1,137 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booklore
+  namespace: booklore
+  labels:
+    app: booklore
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: booklore
+  template:
+    metadata:
+      labels:
+        app: booklore
+    spec:
+      containers:
+        - name: booklore
+          image: adityachandelgit/booklore:latest
+          ports:
+            - containerPort: 6565
+              name: http
+          env:
+            - name: TZ
+              value: "America/Phoenix"
+            - name: BL_DB_TYPE
+              value: "postgres"
+            - name: BL_DB_HOST
+              value: "localhost"
+            - name: BL_DB_PORT
+              value: "5432"
+            - name: BL_DB_NAME
+              value: "booklore"
+            - name: BL_DB_USER
+              value: "booklore"
+            - name: BL_DB_PASSWORD
+              value: "booklore"
+            # OIDC Authentication via Kanidm
+            - name: BL_OAUTH2_ENABLED
+              value: "true"
+            - name: BL_OAUTH2_PROVIDER_NAME
+              value: "Kanidm"
+            - name: BL_OAUTH2_ISSUER_URI
+              value: "https://idm.xrs444.net/oauth2/openid/oauth2_booklore"
+            - name: BL_OAUTH2_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-booklore
+                  key: client-id
+            - name: BL_OAUTH2_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-booklore
+                  key: client-secret
+          volumeMounts:
+            - name: booklore-config
+              mountPath: /config
+            - name: books-fiction
+              mountPath: /books/fiction
+            - name: books-nonfiction
+              mountPath: /books/nonfiction
+            - name: books-adult
+              mountPath: /books/adult
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_USER
+              value: "booklore"
+            - name: POSTGRES_PASSWORD
+              value: "booklore"
+            - name: POSTGRES_DB
+              value: "booklore"
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: booklore-config
+          persistentVolumeClaim:
+            claimName: booklore-config
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: booklore-postgres-data
+        - name: books-fiction
+          persistentVolumeClaim:
+            claimName: booklore-books-fiction
+        - name: books-nonfiction
+          persistentVolumeClaim:
+            claimName: booklore-books-nonfiction
+        - name: books-adult
+          persistentVolumeClaim:
+            claimName: booklore-books-adult

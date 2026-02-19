@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: booklore-books-nonfiction
+  namespace: booklore
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""  # Empty string to prevent dynamic provisioning
+  volumeName: booklore-books-nonfiction-nfs
+  resources:
+    requests:
+      storage: 10Ti
