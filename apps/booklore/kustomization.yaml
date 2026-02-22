@@ -19,3 +19,5 @@ resources:
   - pvc-booklore-books-nonfiction.yaml
   - pv-booklore-books-adult.yaml
   - pvc-booklore-books-adult.yaml
+  - pv-booklore-books-ingest.yaml
+  - pvc-booklore-books-ingest.yaml
