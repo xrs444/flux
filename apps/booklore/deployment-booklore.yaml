@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: booklore
-          image: adityachandelgit/booklore:latest
+          image: booklore/booklore:latest
           ports:
             - containerPort: 6565
               name: http
