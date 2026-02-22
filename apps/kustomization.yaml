@@ -36,5 +36,7 @@ resources:
   - ./rustdesk              # Remote desktop solution
   - ./netbox                # Network source of truth and IPAM/DCIM platform
   - ./netbox/diode-agent    # Diode network discovery agent
-  - ./spegel                 # Peer-to-peer container image caching
+  - ./spegel                # Peer-to-peer container image caching
+  - ./booklore              # Self-hosted book library manager
+#  - ./matrix               # Messaging and video calls (Synapse + Element)
   - ./storage               # Storage PVCs (applied last after namespaces exist)
