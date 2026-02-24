@@ -102,14 +102,22 @@ function proxyToNocoDB(req, res, token) {
 
   const httpModule = parsedUrl.protocol === 'https:' ? https : http;
   const proxy = httpModule.request(options, (proxyRes) => {
-    // Remove Set-Cookie from NocoDB (we manage sessions)
     const headers = { ...proxyRes.headers };
-    delete headers['set-cookie'];
 
-    // Preserve any Set-Cookie headers we set earlier (for nc-session)
+    // Combine NocoDB's Set-Cookie with our nc-session cookie
     const existingSetCookie = res.getHeader('Set-Cookie');
-    if (existingSetCookie) {
-      headers['set-cookie'] = existingSetCookie;
+    if (existingSetCookie || headers['set-cookie']) {
+      const cookies = [];
+      if (existingSetCookie) {
+        cookies.push(existingSetCookie);
+      }
+      if (headers['set-cookie']) {
+        const nocodbCookies = Array.isArray(headers['set-cookie'])
+          ? headers['set-cookie']
+          : [headers['set-cookie']];
+        cookies.push(...nocodbCookies);
+      }
+      headers['set-cookie'] = cookies;
     }
 
     res.writeHead(proxyRes.statusCode, headers);
