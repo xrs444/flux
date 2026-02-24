@@ -11,4 +11,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 172.20.3.201
-    path: /zfs/media/books/ingest
+    path: /export/zfs/media/books/ingest
