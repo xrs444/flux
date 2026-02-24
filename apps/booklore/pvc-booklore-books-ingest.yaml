@@ -8,7 +8,7 @@ spec:
   accessModes:
     - ReadWriteMany
   storageClassName: ""  # Empty string to prevent dynamic provisioning
-  volumeName: booklore-books-ingest-nfs
+  volumeName: booklore-book-ingest-nfs
   resources:
     requests:
       storage: 10Ti
