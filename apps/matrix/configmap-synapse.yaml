@@ -1,0 +1,94 @@
+---
+# yamllint disable rule:line-length
+# Synapse homeserver configuration
+# Sensitive values (signing_key, macaroon_secret_key, form_secret, oidc client_secret)
+# are stored in sealedsecret-synapse.yaml and mounted at /etc/matrix/secrets.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: synapse-config
+  namespace: matrix
+data:
+  homeserver.yaml: |
+    server_name: "matrix.xrs444.net"
+    public_baseurl: "https://matrix.xrs444.net"
+    pid_file: /data/homeserver.pid
+
+    listeners:
+      - port: 8008
+        tls: false
+        type: http
+        x_forwarded: true
+        resources:
+          - names: [client, federation]
+            compress: false
+
+    database:
+      name: psycopg2
+      args:
+        user: synapse
+        password: synapse
+        database: synapse
+        host: localhost
+        cp_min: 5
+        cp_max: 10
+
+    media_store_path: /media
+
+    log_config: "/etc/matrix/log.yaml"
+
+    registration_shared_secret: "SET_IN_SECRET"
+
+    report_stats: false
+
+    macaroon_secret_key: "SET_IN_SECRET"
+    form_secret: "SET_IN_SECRET"
+
+    signing_key_path: "/etc/matrix/signing.key"
+
+    # TURN server for video calls
+    turn_uris:
+      - "turn:turn.xrs444.net:3478?transport=udp"
+      - "turn:turn.xrs444.net:3478?transport=tcp"
+      - "turns:turn.xrs444.net:5349?transport=tcp"
+    turn_shared_secret: "SET_IN_SECRET"
+    turn_user_lifetime: 86400000
+    turn_allow_guests: false
+
+    # OIDC via Kanidm
+    oidc_providers:
+      - idp_id: kanidm
+        idp_name: "Kanidm"
+        issuer: "https://idm.xrs444.net/oauth2/openid/oauth2_matrix"
+        client_id: "oauth2_matrix"
+        client_secret: "SET_IN_SECRET"
+        scopes: ["openid", "profile", "email"]
+        user_mapping_provider:
+          config:
+            localpart_template: "{{ user.preferred_username }}"
+            display_name_template: "{{ user.name }}"
+            email_template: "{{ user.email }}"
+
+    # Disable password login - OIDC only
+    password_config:
+      enabled: false
+
+    trusted_key_servers:
+      - server_name: "matrix.org"
+
+  log.yaml: |
+    version: 1
+    formatters:
+      precise:
+        format: '%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(request)s - %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: precise
+    loggers:
+      synapse.storage.SQL:
+        level: WARNING
+    root:
+      level: WARNING
+      handlers: [console]
+    disable_existing_loggers: false

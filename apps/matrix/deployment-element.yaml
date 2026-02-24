@@ -1,0 +1,90 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: element-web
+  namespace: matrix
+  labels:
+    app: element-web
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: element-web
+  template:
+    metadata:
+      labels:
+        app: element-web
+    spec:
+      containers:
+        - name: element-web
+          image: vectorim/element-web:latest
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: element-config
+              mountPath: /app/config.json
+              subPath: config.json
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: element-config
+          configMap:
+            name: element-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: element-config
+  namespace: matrix
+data:
+  config.json: |
+    {
+      "default_server_config": {
+        "m.homeserver": {
+          "base_url": "https://matrix.xrs444.net",
+          "server_name": "matrix.xrs444.net"
+        }
+      },
+      "brand": "Element",
+      "integrations_ui_url": "",
+      "integrations_rest_url": "",
+      "integrations_widgets_urls": [],
+      "bug_report_endpoint_url": "",
+      "default_theme": "dark",
+      "room_directory": {
+        "servers": ["matrix.xrs444.net"]
+      },
+      "enable_presence_by_hs_url": {
+        "https://matrix.xrs444.net": false
+      },
+      "features": {
+        "feature_video_rooms": true,
+        "feature_element_call_video_rooms": true
+      },
+      "element_call": {
+        "url": "https://call.element.io",
+        "use_exclusively": false
+      }
+    }

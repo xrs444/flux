@@ -1,0 +1,26 @@
+# Matrix - Federated messaging and video calls
+# Synapse homeserver + Element Web client + Coturn TURN server
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  # Synapse homeserver
+  - configmap-synapse.yaml
+  - deployment-synapse.yaml
+  - service-synapse.yaml
+  - sealedsecret-synapse.yaml
+  # Element Web client
+  - deployment-element.yaml
+  - service-element.yaml
+  # Coturn TURN server (video calls)
+  - deployment-coturn.yaml
+  - sealedsecret-coturn.yaml
+  # Ingress
+  - ingressroute-matrix.yaml
+  # Longhorn storage
+  - pvc-synapse-config.yaml
+  - pvc-synapse-postgres.yaml
+  # NFS message/media storage
+  - pv-matrix-data.yaml
+  - pvc-matrix-data.yaml

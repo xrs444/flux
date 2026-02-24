@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coturn
+  namespace: matrix
+  labels:
+    app: coturn
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: coturn
+  template:
+    metadata:
+      labels:
+        app: coturn
+    spec:
+      hostNetwork: true  # Required for TURN to see real client IPs
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: coturn
+          image: coturn/coturn:latest
+          args:
+            - --use-auth-secret
+            - --static-auth-secret=$(TURN_SHARED_SECRET)
+            - --realm=turn.xrs444.net
+            - --listening-port=3478
+            - --tls-listening-port=5349
+            - --min-port=49152
+            - --max-port=49172
+            - --no-tcp-relay
+            - --denied-peer-ip=10.0.0.0-10.255.255.255
+            - --denied-peer-ip=192.168.0.0-192.168.255.255
+            - --denied-peer-ip=172.16.0.0-172.31.255.255
+          env:
+            - name: TURN_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: coturn-secret
+                  key: turn-shared-secret
+          ports:
+            - containerPort: 3478
+              protocol: UDP
+              name: turn-udp
+            - containerPort: 3478
+              protocol: TCP
+              name: turn-tcp
+            - containerPort: 5349
+              protocol: TCP
+              name: turns-tcp
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

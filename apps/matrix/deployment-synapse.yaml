@@ -1,0 +1,137 @@
+---
+# yamllint disable rule:line-length
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse
+  namespace: matrix
+  labels:
+    app: synapse
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: synapse
+  template:
+    metadata:
+      labels:
+        app: synapse
+    spec:
+      initContainers:
+        # Merge ConfigMap base config with Secret overrides into /etc/matrix/homeserver.yaml
+        - name: config-merge
+          image: alpine:3.19
+          command:
+            - sh
+            - -c
+            - |
+              apk add --no-cache yq
+              cp /config-base/homeserver.yaml /etc/matrix/homeserver.yaml
+              cp /config-base/log.yaml /etc/matrix/log.yaml
+              cp /secrets/signing.key /etc/matrix/signing.key
+              chmod 600 /etc/matrix/signing.key
+              # Merge secrets.yaml overrides into homeserver.yaml
+              yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' \
+                /etc/matrix/homeserver.yaml /secrets/secrets.yaml \
+                > /tmp/merged.yaml && mv /tmp/merged.yaml /etc/matrix/homeserver.yaml
+          volumeMounts:
+            - name: config-base
+              mountPath: /config-base
+            - name: synapse-secrets
+              mountPath: /secrets
+            - name: synapse-config
+              mountPath: /etc/matrix
+      containers:
+        - name: synapse
+          image: matrixdotorg/synapse:latest
+          ports:
+            - containerPort: 8008
+              name: http
+          env:
+            - name: SYNAPSE_CONFIG_PATH
+              value: /etc/matrix/homeserver.yaml
+            - name: TZ
+              value: "America/Phoenix"
+          volumeMounts:
+            - name: synapse-config
+              mountPath: /etc/matrix
+            - name: synapse-data
+              mountPath: /data
+            - name: matrix-media
+              mountPath: /media
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+          startupProbe:
+            httpGet:
+              path: /_matrix/client/versions
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /_matrix/client/versions
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /_matrix/client/versions
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_USER
+              value: "synapse"
+            - name: POSTGRES_PASSWORD
+              value: "synapse"
+            - name: POSTGRES_DB
+              value: "synapse"
+            - name: POSTGRES_INITDB_ARGS
+              value: "--encoding=UTF8 --locale=C"
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+        - name: config-base
+          configMap:
+            name: synapse-config
+        - name: synapse-secrets
+          secret:
+            secretName: synapse-secrets
+        - name: synapse-config
+          emptyDir: {}
+        - name: synapse-data
+          persistentVolumeClaim:
+            claimName: synapse-config
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: synapse-postgres-data
+        - name: matrix-media
+          persistentVolumeClaim:
+            claimName: matrix-data

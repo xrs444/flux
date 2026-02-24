@@ -1,0 +1,36 @@
+---
+# Synapse homeserver API
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: synapse
+  namespace: matrix
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`matrix.xrs444.net`)
+      kind: Rule
+      services:
+        - name: synapse
+          port: 8008
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net
+---
+# Element Web client
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: element-web
+  namespace: matrix
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`element.xrs444.net`)
+      kind: Rule
+      services:
+        - name: element-web
+          port: 80
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net
