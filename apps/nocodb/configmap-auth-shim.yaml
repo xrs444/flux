@@ -100,18 +100,17 @@ data:
         }
       };
 
-      // Keep cookies from the client to allow NocoDB's own session management
-      // But don't forward our internal nc-session cookie
-      if (options.headers['cookie']) {
-        options.headers['cookie'] = options.headers['cookie']
-          .split(';')
-          .filter(c => !c.trim().startsWith('nc-session='))
-          .join(';');
-      }
+      // Remove headers that shouldn't be forwarded
+      delete options.headers['cookie'];
+      delete options.headers['nc-session'];
 
       const httpModule = parsedUrl.protocol === 'https:' ? https : http;
       const proxy = httpModule.request(options, (proxyRes) => {
-        res.writeHead(proxyRes.statusCode, proxyRes.headers);
+        // Remove Set-Cookie from NocoDB (we manage sessions)
+        const headers = { ...proxyRes.headers };
+        delete headers['set-cookie'];
+
+        res.writeHead(proxyRes.statusCode, headers);
         proxyRes.pipe(res);
       });
 

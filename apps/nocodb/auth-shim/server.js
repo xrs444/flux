@@ -129,6 +129,7 @@ async function handleRequest(req, res) {
 
   // Get authenticated user from oauth2-proxy headers
   const userEmail = req.headers['x-auth-request-email'] || req.headers['x-forwarded-email'];
+  console.log(`Request: ${req.method} ${req.url} from ${userEmail || 'anonymous'}`);
 
   if (!userEmail) {
     res.writeHead(401, { 'Content-Type': 'application/json' });
