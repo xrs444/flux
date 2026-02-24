@@ -30,22 +30,20 @@ spec:
               value: "6565"
             - name: TZ
               value: "America/Phoenix"
-            # Spring Boot datasource configuration
+            # Spring Boot datasource configuration for MariaDB
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://localhost:5432/booklore"
+              value: "jdbc:mariadb://localhost:3306/booklore"
             - name: SPRING_DATASOURCE_USERNAME
               value: "booklore"
             - name: SPRING_DATASOURCE_PASSWORD
               value: "booklore"
-            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
-              value: "org.postgresql.Driver"
             # Booklore-specific configuration
             - name: BL_DB_TYPE
-              value: "postgres"
+              value: "mariadb"
             - name: BL_DB_HOST
               value: "localhost"
             - name: BL_DB_PORT
-              value: "5432"
+              value: "3306"
             - name: BL_DB_NAME
               value: "booklore"
             - name: BL_DB_USER
@@ -107,23 +105,23 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 3
-        - name: postgres
-          image: postgres:15-alpine
+        - name: mariadb
+          image: mariadb:11-noble
           ports:
-            - containerPort: 5432
-              name: postgres
+            - containerPort: 3306
+              name: mariadb
           env:
-            - name: POSTGRES_USER
+            - name: MYSQL_ROOT_PASSWORD
               value: "booklore"
-            - name: POSTGRES_PASSWORD
+            - name: MYSQL_DATABASE
               value: "booklore"
-            - name: POSTGRES_DB
+            - name: MYSQL_USER
               value: "booklore"
-            - name: PGDATA
-              value: "/var/lib/postgresql/data/pgdata"
+            - name: MYSQL_PASSWORD
+              value: "booklore"
           volumeMounts:
             - name: postgres-data
-              mountPath: /var/lib/postgresql/data
+              mountPath: /var/lib/mysql
           resources:
             requests:
               cpu: 100m
