@@ -76,6 +76,8 @@ spec:
               mountPath: /books/nonfiction
             - name: books-adult
               mountPath: /books/adult
+            - name: books-ingest
+              mountPath: /bookdrop
           resources:
             requests:
               cpu: 100m
@@ -145,3 +147,6 @@ spec:
         - name: books-adult
           persistentVolumeClaim:
             claimName: booklore-books-adult
+        - name: books-ingest
+          persistentVolumeClaim:
+            claimName: booklore-books-ingest
