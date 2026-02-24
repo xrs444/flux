@@ -8,6 +8,7 @@ resources:
   - deployment-nocodb.yaml
   - service-nocodb.yaml
   - ingressroute-nocodb.yaml
+  - ingressroute-nocodb-oauth2.yaml
   - configmap-auth-shim.yaml
   - middleware-nocodb-auth.yaml
   # Uncomment after creating sealed secret:
