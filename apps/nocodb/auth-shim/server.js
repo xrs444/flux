@@ -96,8 +96,13 @@ function proxyToNocoDB(req, res, token) {
     }
   };
 
-  // Remove headers that shouldn't be forwarded
-  delete options.headers['cookie'];
+  // Forward NocoDB cookies but filter out our nc-session cookie
+  if (options.headers['cookie']) {
+    options.headers['cookie'] = options.headers['cookie']
+      .split(';')
+      .filter(c => !c.trim().startsWith('nc-session='))
+      .join(';');
+  }
   delete options.headers['nc-session'];
 
   const httpModule = parsedUrl.protocol === 'https:' ? https : http;
