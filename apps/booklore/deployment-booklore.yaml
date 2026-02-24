@@ -26,8 +26,20 @@ spec:
             - containerPort: 6565
               name: http
           env:
+            - name: BOOKLORE_PORT
+              value: "6565"
             - name: TZ
               value: "America/Phoenix"
+            # Spring Boot datasource configuration
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://localhost:5432/booklore"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "booklore"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "booklore"
+            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+              value: "org.postgresql.Driver"
+            # Booklore-specific configuration
             - name: BL_DB_TYPE
               value: "postgres"
             - name: BL_DB_HOST
