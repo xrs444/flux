@@ -133,6 +133,12 @@ async function handleRequest(req, res) {
     return res.end('OK');
   }
 
+  // Intercept token refresh - we manage auth via sessions, not NocoDB tokens
+  if (req.url === '/auth/token/refresh' && req.method === 'POST') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ msg: 'Token refreshed' }));
+  }
+
   // Get authenticated user from oauth2-proxy headers
   const userEmail = req.headers['x-auth-request-email'] || req.headers['x-forwarded-email'];
   console.log(`Request: ${req.method} ${req.url} from ${userEmail || 'anonymous'}`);
