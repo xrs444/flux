@@ -108,13 +108,11 @@ function proxyToNocoDB(req, res, token) {
 
     // Preserve any Set-Cookie headers we set earlier (for nc-session)
     const existingSetCookie = res.getHeader('Set-Cookie');
-
-    res.writeHead(proxyRes.statusCode, headers);
-
     if (existingSetCookie) {
-      res.setHeader('Set-Cookie', existingSetCookie);
+      headers['set-cookie'] = existingSetCookie;
     }
 
+    res.writeHead(proxyRes.statusCode, headers);
     proxyRes.pipe(res);
   });
 
