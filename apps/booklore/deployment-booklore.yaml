@@ -70,6 +70,8 @@ spec:
           volumeMounts:
             - name: booklore-config
               mountPath: /config
+            - name: booklore-data
+              mountPath: /app/data
             - name: books-fiction
               mountPath: /books/fiction
             - name: books-nonfiction
@@ -135,6 +137,8 @@ spec:
         - name: booklore-config
           persistentVolumeClaim:
             claimName: booklore-config
+        - name: booklore-data
+          emptyDir: {}
         - name: postgres-data
           persistentVolumeClaim:
             claimName: booklore-postgres-data
