@@ -68,7 +68,7 @@ spec:
                   name: oauth2-secret-booklore
                   key: client-secret
             - name: BL_OAUTH2_REDIRECT_URI
-              value: "https://booklore.xrs444.net/api/oidc"
+              value: "https://booklore.xrs444.net/oauth2-callback"
           volumeMounts:
             - name: booklore-config
               mountPath: /config
