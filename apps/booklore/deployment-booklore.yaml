@@ -58,15 +58,7 @@ spec:
             - name: BL_OAUTH2_ISSUER_URI
               value: "https://idm.xrs444.net/oauth2/openid/oauth2_booklore"
             - name: BL_OAUTH2_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: oauth2-secret-booklore
-                  key: client-id
-            - name: BL_OAUTH2_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: oauth2-secret-booklore
-                  key: client-secret
+              value: "oauth2_booklore"
             - name: BL_OAUTH2_REDIRECT_URI
               value: "https://booklore.xrs444.net/oauth2-callback"
           volumeMounts:
