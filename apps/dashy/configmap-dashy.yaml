@@ -311,7 +311,7 @@ data:
           - title: Home Assistant
             description: Home automation platform
             icon: hl-homeassistant
-            url: http://xsvr1.lan:8123
+            url: http://hass.xrs444.net
             target: newtab
             statusCheck: true
             id: 7_1_homeassistant
