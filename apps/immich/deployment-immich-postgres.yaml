@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: tensorchord/pgvecto-rs:pg14-v0.2.0
+          image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
           ports:
             - containerPort: 5432
           env:
@@ -35,6 +35,8 @@ spec:
             - name: db-data
               mountPath: /var/lib/postgresql/data
               subPath: pgdata
+            - name: dshm
+              mountPath: /dev/shm
           resources:
             requests:
               cpu: 100m
@@ -46,3 +48,7 @@ spec:
         - name: db-data
           persistentVolumeClaim:
             claimName: immich-db
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 128Mi
