@@ -21,8 +21,6 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
-        runAsUser: 1000
-        runAsGroup: 1000
       containers:
         - name: booklore
           image: booklore/booklore:latest
@@ -78,6 +76,9 @@ spec:
               mountPath: /books/adult
             - name: books-ingest
               mountPath: /bookdrop
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
           resources:
             requests:
               cpu: 100m
