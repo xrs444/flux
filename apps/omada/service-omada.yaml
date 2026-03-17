@@ -35,10 +35,22 @@ spec:
       port: 29812
       targetPort: 29812
     - name: discovery2
-      protocol: UDP
+      protocol: TCP
       port: 29813
       targetPort: 29813
     - name: mgmt2
       protocol: TCP
       port: 29814
       targetPort: 29814
+    - name: mgmt3
+      protocol: TCP
+      port: 29815
+      targetPort: 29815
+    - name: mgmt4
+      protocol: TCP
+      port: 29816
+      targetPort: 29816
+    - name: monitor
+      protocol: TCP
+      port: 29817
+      targetPort: 29817
