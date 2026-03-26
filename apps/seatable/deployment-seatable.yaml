@@ -1,0 +1,164 @@
+---
+# yamllint disable rule:line-length
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seatable
+  namespace: seatable
+  labels:
+    app: seatable
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: seatable
+  template:
+    metadata:
+      labels:
+        app: seatable
+    spec:
+      initContainers:
+        - name: config-init
+          image: busybox:latest
+          command: ['sh', '-c']
+          args:
+            - |
+              cat > /config/dtable_web_settings.py <<EOF
+              # OAuth2/OIDC Configuration for Kanidm
+              ENABLE_OAUTH = True
+              OAUTH_CLIENT_ID = "oauth2_seatable"
+              OAUTH_CLIENT_SECRET = "$OAUTH_CLIENT_SECRET"
+              OAUTH_REDIRECT_URL = 'https://seatable.xrs444.net/oauth/callback/'
+              OAUTH_AUTHORIZATION_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/authorize'  # yamllint disable-line rule:line-length
+              OAUTH_TOKEN_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/token'  # yamllint disable-line rule:line-length
+              OAUTH_USER_INFO_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/userinfo'  # yamllint disable-line rule:line-length
+              OAUTH_SCOPE = ["openid", "profile", "email"]
+              OAUTH_ATTRIBUTE_MAP = {
+                  "id": "uid",
+                  "name": "name",
+                  "email": "contact_email",
+              }
+              OAUTH_PROVIDER_DOMAIN = 'idm.xrs444.net'
+              EOF
+          env:
+            - name: OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-seatable
+                  key: client-secret
+          volumeMounts:
+            - name: config-temp
+              mountPath: /config
+      containers:
+        - name: seatable
+          image: seatable/seatable-developer:latest
+          ports:
+            - containerPort: 80
+              name: http
+          env:
+            - name: SEATABLE_SERVER_HOSTNAME
+              value: "seatable.xrs444.net"
+            - name: SEATABLE_SERVER_PROTOCOL
+              value: "https"
+            - name: TIME_ZONE
+              value: "America/Phoenix"
+            - name: DB_HOST
+              value: "localhost"
+            - name: DB_ROOT_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: mariadb-root-password
+            - name: SEATABLE_ADMIN_EMAIL
+              value: "xrs444@xrs444.net"
+            - name: SEATABLE_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: admin-password
+          volumeMounts:
+            - name: seatable-data
+              mountPath: /shared
+            - name: config-temp
+              mountPath: /shared/seatable/conf/dtable_web_settings.py
+              subPath: dtable_web_settings.py
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 60
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+        - name: mariadb
+          image: mariadb:10.11
+          ports:
+            - containerPort: 3306
+              name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: mariadb-root-password
+            - name: MYSQL_LOG_CONSOLE
+              value: "true"
+          volumeMounts:
+            - name: mariadb-data
+              mountPath: /var/lib/mysql
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          args:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+            - --max-connections=1000
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+      volumes:
+        - name: seatable-data
+          persistentVolumeClaim:
+            claimName: seatable-data
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: seatable-mariadb-data
+        - name: config-temp
+          emptyDir: {}

@@ -1,0 +1,15 @@
+# Seatable - Database and spreadsheet platform
+# Supports Kanidm OIDC authentication via dtable_web_settings.py configuration
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - deployment-seatable.yaml
+  - service-seatable.yaml
+  - ingressroute-seatable.yaml
+  - sealedsecret-seatable.yaml
+  - oauth2-sealedsecret-seatable.yaml
+  # Storage resources
+  - pvc-seatable-data.yaml
+  - pvc-seatable-mariadb-data.yaml

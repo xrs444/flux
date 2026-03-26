@@ -102,6 +102,14 @@ data:
             statusCheck: true
             id: 1_3_nocodb
 
+          - title: Seatable
+            description: Database and spreadsheet platform
+            icon: hl-airtable
+            url: https://seatable.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 1_4_seatable
+
           - title: Linkwarden
             description: Bookmark management
             icon: hl-linkwarden
