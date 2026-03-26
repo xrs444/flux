@@ -121,9 +121,51 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+        - name: mariadb
+          image: mariadb:10.11
+          ports:
+            - containerPort: 3306
+              name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: mariadb-root-password
+            - name: MYSQL_LOG_CONSOLE
+              value: "true"
+          volumeMounts:
+            - name: mariadb-data
+              mountPath: /var/lib/mysql
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          args:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+            - --max-connections=1000
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
       volumes:
         - name: seatable-data
           persistentVolumeClaim:
             claimName: seatable-data
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: seatable-mariadb-data
         - name: config-temp
           emptyDir: {}

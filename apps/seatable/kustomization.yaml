@@ -12,3 +12,4 @@ resources:
   - oauth2-sealedsecret-seatable.yaml
   # Storage resources
   - pvc-seatable-data.yaml
+  - pvc-seatable-mariadb-data.yaml
