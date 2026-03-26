@@ -65,13 +65,20 @@ spec:
               value: "https"
             - name: TIME_ZONE
               value: "America/Phoenix"
-            - name: DB_HOST
+            - name: SEATABLE_MYSQL_DB_HOST
               value: "localhost"
-            - name: DB_ROOT_PASSWD
+            - name: SEATABLE_MYSQL_DB_USER
+              value: "root"
+            - name: SEATABLE_MYSQL_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: seatable-secrets
                   key: mariadb-root-password
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: jwt-private-key
             - name: SEATABLE_ADMIN_EMAIL
               value: "xrs444@xrs444.net"
             - name: SEATABLE_ADMIN_PASSWORD
