@@ -77,7 +77,7 @@ spec:
             - name: seatable-data
               mountPath: /shared
             - name: seatable-license
-              mountPath: /shared/seatable-license.txt
+              mountPath: /shared/seatable/seatable-license.txt
               subPath: seatable-license.txt
               readOnly: true
           resources:
