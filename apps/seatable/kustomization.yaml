@@ -10,6 +10,7 @@ resources:
   - ingressroute-seatable.yaml
   - sealedsecret-seatable.yaml
   - oauth2-sealedsecret-seatable.yaml
+  - sealedsecret-seatable-license.yaml
   # Storage resources
   - pvc-seatable-data.yaml
   - pvc-seatable-mariadb-data.yaml

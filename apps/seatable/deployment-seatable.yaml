@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: seatable
-          image: seatable/seatable-developer:latest
+          image: seatable/seatable-enterprise:latest
           ports:
             - containerPort: 80
               name: http
@@ -76,6 +76,10 @@ spec:
           volumeMounts:
             - name: seatable-data
               mountPath: /shared
+            - name: seatable-license
+              mountPath: /shared/seatable-license.txt
+              subPath: seatable-license.txt
+              readOnly: true
           resources:
             requests:
               cpu: 200m
@@ -151,3 +155,6 @@ spec:
         - name: mariadb-data
           persistentVolumeClaim:
             claimName: seatable-mariadb-data
+        - name: seatable-license
+          secret:
+            secretName: seatable-license
