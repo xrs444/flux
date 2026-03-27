@@ -20,6 +20,44 @@ spec:
       labels:
         app: seatable
     spec:
+      initContainers:
+        - name: oauth-config
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              # Wait for seatable directory to be created or create it
+              mkdir -p /shared/seatable/conf
+
+              # Read the OAuth template and inject the client secret
+              cat /oauth-template/oauth-settings.py > /tmp/oauth-config.py
+              echo "OAUTH_CLIENT_SECRET = '${OAUTH_CLIENT_SECRET}'" >> /tmp/oauth-config.py
+
+              # Append OAuth config to dtable_web_settings.py
+              if [ -f /shared/seatable/conf/dtable_web_settings.py ]; then
+                # Check if OAuth config already exists
+                if ! grep -q "ENABLE_OAUTH" /shared/seatable/conf/dtable_web_settings.py; then
+                  echo "" >> /shared/seatable/conf/dtable_web_settings.py
+                  echo "# OAuth Configuration" >> /shared/seatable/conf/dtable_web_settings.py
+                  cat /tmp/oauth-config.py >> /shared/seatable/conf/dtable_web_settings.py
+                fi
+              else
+                # Create new file with OAuth config
+                echo "# OAuth Configuration" > /shared/seatable/conf/dtable_web_settings.py
+                cat /tmp/oauth-config.py >> /shared/seatable/conf/dtable_web_settings.py
+              fi
+          env:
+            - name: OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-seatable
+                  key: client-secret
+          volumeMounts:
+            - name: seatable-data
+              mountPath: /shared
+            - name: oauth-config
+              mountPath: /oauth-template
       containers:
         - name: seatable
           image: seatable/seatable-enterprise:latest
@@ -158,3 +196,6 @@ spec:
         - name: seatable-license
           secret:
             secretName: seatable-license
+        - name: oauth-config
+          configMap:
+            name: seatable-oauth-config

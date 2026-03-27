@@ -1,0 +1,24 @@
+---
+# yamllint disable rule:line-length
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: seatable-oauth-config
+  namespace: seatable
+data:
+  oauth-settings.py: |
+    # OAuth/OIDC Configuration for Kanidm
+    ENABLE_OAUTH = True
+    OAUTH_ENABLE_INSECURE_TRANSPORT = False
+    OAUTH_CLIENT_ID = 'oauth2_seatable'
+    OAUTH_REDIRECT_URL = 'https://seatable.xrs444.net/oauth/callback/'
+    OAUTH_AUTHORIZATION_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/authorize'
+    OAUTH_TOKEN_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/token'
+    OAUTH_USER_INFO_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/userinfo'
+    OAUTH_SCOPE = ['openid', 'profile', 'email']
+    OAUTH_ATTRIBUTE_MAP = {
+        'id': 'uid',
+        'name': 'name',
+        'email': 'contact_email',
+    }
+    OAUTH_PROVIDER_DOMAIN = 'idm.xrs444.net'

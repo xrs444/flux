@@ -8,6 +8,7 @@ resources:
   - deployment-seatable.yaml
   - service-seatable.yaml
   - ingressroute-seatable.yaml
+  - configmap-oauth-config.yaml
   - sealedsecret-seatable.yaml
   - oauth2-sealedsecret-seatable.yaml
   - sealedsecret-seatable-license.yaml
