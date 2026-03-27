@@ -266,6 +266,13 @@ data:
             statusCheck: true
             id: 4_11_cockpit
 
+          - title: Firewalla MSP Portal
+            description: Firewalla MSP Portal
+            url: https://dn-j3almw.firewalla.net/global/dashboard
+            target: newtab
+            statusCheck: false
+            id: 4_12_firewallamsp
+
       - name: Gaming & Entertainment
         icon: fas fa-gamepad
         displayData:
@@ -287,6 +294,7 @@ data:
             target: newtab
             statusCheck: true
             id: 5_2_romm
+
 
       - name: Personal & Hobbies
         icon: fas fa-user
