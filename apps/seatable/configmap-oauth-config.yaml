@@ -9,7 +9,6 @@ data:
   oauth-settings.py: |
     # OAuth/OIDC Configuration for Kanidm
     ENABLE_OAUTH = True
-    OAUTH_ENABLE_INSECURE_TRANSPORT = False
     OAUTH_CLIENT_ID = 'oauth2_seatable'
     OAUTH_REDIRECT_URL = 'https://seatable.xrs444.net/oauth/callback/'
     OAUTH_AUTHORIZATION_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/authorize'
