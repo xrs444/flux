@@ -5,7 +5,7 @@ metadata:
   name: seatable-data
   namespace: seatable
 spec:
-  storageClassName: longhorn-retain
+  storageClassName: longhorn
   accessModes:
     - ReadWriteOnce
   resources:
