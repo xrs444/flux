@@ -8,6 +8,7 @@ metadata:
 data:
   oauth-settings.py: |
     # OAuth/OIDC Configuration for Kanidm
+    IS_PRO_VERSION = True
     ENABLE_OAUTH = True
     OAUTH_CLIENT_ID = 'oauth2_seatable'
     OAUTH_REDIRECT_URL = 'https://seatable.xrs444.net/oauth/callback/'
