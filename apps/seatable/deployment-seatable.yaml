@@ -20,38 +20,6 @@ spec:
       labels:
         app: seatable
     spec:
-      initContainers:
-        - name: config-init
-          image: busybox:latest
-          command: ['sh', '-c']
-          args:
-            - |
-              cat > /config/dtable_web_settings.py <<EOF
-              # OAuth2/OIDC Configuration for Kanidm
-              ENABLE_OAUTH = True
-              OAUTH_CLIENT_ID = "oauth2_seatable"
-              OAUTH_CLIENT_SECRET = "$OAUTH_CLIENT_SECRET"
-              OAUTH_REDIRECT_URL = 'https://seatable.xrs444.net/oauth/callback/'
-              OAUTH_AUTHORIZATION_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/authorize'  # yamllint disable-line rule:line-length
-              OAUTH_TOKEN_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/token'  # yamllint disable-line rule:line-length
-              OAUTH_USER_INFO_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/userinfo'  # yamllint disable-line rule:line-length
-              OAUTH_SCOPE = ["openid", "profile", "email"]
-              OAUTH_ATTRIBUTE_MAP = {
-                  "id": "uid",
-                  "name": "name",
-                  "email": "contact_email",
-              }
-              OAUTH_PROVIDER_DOMAIN = 'idm.xrs444.net'
-              EOF
-          env:
-            - name: OAUTH_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: oauth2-secret-seatable
-                  key: client-secret
-          volumeMounts:
-            - name: config-temp
-              mountPath: /config
       containers:
         - name: seatable
           image: seatable/seatable-developer:latest
@@ -108,9 +76,6 @@ spec:
           volumeMounts:
             - name: seatable-data
               mountPath: /shared
-            - name: config-temp
-              mountPath: /shared/seatable/conf/dtable_web_settings.py
-              subPath: dtable_web_settings.py
           resources:
             requests:
               cpu: 200m
@@ -186,5 +151,3 @@ spec:
         - name: mariadb-data
           persistentVolumeClaim:
             claimName: seatable-mariadb-data
-        - name: config-temp
-          emptyDir: {}
