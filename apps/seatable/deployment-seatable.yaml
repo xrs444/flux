@@ -76,6 +76,23 @@ spec:
                 secretKeyRef:
                   name: seatable-secrets
                   key: mariadb-root-password
+            - name: INIT_SEATABLE_MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: mariadb-root-password
+            - name: SEATABLE_MYSQL_DB_DTABLE_DB_NAME
+              value: "dtable_db"
+            - name: SEATABLE_MYSQL_DB_CCNET_DB_NAME
+              value: "ccnet_db"
+            - name: SEATABLE_MYSQL_DB_SEAFILE_DB_NAME
+              value: "seafile_db"
+            - name: REDIS_HOST
+              value: "127.0.0.1"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              value: ""
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
