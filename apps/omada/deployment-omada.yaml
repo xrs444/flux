@@ -28,6 +28,8 @@ spec:
             - containerPort: 443 # HTTPS
               name: https
             - containerPort: 8843 # Portal HTTPS
+            - containerPort: 8088 # HTTP for portal
+            - containerPort: 8043 # HTTPS for upgrade
             - containerPort: 29810 # Controller Discovery (UDP)
             - containerPort: 29811 # Controller Management
             - containerPort: 29812 # Controller Upgrade
