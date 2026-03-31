@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -22,6 +23,14 @@ spec:
       protocol: TCP
       port: 8843
       targetPort: 8843
+    - name: portal-http
+      protocol: TCP
+      port: 8088
+      targetPort: 8088
+    - name: upgrade-https
+      protocol: TCP
+      port: 8043
+      targetPort: 8043
     - name: discovery
       protocol: UDP
       port: 29810
