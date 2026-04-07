@@ -17,9 +17,9 @@ data:
     OAUTH_USER_INFO_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/userinfo'
     OAUTH_SCOPE = ['openid', 'profile', 'email']
     OAUTH_ATTRIBUTE_MAP = {
-        'id': 'uid',
+        'id': 'sub',
         'name': 'name',
-        'email': 'contact_email',
+        'email': 'email',
     }
     OAUTH_PROVIDER_DOMAIN = 'idm.xrs444.net'
 
