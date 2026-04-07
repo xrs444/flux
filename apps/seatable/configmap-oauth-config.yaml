@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: seatable-oauth-config
+  name: seatable-config
   namespace: seatable
 data:
   oauth-settings.py: |
@@ -22,3 +22,11 @@ data:
         'email': 'contact_email',
     }
     OAUTH_PROVIDER_DOMAIN = 'idm.xrs444.net'
+
+  url-settings.py: |
+    # SeaTable URL Configuration
+    # Required for proper routing of dtable-server and seafile requests
+    DTABLE_SERVER_URL = 'https://seatable.xrs444.net/dtable-server/'
+    DTABLE_SOCKET_URL = 'https://seatable.xrs444.net/'
+    DTABLE_WEB_SERVICE_URL = 'https://seatable.xrs444.net/'
+    FILE_SERVER_ROOT = 'https://seatable.xrs444.net/seafhttp/'
