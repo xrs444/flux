@@ -12,8 +12,8 @@ data:
     ENABLE_OAUTH = True
     OAUTH_CLIENT_ID = 'oauth2_seatable'
     OAUTH_REDIRECT_URL = 'https://seatable.xrs444.net/oauth/callback/'
-    OAUTH_AUTHORIZATION_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/authorize'
-    OAUTH_TOKEN_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/token'
+    OAUTH_AUTHORIZATION_URL = 'https://idm.xrs444.net/ui/oauth2'
+    OAUTH_TOKEN_URL = 'https://idm.xrs444.net/oauth2/token'
     OAUTH_USER_INFO_URL = 'https://idm.xrs444.net/oauth2/openid/oauth2_seatable/userinfo'
     OAUTH_SCOPE = ['openid', 'profile', 'email']
     OAUTH_ATTRIBUTE_MAP = {
