@@ -94,14 +94,6 @@ data:
             statusCheck: true
             id: 1_2_paperless
 
-          - title: NocoDB
-            description: No-code database platform
-            icon: hl-nocodb
-            url: https://nocodb.xrs444.net
-            target: newtab
-            statusCheck: true
-            id: 1_3_nocodb
-
           - title: Seatable
             description: Database and spreadsheet platform
             icon: hl-airtable

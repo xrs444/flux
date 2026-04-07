@@ -2,22 +2,20 @@
 
 ## Summary
 
-Added 8 new applications to the HomeProd Kubernetes cluster:
+Added 7 new applications to the HomeProd Kubernetes cluster:
 
-1. **NocoDB** - No-code database platform
-2. **Loki** - Log aggregation system with Promtail
-3. **Paperless-ngx** - Document management system
-4. **Jitsi** - Video conferencing platform
-5. **Ntfy** - Push notification service
-6. **Diskover** - File system indexer and search
-7. **Linkwarden** - Bookmark and link management
-8. **Garage** - S3-compatible object storage
+1. **Loki** - Log aggregation system with Promtail
+2. **Paperless-ngx** - Document management system
+3. **Jitsi** - Video conferencing platform
+4. **Ntfy** - Push notification service
+5. **Diskover** - File system indexer and search
+6. **Linkwarden** - Bookmark and link management
+7. **Garage** - S3-compatible object storage
 
 ## Kanidm OIDC Integration
 
 The following applications support Kanidm OIDC authentication:
 
-- **NocoDB**: Configure via NC_OIDC_* environment variables
 - **Paperless-ngx**: Configure via PAPERLESS_APPS and PAPERLESS_SOCIALACCOUNT_PROVIDERS
 - **Linkwarden**: Configure via OAUTH_* environment variables
 - **Jitsi**: Requires JWT authentication setup (more complex)
@@ -26,11 +24,10 @@ The following applications support Kanidm OIDC authentication:
 
 ### Secrets and Configuration
 
-1. **NocoDB**: Generate OIDC client credentials
-2. **Paperless-ngx**: Generate secure PAPERLESS_SECRET_KEY
-3. **Jitsi**: Generate secure secrets for Jicofo and JVB components
-4. **Linkwarden**: Generate secure NEXTAUTH_SECRET
-5. **Garage**: Generate 32-byte hex RPC secret and admin token
+1. **Paperless-ngx**: Generate secure PAPERLESS_SECRET_KEY
+2. **Jitsi**: Generate secure secrets for Jicofo and JVB components
+3. **Linkwarden**: Generate secure NEXTAUTH_SECRET
+4. **Garage**: Generate 32-byte hex RPC secret and admin token
 
 ### Loki Log Collection
 
@@ -41,7 +38,6 @@ All applications will automatically have their logs collected.
 
 All applications use Longhorn storage class for persistent volumes:
 
-- NocoDB: 10Gi
 - Loki: 50Gi
 - Paperless-ngx: 70Gi total (data + media + consume)
 - Jitsi: 5Gi
@@ -54,7 +50,6 @@ All applications use Longhorn storage class for persistent volumes:
 
 Applications will be available at:
 
-- https://nocodb.xrs444.net
 - https://loki.xrs444.net
 - https://paperless.xrs444.net
 - https://jitsi.xrs444.net

@@ -22,7 +22,6 @@ resources:
   - ./loki                  # Log aggregation system
   - ./prometheus-sa         # Prometheus ServiceAccount for external scraping
   - ./apprise               # Multi-platform notification service
-  - ./nocodb                # No-code database platform
   - ./seatable              # Database and spreadsheet platform
   - ./paperless-ngx         # Document management system
   - ./cups                  # Print server with web management

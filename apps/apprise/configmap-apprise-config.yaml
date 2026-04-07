@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apprise-config
+  namespace: apprise
+data:
+  apprise.yml: |
+    # Apprise Notification Routing Configuration
+    # Tag-based routing to per-user ntfy topics
+    version: 1
+
+    # Asset metadata for all notifications
+    asset:
+      app_id: HomeProd
+      app_desc: HomeProd Infrastructure Notifications
+
+    # URL definitions with tag-based routing
+    urls:
+      # dog - receives home services only (HomeAssistant, Paperless, Immich)
+      - ntfy://apprise:${NTFY_APPRISE_PASSWORD}@ntfy.ntfy.svc.cluster.local/dog:
+        - tag: home-services, all-users
+
+      # xrs444 - receives critical infrastructure + home services
+      - ntfy://apprise:${NTFY_APPRISE_PASSWORD}@ntfy.ntfy.svc.cluster.local/xrs444:
+        - tag: critical-infra, home-services, all-users
+
+      # samantha - receives critical infrastructure + home services
+      - ntfy://apprise:${NTFY_APPRISE_PASSWORD}@ntfy.ntfy.svc.cluster.local/samantha:
+        - tag: critical-infra, home-services, all-users
+
+      # greyson - future use (broadcast messages only)
+      - ntfy://apprise:${NTFY_APPRISE_PASSWORD}@ntfy.ntfy.svc.cluster.local/greyson:
+        - tag: all-users
+
+      # rowan - future use (broadcast messages only)
+      - ntfy://apprise:${NTFY_APPRISE_PASSWORD}@ntfy.ntfy.svc.cluster.local/rowan:
+        - tag: all-users

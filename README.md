@@ -156,5 +156,4 @@ flux reconcile kustomization flux-system --with-source
 - Immich
 - Configure Garage
 - Audiobookshelf
-- NoCoDB Auth proxy for oauth2
 - Configure Jitsi

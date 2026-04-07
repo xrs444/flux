@@ -2,32 +2,7 @@
 
 ## Applications Supporting Kanidm OIDC
 
-### 1. NocoDB
-
-**Location**: `flux/apps/nocodb/deployment-nocodb.yaml`
-
-**Environment Variables Needed**:
-
-```yaml
-- name: NC_OIDC_ISSUER
-  value: "https://idm.xrs444.net/oauth2/openid/nocodb"
-- name: NC_OIDC_CLIENT_ID
-  valueFrom:
-    secretKeyRef:
-      name: nocodb-oidc-secret
-      key: client_id
-- name: NC_OIDC_CLIENT_SECRET
-  valueFrom:
-    secretKeyRef:
-      name: nocodb-oidc-secret
-      key: client_secret
-```
-
-**Nix Config**: Create sealed secret in nix config with Kanidm OAuth2 credentials
-
----
-
-### 2. Paperless-ngx
+### 1. Paperless-ngx
 
 **Location**: `flux/apps/paperless-ngx/deployment-paperless-ngx.yaml`
 
@@ -107,7 +82,6 @@ appropriate JWT tokens and configure Jitsi properly.
 In your nix configuration (`nix/` directory), you will need to:
 
 1. **Create Kanidm OAuth2 clients** for each application:
-   - nocodb
    - paperless
    - linkwarden
    - jitsi (if implementing)
@@ -117,7 +91,6 @@ In your nix configuration (`nix/` directory), you will need to:
    - client_secret
 
 3. **Configure redirect URIs** in Kanidm for each client:
-   - NocoDB: <https://nocodb.xrs444.net/auth/callback>
    - Paperless: <https://paperless.xrs444.net/accounts/oidc/kanidm/login/callback/>
    - Linkwarden: <https://linkwarden.xrs444.net/api/auth/callback/generic>
 
