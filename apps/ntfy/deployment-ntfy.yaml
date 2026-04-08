@@ -32,11 +32,16 @@ spec:
                 username=$(echo "$line" | cut -d':' -f1 | tr -d ' ')
                 password=$(echo "$line" | cut -d':' -f2- | sed 's/^ *//')
                 if [ -n "$username" ] && [ -n "$password" ]; then
-                  echo "Creating user: $username"
-                  ntfy user add --ignore-exists "$username"
-                  # Pipe password twice for confirmation
-                  printf "%s\n%s\n" "$password" "$password" | \
-                    ntfy user change-pass "$username"
+                  # Check if user exists
+                  if ntfy user list | grep -q "^user $username "; then
+                    echo "User $username exists, updating password"
+                    printf "%s\n%s\n" "$password" "$password" | \
+                      ntfy user change-pass "$username"
+                  else
+                    echo "Creating user: $username"
+                    printf "%s\n%s\n" "$password" "$password" | \
+                      ntfy user add "$username"
+                  fi
                 fi
               done
           env:
