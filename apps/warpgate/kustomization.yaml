@@ -5,7 +5,7 @@ namespace: warpgate
 resources:
   - namespace-warpgate.yaml
   - pvc-warpgate.yaml
-  - sealedsecret-warpgate-admin.yaml
+  - sealedsecret-warpgate-secret.yaml
   - sealedsecret-warpgate-oidc.yaml
   - helmrelease-warpgate.yaml
   - ingressroute-warpgate.yaml

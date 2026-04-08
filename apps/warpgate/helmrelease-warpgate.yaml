@@ -37,13 +37,9 @@ spec:
       existingClaim: warpgate-data
 
     # Setup job configuration
+    # Note: Chart expects 'warpgate-secret' with 'adminPassword' key
     setup:
       enabled: true
-      adminPassword:
-        valueFrom:
-          secretKeyRef:
-            name: warpgate-admin
-            key: adminPassword
       sessionRecording: true
 
     # Service configuration (web UI - ClusterIP for Traefik)
