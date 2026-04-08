@@ -32,15 +32,16 @@ spec:
     replicaCount: 1
 
     # Persistence configuration
-    persistence:
-      enabled: true
-      existingClaim: warpgate-data
+    data:
+      pvc:
+        enabled: true
+        claimName: warpgate-data
 
     # Setup job configuration
     # Note: Chart expects 'warpgate-secret' with 'adminPassword' key
     setup:
       enabled: true
-      sessionRecording: true
+      recordSessions: true
 
     # Service configuration (web UI - ClusterIP for Traefik)
     service:
@@ -58,6 +59,24 @@ spec:
     # Warpgate configuration via overrides_config
     overrides_config: |
       external_host: warpgate.xrs444.net
+
+      http:
+        enable: true
+        listen: "0.0.0.0:8888"
+        trust_x_forwarded_headers: true
+
+      ssh:
+        enable: true
+        listen: "0.0.0.0:2222"
+
+      mysql:
+        enable: true
+        listen: "0.0.0.0:33306"
+
+      database_url: "sqlite:/data/db"
+
+      recordings:
+        path: /data/recordings
 
       sso_providers:
         - name: kanidm
