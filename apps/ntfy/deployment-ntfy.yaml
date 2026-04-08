@@ -45,6 +45,16 @@ spec:
                   fi
                 fi
               done
+
+              # Grant topic access permissions
+              echo "Granting topic access permissions..."
+              ntfy access apprise "*" write-only
+              ntfy access dog dog read-only
+              ntfy access xrs444 xrs444 read-only
+              ntfy access samantha samantha read-only
+              ntfy access greyson greyson read-only
+              ntfy access rowan rowan read-only
+              ntfy access dog "*" read-write
           env:
             - name: NTFY_AUTH_FILE
               value: "/var/lib/ntfy/user.db"

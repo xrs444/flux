@@ -13,20 +13,7 @@ data:
     auth-default-access: deny-all
     behind-proxy: true
 
-    # Access Control List - Per-User Topics Architecture
-    # Format: "username:topic:access" where access is ro/wo/rw/deny
+    # Access Control List
+    # ACL is managed via init container using 'ntfy access' commands
     # Default access: deny-all (configured above)
-    # Apprise routes notifications to user topics based on tags
-    auth-access:
-      # Apprise - central router with write access to all user topics
-      - "apprise:*:wo"
-
-      # User Topics - each user has read-only access to their topic
-      - "dog:dog:ro"
-      - "xrs444:xrs444:ro"
-      - "samantha:samantha:ro"
-      - "greyson:greyson:ro"
-      - "rowan:rowan:ro"
-
-      # Admin (dog) has full access to all topics
-      - "dog:*:rw"
+    # This ensures users can only access their designated topics
