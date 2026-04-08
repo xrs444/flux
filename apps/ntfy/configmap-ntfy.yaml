@@ -13,63 +13,34 @@ data:
     auth-default-access: deny-all
     behind-proxy: true
 
-    # Access Control List
+    # Access Control List - Per-User Topics Architecture
     # Format: topic permissions username
-    # Permissions: deny-all
+    # Default access: deny-all
+    # Apprise routes notifications to user topics based on tags
     acl:
-      # Apprise - central notification router with access to all topics
+      # Apprise - central router with write access to all user topics
       - topic: "*"
         permission: "write-only"
         username: "apprise"
 
-      # Monitoring topics
-      - topic: "alerts"
-        permission: "write-only"
-        username: "prometheus"
-      - topic: "alerts"
-        permission: "write-only"
-        username: "loki"
-      - topic: "alerts"
-        permission: "read-only"
-        username: "xrs444"
-      - topic: "alerts"
+      # User Topics - each user has read-only access to their topic
+      - topic: "dog"
         permission: "read-only"
         username: "dog"
-
-      # Home Assistant
-      - topic: "homeassistant"
-        permission: "write-only"
-        username: "hass"
-      - topic: "homeassistant"
+      - topic: "xrs444"
         permission: "read-only"
         username: "xrs444"
-      - topic: "homeassistant"
+      - topic: "samantha"
         permission: "read-only"
-        username: "dog"
+        username: "samantha"
+      - topic: "greyson"
+        permission: "read-only"
+        username: "greyson"
+      - topic: "rowan"
+        permission: "read-only"
+        username: "rowan"
 
-      # Paperless
-      - topic: "documents"
-        permission: "write-only"
-        username: "paperless"
-      - topic: "documents"
-        permission: "read-only"
-        username: "xrs444"
-      - topic: "documents"
-        permission: "read-only"
-        username: "dog"
-
-      # Immich
-      - topic: "photos"
-        permission: "write-only"
-        username: "immich"
-      - topic: "photos"
-        permission: "read-only"
-        username: "xrs444"
-      - topic: "photos"
-        permission: "read-only"
-        username: "dog"
-
-      # Admin has full access to everything
+      # Admin (dog) has full access to all topics
       - topic: "*"
         permission: "read-write"
         username: "dog"
