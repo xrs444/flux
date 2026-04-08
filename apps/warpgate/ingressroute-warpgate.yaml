@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: warpgate
+  namespace: warpgate
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`warpgate.xrs444.net`)
+      kind: Rule
+      services:
+        - name: warpgate
+          port: 8888
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

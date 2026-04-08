@@ -38,5 +38,7 @@ resources:
   - ./netbox/diode-agent    # Diode network discovery agent
   - ./spegel                # Peer-to-peer container image caching
   - ./booklore              # Self-hosted book library manager
-#  - ./matrix               # Messaging and video calls (Synapse + Element)
+  - ./termix                # Web-based server management
+  - ./warpgate              # SSH/HTTPS bastion with session recording
+  # - ./matrix              # Messaging and video calls (Synapse + Element)
   - ./storage               # Storage PVCs (applied last after namespaces exist)

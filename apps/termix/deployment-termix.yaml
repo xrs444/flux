@@ -1,0 +1,98 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: termix
+  namespace: termix
+  labels:
+    app: termix
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: termix
+  template:
+    metadata:
+      labels:
+        app: termix
+    spec:
+      containers:
+        - name: termix
+          image: ghcr.io/lukegus/termix:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: PORT
+              value: "8080"
+            - name: DATA_DIR
+              value: "/app/data"
+            - name: NODE_ENV
+              value: "production"
+            - name: DB_FILE_ENCRYPTION
+              value: "true"
+            # Guacamole Configuration
+            - name: ENABLE_GUACAMOLE
+              value: "true"
+            - name: GUACD_HOST
+              value: "guacd.termix.svc.cluster.local"
+            - name: GUACD_PORT
+              value: "4822"
+            # OIDC Configuration
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: termix-oidc-secret
+                  key: client-id
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: termix-oidc-secret
+                  key: client-secret
+            - name: OIDC_ISSUER_URL
+              value: "https://idm.xrs444.net/oauth2/openid/oauth2_termix"
+            - name: OIDC_AUTHORIZATION_URL
+              value: "https://idm.xrs444.net/ui/oauth2"
+            - name: OIDC_TOKEN_URL
+              value: "https://idm.xrs444.net/oauth2/token"
+            - name: OIDC_SCOPES
+              value: "openid email profile"
+          volumeMounts:
+            - name: termix-data
+              mountPath: /app/data
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: termix-data
+          persistentVolumeClaim:
+            claimName: termix-data
