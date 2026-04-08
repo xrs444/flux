@@ -14,33 +14,19 @@ data:
     behind-proxy: true
 
     # Access Control List - Per-User Topics Architecture
-    # Format: topic permissions username
-    # Default access: deny-all
+    # Format: "username:topic:access" where access is ro/wo/rw/deny
+    # Default access: deny-all (configured above)
     # Apprise routes notifications to user topics based on tags
-    acl:
+    auth-access:
       # Apprise - central router with write access to all user topics
-      - topic: "*"
-        permission: "write-only"
-        username: "apprise"
+      - "apprise:*:wo"
 
       # User Topics - each user has read-only access to their topic
-      - topic: "dog"
-        permission: "read-only"
-        username: "dog"
-      - topic: "xrs444"
-        permission: "read-only"
-        username: "xrs444"
-      - topic: "samantha"
-        permission: "read-only"
-        username: "samantha"
-      - topic: "greyson"
-        permission: "read-only"
-        username: "greyson"
-      - topic: "rowan"
-        permission: "read-only"
-        username: "rowan"
+      - "dog:dog:ro"
+      - "xrs444:xrs444:ro"
+      - "samantha:samantha:ro"
+      - "greyson:greyson:ro"
+      - "rowan:rowan:ro"
 
       # Admin (dog) has full access to all topics
-      - topic: "*"
-        permission: "read-write"
-        username: "dog"
+      - "dog:*:rw"
