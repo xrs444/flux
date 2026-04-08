@@ -34,9 +34,9 @@ spec:
                 if [ -n "$username" ] && [ -n "$password" ]; then
                   echo "Creating user: $username"
                   ntfy user add --ignore-exists "$username"
-                  # Use NTFY_PASSWORD environment variable as documented
-                  export NTFY_PASSWORD="$password"
-                  ntfy user change-pass "$username"
+                  # Pipe password twice for confirmation
+                  printf "%s\n%s\n" "$password" "$password" | \
+                    ntfy user change-pass "$username"
                 fi
               done
           env:
