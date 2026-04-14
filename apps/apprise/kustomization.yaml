@@ -7,5 +7,6 @@ resources:
   - namespace.yaml
   - deployment-apprise.yaml
   - service-apprise.yaml
-  - sealedsecret-apprise-config.yaml
+  - configmap-apprise-config.yaml
+  - sealedsecret-apprise-ntfy-credentials.yaml
   - ingressroute-apprise.yaml
