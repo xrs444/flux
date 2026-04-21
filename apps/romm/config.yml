@@ -1,0 +1,29 @@
+---
+# RomM configuration file
+#
+# NOT a Kubernetes resource. Place manually in the romm-config PVC:
+#   kubectl cp flux/apps/romm/config.yml \
+#     romm/<pod>:/romm/config/config.yml
+#
+# Omitted sections use RomM's built-in defaults.
+
+system:
+  platforms:
+    # Maps the 'dos' library folder to the MS-DOS IGDB platform slug.
+    dos: "dos"
+
+exclude:
+  roms:
+    multi_file:
+      # Prevent ROMM scanning the CD/ disc-image subfolder as a game entry.
+      names:
+        - CD
+
+scan:
+  priority:
+    metadata:
+      - igdb
+      - mobygames
+    artwork:
+      - igdb
+      - mobygames
