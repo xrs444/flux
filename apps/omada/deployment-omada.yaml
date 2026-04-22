@@ -19,6 +19,15 @@ spec:
       labels:
         app: omada-controller
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - v-k8s-xsvr2
       containers:
         - name: omada-controller
           image: mbentley/omada-controller:6.1
