@@ -23,7 +23,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: grimmory
-          image: grimmory-tools/grimmory:latest
+          image: grimmory/grimmory:latest
           ports:
             - containerPort: 6565
               name: http
