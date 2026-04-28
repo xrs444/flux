@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: syncthing-data
+  namespace: syncthing
+  annotations:
+    kustomize.config.k8s.io/behavior: merge
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""  # Empty string to prevent dynamic provisioning
+  volumeName: syncthing-data-nfs  # Bind to specific PV
+  resources:
+    requests:
+      storage: 1Ti  # Must match PV capacity

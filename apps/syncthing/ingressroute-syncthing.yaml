@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: syncthing
+  namespace: syncthing
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`syncthing.xrs444.net`)
+      kind: Rule
+      services:
+        - name: syncthing
+          port: 8384
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

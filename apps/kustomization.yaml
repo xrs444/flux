@@ -40,5 +40,6 @@ resources:
   - ./booklore              # Self-hosted book library manager
   - ./termix                # Web-based server management
   - ./warpgate              # SSH/HTTPS bastion with session recording
+  - ./syncthing             # Continuous file synchronization
   # - ./matrix              # Messaging and video calls (Synapse + Element)
   - ./storage               # Storage PVCs (applied last after namespaces exist)

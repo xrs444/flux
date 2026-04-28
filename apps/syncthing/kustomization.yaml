@@ -1,0 +1,14 @@
+# Syncthing - Continuous file synchronization
+# Syncs files between devices using the Syncthing protocol
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - deployment-syncthing.yaml
+  - service-syncthing.yaml
+  - service-syncthing-sync.yaml
+  - ingressroute-syncthing.yaml
+  # NFS storage
+  - pv-syncthing-data.yaml
+  - pvc-syncthing-data.yaml
