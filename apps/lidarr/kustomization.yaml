@@ -1,0 +1,21 @@
+# Lidarr - Music collection manager
+# Beets CronJob auto-tags new music from /ingest and organizes to /music every 15 minutes
+# Lidarr monitors /music and handles library metadata, quality rules, and Jellyfin sync
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: lidarr
+resources:
+  - namespace.yaml
+  - deployment-lidarr.yaml
+  - service-lidarr.yaml
+  - ingressroute-lidarr.yaml
+  - configmap-beets.yaml
+  - cronjob-beets.yaml
+  # Storage resources
+  - pv-lidarr-music.yaml
+  - pv-lidarr-ingest.yaml
+  - pvc-lidarr-config.yaml
+  - pvc-lidarr-music.yaml
+  - pvc-lidarr-ingest.yaml
+  - pvc-beets-state.yaml

@@ -10,5 +10,7 @@ resources:
   - ingressroute-manyfold.yaml
   # Storage resources
   - pv-manyfold-store.yaml
+  - pv-manyfold-ingest.yaml
   - pvc-manyfold-data.yaml
   - pvc-manyfold-store.yaml
+  - pvc-manyfold-ingest.yaml

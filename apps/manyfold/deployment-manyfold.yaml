@@ -61,6 +61,8 @@ spec:
               mountPath: /libraries
             - name: store
               mountPath: /store
+            - name: ingest
+              mountPath: /ingest
           resources:
             requests:
               cpu: 500m
@@ -136,3 +138,6 @@ spec:
         - name: store
           persistentVolumeClaim:
             claimName: manyfold-store
+        - name: ingest
+          persistentVolumeClaim:
+            claimName: manyfold-ingest

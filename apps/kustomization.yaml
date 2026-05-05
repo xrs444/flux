@@ -38,6 +38,9 @@ resources:
   - ./netbox/diode-agent    # Diode network discovery agent
   - ./spegel                # Peer-to-peer container image caching
   - ./booklore              # Self-hosted book library manager
+  - ./radarr                # Movie collection manager and auto-importer
+  - ./sonarr                # TV show collection manager and auto-importer
+  - ./lidarr                # Music collection manager with Beets auto-tagger
   - ./termix                # Web-based server management
   - ./warpgate              # SSH/HTTPS bastion with session recording
   - ./syncthing             # Continuous file synchronization

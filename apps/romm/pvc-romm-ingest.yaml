@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-consume
-  namespace: paperless-ngx
+  name: romm-ingest
+  namespace: romm
 spec:
   storageClassName: ""
-  volumeName: paperless-consume-nfs
+  volumeName: romm-ingest-nfs
   accessModes:
     - ReadWriteMany
   resources:

@@ -48,6 +48,8 @@ spec:
               mountPath: /romm/resources
             - name: config
               mountPath: /romm/config
+            - name: ingest
+              mountPath: /romm/ingest
           startupProbe:
             httpGet:
               path: /
@@ -86,3 +88,6 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: romm-config
+        - name: ingest
+          persistentVolumeClaim:
+            claimName: romm-ingest

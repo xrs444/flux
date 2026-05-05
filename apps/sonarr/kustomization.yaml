@@ -1,0 +1,17 @@
+# Sonarr - TV show collection manager and auto-importer
+# Watches /ingest for new episodes, renames/organizes to /tv (Jellyfin library)
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sonarr
+resources:
+  - namespace.yaml
+  - deployment-sonarr.yaml
+  - service-sonarr.yaml
+  - ingressroute-sonarr.yaml
+  # Storage resources
+  - pv-sonarr-tvshows.yaml
+  - pv-sonarr-ingest.yaml
+  - pvc-sonarr-config.yaml
+  - pvc-sonarr-tvshows.yaml
+  - pvc-sonarr-ingest.yaml

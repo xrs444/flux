@@ -5,6 +5,8 @@ namespace: romm
 resources:
   - namespace.yaml
   - pv-romm-games.yaml
+  - pv-romm-ingest.yaml
+  - pvc-romm-ingest.yaml
   - pvc-romm-games.yaml
   - pvc-romm-config.yaml
   - pvc-romm-resources.yaml

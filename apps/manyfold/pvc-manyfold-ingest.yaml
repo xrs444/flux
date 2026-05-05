@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-consume
-  namespace: paperless-ngx
+  name: manyfold-ingest
+  namespace: manyfold
 spec:
   storageClassName: ""
-  volumeName: paperless-consume-nfs
+  volumeName: manyfold-ingest-nfs
   accessModes:
     - ReadWriteMany
   resources:

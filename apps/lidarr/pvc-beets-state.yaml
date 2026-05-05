@@ -1,0 +1,15 @@
+---
+# Persistent storage for Beets library database and config
+# Keeps the MusicBrainz match cache and import log across CronJob runs
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: beets-state
+  namespace: lidarr
+spec:
+  storageClassName: longhorn-retain
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

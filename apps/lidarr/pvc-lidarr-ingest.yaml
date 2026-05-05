@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-consume
-  namespace: paperless-ngx
+  name: lidarr-ingest
+  namespace: lidarr
 spec:
   storageClassName: ""
-  volumeName: paperless-consume-nfs
+  volumeName: lidarr-ingest-nfs
   accessModes:
     - ReadWriteMany
   resources:

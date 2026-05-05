@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: beets-config
+  namespace: lidarr
+data:
+  config.yaml: |
+    directory: /music
+    library: /beets-state/musiclibrary.db
+    import:
+      move: yes
+      write: yes
+      log: /beets-state/import.log
+      timid: no
+      quiet: yes
+    match:
+      strong_rec_thresh: 0.10
+      preferred:
+        countries: []
+        media: []
+    plugins:
+      - fetchart
+      - embedart
+      - lastgenre
+    fetchart:
+      auto: yes
+    embedart:
+      auto: yes
+    lastgenre:
+      auto: yes
+      source: track

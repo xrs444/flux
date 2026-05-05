@@ -10,6 +10,7 @@ resources:
   - ingressroute-paperless-ngx.yaml
   - oauth2-sealedsecret-paperless.yaml
   # Storage resources
+  - pv-paperless-consume.yaml
   - pvc-paperless-consume.yaml
   - pvc-paperless-data.yaml
   - pvc-paperless-media.yaml

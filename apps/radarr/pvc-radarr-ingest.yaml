@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-consume
-  namespace: paperless-ngx
+  name: radarr-ingest
+  namespace: radarr
 spec:
   storageClassName: ""
-  volumeName: paperless-consume-nfs
+  volumeName: radarr-ingest-nfs
   accessModes:
     - ReadWriteMany
   resources:
