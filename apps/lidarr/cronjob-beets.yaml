@@ -1,7 +1,6 @@
 ---
-# Beets import CronJob - runs every 15 minutes, auto-tags music from /ingest and
-# moves organized files to /music (Lidarr's root folder). Uses Forbid concurrency
-# to prevent overlapping imports if a run takes longer than 15 minutes.
+# Beets import CronJob — auto-tags music from /ingest, moves to /music.
+# Runs every 15 min. Forbid concurrency prevents overlapping imports.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -19,8 +18,11 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: beets
-              image: beetbox/beets:latest
+              image: lscr.io/linuxserver/beets:latest
+              command: ["/usr/bin/beet"]
               args:
+                - -c
+                - /config/config.yaml
                 - import
                 - -q
                 - /ingest
@@ -30,7 +32,7 @@ spec:
                 - name: music
                   mountPath: /music
                 - name: beets-config
-                  mountPath: /root/.config/beets
+                  mountPath: /config
                   readOnly: true
                 - name: beets-state
                   mountPath: /beets-state
