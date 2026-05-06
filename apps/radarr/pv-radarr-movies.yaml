@@ -11,7 +11,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 172.20.3.201
-    path: /export/zfs/media/movies
+    path: /zfs/media/movies
   mountOptions:
     - vers=4.1
     - hard

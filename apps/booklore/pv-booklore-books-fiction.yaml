@@ -11,4 +11,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 172.20.3.201
-    path: /export/zfs/media/books/fiction
+    path: /zfs/media/books/fiction

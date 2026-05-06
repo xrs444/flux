@@ -11,7 +11,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 172.20.3.201
-    path: /export/zfs/ingest/tvshows
+    path: /zfs/ingest/tvshows
   mountOptions:
     - vers=4.1
     - hard
