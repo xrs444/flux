@@ -29,6 +29,23 @@ spec:
               value: "1000"
             - name: TZ
               value: "America/Phoenix"
+            - name: RADARR__AUTH__APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: radarr-apikey
+                  key: apikey
+            - name: RADARR__AUTH__METHOD
+              value: "External"
+            - name: RADARR__AUTH__REQUIRED
+              value: "Enabled"
+            - name: RADARR__LOG__LEVEL
+              value: "info"
+            - name: RADARR__LOG__ANALYTICSENABLED
+              value: "False"
+            - name: RADARR__APP__LAUNCHBROWSER
+              value: "False"
+            - name: RADARR__UPDATE__MECHANISM
+              value: "Docker"
           volumeMounts:
             - name: config
               mountPath: /config

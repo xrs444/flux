@@ -29,6 +29,23 @@ spec:
               value: "1000"
             - name: TZ
               value: "America/Phoenix"
+            - name: SONARR__AUTH__APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: sonarr-apikey
+                  key: apikey
+            - name: SONARR__AUTH__METHOD
+              value: "External"
+            - name: SONARR__AUTH__REQUIRED
+              value: "Enabled"
+            - name: SONARR__LOG__LEVEL
+              value: "info"
+            - name: SONARR__LOG__ANALYTICSENABLED
+              value: "False"
+            - name: SONARR__APP__LAUNCHBROWSER
+              value: "False"
+            - name: SONARR__UPDATE__MECHANISM
+              value: "Docker"
           volumeMounts:
             - name: config
               mountPath: /config

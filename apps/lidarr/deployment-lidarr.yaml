@@ -29,6 +29,23 @@ spec:
               value: "1000"
             - name: TZ
               value: "America/Phoenix"
+            - name: LIDARR__AUTH__APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: lidarr-apikey
+                  key: apikey
+            - name: LIDARR__AUTH__METHOD
+              value: "External"
+            - name: LIDARR__AUTH__REQUIRED
+              value: "Enabled"
+            - name: LIDARR__LOG__LEVEL
+              value: "info"
+            - name: LIDARR__LOG__ANALYTICSENABLED
+              value: "False"
+            - name: LIDARR__APP__LAUNCHBROWSER
+              value: "False"
+            - name: LIDARR__UPDATE__MECHANISM
+              value: "Docker"
           volumeMounts:
             - name: config
               mountPath: /config
