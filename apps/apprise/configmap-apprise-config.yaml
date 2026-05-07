@@ -21,9 +21,9 @@ data:
       - ntfy://apprise:${NTFY_APPRISE_PASSWORD}@ntfy.ntfy.svc.cluster.local/dog:
         - tag: home-services, all-users
 
-      # xrs444 - receives critical infrastructure + home services
+      # xrs444 - receives all alerts + critical infra + home services
       - ntfy://apprise:${NTFY_APPRISE_PASSWORD}@ntfy.ntfy.svc.cluster.local/xrs444:
-        - tag: critical-infra, home-services, all-users
+        - tag: alerts, critical-infra, home-services, all-users
 
       # samantha - receives critical infrastructure + home services
       - ntfy://apprise:${NTFY_APPRISE_PASSWORD}@ntfy.ntfy.svc.cluster.local/samantha:
