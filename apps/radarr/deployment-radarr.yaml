@@ -82,6 +82,29 @@ spec:
             limits:
               cpu: 2000m
               memory: 1Gi
+        - name: exportarr
+          image: ghcr.io/onedr0p/exportarr:latest
+          args: ["radarr"]
+          ports:
+            - containerPort: 9708
+              name: metrics
+          env:
+            - name: PORT
+              value: "9708"
+            - name: URL
+              value: "http://localhost:7878"
+            - name: APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: radarr-apikey
+                  key: apikey
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
       volumes:
         - name: config
           persistentVolumeClaim:

@@ -82,6 +82,29 @@ spec:
             limits:
               cpu: 2000m
               memory: 1Gi
+        - name: exportarr
+          image: ghcr.io/onedr0p/exportarr:latest
+          args: ["lidarr"]
+          ports:
+            - containerPort: 9709
+              name: metrics
+          env:
+            - name: PORT
+              value: "9709"
+            - name: URL
+              value: "http://localhost:8686"
+            - name: APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: lidarr-apikey
+                  key: apikey
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
       volumes:
         - name: config
           persistentVolumeClaim:

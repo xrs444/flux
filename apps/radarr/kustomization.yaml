@@ -1,5 +1,5 @@
 # Radarr - Movie collection manager and auto-importer
-# Watches /ingest for new movies, renames/organizes to /movies (Jellyfin library)
+# Watches /ingest, renames/organizes to /movies (Jellyfin library)
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -8,6 +8,7 @@ resources:
   - namespace.yaml
   - deployment-radarr.yaml
   - service-radarr.yaml
+  - service-radarr-metrics-nodeport.yaml
   - ingressroute-radarr.yaml
   # Storage resources
   - pv-radarr-movies.yaml

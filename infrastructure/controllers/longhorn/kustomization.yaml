@@ -20,3 +20,4 @@ resources:
   - ./storageclass-longhorn-ephemeral.yaml      # Temporary storage
   - ./helmrelease-longhorn-oidc2.yaml           # OAuth2 proxy Helm release
   - ./middleware_traefik_longhorn.yaml          # Traefik middleware
+  - ./service-longhorn-metrics-nodeport.yaml   # Metrics NodePort for Prometheus

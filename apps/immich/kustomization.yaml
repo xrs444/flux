@@ -19,5 +19,7 @@ resources:
   - service-immich-redis.yaml
   # Helm release
   - helmrelease.yaml
+  # Metrics NodePort for external Prometheus scraping
+  - service-immich-metrics-nodeport.yaml
   # Ingress
   - ingressroute-immich.yaml

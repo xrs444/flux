@@ -1,0 +1,20 @@
+---
+# Exportarr sidecar exposes Radarr metrics on port 9708
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr-metrics-nodeport
+  namespace: radarr
+  labels:
+    app: radarr
+    app.kubernetes.io/component: metrics
+spec:
+  type: NodePort
+  ports:
+    - name: metrics
+      port: 9708
+      targetPort: 9708
+      nodePort: 30111
+      protocol: TCP
+  selector:
+    app: radarr

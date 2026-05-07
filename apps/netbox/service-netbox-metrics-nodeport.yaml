@@ -1,0 +1,21 @@
+---
+# NetBox exposes Prometheus metrics at /metrics on the main application port
+apiVersion: v1
+kind: Service
+metadata:
+  name: netbox-metrics-nodeport
+  namespace: netbox
+  labels:
+    app.kubernetes.io/name: netbox
+    app.kubernetes.io/component: metrics
+spec:
+  type: NodePort
+  ports:
+    - name: metrics
+      port: 8080
+      targetPort: 8080
+      nodePort: 30107
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: netbox
+    app.kubernetes.io/component: netbox

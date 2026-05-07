@@ -10,5 +10,7 @@ resources:
   - service-ntfy.yaml
   - ingressroute-ntfy.yaml
   - sealedsecret-ntfy-users.yaml
+  # Metrics NodePort for external Prometheus scraping
+  - service-ntfy-metrics-nodeport.yaml
   # Storage resources
   - pvc-ntfy-data.yaml

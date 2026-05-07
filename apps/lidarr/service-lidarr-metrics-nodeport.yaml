@@ -1,0 +1,20 @@
+---
+# Exportarr sidecar exposes Lidarr metrics on port 9709
+apiVersion: v1
+kind: Service
+metadata:
+  name: lidarr-metrics-nodeport
+  namespace: lidarr
+  labels:
+    app: lidarr
+    app.kubernetes.io/component: metrics
+spec:
+  type: NodePort
+  ports:
+    - name: metrics
+      port: 9709
+      targetPort: 9709
+      nodePort: 30112
+      protocol: TCP
+  selector:
+    app: lidarr

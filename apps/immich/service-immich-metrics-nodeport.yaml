@@ -1,0 +1,21 @@
+---
+# Immich server exposes Prometheus metrics on port 8081
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-metrics-nodeport
+  namespace: immich
+  labels:
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/component: metrics
+spec:
+  type: NodePort
+  ports:
+    - name: metrics
+      port: 8081
+      targetPort: 8081
+      nodePort: 30106
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/component: server

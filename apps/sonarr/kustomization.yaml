@@ -8,6 +8,7 @@ resources:
   - namespace.yaml
   - deployment-sonarr.yaml
   - service-sonarr.yaml
+  - service-sonarr-metrics-nodeport.yaml
   - ingressroute-sonarr.yaml
   # Storage resources
   - pv-sonarr-tvshows.yaml

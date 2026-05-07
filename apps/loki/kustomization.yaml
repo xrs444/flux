@@ -11,5 +11,7 @@ resources:
   - ingressroute-loki.yaml
   - configmap-promtail.yaml
   - daemonset-promtail.yaml
+  # Metrics NodePort for external Prometheus scraping
+  - service-loki-metrics-nodeport.yaml
   # Storage resources
   - pvc-loki-data.yaml
