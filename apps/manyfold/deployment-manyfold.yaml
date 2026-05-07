@@ -53,9 +53,27 @@ spec:
                   name: manyfold-db-password
                   key: password
             - name: SECRET_KEY_BASE
-              value: "changeme-generate-a-secure-key"
+              valueFrom:
+                secretKeyRef:
+                  name: manyfold-secret-key
+                  key: secret-key-base
             - name: REDIS_URL
               value: "redis://localhost:6379"
+            - name: MULTIUSER
+              value: "enabled"
+            - name: OIDC_CLIENT_ID
+              value: "oauth2_manyfold"
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: manyfold-oidc
+                  key: client-secret
+            - name: OIDC_ISSUER
+              value: "https://idm.xrs444.net/oauth2/openid/oauth2_manyfold"
+            - name: OIDC_NAME
+              value: "Kanidm"
+            - name: FORCE_OIDC
+              value: "enabled"
           volumeMounts:
             - name: data
               mountPath: /libraries
