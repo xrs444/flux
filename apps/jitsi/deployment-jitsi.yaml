@@ -22,7 +22,7 @@ spec:
       containers:
         # Jitsi Web (frontend)
         - name: web
-          image: jitsi/web:stable-9258
+          image: jitsi/web:stable-10888
           ports:
             - containerPort: 80
               name: http
@@ -54,7 +54,7 @@ spec:
               memory: 512Mi
         # Prosody XMPP server
         - name: prosody
-          image: jitsi/prosody:stable-9258
+          image: jitsi/prosody:stable-10888
           ports:
             - containerPort: 5222
               name: xmpp-c2s
@@ -89,7 +89,7 @@ spec:
               memory: 512Mi
         # Jicofo (conference focus)
         - name: jicofo
-          image: jitsi/jicofo:stable-9258
+          image: jitsi/jicofo:stable-10888
           envFrom:
             - configMapRef:
                 name: jitsi-config
@@ -145,7 +145,7 @@ spec:
     spec:
       containers:
         - name: jvb
-          image: jitsi/jvb:stable-9258
+          image: jitsi/jvb:stable-10888
           ports:
             - containerPort: 10000
               protocol: UDP

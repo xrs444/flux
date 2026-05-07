@@ -1,0 +1,198 @@
+---
+name: version-drift
+
+"on":
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * 1"  # Every Monday at 08:00 UTC
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          # Install crane for OCI/Docker image tag lookups
+          CRANE_VERSION=$(curl -s https://api.github.com/repos/google/go-containerregistry/releases/latest | jq -r '.tag_name')
+          curl -sL "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/go-containerregistry_Linux_x86_64.tar.gz" | tar xz crane
+          sudo mv crane /usr/local/bin/crane
+          # Install helm for chart version lookups
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          # Install yq for YAML parsing
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Add Helm repos
+        run: |
+          helm repo add cilium https://helm.cilium.io
+          helm repo add traefik https://traefik.github.io/charts
+          helm repo add oauth2-proxy https://oauth2-proxy.github.io/manifests
+          helm repo add netbox https://charts.netbox.dev
+          helm repo add rm3l https://helm.rm3l.org
+          helm repo add warpgate https://charts.warpgate.dev 2>/dev/null || true
+          helm repo update
+
+      - name: Check Helm chart versions
+        id: helm
+        run: |
+          REPORT=""
+          check_helm() {
+            local NAME=$1 REPO=$2 CURRENT=$3 CONSTRAINT=$4
+            LATEST=$(helm search repo "${REPO}" --output json 2>/dev/null | jq -r '.[0].version // "unknown"')
+            if [ "$LATEST" = "unknown" ]; then
+              REPORT="${REPORT}\n| ${NAME} | ${CURRENT} | ⚠️ lookup failed |"
+            elif [ "$LATEST" != "$CURRENT" ]; then
+              REPORT="${REPORT}\n| ${NAME} | ${CURRENT} | 🔴 ${LATEST} available |"
+            else
+              REPORT="${REPORT}\n| ${NAME} | ${CURRENT} | ✅ up to date |"
+            fi
+          }
+
+          # Extract current pinned chart version from HelmRelease files (semver range → resolve latest in range)
+          CILIUM_CURRENT=$(yq '.spec.chart.spec.version' infrastructure/controllers/cilium/helmrelease-cilium.yaml)
+          TRAEFIK_CURRENT=$(yq '.spec.chart.spec.version' infrastructure/controllers/traefik/helmrelease-traefik.yaml)
+          OAUTH2_CURRENT=$(yq '.spec.chart.spec.version' infrastructure/controllers/traefik/helmrelease-traefik-oauth2.yaml)
+          ATUIN_CURRENT=$(yq '.spec.chart.spec.version' apps/atuin/helmrelease.yaml)
+
+          check_helm "Cilium"       "cilium/cilium"          "$CILIUM_CURRENT"  ">=1.0.0 <2.0.0"
+          check_helm "Traefik"      "traefik/traefik"        "$TRAEFIK_CURRENT" ">=38.0.0 <39.0.0"
+          check_helm "OAuth2-Proxy" "oauth2-proxy/oauth2-proxy" "$OAUTH2_CURRENT" ">=7.0.0 <8.0.0"
+          check_helm "Atuin"        "rm3l/atuin"             "$ATUIN_CURRENT"   ">=0.0.0 <1.0.0"
+
+          echo "helm_report<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$REPORT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Check container image versions
+        id: images
+        run: |
+          REPORT=""
+          check_image() {
+            local NAME=$1 IMAGE=$2 CURRENT=$3 MAJOR=$4
+            # Get all tags, filter to same major version, find latest semver
+            LATEST=$(crane ls "${IMAGE}" 2>/dev/null \
+              | grep -E "^v?${MAJOR}\.[0-9]+\.[0-9]+$" \
+              | sort -V | tail -1)
+            if [ -z "$LATEST" ]; then
+              REPORT="${REPORT}\n| ${NAME} | ${IMAGE}:${CURRENT} | ⚠️ lookup failed |"
+            elif [ "$LATEST" != "$CURRENT" ]; then
+              REPORT="${REPORT}\n| ${NAME} | ${IMAGE}:${CURRENT} | 🔴 ${LATEST} available |"
+            else
+              REPORT="${REPORT}\n| ${NAME} | ${IMAGE}:${CURRENT} | ✅ up to date |"
+            fi
+          }
+
+          check_image "Jellyfin"           "docker.io/jellyfin/jellyfin"                       "10.11.8"    "10"
+          check_image "ntfy"               "docker.io/binwiederhier/ntfy"                      "v2.22.0"    "v2"
+          check_image "kube-state-metrics" "registry.k8s.io/kube-state-metrics/kube-state-metrics" "v2.18.0" "v2"
+          check_image "Garage"             "docker.io/dxflrs/garage"                           "v1.3.1"     "v1"
+          check_image "Dashy"              "docker.io/lissy93/dashy"                           "3.3.0"      "3"
+          check_image "LubeLogger"         "ghcr.io/hargata/lubelogger"                        "v1.6.4"     "v1"
+          check_image "Warpgate"           "ghcr.io/warp-tech/warpgate"                        "0.23.3"     "0"
+
+          # Jitsi uses build-number tags (stable-NNNN) — just report latest stable tag
+          JITSI_LATEST=$(crane ls docker.io/jitsi/web 2>/dev/null \
+            | grep -E "^stable-[0-9]+$" | sort -t- -k2 -n | tail -1)
+          JITSI_CURRENT="stable-10888"
+          if [ -z "$JITSI_LATEST" ]; then
+            REPORT="${REPORT}\n| Jitsi | jitsi/*:${JITSI_CURRENT} | ⚠️ lookup failed |"
+          elif [ "$JITSI_LATEST" != "$JITSI_CURRENT" ]; then
+            REPORT="${REPORT}\n| Jitsi | jitsi/*:${JITSI_CURRENT} | 🔴 ${JITSI_LATEST} available |"
+          else
+            REPORT="${REPORT}\n| Jitsi | jitsi/*:${JITSI_CURRENT} | ✅ up to date |"
+          fi
+
+          # Omada uses dotted-version tags (6.x.y.z) — find latest 6.x
+          OMADA_LATEST=$(crane ls docker.io/mbentley/omada-controller 2>/dev/null \
+            | grep -E "^6\.[0-9]+\.[0-9]+\.[0-9]+$" | sort -V | tail -1)
+          OMADA_CURRENT="6.2"
+          if [ -n "$OMADA_LATEST" ]; then
+            REPORT="${REPORT}\n| Omada | mbentley/omada-controller:${OMADA_CURRENT} | latest full tag: ${OMADA_LATEST} |"
+          fi
+
+          echo "image_report<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$REPORT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Build summary
+        id: summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY <<'SUMMARY'
+          ## Version Drift Report
+
+          ### Helm Charts
+          | Component | Current | Status |
+          |-----------|---------|--------|
+          SUMMARY
+          echo -e "${{ steps.helm.outputs.helm_report }}" >> $GITHUB_STEP_SUMMARY
+
+          cat >> $GITHUB_STEP_SUMMARY <<'SUMMARY'
+
+          ### Container Images
+          | Component | Image | Status |
+          |-----------|-------|--------|
+          SUMMARY
+          echo -e "${{ steps.images.outputs.image_report }}" >> $GITHUB_STEP_SUMMARY
+
+          cat >> $GITHUB_STEP_SUMMARY <<'SUMMARY'
+
+          ### Not checked (safe to skip)
+          - Postgres images (major version upgrades require migration)
+          - MariaDB images (major version upgrades require migration)
+          - Immich Postgres (special image with pgvector extensions — coordinate with Immich releases)
+          - NetBox custom image (built via `build-netbox-image.yml`)
+          SUMMARY
+
+      - name: Create or update tracking issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '📦 Version drift tracker';
+            const body = `## Version Drift Report — ${new Date().toISOString().split('T')[0]}
+
+            See the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for the full report.
+
+            ### Helm Charts
+            | Component | Current Constraint | Status |
+            |-----------|-------------------|--------|
+            ${{ steps.helm.outputs.helm_report }}
+
+            ### Container Images
+            | Component | Image | Status |
+            |-----------|-------|--------|
+            ${{ steps.images.outputs.image_report }}
+
+            _Updated automatically by the \`version-drift\` workflow._`;
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'version-drift'
+            });
+
+            if (issues.data.length > 0) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: body
+              });
+              console.log(`Updated issue #${issues.data[0].number}`);
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['version-drift']
+              });
+              console.log('Created new tracking issue');
+            }

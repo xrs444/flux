@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: cilium
-      version: "1.18.5"
+      version: ">=1.19.0 <2.0.0"
       sourceRef:
         kind: HelmRepository
         name: cilium
@@ -31,7 +31,7 @@ spec:
   values:
     # upgradeCompatibility set to 1.17 for smooth upgrade to 1.18
     # This minimizes datapath disruption during the upgrade
-    upgradeCompatibility: "1.17"
+    upgradeCompatibility: "1.18"
 
     operator:
       revisionHistoryLimit: 3

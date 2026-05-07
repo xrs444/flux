@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -20,7 +21,7 @@ data:
       # -- Registry and repository for the lubelogger image.
       repository: ghcr.io/hargata/lubelogger
       # -- Tag for the image.
-      tag: "v1.4.9"
+      tag: "v1.6.4"
       # -- Image pull policy.
       pullPolicy: IfNotPresent
 
