@@ -37,10 +37,12 @@ spec:
         enabled: true
         claimName: warpgate-data
 
-    # Setup job configuration
-    # Note: Chart expects 'warpgate-secret' with 'adminPassword' key
+    # Use podinit mode so setup runs as an init container instead of a
+    # separate Job. The Job mode creates an immutable resource that Helm
+    # cannot patch on upgrade, permanently stalling the HelmRelease.
     setup:
       enabled: true
+      type: podinit
       recordSessions: true
 
     # Service configuration (web UI - ClusterIP for Traefik)
