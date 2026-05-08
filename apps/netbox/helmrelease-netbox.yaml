@@ -33,6 +33,9 @@ spec:
     # Basic configuration
     replicaCount: 1
 
+    # Enable Prometheus metrics at /metrics (port 8080)
+    metricsEnabled: true
+
     # Superuser configuration (using existing secret)
     superuser:
       enabled: true

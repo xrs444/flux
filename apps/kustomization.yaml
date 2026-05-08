@@ -19,6 +19,7 @@ resources:
   - ./audiobookshelf        # Audiobook and podcast server
   - ./manyfold              # 3D print file manager
   - ./kube-state-metrics    # Kubernetes object metrics for monitoring
+  - ./node-exporter         # Node-level metrics DaemonSet for Talos VMs
   - ./loki                  # Log aggregation system
   - ./prometheus-sa         # Prometheus ServiceAccount for external scraping
   - ./apprise               # Multi-platform notification service

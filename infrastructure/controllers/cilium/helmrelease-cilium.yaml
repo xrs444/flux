@@ -35,6 +35,9 @@ spec:
 
     operator:
       revisionHistoryLimit: 3
+      prometheus:
+        enabled: true
+        port: 9963
 
     identityAllocationMode: crd
     enablePolicy: default
@@ -114,3 +117,9 @@ spec:
           - 10.96.0.0/12    # Service CIDR - no masquerade for pod-to-service
           - 172.21.0.0/24   # LoadBalancer IPs - BGP routed via BGP
         masqLinkLocal: false
+
+    # Enable Prometheus metrics on port 9962 (agent)
+    # Required for the cilium-agent-metrics-nodeport Service to have a backend
+    prometheus:
+      enabled: true
+      port: 9962
