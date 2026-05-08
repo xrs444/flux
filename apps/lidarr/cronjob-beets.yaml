@@ -19,13 +19,11 @@ spec:
           containers:
             - name: beets
               image: lscr.io/linuxserver/beets:2.11.0
-              command: ["/usr/local/bin/beet"]
+              command: ["/bin/sh", "-c"]
               args:
-                - -c
-                - /config/config.yaml
-                - import
-                - -q
-                - /ingest
+                - |
+                  BEET=$(command -v beet || echo /lsiopy/bin/beet)
+                  exec "$BEET" -c /config/config.yaml import -q /ingest
               volumeMounts:
                 - name: ingest
                   mountPath: /ingest
