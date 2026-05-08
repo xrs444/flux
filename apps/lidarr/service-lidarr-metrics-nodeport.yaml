@@ -14,7 +14,7 @@ spec:
     - name: metrics
       port: 9709
       targetPort: 9709
-      nodePort: 30112
+      nodePort: 30113
       protocol: TCP
   selector:
     app: lidarr
