@@ -13,6 +13,9 @@ data:
     auth-default-access: deny-all
     behind-proxy: true
 
+    # Prometheus metrics
+    enable-metrics: true
+
     # Access Control List
     # ACL is managed via init container using 'ntfy access' commands
     # Default access: deny-all (configured above)

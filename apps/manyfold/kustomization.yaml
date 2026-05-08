@@ -5,6 +5,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
+  - secret-manyfold-secret-key.yaml
+  - secret-manyfold-oidc.yaml
+  - secret-manyfold-db.yaml
   - deployment-manyfold.yaml
   - service-manyfold.yaml
   - ingressroute-manyfold.yaml
