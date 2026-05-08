@@ -23,6 +23,19 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  # Patch the Deployment to use Recreate strategy so upgrades don't deadlock
+  # when the old pod holds the RWO PVC on a different node.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: warpgate
+            patch: |
+              - op: add
+                path: /spec/strategy
+                value:
+                  type: Recreate
   values:
     image:
       repository: ghcr.io/warp-tech/warpgate
