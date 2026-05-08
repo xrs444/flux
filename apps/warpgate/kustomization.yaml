@@ -9,4 +9,5 @@ resources:
   - sealedsecret-warpgate-oidc.yaml
   - helmrelease-warpgate.yaml
   - ingressroute-warpgate.yaml
+  - serversTransport-warpgate.yaml
   - service-warpgate-ssh.yaml

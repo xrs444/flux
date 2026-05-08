@@ -13,5 +13,7 @@ spec:
       services:
         - name: warpgate
           port: 8888
+          scheme: https
+          serversTransport: warpgate-https
   tls:
     secretName: letsencrypt-wildcard-cert-xrs444.net

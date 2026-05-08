@@ -56,6 +56,23 @@ spec:
     ingress:
       enabled: false
 
+    # Mount the wildcard TLS cert so warpgate can serve HTTPS.
+    # subPath mounts appear alongside the PVC data at /data.
+    volumes:
+      - name: tls-cert
+        secret:
+          secretName: letsencrypt-wildcard-cert-xrs444.net
+
+    volume_mounts:
+      - name: tls-cert
+        mountPath: /data/tls.certificate.pem
+        subPath: tls.crt
+        readOnly: true
+      - name: tls-cert
+        mountPath: /data/tls.key.pem
+        subPath: tls.key
+        readOnly: true
+
     # Warpgate configuration via overrides_config
     overrides_config: |
       external_host: warpgate.xrs444.net
@@ -64,6 +81,8 @@ spec:
         enable: true
         listen: "0.0.0.0:8888"
         trust_x_forwarded_headers: true
+        certificate: /data/tls.certificate.pem
+        key: /data/tls.key.pem
 
       ssh:
         enable: true
