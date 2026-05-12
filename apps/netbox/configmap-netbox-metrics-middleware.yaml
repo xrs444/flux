@@ -1,0 +1,17 @@
+---
+# Injects django-prometheus middleware into NetBox.
+# metricsEnabled: true (chart v7.x) only adds django_prometheus to
+# INSTALLED_APPS but does not wire it into MIDDLEWARE.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netbox-metrics-middleware
+  namespace: netbox
+data:
+  metrics-middleware.py: |
+    # Wrap MIDDLEWARE with prometheus instrumentation
+    MIDDLEWARE = (
+        ["django_prometheus.middleware.PrometheusBeforeMiddleware"]
+        + list(MIDDLEWARE)
+        + ["django_prometheus.middleware.PrometheusAfterMiddleware"]
+    )

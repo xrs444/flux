@@ -48,8 +48,8 @@ spec:
       OAUTH_BUTTON_TEXT: "Login with Kanidm"
       OAUTH_AUTO_REGISTER: "true"
       OAUTH_AUTO_LAUNCH: "false"
-      # Enable Prometheus metrics endpoint on port 8081
-      IMMICH_METRICS: "true"
+      # Enable Prometheus metrics (all components) on ports 8081/8082
+      IMMICH_TELEMETRY_INCLUDE: "all"
 
     immich:
       persistence:

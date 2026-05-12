@@ -162,3 +162,8 @@ spec:
           items:
             - key: api-token-peppers.yaml
               path: api-token-peppers.yaml
+      - configMap:
+          name: netbox-metrics-middleware
+          items:
+            - key: metrics-middleware.py
+              path: metrics-middleware.py

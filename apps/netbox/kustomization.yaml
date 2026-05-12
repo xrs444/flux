@@ -32,5 +32,6 @@ resources:
 
   # Metrics NodePort for external Prometheus scraping
   - service-netbox-metrics-nodeport.yaml
+  - configmap-netbox-metrics-middleware.yaml
   # Ingress
   - ingressroute-netbox.yaml

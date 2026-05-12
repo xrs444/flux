@@ -17,5 +17,5 @@ spec:
       nodePort: 30106
       protocol: TCP
   selector:
-    app.kubernetes.io/name: immich
-    app.kubernetes.io/component: server
+    app.kubernetes.io/name: server
+    app.kubernetes.io/instance: immich
