@@ -34,7 +34,9 @@ spec:
     replicaCount: 1
 
     # Enable Prometheus metrics at /metrics (port 8080)
-    metricsEnabled: true
+    # metricsEnabled is the wrong key — chart template reads metrics.enabled
+    metrics:
+      enabled: true
 
     # Superuser configuration (using existing secret)
     superuser:
@@ -162,8 +164,3 @@ spec:
           items:
             - key: api-token-peppers.yaml
               path: api-token-peppers.yaml
-      - configMap:
-          name: netbox-metrics-middleware
-          items:
-            - key: metrics-middleware.py
-              path: metrics-middleware.py
