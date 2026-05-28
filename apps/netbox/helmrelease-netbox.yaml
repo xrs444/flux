@@ -24,10 +24,9 @@ spec:
     remediation:
       retries: 3
   values:
-    # Custom image with Diode plugin pre-installed
     image:
       registry: ghcr.io
-      repository: xrs444/netbox-custom
+      repository: netbox-community/netbox
       tag: v4.5.2
 
     # Basic configuration
@@ -113,10 +112,6 @@ spec:
     ingress:
       enabled: false
 
-    # Diode plugin
-    plugins:
-      - netbox_diode_plugin
-
     # OIDC Authentication with Kanidm
     remoteAuth:
       enabled: true
@@ -136,11 +131,6 @@ spec:
           items:
             - key: oidc.yaml
               path: oidc.yaml
-      - secret:
-          secretName: netbox-diode-plugin-config
-          items:
-            - key: diode-plugin.yaml
-              path: diode-plugin.yaml
       - secret:
           secretName: netbox-api-token-peppers
           items:

@@ -36,7 +36,6 @@ resources:
   - ./romm                  # ROM collection manager
   - ./rustdesk              # Remote desktop solution
   - ./netbox                # Network source of truth and IPAM/DCIM platform
-  - ./netbox/diode-agent    # Diode network discovery agent
   - ./spegel                # Peer-to-peer container image caching
   - ./booklore              # Self-hosted book library manager
   - ./radarr                # Movie collection manager and auto-importer
