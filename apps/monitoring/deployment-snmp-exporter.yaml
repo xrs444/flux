@@ -1,0 +1,79 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snmp-exporter
+  namespace: monitoring
+  labels:
+    app: snmp-exporter
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: snmp-exporter
+  template:
+    metadata:
+      labels:
+        app: snmp-exporter
+    spec:
+      initContainers:
+        # Substitute @SNMP_COMMUNITY@ in the template using the Secret value
+        - name: generate-snmp-config
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              community=$(cat /run/secrets/snmp-community)
+              sed "s/@SNMP_COMMUNITY@/$community/g" \
+                /etc/snmp-template/snmp.yml.template > /etc/snmp/snmp.yml
+          volumeMounts:
+            - name: snmp-template
+              mountPath: /etc/snmp-template
+            - name: snmp-config
+              mountPath: /etc/snmp
+          env:
+            - name: SNMP_COMMUNITY
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-community
+                  key: community
+      containers:
+        - name: snmp-exporter
+          image: prom/snmp-exporter:latest
+          args:
+            - --config.file=/etc/snmp/snmp.yml
+          ports:
+            - containerPort: 9116
+              name: http
+          volumeMounts:
+            - name: snmp-config
+              mountPath: /etc/snmp
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: snmp-template
+          configMap:
+            name: snmp-exporter-config-template
+        - name: snmp-config
+          emptyDir: {}

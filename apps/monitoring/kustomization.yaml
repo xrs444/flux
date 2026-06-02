@@ -1,0 +1,159 @@
+# Monitoring namespace — kube-prometheus-stack
+# (Prometheus, Grafana, Alertmanager, Pushgateway, Blackbox, SNMP exporter)
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+  - helmrelease-kube-prometheus-stack.yaml
+  # Pushgateway
+  - deployment-pushgateway.yaml
+  - service-pushgateway.yaml
+  # Blackbox exporter
+  - configmap-blackbox.yaml
+  - deployment-blackbox.yaml
+  - service-blackbox.yaml
+  # SNMP exporter
+  - configmap-snmp-exporter.yaml
+  - deployment-snmp-exporter.yaml
+  - service-snmp-exporter.yaml
+  # IngressRoutes
+  - ingressroute-grafana.yaml
+  - ingressroute-prometheus.yaml
+  - ingressroute-alertmanager.yaml
+  # Sealed Secrets (must be created/sealed before deploying)
+  - sealedsecret-grafana-admin.yaml
+  - sealedsecret-snmp-community.yaml
+  - sealedsecret-ha-bearer-token.yaml
+  - sealedsecret-netbox-api-token.yaml
+  - sealedsecret-additional-scrape-configs.yaml
+
+# Dashboard ConfigMaps — loaded by Grafana sidecar (label: grafana_dashboard=1)
+# Large dashboards (node-exporter-full: 668K, alertmanager: 304K) are isolated
+# to avoid approaching the 1MiB ConfigMap limit.
+configMapGenerator:
+  - name: grafana-dashboards-system
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: System
+    files:
+      - dashboards/overall-system-status.json
+      - dashboards/server-health-overview.json
+      - dashboards/server-detail.json
+      - dashboards/prometheus-stats.json
+      - dashboards/zfs.json
+
+  - name: grafana-dashboards-system-node-exporter
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: System
+    files:
+      - dashboards/node-exporter-full.json
+
+  - name: grafana-dashboards-system-alertmanager
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: System
+    files:
+      - dashboards/alertmanager.json
+
+  - name: grafana-dashboards-kubernetes
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Kubernetes
+    files:
+      - dashboards/kubernetes-cluster-overview.json
+      - dashboards/kubernetes-cluster-monitoring.json
+      - dashboards/kubernetes-apiserver.json
+      - dashboards/kubernetes-pod-overview.json
+      - dashboards/talos-node-detail.json
+      - dashboards/deployments.json
+
+  - name: grafana-dashboards-network
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Network
+    files:
+      - dashboards/network-devices.json
+
+  - name: grafana-dashboards-infrastructure
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Infrastructure
+    files:
+      - dashboards/app-traefik.json
+      - dashboards/app-cilium.json
+      - dashboards/app-cert-manager.json
+      - dashboards/app-loki.json
+      - dashboards/app-longhorn.json
+      - dashboards/app-spegel.json
+      - dashboards/app-kube-state-metrics.json
+
+  - name: grafana-dashboards-media
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Media
+    files:
+      - dashboards/app-sonarr.json
+      - dashboards/app-radarr.json
+      - dashboards/app-lidarr.json
+      - dashboards/app-jellyfin.json
+      - dashboards/app-audiobookshelf.json
+      - dashboards/app-tdarr.json
+
+  - name: grafana-dashboards-applications
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Applications
+    files:
+      - dashboards/app-apprise.json
+      - dashboards/app-asterisk.json
+      - dashboards/app-atuin.json
+      - dashboards/app-booklore.json
+      - dashboards/app-borgwarehouse.json
+      - dashboards/app-craftycontroller.json
+      - dashboards/app-cups.json
+      - dashboards/app-dashy.json
+      - dashboards/app-garage.json
+      - dashboards/app-homeassistant.json
+      - dashboards/app-immich.json
+      - dashboards/app-jitsi.json
+      - dashboards/app-linkwarden.json
+      - dashboards/app-lubelogger.json
+      - dashboards/app-manyfold.json
+      - dashboards/app-mealie.json
+      - dashboards/app-netbox.json
+      - dashboards/app-ntfy.json
+      - dashboards/app-omada.json
+      - dashboards/app-paperless.json
+      - dashboards/app-romm.json
+      - dashboards/app-rustdesk.json
+      - dashboards/app-seatable.json
+      - dashboards/app-syncthing.json
+      - dashboards/app-termix.json
+      - dashboards/app-warpgate.json

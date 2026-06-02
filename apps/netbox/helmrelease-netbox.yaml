@@ -121,11 +121,19 @@ spec:
       superusers:
         - xrs444
 
+    # Install prometheus-sd plugin via pip at container init time
+    extraPipPackages:
+      - netbox-plugin-prometheus-sd
+
     # OIDC settings injected as Django settings via extraConfig
     # (env vars alone are not loaded into Django settings by NetBox)
     extraConfig:
       - values:
           SOCIAL_AUTH_OIDC_OIDC_ENDPOINT: "https://idm.xrs444.net/oauth2/openid/oauth2_netbox"
+          PLUGINS:
+            - netbox_prometheus_sd
+          PLUGINS_CONFIG:
+            netbox_prometheus_sd: {}
       - secret:
           secretName: netbox-oidc-config
           items:

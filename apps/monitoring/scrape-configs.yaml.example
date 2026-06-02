@@ -1,0 +1,238 @@
+# Additional Prometheus scrape configurations for bare-metal hosts,
+# SNMP devices (via NetBox HTTP SD), and k8s NodePort services.
+#
+# This file is the unsealed source for sealedsecret-additional-scrape-configs.yaml.
+# DO NOT commit this file with real secret values — it is .gitignored.
+# The actual Secret is sealed via kubeseal.
+#
+# Before sealing, replace any <PLACEHOLDER> values with real ones.
+
+# Prometheus itself (for kube-prometheus-stack self-monitoring)
+- job_name: prometheus
+  static_configs:
+    - targets: [localhost:9090]
+
+# Bare-metal node exporters — discovered from NetBox via HTTP SD
+# Apply tag 'node-exporter' to all NixOS hosts in NetBox before enabling.
+- job_name: node-exporter-baremetal
+  http_sd_configs:
+    - url: http://netbox.netbox.svc.cluster.local/api/plugins/prometheus-sd/devices/?tag=node-exporter
+      refresh_interval: 5m
+      authorization:
+        type: Token
+        credentials_file: /etc/prometheus/secrets/netbox-api-token/token
+  relabel_configs:
+    - source_labels: [__meta_netbox_primary_ip]
+      regex: (.+)/\d+
+      replacement: ${1}:9100
+      target_label: __address__
+    - source_labels: [__meta_netbox_name]
+      target_label: instance
+    - source_labels: [__meta_netbox_site_name]
+      target_label: site
+
+# ZFS exporter — xsvr1 and xsvr2 only
+- job_name: zfs
+  static_configs:
+    - targets: [172.20.1.10:9134, 172.20.1.20:9134]
+
+# Bird BGP exporter — exit nodes (xts1, xts2) and gateway nodes (xsvr1-3)
+- job_name: bird
+  static_configs:
+    - targets: [172.18.10.1:9324, 172.18.10.2:9324]
+      labels:
+        bird_role: exit-node
+    - targets: [172.20.1.10:9324, 172.20.1.20:9324, 172.20.1.30:9324]
+      labels:
+        bird_role: gateway
+
+# Libvirt exporter — KVM hosts (xsvr1, xsvr2, xsvr3)
+- job_name: libvirt
+  static_configs:
+    - targets: [172.20.1.10:9177, 172.20.1.20:9177, 172.20.1.30:9177]
+
+# Smartctl exporter — all bare-metal hosts
+- job_name: smartctl
+  static_configs:
+    - targets:
+      - 172.20.1.10:9633  # xsvr1
+      - 172.20.1.20:9633  # xsvr2
+      - 172.20.1.30:9633  # xsvr3
+      - v-xlabmgmt.lan:9633
+      - 172.18.10.1:9633  # xts1
+      - 172.18.10.2:9633  # xts2
+      - xcomm1.lan:9633
+      - xpbx1.lan:9633
+
+# BIND DNS exporter — v-xlabmgmt only
+- job_name: bind
+  static_configs:
+    - targets: [v-xlabmgmt.lan:9119]
+
+# SNMP — devices discovered from NetBox via HTTP SD
+# Apply tag 'snmp-monitor' to SNMP devices in NetBox.
+# Set custom field 'snmp_module' (default: if_mib) per device.
+- job_name: snmp
+  http_sd_configs:
+    - url: http://netbox.netbox.svc.cluster.local/api/plugins/prometheus-sd/devices/?tag=snmp-monitor
+      refresh_interval: 5m
+      authorization:
+        type: Token
+        credentials_file: /etc/prometheus/secrets/netbox-api-token/token
+  metrics_path: /snmp
+  relabel_configs:
+    - source_labels: [__meta_netbox_primary_ip]
+      regex: (.+)/\d+
+      target_label: __param_target
+    - source_labels: [__meta_netbox_custom_field_snmp_module]
+      target_label: __param_module
+    - source_labels: [__param_module]
+      regex: ^$
+      replacement: if_mib
+      target_label: __param_module
+    - replacement: snmp_community
+      target_label: __param_auth
+    - replacement: snmp-exporter.monitoring.svc.cluster.local:9116
+      target_label: __address__
+    - source_labels: [__meta_netbox_name]
+      target_label: device_name
+    - source_labels: [__meta_netbox_device_role_name]
+      target_label: device_role
+    - source_labels: [__meta_netbox_site_name]
+      target_label: site
+
+# SNMP exporter self-scrape
+- job_name: snmp-exporter
+  static_configs:
+    - targets: [snmp-exporter.monitoring.svc.cluster.local:9116]
+
+# Promtail — all bare-metal hosts
+- job_name: promtail
+  static_configs:
+    - targets:
+      - 172.20.1.10:9080  # xsvr1
+      - 172.20.1.20:9080  # xsvr2
+      - 172.20.1.30:9080  # xsvr3
+      - v-xlabmgmt.lan:9080
+      - 172.18.10.1:9080  # xts1
+      - 172.18.10.2:9080  # xts2
+      - xcomm1.lan:9080
+      - xpbx1.lan:9080
+
+# Home Assistant — Bearer token auth
+- job_name: homeassistant
+  metrics_path: /api/prometheus
+  authorization:
+    type: Bearer
+    credentials_file: /etc/prometheus/secrets/ha-bearer-token/token
+  static_configs:
+    - targets: [hass.xrs444.net:8123]
+
+# Asterisk PBX exporter
+- job_name: asterisk
+  metrics_path: /metrics
+  static_configs:
+    - targets: [xpbx1.lan:8088]
+
+# Pushgateway — CI deploy metrics
+- job_name: pushgateway
+  honor_labels: true
+  static_configs:
+    - targets: [pushgateway.monitoring.svc.cluster.local:9091]
+
+# Blackbox SSL certificate and endpoint probing
+- job_name: blackbox-ssl
+  metrics_path: /probe
+  params:
+    module: [http_2xx_tls]
+  static_configs:
+    - targets:
+      - https://loki.xrs444.net
+      - https://kanidm.xrs444.net
+      - https://grafana.xrs444.net
+      - https://immich.xrs444.net
+      - https://netbox.xrs444.net
+      - https://paperless.xrs444.net
+      - https://ntfy.xrs444.net
+      - https://jellyfin.xrs444.net
+      - https://mealie.xrs444.net
+      - https://audiobookshelf.xrs444.net
+      - https://sonarr.xrs444.net
+      - https://radarr.xrs444.net
+      - https://lidarr.xrs444.net
+      - https://garage.xrs444.net
+  relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - replacement: blackbox.monitoring.svc.cluster.local:9115
+      target_label: __address__
+
+# Talos Kubernetes nodes — node exporter on control-plane VMs
+- job_name: talos-node
+  static_configs:
+    - targets: [172.20.3.10:9100, 172.20.3.20:9100, 172.20.3.30:9100]
+
+# Talos kubelet metrics
+- job_name: kubelet
+  scheme: https
+  tls_config:
+    insecure_skip_verify: true
+  static_configs:
+    - targets: [172.20.3.10:10250, 172.20.3.20:10250, 172.20.3.30:10250]
+
+# Kubernetes API server
+- job_name: kubernetes-apiserver
+  scheme: https
+  tls_config:
+    insecure_skip_verify: true
+  static_configs:
+    - targets: [172.20.3.10:6443]
+
+# Kube-state-metrics (existing deployment in kube-state-metrics namespace)
+- job_name: kube-state-metrics
+  static_configs:
+    - targets: [kube-state-metrics.kube-state-metrics.svc.cluster.local:8080]
+
+# Kubernetes workload metrics (NodePort services)
+- job_name: traefik
+  static_configs:
+    - targets: [172.20.3.10:30090]
+- job_name: cilium
+  static_configs:
+    - targets: [172.20.3.10:30091]
+- job_name: cert-manager
+  static_configs:
+    - targets: [172.20.3.10:30092]
+- job_name: garage
+  static_configs:
+    - targets: [172.20.3.10:30100]
+- job_name: loki
+  static_configs:
+    - targets: [172.20.3.10:30101]
+- job_name: longhorn
+  static_configs:
+    - targets: [172.20.3.10:30102]
+- job_name: ntfy
+  metrics_path: /metrics
+  static_configs:
+    - targets: [172.20.3.10:30103]
+- job_name: spegel
+  static_configs:
+    - targets: [172.20.3.10:30105]
+- job_name: immich
+  static_configs:
+    - targets: [172.20.3.10:30106]
+- job_name: netbox
+  static_configs:
+    - targets: [172.20.3.10:30107]
+- job_name: sonarr
+  static_configs:
+    - targets: [172.20.3.10:30110]
+- job_name: radarr
+  static_configs:
+    - targets: [172.20.3.10:30111]
+- job_name: lidarr
+  static_configs:
+    - targets: [172.20.3.10:30113]

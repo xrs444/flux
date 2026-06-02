@@ -1,0 +1,133 @@
+# yamllint disable rule:line-length
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 30m
+  timeout: 20m
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: '>=75.0.0 <76.0.0'
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+      interval: 12h
+  install:
+    remediation:
+      retries: 3
+    crds: CreateReplace
+  upgrade:
+    remediation:
+      retries: 3
+    crds: CreateReplace
+  values:
+    # Disable bundled exporters — these are already deployed separately or not needed
+    nodeExporter:
+      enabled: false
+    kubeStateMetrics:
+      enabled: false
+
+    # Prometheus configuration
+    prometheus:
+      prometheusSpec:
+        retention: 30d
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: longhorn-retain
+              accessModes: [ReadWriteOnce]
+              resources:
+                requests:
+                  storage: 20Gi
+        # Additional scrape configs from Secret (bare-metal hosts, SNMP, k8s NodePorts, HA, etc.)
+        additionalScrapeConfigsSecret:
+          enabled: true
+          name: prometheus-additional-scrape-configs
+          key: scrape-configs.yaml
+        # Allow ServiceMonitors/PodMonitors/PrometheusRules from any namespace
+        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelectorNilUsesHelmValues: false
+        ruleSelectorNilUsesHelmValues: false
+      ingress:
+        enabled: false
+
+    # Grafana configuration
+    grafana:
+      enabled: true
+      persistence:
+        enabled: true
+        storageClassName: longhorn-retain
+        size: 5Gi
+      admin:
+        existingSecret: grafana-admin-secret
+        userKey: admin-user
+        passwordKey: admin-password
+      # Datasources provisioned via values (not a separate ConfigMap)
+      additionalDataSources:
+        - name: Prometheus
+          type: prometheus
+          url: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+          isDefault: true
+          uid: "000000001"
+          jsonData:
+            timeInterval: "15s"
+        - name: Loki
+          type: loki
+          url: https://loki.xrs444.net
+          uid: "000000002"
+          jsonData:
+            maxLines: 1000
+            timeout: 60
+      # Sidecar loads ConfigMaps labelled grafana_dashboard=1 from all namespaces
+      sidecar:
+        dashboards:
+          enabled: true
+          label: grafana_dashboard
+          labelValue: "1"
+          searchNamespace: ALL
+          folderAnnotation: grafana_folder
+          provider:
+            disableDelete: false
+            allowUiUpdates: true
+      ingress:
+        enabled: false
+
+    # Alertmanager configuration
+    alertmanager:
+      alertmanagerSpec:
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: longhorn-retain
+              resources:
+                requests:
+                  storage: 2Gi
+      config:
+        global:
+          resolve_timeout: 5m
+        route:
+          receiver: apprise
+          group_by: [alertname, instance]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 4h
+          routes:
+            - matchers:
+                - severity=critical
+              receiver: apprise
+              repeat_interval: 1h
+        receivers:
+          - name: apprise
+            webhook_configs:
+              - url: https://apprise.xrs444.net/notify/apprise
+                send_resolved: true
+                http_config:
+                  tls_config:
+                    insecure_skip_verify: false
+      ingress:
+        enabled: false

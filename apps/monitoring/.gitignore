@@ -1,0 +1,3 @@
+# Unsealed secret source files — never commit these
+scrape-configs.yaml
+*.secret.yaml
