@@ -27,8 +27,7 @@ spec:
             - sh
             - -c
             - |
-              community=$(cat /run/secrets/snmp-community)
-              sed "s/@SNMP_COMMUNITY@/$community/g" \
+              sed "s/@SNMP_COMMUNITY@/$SNMP_COMMUNITY/g" \
                 /etc/snmp-template/snmp.yml.template > /etc/snmp/snmp.yml
           volumeMounts:
             - name: snmp-template

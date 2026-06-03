@@ -67,15 +67,9 @@ spec:
         existingSecret: grafana-admin-secret
         userKey: admin-user
         passwordKey: admin-password
-      # Datasources provisioned via values (not a separate ConfigMap)
+      # The chart's sidecar already provisions a default Prometheus datasource.
+      # Only add Loki here to avoid a duplicate-default conflict.
       additionalDataSources:
-        - name: Prometheus
-          type: prometheus
-          url: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
-          isDefault: true
-          uid: "000000001"
-          jsonData:
-            timeInterval: "15s"
         - name: Loki
           type: loki
           url: https://loki.xrs444.net
