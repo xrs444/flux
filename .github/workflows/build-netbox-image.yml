@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       netbox_version:
-        description: 'NetBox version tag (e.g. v4.5.2)'
+        description: 'NetBox version tag (e.g. v4.6.1)'
         required: true
-        default: 'v4.5.2'
+        default: 'v4.6.1'
   push:
     branches: [main]
     paths:
@@ -35,7 +35,7 @@ jobs:
             VER="${{ github.event.inputs.netbox_version }}"
             echo "netbox_version=${VER}" >> "$GITHUB_OUTPUT"
           else
-            echo "netbox_version=v4.5.2" >> "$GITHUB_OUTPUT"
+            echo "netbox_version=v4.6.1" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Log in to GHCR

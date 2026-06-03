@@ -11,7 +11,7 @@ spec:
   chart:
     spec:
       chart: netbox
-      version: '>=7.4.0 <8.0.0'
+      version: '>=8.0.0 <9.0.0'
       sourceRef:
         kind: HelmRepository
         name: netbox
@@ -26,27 +26,28 @@ spec:
   values:
     image:
       registry: ghcr.io
-      repository: netbox-community/netbox
-      tag: v4.5.2
+      repository: xrs444/netbox-custom
+      tag: v4.6.1
 
-    # Basic configuration
     replicaCount: 1
 
-    # Enable Prometheus metrics at /metrics (port 8080)
-    # metricsEnabled is the wrong key — chart template reads metrics.enabled
+    # Plugins — installed in the custom image
+    plugins:
+      - netbox_prometheus_sd
+    pluginsConfig:
+      netbox_prometheus_sd: {}
+
+    # Enable Prometheus metrics
     metrics:
       enabled: true
 
-    # Superuser configuration (using existing secret)
+    # Superuser configuration
     superuser:
-      enabled: true
       name: admin
       email: admin@xrs444.net
       existingSecret: netbox-superuser
-      existingSecretPasswordKey: password
-      existingSecretApiTokenKey: api_token
 
-    # Use existing secret for Django secret key
+    # Django secret key
     existingSecret: netbox-secret
 
     # Network configuration
@@ -85,8 +86,7 @@ spec:
       size: 5Gi
       accessMode: ReadWriteMany
 
-    # Override probes — chart defaults target NGINX Unit (port 8081) which
-    # no longer exists in NetBox v4.x (now uses Granian on port 8080)
+    # Probes — Granian listens on port 8080
     livenessProbe:
       enabled: false
     customLivenessProbe:
@@ -121,19 +121,10 @@ spec:
       superusers:
         - xrs444
 
-    # Install prometheus-sd plugin via pip at container init time
-    extraPipPackages:
-      - netbox-plugin-prometheus-sd
-
-    # OIDC settings injected as Django settings via extraConfig
-    # (env vars alone are not loaded into Django settings by NetBox)
+    # OIDC endpoint and secrets injected as Django settings
     extraConfig:
       - values:
           SOCIAL_AUTH_OIDC_OIDC_ENDPOINT: "https://idm.xrs444.net/oauth2/openid/oauth2_netbox"
-          PLUGINS:
-            - netbox_prometheus_sd
-          PLUGINS_CONFIG:
-            netbox_prometheus_sd: {}
       - secret:
           secretName: netbox-oidc-config
           items:
