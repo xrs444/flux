@@ -1,0 +1,26 @@
+# yamllint disable rule:line-length
+# SSH known_hosts for the NixOS fleet, mounted into worker pods.
+# Populate by running (from a machine with SSH access to the fleet):
+#
+#   for h in xsvr1 xsvr2 xsvr3 xts1 xts2 xpbx1 xcomm1 xdt1-t xlt1-t-vnixos; do
+#     ssh-keyscan -t ed25519 ${h}.lan
+#   done
+#
+# Paste the output into the known_hosts key below, then commit.
+# Re-run after adding new NixOS hosts or rotating host SSH keys.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: windmill-known-hosts
+  namespace: windmill
+data:
+  known_hosts: |
+    xsvr1.lan ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPi6pOq7wjkPhbRs19XO1g9oud5JTq6O46KuEqVnKp09
+    xsvr2.lan ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILqV1INQL4xXMLnypfJQrB/R/i+xl4UR4dWdYTa8Ghae
+    xsvr3.lan ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE3iLniG9niDNFxK3Z3INcwqc6N6R1+2v/PfD88klFAX
+    xts1.lan  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAJ61+bV3g7btEe0V4O5/a3GScuQYGaeAWHPFM6Yx5Dz
+    # xts2.lan  ssh-ed25519 AAAA...
+    # xpbx1.lan ssh-ed25519 AAAA...
+    xcomm1.lan ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEyOY7Lv43MdDsIuOIsGaEPusSYIe076UG2gDEFsJvuG
+    xdt1-t.lan ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDGFg8FIT5bB7OU3ihOBLvHlRs6hAxOSB3BopiV1O2J0

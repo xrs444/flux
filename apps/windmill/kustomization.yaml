@@ -1,0 +1,27 @@
+# yamllint disable rule:line-length
+# Windmill — FOSS automation engine (AGPL v3)
+# Schedules, on-demand, and webhook-triggered jobs with full run history UI.
+# https://windmill.dev
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - helmrepository-windmill.yaml
+  # Storage — must exist before HelmRelease so postgresql subchart can bind
+  - pvc-windmill-postgres-data.yaml
+  # RBAC for worker pods (kubectl in-cluster access)
+  - rbac-windmill-runner.yaml
+  # Secrets — seal these with kubeseal before committing real values
+  - sealedsecret-windmill-postgres.yaml
+  - sealedsecret-windmill-postgres-url.yaml
+  - sealedsecret-windmill-oauth.yaml
+  - sealedsecret-windmill-ssh-key.yaml
+  # SSH known_hosts for NixOS fleet (populate via ssh-keyscan before deploying)
+  - configmap-windmill-known-hosts.yaml
+  # Helm release
+  - helmrelease.yaml
+  # Ingress
+  - ingressroute-windmill.yaml
+  # Metrics NodePort for external Prometheus scraping (CE: /metrics on port 8000)
+  - service-windmill-metrics-nodeport.yaml

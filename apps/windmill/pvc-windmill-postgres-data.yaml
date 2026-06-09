@@ -1,0 +1,16 @@
+---
+# Persistent storage for the windmill postgresql subchart.
+# The bitnami postgresql subchart references this via
+# postgresql.primary.persistence.existingClaim in the HelmRelease.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: windmill-postgres-data
+  namespace: windmill
+spec:
+  storageClassName: longhorn-retain
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi

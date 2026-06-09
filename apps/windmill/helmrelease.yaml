@@ -1,0 +1,115 @@
+# yamllint disable rule:line-length
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: windmill
+  namespace: windmill
+spec:
+  interval: 30m
+  timeout: 20m
+  chart:
+    spec:
+      chart: windmill
+      version: ">=2.0.0 <3.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: windmill
+        namespace: windmill
+      interval: 12h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    windmill:
+      # Public URL — must match the IngressRoute hostname
+      baseDomain: windmill.xrs444.net
+      baseProtocol: https
+
+      # Replica counts (scale up workers as job volume grows)
+      appReplicas: 1
+
+      # Database connection — full postgres:// URL stored in SealedSecret windmill-postgres-url
+      databaseUrlSecretName: windmill-postgres-url
+      databaseUrlSecretKey: url
+
+      # Worker groups — default workers handle all script types, native workers handle
+      # lightweight in-process TS/Python without the heavy sandbox fork
+      workerGroups:
+        - name: default
+          replicas: 1
+          # Workers run privileged so they can unshare PID namespace for sandboxing
+          privileged: true
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              memory: "2Gi"
+          # Allow workers to call kubectl via in-cluster service account
+          serviceAccountName: windmill-runner
+          extraVolumes:
+            - name: ssh-key
+              secret:
+                secretName: windmill-ssh-key
+                defaultMode: 0400
+            - name: known-hosts
+              configMap:
+                name: windmill-known-hosts
+          extraVolumeMounts:
+            - name: ssh-key
+              mountPath: /root/.ssh/id_ed25519
+              subPath: id_ed25519
+              readOnly: true
+            - name: known-hosts
+              mountPath: /root/.ssh/known_hosts
+              subPath: known_hosts
+              readOnly: true
+
+        - name: native
+          replicas: 1
+          privileged: false
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              memory: "1Gi"
+          extraEnv:
+            - name: NATIVE_MODE
+              value: "true"
+            - name: SLEEP_QUEUE
+              value: "200"
+
+      app:
+        # OAuth providers JSON injected from SealedSecret as base64
+        # Generate via: echo '{"kanidm": {...}}' | base64 -w0
+        # See sealedsecret-windmill-oauth.yaml for the full JSON structure
+        extraEnv:
+          - name: OAUTH_JSON_AS_BASE64
+            valueFrom:
+              secretKeyRef:
+                name: windmill-oauth
+                key: oauth-json-base64
+
+    # PostgreSQL subchart (bitnami) — single instance, PVC-backed
+    postgresql:
+      enabled: true
+      auth:
+        database: windmill
+        username: windmill
+        existingSecret: windmill-postgres
+        secretKeys:
+          adminPasswordKey: postgres-password
+          userPasswordKey: password
+      primary:
+        persistence:
+          enabled: true
+          existingClaim: windmill-postgres-data
+
+    # Disable built-in ingress — we use Traefik IngressRoute
+    ingress:
+      enabled: false

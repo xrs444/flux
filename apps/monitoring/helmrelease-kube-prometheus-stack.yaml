@@ -123,5 +123,40 @@ spec:
                 http_config:
                   tls_config:
                     insecure_skip_verify: false
+          # Windmill remediation receiver — fires alert-triggered runbooks.
+          # The webhook token is generated in Windmill UI for f/alerts/remediate.
+          # Replace WINDMILL_WEBHOOK_TOKEN with the actual token after first deploy.
+          - name: windmill-remediate
+            webhook_configs:
+              - url: https://windmill.xrs444.net/api/w/homeprod/jobs_u/run/p/f/alerts/remediate?token=WINDMILL_WEBHOOK_TOKEN
+                send_resolved: true
+                http_config:
+                  tls_config:
+                    insecure_skip_verify: false
+        routes:
+          - matchers:
+              - severity=critical
+            receiver: apprise
+            repeat_interval: 1h
+          # Route alerts labelled remediate=true to Windmill (and also to Apprise via continue)
+          - matchers:
+              - remediate="true"
+            receiver: windmill-remediate
+            continue: true
       ingress:
         enabled: false
+
+    # Windmill-specific alert rules
+    additionalPrometheusRulesMap:
+      windmill-rules:
+        groups:
+          - name: windmill
+            rules:
+              - alert: WindmillWorkerDown
+                expr: up{job="windmill"} == 0
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Windmill unreachable"
+                  description: "Prometheus cannot scrape windmill metrics endpoint for 5 minutes."

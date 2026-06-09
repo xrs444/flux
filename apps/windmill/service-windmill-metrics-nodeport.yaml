@@ -1,0 +1,23 @@
+# yamllint disable rule:line-length
+---
+# Windmill CE exposes Prometheus metrics at /metrics on the main app port (8000).
+# NodePort 30120 — add scrape target to nix/modules/services/monitoring/prometheus.nix
+apiVersion: v1
+kind: Service
+metadata:
+  name: windmill-metrics-nodeport
+  namespace: windmill
+  labels:
+    app: windmill
+    app.kubernetes.io/component: metrics
+spec:
+  type: NodePort
+  ports:
+    - name: metrics
+      port: 8000
+      targetPort: 8000
+      nodePort: 30120
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: windmill
+    app.kubernetes.io/component: app
