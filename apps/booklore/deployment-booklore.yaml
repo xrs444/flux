@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: booklore
+  name: grimmory
   namespace: booklore
   labels:
-    app: booklore
+    app: grimmory
 spec:
   revisionHistoryLimit: 3
   replicas: 1
@@ -13,11 +13,11 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: booklore
+      app: grimmory
   template:
     metadata:
       labels:
-        app: booklore
+        app: grimmory
     spec:
       securityContext:
         fsGroup: 1000
@@ -60,7 +60,15 @@ spec:
             - name: BL_OAUTH2_ISSUER_URI
               value: "https://idm.xrs444.net/oauth2/openid/oauth2_booklore"
             - name: BL_OAUTH2_CLIENT_ID
-              value: "oauth2_booklore"
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-booklore
+                  key: client-id
+            - name: BL_OAUTH2_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-booklore
+                  key: client-secret
             - name: BL_OAUTH2_REDIRECT_URI
               value: "https://booklore.xrs444.net/oauth2-callback"
           volumeMounts:
@@ -134,7 +142,8 @@ spec:
           persistentVolumeClaim:
             claimName: booklore-config
         - name: booklore-data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: booklore-data
         - name: postgres-data
           persistentVolumeClaim:
             claimName: booklore-postgres-data

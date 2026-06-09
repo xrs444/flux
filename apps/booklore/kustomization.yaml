@@ -11,6 +11,7 @@ resources:
   - oauth2-sealedsecret-booklore.yaml
   # Longhorn storage
   - pvc-booklore-config.yaml
+  - pvc-booklore-data.yaml
   - pvc-booklore-postgres.yaml
   # NFS library storage
   - pv-booklore-books-fiction.yaml
