@@ -24,7 +24,7 @@ spec:
     remediation:
       retries: 3
   values:
-    # Disable the demo postgresql container — we deploy our own StatefulSet
+    # Disable the demo postgresql — we deploy our own via extraDeploy
     postgresql:
       enabled: false
 
@@ -36,13 +36,13 @@ spec:
       baseDomain: windmill.xrs444.net
       baseProtocol: https
       appReplicas: 1
-      # windmill-extra: unified LSP + debugger pod (1 replica = responsive IDE)
+      # windmill-extra: unified LSP + debugger pod
       extraReplicas: 1
-      # Disable the indexer — ephemeral-storage hungry, not needed for homelab
+      # Disable full-text indexer — ephemeral-storage heavy, not needed for homelab
       indexer:
         enabled: false
 
-      # Database URL comes from the windmill-postgres-url SealedSecret
+      # Database URL from SealedSecret
       databaseUrlSecretName: windmill-postgres-url
       databaseUrlSecretKey: url
 
@@ -55,7 +55,7 @@ spec:
                 key: oauth-json-base64
 
       workerGroups:
-        # default: privileged, SSH-enabled, kubectl SA for in-cluster jobs
+        # default: privileged, SSH-enabled, in-cluster kubectl via windmill-runner SA
         - name: default
           replicas: 1
           privileged: true
@@ -78,7 +78,69 @@ spec:
               subPath: known_hosts
               readOnly: true
 
-        # native: lightweight, for fast TS/Py jobs without container overhead
+        # native: lightweight, fast TS/Py jobs without container overhead
         - name: native
           replicas: 1
           privileged: false
+
+    # Deploy postgres as part of the helm release to avoid kustomization/helm
+    # service ownership conflicts. The PVC (windmill-postgres-data) is managed
+    # separately by the kustomization so it survives helm uninstall.
+    extraDeploy:
+      - apiVersion: apps/v1
+        kind: StatefulSet
+        metadata:
+          name: windmill-postgresql
+          namespace: windmill
+        spec:
+          serviceName: windmill-postgresql
+          replicas: 1
+          selector:
+            matchLabels:
+              app: windmill-postgresql
+          template:
+            metadata:
+              labels:
+                app: windmill-postgresql
+            spec:
+              containers:
+                - name: postgres
+                  image: postgres:17
+                  env:
+                    - name: POSTGRES_USER
+                      value: windmill
+                    - name: POSTGRES_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          name: windmill-postgres
+                          key: password
+                    - name: POSTGRES_DB
+                      value: windmill
+                    - name: PGDATA
+                      value: /var/lib/postgresql/data/pgdata
+                  ports:
+                    - containerPort: 5432
+                  volumeMounts:
+                    - name: data
+                      mountPath: /var/lib/postgresql/data
+                  resources:
+                    requests:
+                      memory: 256Mi
+                      cpu: 100m
+                    limits:
+                      memory: 1Gi
+              volumes:
+                - name: data
+                  persistentVolumeClaim:
+                    claimName: windmill-postgres-data
+      - apiVersion: v1
+        kind: Service
+        metadata:
+          name: windmill-postgresql
+          namespace: windmill
+        spec:
+          selector:
+            app: windmill-postgresql
+          ports:
+            - port: 5432
+              targetPort: 5432

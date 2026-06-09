@@ -8,9 +8,8 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - helmrepository-windmill.yaml
-  # Storage + postgres — PVC must exist before StatefulSet
+  # Storage — PVC must exist before HelmRelease (postgres StatefulSet is in extraDeploy)
   - pvc-windmill-postgres-data.yaml
-  - statefulset-windmill-postgres.yaml
   # RBAC for worker pods (kubectl in-cluster access)
   - rbac-windmill-runner.yaml
   # Secrets — seal these with kubeseal before committing real values
