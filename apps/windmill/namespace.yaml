@@ -5,3 +5,4 @@ metadata:
   name: windmill
   labels:
     name: windmill
+    pod-security.kubernetes.io/enforce: privileged
