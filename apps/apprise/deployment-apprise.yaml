@@ -26,7 +26,7 @@ spec:
         # is used here. The rendered /config dir is also writable, which fixes
         # CONFIG_PERMISSION_ISSUE in the Apprise health status.
         - name: render-config
-          image: alpine:3.21
+          image: alpine:3.24
           command:
             - sh
             - -c
