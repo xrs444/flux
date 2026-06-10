@@ -65,16 +65,10 @@
       - 172.20.1.10:9633  # xsvr1
       - 172.20.1.20:9633  # xsvr2
       - 172.20.1.30:9633  # xsvr3
-      - v-xlabmgmt.lan:9633
       - 172.18.10.1:9633  # xts1
       - 172.18.10.2:9633  # xts2
       - xcomm1.lan:9633
       - xpbx1.lan:9633
-
-# BIND DNS exporter — v-xlabmgmt only
-- job_name: bind
-  static_configs:
-    - targets: [v-xlabmgmt.lan:9119]
 
 # SNMP — devices discovered from NetBox via HTTP SD
 # Apply tag 'snmp-monitor' to SNMP devices in NetBox.
@@ -120,7 +114,6 @@
       - 172.20.1.10:9080  # xsvr1
       - 172.20.1.20:9080  # xsvr2
       - 172.20.1.30:9080  # xsvr3
-      - v-xlabmgmt.lan:9080
       - 172.18.10.1:9080  # xts1
       - 172.18.10.2:9080  # xts2
       - xcomm1.lan:9080

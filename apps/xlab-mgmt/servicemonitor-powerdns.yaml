@@ -1,0 +1,19 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: powerdns
+  namespace: xlab-mgmt
+  labels:
+    app: powerdns
+spec:
+  selector:
+    matchLabels:
+      app: powerdns
+  namespaceSelector:
+    matchNames:
+      - xlab-mgmt
+  endpoints:
+    - port: api
+      path: /metrics
+      interval: 30s

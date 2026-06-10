@@ -15,5 +15,5 @@ resources:
   - deployment-powerdns.yaml
   - service-powerdns-dns.yaml
   - service-powerdns-api.yaml
-  - service-powerdns-metrics-nodeport.yaml
+  - servicemonitor-powerdns.yaml
   - job-zone-seed.yaml
