@@ -40,7 +40,7 @@ spec:
               mountPath: /config
       containers:
         - name: garage
-          image: dxflrs/garage:v1.3.1
+          image: dxflrs/garage:v2.3.0
           command: ['/garage']
           args: ['-c', '/config/garage.toml', 'server']
           ports:
