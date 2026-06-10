@@ -39,7 +39,7 @@ spec:
   values:
     image:
       repository: ghcr.io/warp-tech/warpgate
-      tag: "0.23.3"
+      tag: "0.25.2"
       pullPolicy: IfNotPresent
 
     replicaCount: 1
