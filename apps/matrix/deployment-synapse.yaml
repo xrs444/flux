@@ -23,7 +23,7 @@ spec:
       initContainers:
         # Merge ConfigMap base config with Secret overrides into /etc/matrix/homeserver.yaml
         - name: config-merge
-          image: alpine:3.19
+          image: alpine:3.24
           command:
             - sh
             - -c
