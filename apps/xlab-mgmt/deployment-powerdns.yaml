@@ -42,7 +42,7 @@ spec:
               readOnly: true
       containers:
         - name: powerdns
-          image: powerdns/pdns-auth:4
+          image: powerdns/pdns-auth-48:4.8.5
           env:
             - name: PDNS_AUTH_LAUNCH
               value: gsqlite3
