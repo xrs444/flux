@@ -135,7 +135,7 @@ spec:
               cpu: 500m
               memory: 512Mi
         - name: redis
-          image: redis:7-alpine
+          image: redis:8-alpine
           ports:
             - containerPort: 6379
               name: redis
