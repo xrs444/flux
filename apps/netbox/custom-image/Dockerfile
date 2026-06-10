@@ -1,4 +1,4 @@
-ARG NETBOX_VERSION=v4.6.1
+ARG NETBOX_VERSION=v4.6.2
 FROM ghcr.io/netbox-community/netbox:${NETBOX_VERSION}
 
 ADD --chmod=644 https://bootstrap.pypa.io/get-pip.py /tmp/get-pip.py
