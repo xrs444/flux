@@ -5,15 +5,15 @@
   "dependencyDashboardTitle": "Renovate Dependency Dashboard",
   "ignorePaths": ["cluster/flux-system/gotk-components.yaml"],
   "flux": {
-    "fileMatch": [
-      "(^|/)apps/.+\\.ya?ml$",
-      "(^|/)infrastructure/.+\\.ya?ml$"
+    "managerFilePatterns": [
+      "/(^|/)apps/.+\\.ya?ml$/",
+      "/(^|/)infrastructure/.+\\.ya?ml$/"
     ]
   },
   "kubernetes": {
-    "fileMatch": [
-      "(^|/)apps/.+\\.ya?ml$",
-      "(^|/)infrastructure/.+\\.ya?ml$"
+    "managerFilePatterns": [
+      "/(^|/)apps/.+\\.ya?ml$/",
+      "/(^|/)infrastructure/.+\\.ya?ml$/"
     ]
   },
   "automerge": true,
@@ -51,10 +51,12 @@
     },
     {
       "description": "Jitsi suite uses stable-NNNN build tags — group all four images, require review",
-      "matchPackagePatterns": ["^jitsi/"],
       "groupName": "jitsi",
       "versioning": "regex:^stable-(?<major>\\d+)$",
-      "automerge": false
+      "automerge": false,
+      "matchPackageNames": [
+        "/^jitsi//"
+      ]
     },
     {
       "description": "Omada controller uses non-standard dotted version format (6.x.y.z)",
@@ -76,17 +78,23 @@
     },
     {
       "description": "Flux components are managed by update-flux.yml — skip entirely",
-      "matchPackagePatterns": ["^fluxcd/"],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": [
+        "/^fluxcd//"
+      ]
     },
     {
       "description": "Label app updates for easy filtering",
-      "matchPaths": ["apps/**"],
+      "matchFileNames": [
+        "apps/**"
+      ],
       "addLabels": ["app-update"]
     },
     {
       "description": "Label infrastructure updates for easy filtering",
-      "matchPaths": ["infrastructure/**"],
+      "matchFileNames": [
+        "infrastructure/**"
+      ],
       "addLabels": ["infrastructure"]
     }
   ]
