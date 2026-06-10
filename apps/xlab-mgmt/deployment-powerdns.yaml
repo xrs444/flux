@@ -60,8 +60,6 @@ spec:
               value: "0.0.0.0/0"
             - name: PDNS_AUTH_LOCAL_ADDRESS
               value: "0.0.0.0"
-            - name: PDNS_AUTH_LOCAL_PORT
-              value: "5300"
             - name: PDNS_AUTH_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -69,10 +67,10 @@ spec:
                   key: api-key
           ports:
             - name: dns-udp
-              containerPort: 5300
+              containerPort: 53
               protocol: UDP
             - name: dns-tcp
-              containerPort: 5300
+              containerPort: 53
               protocol: TCP
             - name: api
               containerPort: 8081
