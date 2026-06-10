@@ -17,6 +17,8 @@ spec:
       labels:
         app: powerdns
     spec:
+      securityContext:
+        fsGroup: 953
       initContainers:
         - name: init-db
           image: alpine:3
@@ -32,9 +34,9 @@ spec:
               else
                 echo "Initializing PowerDNS database schema..."
                 sqlite3 "$DB" < /schema/schema.sqlite3.sql
-                chown 953:953 "$DB"
                 echo "Schema applied."
               fi
+              chown 953:953 "$DB"
           volumeMounts:
             - name: data
               mountPath: /var/lib/powerdns
