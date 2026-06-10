@@ -26,17 +26,18 @@ spec:
             - |
               set -e
               apk add --no-cache --quiet sqlite >/dev/null 2>&1
-              DB=/var/lib/pdns/pdns.sqlite3
+              DB=/var/lib/powerdns/pdns.sqlite3
               if sqlite3 "$DB" "SELECT 1 FROM domains LIMIT 1;" >/dev/null 2>&1; then
                 echo "Database already initialized, skipping."
               else
                 echo "Initializing PowerDNS database schema..."
                 sqlite3 "$DB" < /schema/schema.sqlite3.sql
+                chown 953:953 "$DB"
                 echo "Schema applied."
               fi
           volumeMounts:
             - name: data
-              mountPath: /var/lib/pdns
+              mountPath: /var/lib/powerdns
             - name: schema
               mountPath: /schema
               readOnly: true
@@ -44,10 +45,6 @@ spec:
         - name: powerdns
           image: powerdns/pdns-auth-48:4.8.5
           env:
-            - name: PDNS_AUTH_LAUNCH
-              value: gsqlite3
-            - name: PDNS_AUTH_GSQLITE3_DATABASE
-              value: /var/lib/pdns/pdns.sqlite3
             - name: PDNS_AUTH_API
               value: "yes"
             - name: PDNS_AUTH_WEBSERVER
@@ -58,8 +55,6 @@ spec:
               value: "8081"
             - name: PDNS_AUTH_WEBSERVER_ALLOW_FROM
               value: "0.0.0.0/0"
-            - name: PDNS_AUTH_LOCAL_ADDRESS
-              value: "0.0.0.0"
             - name: PDNS_AUTH_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -96,7 +91,7 @@ spec:
               memory: 256Mi
           volumeMounts:
             - name: data
-              mountPath: /var/lib/pdns
+              mountPath: /var/lib/powerdns
       volumes:
         - name: data
           persistentVolumeClaim:
