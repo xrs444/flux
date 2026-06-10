@@ -1,0 +1,93 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dependency Dashboard",
+  "ignorePaths": ["cluster/flux-system/gotk-components.yaml"],
+  "flux": {
+    "fileMatch": [
+      "(^|/)apps/.+\\.ya?ml$",
+      "(^|/)infrastructure/.+\\.ya?ml$"
+    ]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "(^|/)apps/.+\\.ya?ml$",
+      "(^|/)infrastructure/.+\\.ya?ml$"
+    ]
+  },
+  "automerge": true,
+  "automergeType": "pr",
+  "packageRules": [
+    {
+      "description": "Never automerge major updates",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "Helm chart updates always require PR review; convert existing SemVer ranges to pinned versions",
+      "matchManagers": ["flux"],
+      "automerge": false,
+      "rangeStrategy": "pin"
+    },
+    {
+      "description": "Group the one-shot range→pin conversion into a single PR",
+      "matchManagers": ["flux"],
+      "matchUpdateTypes": ["pin"],
+      "groupName": "pin-helm-chart-versions",
+      "automerge": false
+    },
+    {
+      "description": "Skip :latest image tags — no version to track",
+      "matchDatasources": ["docker"],
+      "matchCurrentVersion": "/^latest$/",
+      "enabled": false
+    },
+    {
+      "description": "Skip Postgres major upgrades — requires manual data migration",
+      "matchPackageNames": ["postgres", "ghcr.io/immich-app/postgres"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "Jitsi suite uses stable-NNNN build tags — group all four images, require review",
+      "matchPackagePatterns": ["^jitsi/"],
+      "groupName": "jitsi",
+      "versioning": "regex:^stable-(?<major>\\d+)$",
+      "automerge": false
+    },
+    {
+      "description": "Omada controller uses non-standard dotted version format (6.x.y.z)",
+      "matchPackageNames": ["mbentley/omada-controller"],
+      "versioning": "loose",
+      "automerge": false
+    },
+    {
+      "description": "Critical infrastructure — always require review",
+      "matchPackageNames": [
+        "cilium",
+        "cert-manager",
+        "longhorn",
+        "sealed-secrets",
+        "traefik"
+      ],
+      "automerge": false,
+      "addLabels": ["infrastructure", "requires-review"]
+    },
+    {
+      "description": "Flux components are managed by update-flux.yml — skip entirely",
+      "matchPackagePatterns": ["^fluxcd/"],
+      "enabled": false
+    },
+    {
+      "description": "Label app updates for easy filtering",
+      "matchPaths": ["apps/**"],
+      "addLabels": ["app-update"]
+    },
+    {
+      "description": "Label infrastructure updates for easy filtering",
+      "matchPaths": ["infrastructure/**"],
+      "addLabels": ["infrastructure"]
+    }
+  ]
+}
