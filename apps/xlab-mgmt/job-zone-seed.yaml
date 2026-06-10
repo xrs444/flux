@@ -1,0 +1,67 @@
+# yamllint disable rule:line-length
+---
+# Seeds the lab.xrs444.net zone into PowerDNS on first deploy.
+# Idempotent: checks for zone existence before creating.
+# After the zone is seeded, use the PowerDNS API to make changes —
+# this Job does NOT re-run on ConfigMap updates.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: powerdns-zone-seed
+  namespace: xlab-mgmt
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: seed
+          image: alpine:3
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              apk add --no-cache --quiet curl >/dev/null 2>&1
+              API="http://powerdns-api.xlab-mgmt.svc.cluster.local:8081"
+              ZONE="lab.xrs444.net."
+              echo "Waiting for PowerDNS API..."
+              until curl -sf -H "X-API-Key: ${PDNS_API_KEY}" "${API}/api/v1/servers/localhost" >/dev/null 2>&1; do
+                sleep 2
+              done
+              echo "PowerDNS API ready."
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+                -H "X-API-Key: ${PDNS_API_KEY}" \
+                "${API}/api/v1/servers/localhost/zones/${ZONE}")
+              if [ "$STATUS" = "200" ]; then
+                echo "Zone ${ZONE} already exists, skipping."
+                exit 0
+              fi
+              echo "Creating zone ${ZONE}..."
+              curl -sf \
+                -H "X-API-Key: ${PDNS_API_KEY}" \
+                -H "Content-Type: application/json" \
+                -d @/seed/lab.xrs444.net.json \
+                "${API}/api/v1/servers/localhost/zones"
+              echo "Zone ${ZONE} created."
+          env:
+            - name: PDNS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: powerdns-api-key
+                  key: api-key
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: seed
+              mountPath: /seed
+              readOnly: true
+      volumes:
+        - name: seed
+          configMap:
+            name: zone-seed

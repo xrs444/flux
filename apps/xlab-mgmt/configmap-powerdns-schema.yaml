@@ -1,0 +1,98 @@
+---
+# PowerDNS Authoritative 4.x SQLite3 schema — vendored from:
+# https://github.com/PowerDNS/pdns/blob/master/modules/gsqlite3backend/schema.sqlite3.sql
+# Mounted into the init-db initContainer to bootstrap an empty database.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: powerdns-schema
+  namespace: xlab-mgmt
+data:
+  schema.sqlite3.sql: |
+    CREATE TABLE domains (
+      id                    INTEGER PRIMARY KEY,
+      name                  VARCHAR(255) NOT NULL,
+      master                VARCHAR(128) DEFAULT NULL,
+      last_check            INT DEFAULT NULL,
+      type                  VARCHAR(6) NOT NULL,
+      notified_serial       INT DEFAULT NULL,
+      account               VARCHAR(40) DEFAULT NULL,
+      options               VARCHAR(65535) DEFAULT NULL,
+      catalog               VARCHAR(255) DEFAULT NULL
+    );
+
+    CREATE UNIQUE INDEX name_index ON domains(name);
+
+
+    CREATE TABLE records (
+      id                    INTEGER PRIMARY KEY,
+      domain_id             INT DEFAULT NULL,
+      name                  VARCHAR(255) DEFAULT NULL,
+      type                  VARCHAR(10) DEFAULT NULL,
+      content               VARCHAR(65535) DEFAULT NULL,
+      ttl                   INT DEFAULT NULL,
+      prio                  INT DEFAULT NULL,
+      disabled              BOOL DEFAULT 0,
+      ordername             VARCHAR(255),
+      auth                  BOOL DEFAULT 1,
+      FOREIGN KEY(domain_id) REFERENCES domains(id)
+    );
+
+    CREATE INDEX records_lookup_id_index ON records(domain_id);
+    CREATE INDEX records_lookup_name_type_index ON records(name, type);
+    CREATE INDEX records_lookup_name_index ON records(name);
+    CREATE INDEX records_order_index ON records(domain_id, ordername);
+
+
+    CREATE TABLE supermasters (
+      ip                    VARCHAR(64) NOT NULL,
+      nameserver            VARCHAR(255) NOT NULL,
+      account               VARCHAR(40) NOT NULL,
+      PRIMARY KEY (ip, nameserver)
+    );
+
+
+    CREATE TABLE comments (
+      id                    INTEGER PRIMARY KEY,
+      domain_id             INT NOT NULL,
+      name                  VARCHAR(255) NOT NULL,
+      type                  VARCHAR(10) NOT NULL,
+      modified_at           INT NOT NULL,
+      account               VARCHAR(40) DEFAULT NULL,
+      comment               VARCHAR(65535) NOT NULL,
+      FOREIGN KEY(domain_id) REFERENCES domains(id)
+    );
+
+    CREATE INDEX comments_idx ON comments(domain_id);
+
+
+    CREATE TABLE domainmetadata (
+      id                    INTEGER PRIMARY KEY,
+      domain_id             INT NOT NULL,
+      kind                  VARCHAR(32),
+      content               VARCHAR(65535)
+    );
+
+    CREATE INDEX domainmetadata_idx ON domainmetadata(domain_id);
+
+
+    CREATE TABLE cryptokeys (
+      id                    INTEGER PRIMARY KEY,
+      domain_id             INT NOT NULL,
+      flags                 INT NOT NULL,
+      active                BOOL,
+      published             BOOL DEFAULT 1,
+      content               VARCHAR(65535)
+    );
+
+    CREATE INDEX domainidindex ON cryptokeys(domain_id);
+
+
+    CREATE TABLE tsigkeys (
+      id                    INTEGER PRIMARY KEY,
+      name                  VARCHAR(255),
+      algorithm             VARCHAR(50),
+      secret                VARCHAR(255)
+    );
+
+    CREATE UNIQUE INDEX namealgoindex ON tsigkeys(name, algorithm);

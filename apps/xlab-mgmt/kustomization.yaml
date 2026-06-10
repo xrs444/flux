@@ -1,0 +1,19 @@
+# xlab-mgmt — Lab control plane (PowerDNS + lab script placeholders)
+# DNS: lab.xrs444.net authoritative at 172.21.0.53
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-powerdns.yaml
+  - configmap-powerdns-schema.yaml
+  - configmap-zone-seed.yaml
+  - sealedsecret-powerdns-api-key.yaml
+  # Uncomment once sealed (files contain kubeseal instructions):
+  # - sealedsecret-lab-nutanix-prism.yaml
+  # - sealedsecret-lab-ipmi.yaml
+  - deployment-powerdns.yaml
+  - service-powerdns-dns.yaml
+  - service-powerdns-api.yaml
+  - service-powerdns-metrics-nodeport.yaml
+  - job-zone-seed.yaml

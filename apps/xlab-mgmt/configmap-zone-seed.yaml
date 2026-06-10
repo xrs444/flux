@@ -1,0 +1,144 @@
+# yamllint disable rule:line-length
+---
+# Initial lab.xrs444.net zone — seeded by job-zone-seed on first deploy.
+# After seeding, the live zone lives in the PowerDNS SQLite database.
+# This ConfigMap is a disaster-recovery seed only; direct API edits
+# (via Windmill / IaC) are the authoritative mutation path post-bootstrap.
+#
+# To update the live zone: PATCH via the PowerDNS API or pdnsutil in the pod.
+# To update this seed (for DR): edit the rrsets below, bump the SOA serial.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zone-seed
+  namespace: xlab-mgmt
+data:
+  lab.xrs444.net.json: |
+    {
+      "name": "lab.xrs444.net.",
+      "kind": "Native",
+      "nameservers": [],
+      "rrsets": [
+        {
+          "name": "lab.xrs444.net.",
+          "type": "SOA",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "ns1.lab.xrs444.net. hostmaster.lab.xrs444.net. 2026061001 10800 3600 604800 3600",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "lab.xrs444.net.",
+          "type": "NS",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "ns1.lab.xrs444.net.",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "lab.xrs444.net.",
+          "type": "A",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "172.21.0.53",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "ns1.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "172.21.0.53",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "xntnx1.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "172.25.1.10",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "xntnx2.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "172.25.1.20",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "xntnx3.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "172.25.1.30",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "ntnx-xntnx1-cvm.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "172.25.1.11",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "ntnx-xntnx2-cvm.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "172.25.1.21",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "ntnx-xntnx3-cvm.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "172.25.1.31",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "xntnx-pc.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 3600,
+          "records": [
+            {
+              "content": "172.25.2.100",
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    }

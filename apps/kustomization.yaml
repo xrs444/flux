@@ -48,4 +48,5 @@ resources:
   - ./syncthing             # Continuous file synchronization
   # - ./matrix              # Messaging and video calls (Synapse + Element)
   - ./windmill              # Central automation engine (schedules, on-demand, webhooks)
+  - ./xlab-mgmt             # Lab control plane: PowerDNS for lab.xrs444.net + Windmill script placeholders
   - ./storage               # Storage PVCs (applied last after namespaces exist)

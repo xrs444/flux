@@ -1,0 +1,108 @@
+# yamllint disable rule:line-length
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: powerdns
+  namespace: xlab-mgmt
+  labels:
+    app: powerdns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: powerdns
+  template:
+    metadata:
+      labels:
+        app: powerdns
+    spec:
+      initContainers:
+        - name: init-db
+          image: alpine:3
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              apk add --no-cache --quiet sqlite >/dev/null 2>&1
+              DB=/var/lib/pdns/pdns.sqlite3
+              if sqlite3 "$DB" "SELECT 1 FROM domains LIMIT 1;" >/dev/null 2>&1; then
+                echo "Database already initialized, skipping."
+              else
+                echo "Initializing PowerDNS database schema..."
+                sqlite3 "$DB" < /schema/schema.sqlite3.sql
+                echo "Schema applied."
+              fi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/pdns
+            - name: schema
+              mountPath: /schema
+              readOnly: true
+      containers:
+        - name: powerdns
+          image: powerdns/pdns-auth:4
+          env:
+            - name: PDNS_AUTH_LAUNCH
+              value: gsqlite3
+            - name: PDNS_AUTH_GSQLITE3_DATABASE
+              value: /var/lib/pdns/pdns.sqlite3
+            - name: PDNS_AUTH_API
+              value: "yes"
+            - name: PDNS_AUTH_WEBSERVER
+              value: "yes"
+            - name: PDNS_AUTH_WEBSERVER_ADDRESS
+              value: "0.0.0.0"
+            - name: PDNS_AUTH_WEBSERVER_PORT
+              value: "8081"
+            - name: PDNS_AUTH_WEBSERVER_ALLOW_FROM
+              value: "0.0.0.0/0"
+            - name: PDNS_AUTH_LOCAL_ADDRESS
+              value: "0.0.0.0"
+            - name: PDNS_AUTH_LOCAL_PORT
+              value: "5300"
+            - name: PDNS_AUTH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: powerdns-api-key
+                  key: api-key
+          ports:
+            - name: dns-udp
+              containerPort: 5300
+              protocol: UDP
+            - name: dns-tcp
+              containerPort: 5300
+              protocol: TCP
+            - name: api
+              containerPort: 8081
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/pdns
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: powerdns-data
+        - name: schema
+          configMap:
+            name: powerdns-schema
