@@ -20,6 +20,7 @@ spec:
       retries: 3
     createNamespace: true
   upgrade:
+    timeout: 20m
     remediation:
       retries: 3
   values:
