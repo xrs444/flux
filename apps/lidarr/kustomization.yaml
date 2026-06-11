@@ -9,7 +9,9 @@ resources:
   - namespace.yaml
   - deployment-lidarr.yaml
   - service-lidarr.yaml
-  - service-lidarr-metrics-nodeport.yaml
+  # Metrics ClusterIP service + ServiceMonitor for Exportarr sidecar (port 9709)
+  - service-lidarr-metrics.yaml
+  - servicemonitor-lidarr.yaml
   - ingressroute-lidarr.yaml
   - configmap-beets.yaml
   - cronjob-beets.yaml

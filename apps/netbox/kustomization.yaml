@@ -19,7 +19,6 @@ resources:
   # Helm Releases
   - helmrelease-netbox.yaml
 
-  # Metrics NodePort for external Prometheus scraping
-  - service-netbox-metrics-nodeport.yaml
+  # ServiceMonitor enabled via Helm values (metrics.serviceMonitor.enabled)
   # Ingress
   - ingressroute-netbox.yaml

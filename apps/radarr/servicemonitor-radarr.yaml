@@ -1,0 +1,20 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: radarr
+  namespace: radarr
+  labels:
+    app: radarr
+spec:
+  selector:
+    matchLabels:
+      app: radarr
+      app.kubernetes.io/component: metrics
+  namespaceSelector:
+    matchNames:
+      - radarr
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s

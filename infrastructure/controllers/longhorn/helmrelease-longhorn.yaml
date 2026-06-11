@@ -102,3 +102,9 @@ spec:
     # Disable pre-upgrade checker for Talos (it checks for iSCSI)
     preUpgradeChecker:
       jobEnabled: false
+
+    # Enable Prometheus ServiceMonitor for in-cluster scraping
+    metrics:
+      serviceMonitor:
+        enabled: true
+        interval: 30s

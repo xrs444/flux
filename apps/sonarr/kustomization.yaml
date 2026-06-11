@@ -8,7 +8,9 @@ resources:
   - namespace.yaml
   - deployment-sonarr.yaml
   - service-sonarr.yaml
-  - service-sonarr-metrics-nodeport.yaml
+  # Metrics ClusterIP service + ServiceMonitor for Exportarr sidecar (port 9707)
+  - service-sonarr-metrics.yaml
+  - servicemonitor-sonarr.yaml
   - ingressroute-sonarr.yaml
   # Storage resources
   - pv-sonarr-tvshows.yaml

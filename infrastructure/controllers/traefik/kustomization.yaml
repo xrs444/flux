@@ -21,5 +21,4 @@ resources:
   - ./ingressroute-dashboard.yaml  # Dashboard ingress
   - ./ingressroute-root-redirect.yaml  # Root path redirect
   - ./ingressroute-oauth2-proxy.yaml  # OAuth2 proxy
-  # Metrics NodePort for external Prometheus
-  - ./service-traefik-metrics-nodeport.yaml
+  # ServiceMonitor enabled via Helm values (metrics.prometheus.serviceMonitor)

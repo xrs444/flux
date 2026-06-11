@@ -37,9 +37,12 @@ spec:
     pluginsConfig:
       netbox_prometheus_sd: {}
 
-    # Enable Prometheus metrics
+    # Enable Prometheus metrics with ServiceMonitor for in-cluster scraping
     metrics:
       enabled: true
+      serviceMonitor:
+        enabled: true
+        interval: 30s
 
     # Superuser configuration
     superuser:

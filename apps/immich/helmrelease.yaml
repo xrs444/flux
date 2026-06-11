@@ -23,45 +23,34 @@ spec:
     remediation:
       retries: 3
   values:
-    env:
-      DB_HOSTNAME: immich-postgres
-      DB_USERNAME: immich
-      DB_DATABASE_NAME: immich
-      DB_PORT: "5432"
-      DB_PASSWORD:
-        valueFrom:
-          secretKeyRef:
-            name: immich-db
-            key: password
-      REDIS_HOSTNAME: immich-redis
-      REDIS_PORT: "6379"
-      # OIDC Configuration
-      OAUTH_ENABLED: "true"
-      OAUTH_ISSUER_URL: "https://idm.xrs444.net/oauth2/openid/oauth2_immich"
-      OAUTH_CLIENT_ID: "oauth2_immich"
-      OAUTH_CLIENT_SECRET:
-        valueFrom:
-          secretKeyRef:
-            name: immich-oauth2
-            key: client-secret
-      OAUTH_SCOPE: "openid email profile"
-      OAUTH_BUTTON_TEXT: "Login with Kanidm"
-      OAUTH_AUTO_REGISTER: "true"
-      OAUTH_AUTO_LAUNCH: "false"
-      # Enable Prometheus metrics (all components) on ports 8081/8082
-      IMMICH_TELEMETRY_INCLUDE: "all"
+    # Global env vars — inherited by both server and machine-learning components
+    controllers:
+      main:
+        containers:
+          main:
+            env:
+              DB_HOSTNAME: immich-postgres
+              DB_USERNAME: immich
+              DB_DATABASE_NAME: immich
+              DB_PORT: "5432"
+              DB_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: immich-db
+                    key: password
+              REDIS_HOSTNAME: immich-redis
+              REDIS_PORT: "6379"
+              IMMICH_TELEMETRY_INCLUDE: "all"
 
     immich:
+      configurationKind: Secret
+      existingConfiguration: immich-config
       persistence:
-        # Main library - must use existing PVC
         library:
           existingClaim: immich-photos
 
     server:
       enabled: true
-      image:
-        repository: ghcr.io/immich-app/immich-server
-        tag: release
 
     machine-learning:
       enabled: true
@@ -69,13 +58,8 @@ spec:
         cache:
           enabled: true
           size: 10Gi
-          # Use emptyDir for ML cache (will re-download models on restart)
           type: emptyDir
 
-    # Use external PostgreSQL
-    postgresql:
-      enabled: false
-
-    # Use external Redis
-    redis:
+    # Bundled valkey disabled — we run external Redis
+    valkey:
       enabled: false

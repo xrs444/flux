@@ -11,7 +11,7 @@ resources:
   - ingressroute-loki.yaml
   - configmap-promtail.yaml
   - daemonset-promtail.yaml
-  # Metrics NodePort for external Prometheus scraping
-  - service-loki-metrics-nodeport.yaml
+  # ServiceMonitor targets the existing loki ClusterIP service (port http/3100)
+  - servicemonitor-loki.yaml
   # Storage resources
   - pvc-loki-data.yaml

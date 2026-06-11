@@ -23,5 +23,6 @@ resources:
   - helmrelease.yaml
   # Ingress
   - ingressroute-windmill.yaml
-  # Metrics NodePort for external Prometheus scraping (CE: /metrics on port 8000)
-  - service-windmill-metrics-nodeport.yaml
+  # Metrics ClusterIP service + ServiceMonitor for in-cluster Prometheus (CE: /metrics on port 8000)
+  - service-windmill-metrics.yaml
+  - servicemonitor-windmill.yaml

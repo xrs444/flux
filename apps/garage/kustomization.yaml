@@ -12,7 +12,8 @@ resources:
   - service-garage-s3.yaml
   - service-garage-web.yaml
   - ingressroute-garage.yaml
-  # Metrics NodePort for external Prometheus scraping
-  - service-garage-metrics-nodeport.yaml
+  # Metrics ClusterIP service + ServiceMonitor for in-cluster Prometheus
+  - service-garage-metrics.yaml
+  - servicemonitor-garage.yaml
   # Storage resources
   - pvc-garage-data.yaml

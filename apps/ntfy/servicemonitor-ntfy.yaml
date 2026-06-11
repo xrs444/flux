@@ -1,0 +1,20 @@
+---
+# ntfy exposes Prometheus metrics at /v1/metrics on the main HTTP port
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ntfy
+  namespace: ntfy
+  labels:
+    app: ntfy
+spec:
+  selector:
+    matchLabels:
+      app: ntfy
+  namespaceSelector:
+    matchNames:
+      - ntfy
+  endpoints:
+    - port: http
+      path: /v1/metrics
+      interval: 30s

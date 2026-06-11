@@ -190,49 +190,7 @@
   static_configs:
     - targets: [172.20.3.10:6443]
 
-# Kube-state-metrics (existing deployment in kube-state-metrics namespace)
-- job_name: kube-state-metrics
-  static_configs:
-    - targets: [kube-state-metrics.kube-state-metrics.svc.cluster.local:8080]
-
-# Kubernetes workload metrics (NodePort services)
-- job_name: traefik
-  static_configs:
-    - targets: [172.20.3.10:30090]
-- job_name: cilium
-  static_configs:
-    - targets: [172.20.3.10:30091]
-- job_name: cert-manager
-  static_configs:
-    - targets: [172.20.3.10:30092]
-- job_name: garage
-  static_configs:
-    - targets: [172.20.3.10:30100]
-- job_name: loki
-  static_configs:
-    - targets: [172.20.3.10:30101]
-- job_name: longhorn
-  static_configs:
-    - targets: [172.20.3.10:30102]
-- job_name: ntfy
-  metrics_path: /metrics
-  static_configs:
-    - targets: [172.20.3.10:30103]
-- job_name: spegel
-  static_configs:
-    - targets: [172.20.3.10:30105]
-- job_name: immich
-  static_configs:
-    - targets: [172.20.3.10:30106]
-- job_name: netbox
-  static_configs:
-    - targets: [172.20.3.10:30107]
-- job_name: sonarr
-  static_configs:
-    - targets: [172.20.3.10:30110]
-- job_name: radarr
-  static_configs:
-    - targets: [172.20.3.10:30111]
-- job_name: lidarr
-  static_configs:
-    - targets: [172.20.3.10:30113]
+# NOTE: kube-state-metrics, traefik, cilium, cert-manager, longhorn, garage,
+# loki, ntfy, spegel, immich, netbox, sonarr, radarr, lidarr, and windmill are
+# now scraped via ServiceMonitor / PodMonitor resources — no additional scrape
+# config needed here.

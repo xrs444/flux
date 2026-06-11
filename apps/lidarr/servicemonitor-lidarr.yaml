@@ -1,0 +1,20 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: lidarr
+  namespace: lidarr
+  labels:
+    app: lidarr
+spec:
+  selector:
+    matchLabels:
+      app: lidarr
+      app.kubernetes.io/component: metrics
+  namespaceSelector:
+    matchNames:
+      - lidarr
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s

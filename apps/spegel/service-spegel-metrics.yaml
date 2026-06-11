@@ -1,19 +1,19 @@
 ---
+# Spegel registry mirror exposes Prometheus metrics on port 9090
 apiVersion: v1
 kind: Service
 metadata:
-  name: spegel-metrics-nodeport
+  name: spegel-metrics
   namespace: spegel
   labels:
     app.kubernetes.io/name: spegel
     app.kubernetes.io/component: metrics
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: metrics
       port: 9090
       targetPort: 9090
-      nodePort: 30105
       protocol: TCP
   selector:
     app.kubernetes.io/name: spegel

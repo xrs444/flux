@@ -1,19 +1,19 @@
 ---
+# Garage admin port (3903) — Prometheus metrics endpoint
 apiVersion: v1
 kind: Service
 metadata:
-  name: garage-metrics-nodeport
+  name: garage-metrics
   namespace: garage
   labels:
     app: garage
     app.kubernetes.io/component: metrics
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: metrics
       port: 3903
       targetPort: 3903
-      nodePort: 30100
       protocol: TCP
   selector:
     app: garage

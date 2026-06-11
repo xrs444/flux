@@ -119,7 +119,10 @@ spec:
         masqLinkLocal: false
 
     # Enable Prometheus metrics on port 9962 (agent)
-    # Required for the cilium-agent-metrics-nodeport Service to have a backend
     prometheus:
       enabled: true
       port: 9962
+      serviceMonitor:
+        # PodMonitor — DaemonSet, scrapes each node's cilium-agent
+        enabled: true
+        interval: 30s

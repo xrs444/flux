@@ -1,0 +1,20 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: windmill
+  namespace: windmill
+  labels:
+    app: windmill
+spec:
+  selector:
+    matchLabels:
+      app: windmill
+      app.kubernetes.io/component: metrics
+  namespaceSelector:
+    matchNames:
+      - windmill
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s

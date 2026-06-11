@@ -10,6 +10,7 @@ resources:
   # Sealed secrets
   - sealedsecret-immich-oauth2.yaml
   - sealedsecret-immich-db.yaml
+  - sealedsecret-immich-config.yaml
   # PostgreSQL (external, not managed by Helm chart)
   - pvc-immich-db.yaml
   - deployment-immich-postgres.yaml
@@ -19,7 +20,8 @@ resources:
   - service-immich-redis.yaml
   # Helm release
   - helmrelease.yaml
-  # Metrics NodePort for external Prometheus scraping
-  - service-immich-metrics-nodeport.yaml
+  # Metrics ClusterIP service + ServiceMonitor for in-cluster Prometheus
+  - service-immich-metrics.yaml
+  - servicemonitor-immich.yaml
   # Ingress
   - ingressroute-immich.yaml

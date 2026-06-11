@@ -8,7 +8,9 @@ resources:
   - namespace.yaml
   - deployment-radarr.yaml
   - service-radarr.yaml
-  - service-radarr-metrics-nodeport.yaml
+  # Metrics ClusterIP service + ServiceMonitor for Exportarr sidecar (port 9708)
+  - service-radarr-metrics.yaml
+  - servicemonitor-radarr.yaml
   - ingressroute-radarr.yaml
   # Storage resources
   - pv-radarr-movies.yaml
