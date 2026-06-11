@@ -679,15 +679,16 @@ data:
         protocol: TCP
         # -- See [upstream documentation](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport)
         nodePort:  # @schema type:[integer, null]; minimum:0
-        redirections:
-          # -- Port Redirections
-          # Added in 2.2, one can make permanent redirects via entrypoints.
-          # Same sets of parameters: to, scheme, permanent and priority.
-          # https://docs.traefik.io/routing/entrypoints/#redirection
-          entryPoint:
-            to: websecure
-            scheme: https
-            permanent: true
+        http:
+          redirections:
+            # -- Port Redirections
+            # Added in 2.2, one can make permanent redirects via entrypoints.
+            # Same sets of parameters: to, scheme, permanent and priority.
+            # https://doc.traefik.io/traefik/reference/install-configuration/entrypoints/#configuration-example
+            entryPoint:
+              to: websecure
+              scheme: https
+              permanent: true
         forwardedHeaders:
           # -- Trust forwarded headers information (X-Forwarded-*).
           trustedIPs: []
@@ -755,20 +756,15 @@ data:
             graceTimeOut:               # @schema type:[string, integer, null]
           keepAliveMaxRequests:         # @schema type:[integer, null]; minimum:0
           keepAliveMaxTime:             # @schema type:[string, integer, null]
-        # --  See [upstream documentation](https://doc.traefik.io/traefik/routing/entrypoints/#tls)
-        tls:
-          enabled: true
-          options: ""
-          certResolver: ""
-          domains: []
-        # -- One can apply Middlewares on an entrypoint
-        # https://doc.traefik.io/traefik/middlewares/overview/
-        # https://doc.traefik.io/traefik/routing/entrypoints/#middlewares
-        # -- /!\ It introduces here a link between your static configuration and your dynamic configuration /!\
-        # It follows the provider naming convention: https://doc.traefik.io/traefik/providers/overview/#provider-namespace
-        #   - namespace-name1@kubernetescrd
-        #   - namespace-name2@kubernetescrd
-        middlewares: []
+        http:
+          # -- See [upstream documentation](https://doc.traefik.io/traefik/reference/install-configuration/entrypoints/#httpmiddlewares)
+          middlewares: []
+          # --  See [upstream documentation](https://doc.traefik.io/traefik/reference/install-configuration/entrypoints/#opt-http-tls)
+          tls:
+            enabled: true
+            options: ""
+            certResolver: ""
+            domains: []
       metrics:
         # -- When using hostNetwork, use another port to avoid conflict with node exporter:
         # https://github.com/prometheus/prometheus/wiki/Default-port-allocations
@@ -896,13 +892,6 @@ data:
       # Enable user-facing roles
       # https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles
       aggregateTo: []
-      # List of Kubernetes secrets that are accessible for Traefik. If empty, then access is granted to every secret.
-      secretResourceNames: []
-
-    # -- Enable to create a PodSecurityPolicy and assign it to the Service Account via RoleBinding or ClusterRoleBinding
-    podSecurityPolicy:
-      enabled: false
-
     # -- The service account the pods will use to interact with the Kubernetes API
     serviceAccount:  # @schema additionalProperties: false
       # If set, an existing service account is used
