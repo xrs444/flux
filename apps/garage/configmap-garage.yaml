@@ -11,7 +11,7 @@ data:
 
     db_engine = "sqlite"
 
-    replication_mode = "none"
+    replication_factor = 1
 
     compression_level = 1
 
