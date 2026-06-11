@@ -5,9 +5,10 @@ metadata:
   name: loki-data
   namespace: loki
 spec:
-  storageClassName: longhorn-retain
+  storageClassName: ""
+  volumeName: loki-data-nfs
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
-      storage: 50Gi
+      storage: 100Gi

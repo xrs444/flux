@@ -14,4 +14,5 @@ resources:
   # ServiceMonitor targets the existing loki ClusterIP service (port http/3100)
   - servicemonitor-loki.yaml
   # Storage resources
+  - pv-loki-data.yaml
   - pvc-loki-data.yaml
