@@ -8,7 +8,6 @@ resources:
   - pv-immich-photos.yaml
   - pvc-immich-photos.yaml
   # Sealed secrets
-  - sealedsecret-immich-oauth2.yaml
   - sealedsecret-immich-db.yaml
   - sealedsecret-immich-config.yaml
   # PostgreSQL (external, not managed by Helm chart)
