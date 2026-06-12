@@ -23,6 +23,7 @@ spec:
   upgrade:
     crds: CreateReplace
     cleanupOnFail: true
+    timeout: 15m
     remediation:
       remediateLastFailure: true
       retries: 5
