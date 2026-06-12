@@ -13,7 +13,7 @@ spec:
         kind: HelmRepository
         name: longhorn-repo
         namespace: flux-system
-      version: "1.10.2"
+      version: "1.11.2"
   interval: 5m30s
   install:
     createNamespace: true
@@ -21,6 +21,7 @@ spec:
       retries: 5
     crds: CreateReplace
   upgrade:
+    crds: CreateReplace
     cleanupOnFail: true
     remediation:
       remediateLastFailure: true
