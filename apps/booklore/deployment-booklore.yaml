@@ -114,7 +114,7 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
         - name: mariadb
-          image: mariadb:11-noble
+          image: mariadb:12-noble
           ports:
             - containerPort: 3306
               name: mariadb
