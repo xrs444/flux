@@ -28,6 +28,14 @@ spec:
                     operator: NotIn
                     values:
                       - v-k8s-xsvr2
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 80
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - v-k8s-xsvr3
       containers:
         - name: omada-controller
           image: mbentley/omada-controller:6.2.10.17

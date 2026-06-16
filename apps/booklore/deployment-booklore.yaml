@@ -19,6 +19,16 @@ spec:
       labels:
         app: grimmory
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 80
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - v-k8s-xsvr3
       securityContext:
         fsGroup: 1000
       containers:

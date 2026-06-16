@@ -103,6 +103,15 @@ spec:
               labels:
                 app: windmill-postgresql
             spec:
+              affinity:
+                nodeAffinity:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                      - matchExpressions:
+                          - key: kubernetes.io/hostname
+                            operator: NotIn
+                            values:
+                              - v-k8s-xsvr3
               containers:
                 - name: postgres
                   image: postgres:17

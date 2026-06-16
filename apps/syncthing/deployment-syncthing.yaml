@@ -19,6 +19,16 @@ spec:
       labels:
         app: syncthing
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 80
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - v-k8s-xsvr3
       containers:
         - name: syncthing
           image: syncthing/syncthing:latest

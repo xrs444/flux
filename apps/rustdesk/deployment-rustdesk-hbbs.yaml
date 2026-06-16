@@ -14,6 +14,16 @@ spec:
       labels:
         app: rustdesk-hbbs
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 80
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - v-k8s-xsvr3
       containers:
         - name: hbbs
           image: rustdesk/rustdesk-server:latest

@@ -36,6 +36,18 @@ spec:
                 path: /spec/strategy
                 value:
                   type: Recreate
+              - op: add
+                path: /spec/template/spec/affinity
+                value:
+                  nodeAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                    - weight: 80
+                      preference:
+                        matchExpressions:
+                        - key: kubernetes.io/hostname
+                          operator: NotIn
+                          values:
+                          - v-k8s-xsvr3
   values:
     image:
       repository: ghcr.io/warp-tech/warpgate

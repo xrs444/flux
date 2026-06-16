@@ -24,6 +24,15 @@ spec:
                     values:
                       - rustdesk-hbbs
               topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 80
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - v-k8s-xsvr3
       containers:
         - name: hbbr
           image: rustdesk/rustdesk-server:latest
