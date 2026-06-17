@@ -1,0 +1,15 @@
+# Hermes Agent (Samantha) - Nous Research
+# Dashboard: https://hermes-s.xrs444.net
+# Gateway API: https://hermes-s.xrs444.net/api
+# Memory: honcho app "hermes-s" (isolated from hermes-t)
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-hermes-s-data.yaml
+  - configmap-hermes-s-config.yaml
+  - sealedsecret-hermes-s-config.yaml
+  - deployment-hermes-s.yaml
+  - service-hermes-s.yaml
+  - ingressroute-hermes-s.yaml

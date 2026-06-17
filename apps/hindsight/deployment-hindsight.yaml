@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hindsight
+  namespace: hindsight
+  labels:
+    app: hindsight
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hindsight
+  template:
+    metadata:
+      labels:
+        app: hindsight
+    spec:
+      containers:
+        - name: hindsight
+          image: ghcr.io/vectorize-io/hindsight:latest
+          ports:
+            - containerPort: 8888
+              name: api
+            - containerPort: 9999
+              name: control
+          env:
+            - name: HINDSIGHT_API_LLM_PROVIDER
+              value: "deepseek"
+            - name: HINDSIGHT_API_LLM_BASE_URL
+              value: "https://api.deepseek.com"
+            - name: HINDSIGHT_API_LLM_MODEL
+              value: "deepseek-v4-flash"
+            - name: HINDSIGHT_API_EMBEDDINGS_PROVIDER
+              value: "local"
+            - name: HINDSIGHT_API_EMBEDDINGS_LOCAL_MODEL
+              value: "BAAI/bge-small-en-v1.5"
+            - name: HINDSIGHT_API_WORKER_ID
+              value: "hindsight-0"
+            - name: HINDSIGHT_API_LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hindsight-config
+                  key: DEEPSEEK_API_KEY
+          volumeMounts:
+            - name: hindsight-data
+              mountPath: /home/hindsight/.pg0
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 3Gi
+          startupProbe:
+            httpGet:
+              path: /health
+              port: api
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: api
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: api
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: hindsight-data
+          persistentVolumeClaim:
+            claimName: hindsight-data

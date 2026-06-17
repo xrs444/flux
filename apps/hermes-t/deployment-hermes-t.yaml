@@ -1,0 +1,107 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes-t
+  namespace: hermes-t
+  labels:
+    app: hermes-t
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hermes-t
+  template:
+    metadata:
+      labels:
+        app: hermes-t
+    spec:
+      containers:
+        - name: hermes-t
+          image: nousresearch/hermes-agent:latest
+          command: ["hermes", "gateway", "run"]
+          ports:
+            - containerPort: 8642
+              name: gateway
+            - containerPort: 9119
+              name: dashboard
+          env:
+            - name: TZ
+              value: "America/Phoenix"
+            - name: HERMES_DASHBOARD
+              value: "1"
+            - name: HERMES_DASHBOARD_OIDC_ISSUER
+              value: "https://idm.xrs444.net/oauth2/openid/oauth2_hermes_t"
+            - name: HERMES_DASHBOARD_OIDC_CLIENT_ID
+              value: "oauth2_hermes_t"
+            - name: HINDSIGHT_MODE
+              value: "local_external"
+            - name: HINDSIGHT_API_URL
+              value: "http://hindsight.hindsight.svc.cluster.local:8888"
+            - name: API_SERVER_ENABLED
+              value: "true"
+            - name: API_SERVER_HOST
+              value: "0.0.0.0"
+            - name: DEEPSEEK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-t-config
+                  key: DEEPSEEK_API_KEY
+            - name: HERMES_DASHBOARD_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-t-config
+                  key: OIDC_CLIENT_SECRET
+            - name: API_SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-t-config
+                  key: API_SERVER_KEY
+          volumeMounts:
+            - name: hermes-t-data
+              mountPath: /opt/data
+            - name: hermes-t-config
+              mountPath: /opt/data/config.yaml
+              subPath: config.yaml
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+          startupProbe:
+            httpGet:
+              path: /
+              port: dashboard
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: dashboard
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: dashboard
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: hermes-t-data
+          persistentVolumeClaim:
+            claimName: hermes-t-data
+        - name: hermes-t-config
+          configMap:
+            name: hermes-t-config
+            items:
+              - key: config.yaml
+                path: config.yaml

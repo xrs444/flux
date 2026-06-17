@@ -47,6 +47,9 @@ resources:
   - ./warpgate              # SSH/HTTPS bastion with session recording
   - ./syncthing             # Continuous file synchronization
   # - ./matrix              # Messaging and video calls (Synapse + Element)
+  - ./hindsight             # Shared memory layer for hermes-t and hermes-s (Vectorize)
+  - ./hermes-t              # Hermes Agent — Thomas (Nous Research)
+  - ./hermes-s              # Hermes Agent — Samantha (Nous Research)
   - ./windmill              # Central automation engine (schedules, on-demand, webhooks)
   - ./xlab-mgmt             # Lab control plane: PowerDNS for lab.xrs444.net + Windmill script placeholders
   - ./storage               # Storage PVCs (applied last after namespaces exist)

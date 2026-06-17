@@ -1,0 +1,15 @@
+# Hermes Agent (Thomas) - Nous Research
+# Dashboard: https://hermes-t.xrs444.net
+# Gateway API: https://hermes-t.xrs444.net/api
+# Memory: honcho app "hermes-t" (isolated from hermes-s)
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-hermes-t-data.yaml
+  - configmap-hermes-t-config.yaml
+  - sealedsecret-hermes-t-config.yaml
+  - deployment-hermes-t.yaml
+  - service-hermes-t.yaml
+  - ingressroute-hermes-t.yaml

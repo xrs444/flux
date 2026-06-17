@@ -1,0 +1,12 @@
+# Hindsight - Shared memory layer for hermes-t and hermes-s
+# Internal only — accessed at http://hindsight.hindsight.svc.cluster.local:8888
+# Uses DeepSeek for memory extraction (no Anthropic dependency)
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-hindsight-data.yaml
+  - sealedsecret-hindsight-config.yaml
+  - deployment-hindsight.yaml
+  - service-hindsight.yaml
