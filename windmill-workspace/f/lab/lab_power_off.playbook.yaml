@@ -1,0 +1,170 @@
+---
+# Lab Power Off — shuts down the Nutanix cluster gracefully in the correct sequence.
+# Args (from Windmill resource bindings): ha_webhook, ilo1, ilo2, ilo3, cvm, prism
+# Requires AOS 6.5+ for Nutanix v4 API. prism.url must include port (https://172.25.2.100:9440).
+
+- name: Shut down user VMs via Prism Central
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Register CVM in dynamic inventory
+      ansible.builtin.add_host:
+        name: cvm_node
+        ansible_host: "{{ cvm.host }}"
+        ansible_user: "{{ cvm.username }}"
+        ansible_ssh_private_key_file: /root/.ssh/id_ed25519
+        ansible_ssh_common_args: >-
+          -o StrictHostKeyChecking=no
+          -o UserKnownHostsFile=/dev/null
+
+    - name: List all VMs from Prism Central v4 API
+      ansible.builtin.uri:
+        url: "{{ prism.url }}/api/vmm/v4.0/ahv/config/vms?limit=100"
+        method: GET
+        user: "{{ prism.username }}"
+        password: "{{ prism.password }}"
+        force_basic_auth: true
+        validate_certs: false
+        return_content: true
+      register: vm_list
+
+    - name: Identify user VMs to shut down
+      ansible.builtin.set_fact:
+        user_vms: "{{ user_vms | default([]) + [item] }}"
+      loop: "{{ vm_list.json.data }}"
+      when:
+        - item.powerState == 'ON'
+        - item.name is not search('CVM', ignorecase=True)
+        - item.name != 'xntnx-pc'
+
+    - name: Send graceful shutdown to user VMs
+      ansible.builtin.uri:
+        url: "{{ prism.url }}/api/vmm/v4.0/ahv/config/vms/{{ item.extId }}/actions/guest-shutdown"
+        method: POST
+        user: "{{ prism.username }}"
+        password: "{{ prism.password }}"
+        force_basic_auth: true
+        validate_certs: false
+        body_format: json
+        body: {}
+        status_code: [200, 202, 204]
+      loop: "{{ user_vms | default([]) }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    # Give VMs 2 minutes to shut down gracefully before forcing
+    - name: Wait for user VMs to power off (120s grace period)
+      ansible.builtin.pause:
+        seconds: 120
+      when: (user_vms | default([]) | length) > 0
+
+    - name: Force power off any remaining user VMs
+      ansible.builtin.uri:
+        url: "{{ prism.url }}/api/vmm/v4.0/ahv/config/vms/{{ item.extId }}/actions/power-off"
+        method: POST
+        user: "{{ prism.username }}"
+        password: "{{ prism.password }}"
+        force_basic_auth: true
+        validate_certs: false
+        body_format: json
+        body: {}
+        status_code: [200, 202, 204]
+      loop: "{{ user_vms | default([]) }}"
+      loop_control:
+        label: "{{ item.name }}"
+      ignore_errors: true
+
+    - name: Shut down Prism Central VM via acli
+      ansible.builtin.command: bash -c "source /etc/profile && acli vm.acpi_shutdown xntnx-pc"
+      delegate_to: cvm_node
+      register: pc_shutdown
+      failed_when: >-
+        pc_shutdown.rc != 0 and
+        'already off' not in (pc_shutdown.stderr | lower) and
+        'already off' not in (pc_shutdown.stdout | lower)
+
+    - name: Wait for Prism Central port 9440 to close
+      ansible.builtin.wait_for:
+        host: 172.25.2.100
+        port: 9440
+        state: stopped
+        timeout: 300
+        sleep: 10
+
+- name: Stop Nutanix cluster via CVM SSH
+  hosts: cvm_node
+  gather_facts: false
+
+  tasks:
+    - name: Stop cluster services
+      ansible.builtin.command: cluster stop
+      register: cluster_stop
+      changed_when: true
+
+    - name: Wait for cluster to fully stop
+      ansible.builtin.command: cluster status
+      register: cluster_status
+      until: >-
+        'Cluster Status: Down' in cluster_status.stdout or
+        'not running' in (cluster_status.stdout | lower) or
+        cluster_status.rc != 0
+      retries: 20
+      delay: 30
+      failed_when: false
+
+- name: Power off nodes and cut smart plug
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Graceful shutdown of nodes via iLO Redfish
+      ansible.builtin.uri:
+        url: "https://{{ item.host }}/redfish/v1/Systems/1/Actions/ComputerSystem.Reset"
+        method: POST
+        user: "{{ item.username }}"
+        password: "{{ item.password }}"
+        force_basic_auth: true
+        validate_certs: false
+        body_format: json
+        body:
+          ResetType: "GracefulShutdown"
+        status_code: [200, 202, 204]
+      loop:
+        - "{{ ilo1 }}"
+        - "{{ ilo2 }}"
+        - "{{ ilo3 }}"
+      loop_control:
+        label: "{{ item.host }}"
+
+    - name: Wait for all nodes to report PowerState Off
+      ansible.builtin.uri:
+        url: "https://{{ item.host }}/redfish/v1/Systems/1"
+        method: GET
+        user: "{{ item.username }}"
+        password: "{{ item.password }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: ilo_status
+      until: ilo_status.json.PowerState == 'Off'
+      retries: 15
+      delay: 20
+      loop:
+        - "{{ ilo1 }}"
+        - "{{ ilo2 }}"
+        - "{{ ilo3 }}"
+      loop_control:
+        label: "{{ item.host }}"
+
+    - name: Cut smart plug power via HA webhook
+      ansible.builtin.uri:
+        url: "{{ ha_webhook.power_off_url }}"
+        method: POST
+        status_code: [200, 201, 202, 204]
+        timeout: 30
+
+    - name: Lab power-off complete
+      ansible.builtin.debug:
+        msg: "Lab is off. Smart plug (switch.lab_power) is now off."

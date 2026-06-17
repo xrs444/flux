@@ -17,7 +17,8 @@ repos:
         exclude: >-
           (charts/.*/templates/.*\.ya?ml$
           |gotk-components\.yaml$
-          |crds/.*\.ya?ml$)
+          |crds/.*\.ya?ml$
+          |windmill-workspace/.*\.ya?ml$)
 
   - repo: local
     hooks:
