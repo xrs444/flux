@@ -12,11 +12,6 @@ spec:
       kind: Rule
       services:
         - name: hermes-t
-          port: 9119
-    - match: Host(`hermes-t.xrs444.net`) && PathPrefix(`/api`)
-      kind: Rule
-      services:
-        - name: hermes-t
           port: 8642
   tls:
     secretName: letsencrypt-wildcard-cert-xrs444.net
