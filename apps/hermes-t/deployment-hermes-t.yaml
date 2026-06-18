@@ -80,23 +80,20 @@ spec:
               cpu: 2000m
               memory: 4Gi
           startupProbe:
-            httpGet:
-              path: /v1/models
+            tcpSocket:
               port: gateway
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 30
             timeoutSeconds: 5
           livenessProbe:
-            httpGet:
-              path: /v1/models
+            tcpSocket:
               port: gateway
             periodSeconds: 30
             timeoutSeconds: 5
             failureThreshold: 3
           readinessProbe:
-            httpGet:
-              path: /v1/models
+            tcpSocket:
               port: gateway
             periodSeconds: 10
             timeoutSeconds: 3
