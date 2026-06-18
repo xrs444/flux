@@ -50,6 +50,10 @@ spec:
           enabled: true
           name: prometheus-additional-scrape-configs
           key: scrape-configs.yaml
+        # Secrets mounted at /etc/prometheus/secrets/<name>/ for credentials_file use
+        secrets:
+          - ha-bearer-token
+          - netbox-api-token
         # Allow ServiceMonitors/PodMonitors/PrometheusRules from any namespace
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
