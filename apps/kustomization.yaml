@@ -1,6 +1,7 @@
 # yamllint disable rule:line-length
-# Superseded by group kustomizations in flux/apps/{core,observability,media,...}/.
-# Remove the apps Flux Kustomization (cluster/apps.yaml) once all groups are healthy.
+# This file is no longer the Flux entry point. Apps are reconciled via the
+# group kustomizations in flux/cluster/apps.yaml (apps-core, apps-observability,
+# apps-media, apps-system-services, apps-services, apps-automation).
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
