@@ -1,8 +1,7 @@
+# yamllint disable rule:line-length
 ---
-# Flux Kustomization for application deployments
-# Reconciles all applications from ./apps directory
-# Depends on infra-configs to ensure infrastructure is ready
-# Configured with 10m interval, 5m timeout, auto-pruning enabled
+# TRANSITION: kept with prune:false until all group kustomizations are healthy.
+# Remove once apps-core/observability/media/system-services/services/automation are green.
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -16,6 +15,115 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./apps
+  wait: true
+  timeout: 5m0s
+  prune: false
+---
+# Core cluster utilities: HelmRepositories, kube-system jobs, metrics, spegel, storage PVCs
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-core
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: infra-configs
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/core
+  wait: true
+  timeout: 5m0s
+  prune: true
+---
+# Observability: kube-prometheus-stack, Loki, Prometheus ServiceAccount
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-observability
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: infra-configs
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/observability
+  wait: true
+  timeout: 5m0s
+  prune: true
+---
+# Media: Jellyfin, Immich, Audiobookshelf, Sonarr, Radarr, Lidarr, Tdarr, Romm, Manyfold, Booklore
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-media
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: infra-configs
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/media
+  wait: true
+  timeout: 5m0s
+  prune: true
+---
+# System services: Apprise, Borgwarehouse, CUPS, ntfy, Syncthing, xlab-mgmt
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-system-services
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: infra-configs
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/system-services
+  wait: true
+  timeout: 5m0s
+  prune: true
+---
+# Services: Atuin, Craftycontroller, Dashy, Garage, Jitsi, Linkwarden, Lubelogger,
+#           Mealie, Netbox, Omada, Paperless-ngx, Rustdesk, Seatable, Termix, Warpgate
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-services
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: infra-configs
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/services
+  wait: true
+  timeout: 5m0s
+  prune: true
+---
+# Automation and AI: Windmill, Hermes-t, Hermes-s, Hindsight
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-automation
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: infra-configs
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/automation
   wait: true
   timeout: 5m0s
   prune: true

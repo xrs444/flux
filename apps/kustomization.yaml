@@ -1,55 +1,8 @@
 # yamllint disable rule:line-length
-# Kustomize configuration for all HomeProd applications
-# Each application has its own directory with dedicated namespace
-# Applications deployed after infrastructure (depends on infra-configs)
+# Superseded by group kustomizations in flux/apps/{core,observability,media,...}/.
+# Remove the apps Flux Kustomization (cluster/apps.yaml) once all groups are healthy.
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-resources:
-  - ./helmrepositories      # External Helm chart repositories
-  - ./monitoring            # kube-prometheus-stack
-  - ./kube-system           # Cluster maintenance jobs (replicaset cleanup)
-  - ./metrics-server        # Cluster-wide resource metrics
-  - ./lubelogger            # Vehicle maintenance tracking
-  - ./omada                 # TP-Link network controller
-  - ./craftycontroller      # Minecraft server management (Helm)
-  - ./atuin                 # Shell history sync server
-  - ./borgwarehouse         # Borg backup repository manager
-  - ./jellyfin              # Media streaming server
-  - ./mealie                # Recipe management
-  - ./audiobookshelf        # Audiobook and podcast server
-  - ./manyfold              # 3D print file manager
-  - ./kube-state-metrics    # Kubernetes object metrics for monitoring
-  - ./node-exporter         # Node-level metrics DaemonSet for Talos VMs
-  - ./loki                  # Log aggregation system
-  - ./prometheus-sa         # Prometheus ServiceAccount for external scraping
-  - ./apprise               # Multi-platform notification service
-  - ./seatable              # Database and spreadsheet platform
-  - ./paperless-ngx         # Document management system
-  - ./cups                  # Print server with web management
-  - ./jitsi                 # Video conferencing platform
-  - ./ntfy                  # Push notification service
-  - ./linkwarden            # Bookmark and link management
-  - ./garage                # S3-compatible object storage
-  - ./tdarr                 # Automated media transcoding and organization
-  - ./dashy                 # Unified dashboard for all services
-  - ./immich                # Photo and video management platform
-  - ./romm                  # ROM collection manager
-  - ./rustdesk              # Remote desktop solution
-  - ./netbox                # Network source of truth and IPAM/DCIM platform
-  - ./spegel                # Peer-to-peer container image caching
-  - ./booklore              # Self-hosted book library manager
-  - ./radarr                # Movie collection manager and auto-importer
-  - ./sonarr                # TV show collection manager and auto-importer
-  - ./lidarr                # Music collection manager with Beets auto-tagger
-  - ./termix                # Web-based server management
-  - ./warpgate              # SSH/HTTPS bastion with session recording
-  - ./syncthing             # Continuous file synchronization
-  # - ./matrix              # Messaging and video calls (Synapse + Element)
-  - ./hindsight             # Shared memory layer for hermes-t and hermes-s (Vectorize)
-  - ./hermes-t              # Hermes Agent — Thomas (Nous Research)
-  - ./hermes-s              # Hermes Agent — Samantha (Nous Research)
-  - ./windmill              # Central automation engine (schedules, on-demand, webhooks)
-  - ./xlab-mgmt             # Lab control plane: PowerDNS for lab.xrs444.net + Windmill script placeholders
-  - ./storage               # Storage PVCs (applied last after namespaces exist)
+resources: []
