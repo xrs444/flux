@@ -36,6 +36,7 @@ spec:
     prometheus:
       prometheusSpec:
         retention: 30d
+        retentionSize: 45GiB
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -43,7 +44,7 @@ spec:
               accessModes: [ReadWriteOnce]
               resources:
                 requests:
-                  storage: 20Gi
+                  storage: 50Gi
         # Additional scrape configs from Secret (bare-metal hosts, SNMP, k8s NodePorts, HA, etc.)
         additionalScrapeConfigsSecret:
           enabled: true
