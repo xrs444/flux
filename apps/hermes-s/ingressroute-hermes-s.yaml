@@ -8,10 +8,15 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`hermes-s.xrs444.net`)
+    - match: Host(`hermes-s.xrs444.net`) && PathPrefix(`/v1`)
       kind: Rule
       services:
         - name: hermes-s
           port: 8642
+    - match: Host(`hermes-s.xrs444.net`)
+      kind: Rule
+      services:
+        - name: hermes-s
+          port: 9119
   tls:
     secretName: letsencrypt-wildcard-cert-xrs444.net
