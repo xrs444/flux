@@ -19,6 +19,8 @@ spec:
       labels:
         app: hindsight
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: hindsight
           image: ghcr.io/vectorize-io/hindsight:latest

@@ -19,6 +19,8 @@ spec:
       labels:
         app: hermes-s
     spec:
+      securityContext:
+        fsGroup: 10000
       containers:
         - name: hermes-s
           image: nousresearch/hermes-agent:latest
