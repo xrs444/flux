@@ -90,6 +90,7 @@ configMapGenerator:
         grafana_folder: Network
     files:
       - dashboards/network-devices.json
+      - dashboards/app-bird.json
 
   - name: grafana-dashboards-infrastructure
     namespace: monitoring
@@ -106,6 +107,7 @@ configMapGenerator:
       - dashboards/app-longhorn.json
       - dashboards/app-spegel.json
       - dashboards/app-kube-state-metrics.json
+      - dashboards/app-libvirt.json
 
   - name: grafana-dashboards-media
     namespace: monitoring
