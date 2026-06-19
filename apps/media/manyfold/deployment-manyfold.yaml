@@ -79,6 +79,8 @@ spec:
               value: "Kanidm"
             - name: FORCE_OIDC
               value: "enabled"
+            - name: PUBLIC_HOSTNAME
+              value: "manyfold.xrs444.net"
           volumeMounts:
             - name: data
               mountPath: /libraries
