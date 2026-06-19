@@ -81,6 +81,8 @@ spec:
               value: "enabled"
             - name: PUBLIC_HOSTNAME
               value: "manyfold.xrs444.net"
+            - name: HTTPS_ONLY
+              value: "enabled"
           volumeMounts:
             - name: data
               mountPath: /libraries
