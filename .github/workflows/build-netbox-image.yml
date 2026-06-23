@@ -12,7 +12,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/netbox/custom-image/**'
+      - 'apps/services/netbox/custom-image/**'
 
 env:
   REGISTRY: ghcr.io
@@ -48,7 +48,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
-          context: apps/netbox/custom-image
+          context: apps/services/netbox/custom-image
           push: true
           build-args: |
             NETBOX_VERSION=${{ steps.version.outputs.netbox_version }}

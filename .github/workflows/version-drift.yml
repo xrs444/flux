@@ -59,7 +59,7 @@ jobs:
           CILIUM_CURRENT=$(yq '.spec.chart.spec.version' infrastructure/controllers/cilium/helmrelease-cilium.yaml)
           TRAEFIK_CURRENT=$(yq '.spec.chart.spec.version' infrastructure/controllers/traefik/helmrelease-traefik.yaml)
           OAUTH2_CURRENT=$(yq '.spec.chart.spec.version' infrastructure/controllers/traefik/helmrelease-traefik-oauth2.yaml)
-          ATUIN_CURRENT=$(yq '.spec.chart.spec.version' apps/atuin/helmrelease.yaml)
+          ATUIN_CURRENT=$(yq '.spec.chart.spec.version' apps/services/atuin/helmrelease.yaml)
 
           check_helm "Cilium"       "cilium/cilium"          "$CILIUM_CURRENT"  ">=1.0.0 <2.0.0"
           check_helm "Traefik"      "traefik/traefik"        "$TRAEFIK_CURRENT" ">=38.0.0 <39.0.0"
