@@ -1,0 +1,72 @@
+---
+# Alerts for the synthetic SSO login prober.
+# The prober is a Windmill scheduled script (f/monitoring/synthetic_login in the homeprod
+# workspace) that authenticates the `monitoring` Kanidm account and runs an OAuth2
+# authorize round-trip against every app's client, then pushes results to Pushgateway.
+#
+# Three alert tiers:
+#   - SyntheticLoginFailed        (warning)  — any non-windmill app breaks
+#   - SyntheticLoginWindmillFailed (critical) — Windmill's own SSO is broken
+#   - SyntheticLoginProberStale   (critical)  — Windmill/prober is down (dead-man switch)
+#
+# Routing: all alerts flow through the existing Alertmanager apprise receiver → ntfy.
+# Critical alerts repeat hourly (alertmanager config repeat_interval: 1h for severity=critical).
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: synthetic-login-rules
+  namespace: monitoring
+spec:
+  groups:
+    - name: synthetic-login
+      interval: 1m
+      rules:
+        # --- Per-app failures (non-Windmill) ----------------------------------------
+        - alert: SyntheticLoginFailed
+          # Exclude windmill — it gets its own higher-severity alert below.
+          expr: synthetic_login_success{app!="windmill"} == 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "SSO login broken for {{ $labels.app }}"
+            description: >
+              The synthetic monitoring account failed the OAuth2 authorize check for
+              **{{ $labels.app }}** on Kanidm for more than 10 minutes.
+              Likely causes: broken redirect URL registration, missing scope-map group,
+              client misconfiguration, or Kanidm unreachable.
+              Check: https://idm.xrs444.net/oauth2/openid/oauth2_{{ $labels.app }}/.well-known/openid-configuration
+
+        # --- Windmill SSO (critical — higher priority, faster trigger) ---------------
+        - alert: SyntheticLoginWindmillFailed
+          expr: synthetic_login_success{app="windmill"} == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Windmill SSO login broken"
+            description: >
+              The synthetic monitoring account failed the OAuth2 authorize check for
+              **Windmill** (oauth2_windmill) on Kanidm for more than 5 minutes.
+              This means users cannot log into Windmill via Kanidm SSO.
+              Check: https://windmill.xrs444.net and https://idm.xrs444.net
+
+        # --- Dead-man switch (fires when Windmill/prober stops pushing) -------------
+        - alert: SyntheticLoginProberStale
+          expr: >
+            absent(push_time_seconds{job="synthetic_login"})
+            or
+            (time() - max(push_time_seconds{job="synthetic_login"})) > 1800
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Synthetic login prober is not running"
+            description: >
+              No metrics have been pushed to Pushgateway for the synthetic_login job
+              in the last 30 minutes. The Windmill scheduled script
+              (f/monitoring/synthetic_login) is likely not running, or Windmill itself
+              is down. This alert fires independently of Windmill — check
+              Windmill at https://windmill.xrs444.net and the schedule status.
+              Note: also check WindmillWorkerDown (up{job="windmill"} == 0) for
+              the underlying Windmill health signal.

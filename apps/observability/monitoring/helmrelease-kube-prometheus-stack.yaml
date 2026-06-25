@@ -72,6 +72,23 @@ spec:
         existingSecret: grafana-admin-secret
         userKey: admin-user
         passwordKey: admin-password
+      envFromSecret: grafana-oauth-secret
+      grafana.ini:
+        auth:
+          disable_login_form: false
+          oauth_auto_login: false
+        auth.generic_oauth:
+          enabled: true
+          name: Kanidm
+          client_id: oauth2_grafana
+          client_secret: ${GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
+          scopes: openid profile email groups
+          auth_url: https://idm.xrs444.net/oauth2/authorise
+          token_url: https://idm.xrs444.net/oauth2/token
+          api_url: https://idm.xrs444.net/oauth2/openid/oauth2_grafana/userinfo
+          use_pkce: true
+          role_attribute_path: "contains(groups[*], 'grafana-admin') && 'Admin' || contains(groups[*], 'grafana') && 'Viewer' || 'Viewer'"
+          allow_sign_up: true
       # The chart's sidecar already provisions a default Prometheus datasource.
       # Only add Loki here to avoid a duplicate-default conflict.
       additionalDataSources:
