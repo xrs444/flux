@@ -8,5 +8,3 @@ resources:
   - sealedsecret-atuin-postgresql.yaml
   - helmrelease.yaml
   - ingressroute-atuin.yaml
-  # Storage resources
-  - pvc-atuin-data.yaml
