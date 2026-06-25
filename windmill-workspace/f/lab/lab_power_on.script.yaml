@@ -1,0 +1,56 @@
+summary: Lab Power On
+description: |-
+  Powers on the Nutanix lab in sequence:
+  1. Turns on HA smart plug (switch.lab_power) via webhook
+  2. Waits for lab switch (xswlab, 172.18.11.249) to be reachable on port 22
+  3. Powers on all three nodes via HP iLO 5 Redfish
+  4. Waits for CVMs (172.25.1.11/21/31) to be reachable on SSH
+  5. Starts the Nutanix cluster via CVM SSH (cluster start)
+  6. Boots Prism Central VM via acli vm.on xntnx-pc
+  7. Waits for Prism Central (172.25.2.100:9440) to be reachable
+
+  Prerequisites: iLO/CVM/Prism creds filled; worker SSH key in CVM authorized_keys; HA webhooks created.
+lock: ""
+has_on_behalf_of: false
+kind: script
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    ha_webhook:
+      type: object
+      format: resource-lab_ha_webhook
+      description: HA webhook URLs for smart plug control
+      default: u/admin/lab_ha_webhook
+    ilo1:
+      type: object
+      format: resource-lab_ipmi
+      description: iLO credentials for xntnx1 (172.25.4.1)
+      default: u/admin/lab_ipmi_xntnx1
+    ilo2:
+      type: object
+      format: resource-lab_ipmi
+      description: iLO credentials for xntnx2 (172.25.4.2)
+      default: u/admin/lab_ipmi_xntnx2
+    ilo3:
+      type: object
+      format: resource-lab_ipmi
+      description: iLO credentials for xntnx3 (172.25.4.3)
+      default: u/admin/lab_ipmi_xntnx3
+    cvm:
+      type: object
+      format: resource-lab_cvm_ssh
+      description: Primary CVM for cluster SSH operations
+      default: u/admin/lab_cvm_primary
+    prism:
+      type: object
+      format: resource-lab_nutanix_prism
+      description: Prism Central API credentials
+      default: u/admin/lab_nutanix_prism
+  required:
+    - ha_webhook
+    - ilo1
+    - ilo2
+    - ilo3
+    - cvm
+    - prism
