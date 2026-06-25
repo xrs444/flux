@@ -21,6 +21,15 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+      initContainers:
+        - name: fix-pg-permissions
+          image: busybox:latest
+          command: ["sh", "-c", "chmod 750 /data/instances/hindsight/data 2>/dev/null || true"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: hindsight-data
+              mountPath: /data
       containers:
         - name: hindsight
           image: ghcr.io/vectorize-io/hindsight:latest
