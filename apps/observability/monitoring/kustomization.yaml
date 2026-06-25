@@ -21,8 +21,11 @@ resources:
   - ingressroute-grafana.yaml
   - ingressroute-prometheus.yaml
   - ingressroute-alertmanager.yaml
+  # Synthetic SSO login monitoring (PrometheusRule + dead-man alerts)
+  - prometheusrule-synthetic-login.yaml
   # Sealed Secrets (must be created/sealed before deploying)
   - sealedsecret-grafana-admin.yaml
+  - sealedsecret-grafana-oauth.yaml
   - sealedsecret-snmp-community.yaml
   - sealedsecret-ha-bearer-token.yaml
   - sealedsecret-netbox-api-token.yaml
@@ -140,7 +143,6 @@ configMapGenerator:
       - dashboards/app-craftycontroller.json
       - dashboards/app-cups.json
       - dashboards/app-dashy.json
-      - dashboards/app-garage.json
       - dashboards/app-homeassistant.json
       - dashboards/app-immich.json
       - dashboards/app-jitsi.json

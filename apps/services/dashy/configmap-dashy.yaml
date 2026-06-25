@@ -186,14 +186,6 @@ data:
             statusCheck: true
             id: 2_1_atuin
 
-          - title: Garage
-            description: S3-compatible storage
-            icon: fas fa-warehouse
-            url: https://garage.xrs444.net
-            target: newtab
-            statusCheck: true
-            id: 2_2_garage
-
           - title: Tdarr
             description: Media transcoding automation
             icon: hl-tdarr
