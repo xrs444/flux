@@ -24,7 +24,7 @@ spec:
         kubernetes.io/hostname: v-k8s-xsvr1
       containers:
         - name: dashy
-          image: lissy93/dashy:4.2.9
+          image: lissy93/dashy:4.3.10
           imagePullPolicy: IfNotPresent
           command: ["node", "server"]
           ports:
