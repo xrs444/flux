@@ -20,9 +20,9 @@ Prometheus metrics pushed (job=synthetic_login, per-app grouping):
 - synthetic_login_duration_seconds{app}: wall-clock time for the authorize step
 - Pushgateway auto-adds push_time_seconds{job="synthetic_login"} (dead-man switch)
 
-Variables required in Windmill (homeprod workspace):
-- u/admin/monitoring_kanidm_password  (sensitive) — account password
-- u/admin/monitoring_kanidm_totp      (sensitive) — base32 TOTP seed from setup
+Variables required in Windmill (admins workspace):
+- u/admin/monitoring_kanidm_password  (sensitive) -- account password
+- u/admin/monitoring_kanidm_totp      (sensitive) -- base32 TOTP seed from setup
 
 Schedule: every 10 minutes.
 """
@@ -43,7 +43,7 @@ PUSHGATEWAY_URL = "http://pushgateway.monitoring.svc.cluster.local:9091"
 KANIDM_USERNAME = "monitoring"
 
 # ---------------------------------------------------------------------------
-# App registry — matches redirect URIs registered in
+# App registry -- matches redirect URIs registered in
 # nix/modules/services/kanidm/default.nix (kanidm-oauth2-redirect-urls service)
 # and scope maps in nix/modules/services/kanidm/provision.nix.
 #
@@ -52,7 +52,6 @@ KANIDM_USERNAME = "monitoring"
 # registered (add add_redirect line in default.nix).
 # ---------------------------------------------------------------------------
 APPS = [
-    # Direct OIDC (Pattern A) — app talks to Kanidm directly
     {
         "name": "paperless",
         "client_id": "oauth2_paperless",
@@ -131,15 +130,14 @@ APPS = [
         "redirect_uri": "https://manyfold.xrs444.net/users/auth/openid_connect/callback",
         "scopes": "openid profile email",
     },
-    # Windmill — checked with the rest; gets its own critical alert in Prometheus
+    # Windmill -- gets its own critical-severity alert in Prometheus
     {
         "name": "windmill",
         "client_id": "oauth2_windmill",
         "redirect_uri": "https://windmill.xrs444.net/user/login_callback/kanidm",
         "scopes": "openid profile email",
     },
-    # Forward-auth apps (Pattern B) — protected by oauth2-proxy; tested via
-    # the oauth2-proxy's own Kanidm client.
+    # Forward-auth (Pattern B) -- tested via oauth2-proxy's Kanidm client
     {
         "name": "longhorn",
         "client_id": "oauth2_longhorn",
@@ -185,12 +183,12 @@ def kanidm_auth(password: str, totp_secret: str) -> tuple[requests.Session, str]
     Authenticate via Kanidm's step-based API with password + TOTP.
     Returns (session, bearer_token).
 
-    Flow (mirrors check-kanidm-oauth2.sh, extended for MFA):
+    Flow:
       POST /v1/auth  {"step": {"init": "<username>"}}
       POST /v1/auth  {"step": {"begin": "password_mfa"}}
       POST /v1/auth  {"step": {"cred": {"password": "<pw>"}}}
-        -> if state.success: done (MFA not enforced for this account)
-        -> if state.continue: TOTP required
+        -> state.success: done (MFA not enforced)
+        -> state.continue: TOTP required
       POST /v1/auth  {"step": {"cred": {"totp": <6-digit-int>}}}
         -> state.success = bearer token
     """
@@ -221,11 +219,9 @@ def kanidm_auth(password: str, totp_secret: str) -> tuple[requests.Session, str]
 
     state = r3.json().get("state", {})
 
-    # Password-only path -- MFA not enforced for this account
     if "success" in state:
         return session, state["success"]
 
-    # TOTP required
     if "continue" not in state:
         raise RuntimeError(
             f"Kanidm auth: unexpected state after password step: {r3.text[:300]}"
@@ -260,16 +256,8 @@ def check_authorize(
     Perform an OAuth2 PKCE authorize request for one app.
     Returns (success, detail_message).
 
-    Success conditions (client is correctly configured):
-    - 302 to redirect_uri carrying ?code=  (auto-approved or first-party trust)
-    - 302 to Kanidm consent UI  (config valid; consent required before code is issued)
-    - 200 with consent form HTML  (same -- config valid)
-
-    Failure conditions:
-    - 302 to redirect_uri carrying ?error=  (OAuth2 protocol error: access_denied,
-      unauthorized_client, invalid_redirect_uri, etc.)
-    - 4xx / 5xx HTTP status
-    - Network error or timeout
+    Success: any 302 without ?error=, or 200 consent page.
+    Failure: 302 with ?error=, 4xx/5xx, network error.
     """
     _, challenge = _pkce_pair()
     state = secrets.token_urlsafe(16)
@@ -301,23 +289,17 @@ def check_authorize(
 
     if resp.status_code == 302:
         if "error=" in location:
-            # OAuth2 error redirect -- parse the error code
             qs = urllib.parse.parse_qs(urllib.parse.urlparse(location).query)
             error = qs.get("error", ["unknown"])[0]
             desc = qs.get("error_description", [""])[0]
             return False, f"oauth2 error={error} -- {desc or location[:120]}"
-        # Any other 302: either code redirect (success) or consent UI redirect
-        # (also success -- Kanidm already validated redirect_uri and scope before
-        # redirecting to the consent page).
         dest = location[:80] if location else "(no Location header)"
         return True, f"302 -> {dest}"
 
     if resp.status_code == 200:
         body = resp.text
         if "authorise/permit" in body or "/oauth2/authorise/permit" in body:
-            # Kanidm consent form -- client config is valid, account has access
             return True, "200 consent page (client valid, account has scope access)"
-        # Some other 200 -- optimistically treat as success but flag it
         snippet = body[:120].replace("\n", " ")
         return True, f"200 (unknown body): {snippet}"
 
@@ -330,14 +312,10 @@ def check_authorize(
 
 def push_metrics(metrics: list[dict]) -> None:
     """
-    Push synthetic_login_success and synthetic_login_duration_seconds to
-    Pushgateway as a single PUT (replaces all metrics for job=synthetic_login).
-    Pushgateway auto-adds push_time_seconds{job="synthetic_login"} which is used
-    by the SyntheticLoginProberStale dead-man switch alert.
+    PUT all metrics to Pushgateway (replaces job=synthetic_login group).
+    Pushgateway auto-adds push_time_seconds used by the dead-man switch alert.
     """
-    lines: list[str] = []
-
-    lines += [
+    lines: list[str] = [
         "# HELP synthetic_login_success Whether the synthetic login authorize check succeeded (1=ok, 0=fail)",
         "# TYPE synthetic_login_success gauge",
     ]
@@ -353,11 +331,9 @@ def push_metrics(metrics: list[dict]) -> None:
             f'synthetic_login_duration_seconds{{app="{m["app"]}"}} {m["duration"]:.4f}'
         )
 
-    body = "\n".join(lines) + "\n"
-
     resp = requests.put(
         f"{PUSHGATEWAY_URL}/metrics/job/synthetic_login",
-        data=body,
+        data="\n".join(lines) + "\n",
         headers={"Content-Type": "text/plain; version=0.0.4"},
         timeout=10,
     )
@@ -370,19 +346,16 @@ def push_metrics(metrics: list[dict]) -> None:
 
 def main() -> dict:
     """
-    Windmill entrypoint. Returns a summary dict visible in the job output.
-    Raises on any hard failure so Windmill marks the job failed.
+    Windmill entrypoint. Raises on hard failure so Windmill marks the job failed.
     """
     password = wmill.get_variable("u/admin/monitoring_kanidm_password")
     totp_secret = wmill.get_variable("u/admin/monitoring_kanidm_totp")
 
-    # --- Authenticate to Kanidm -------------------------------------------------
     print(f"Authenticating to Kanidm as '{KANIDM_USERNAME}'...")
     try:
         session, token = kanidm_auth(password, totp_secret)
     except Exception as exc:
         print(f"CRITICAL: Kanidm authentication failed: {exc}")
-        # Push failure for all apps so Prometheus sees the outage
         dead_metrics = [{"app": a["name"], "success": 0, "duration": 0.0} for a in APPS]
         try:
             push_metrics(dead_metrics)
@@ -392,7 +365,6 @@ def main() -> dict:
 
     print("Authenticated successfully.\n")
 
-    # --- Authorize check per app ------------------------------------------------
     metrics: list[dict] = []
     failures: list[str] = []
 
@@ -400,20 +372,16 @@ def main() -> dict:
         t0 = time.monotonic()
         ok, detail = check_authorize(session, token, app)
         duration = time.monotonic() - t0
-
         status = "OK  " if ok else "FAIL"
         print(f"  [{status}] {app['name']:<18} {detail} ({duration:.2f}s)")
-
         metrics.append({"app": app["name"], "success": 1 if ok else 0, "duration": duration})
         if not ok:
             failures.append(app["name"])
 
-    # --- Push to Pushgateway ----------------------------------------------------
     print(f"\nPushing {len(metrics)} metrics to Pushgateway...")
     push_metrics(metrics)
     print("Pushed.")
 
-    # --- Summary ----------------------------------------------------------------
     summary = {
         "total": len(APPS),
         "ok": len(metrics) - len(failures),
@@ -422,8 +390,6 @@ def main() -> dict:
     }
     print(f"\nResult: {summary['ok']}/{summary['total']} OK")
     if failures:
-        raise RuntimeError(
-            f"SSO authorize failed for: {', '.join(failures)}"
-        )
+        raise RuntimeError(f"SSO authorize failed for: {', '.join(failures)}")
 
     return summary
