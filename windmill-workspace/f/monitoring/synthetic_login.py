@@ -1,9 +1,10 @@
 """
 Synthetic SSO Login Monitor
 ============================
-Authenticates the `monitoring` Kanidm account and performs an OAuth2 PKCE
-authorize round-trip against each app's Kanidm client. Pushes pass/fail metrics
-to Prometheus Pushgateway so alerts can fire the moment a login breaks.
+Authenticates the `monitoring` Kanidm account (password + TOTP) and performs
+an OAuth2 PKCE authorize round-trip against each app's Kanidm client. Pushes
+pass/fail metrics to Prometheus Pushgateway so alerts fire the moment a login
+breaks.
 
 What this tests:
 - Kanidm is reachable and the monitoring account is not locked
@@ -19,15 +20,18 @@ Prometheus metrics pushed (job=synthetic_login, per-app grouping):
 - synthetic_login_duration_seconds{app}: wall-clock time for the authorize step
 - Pushgateway auto-adds push_time_seconds{job="synthetic_login"} (dead-man switch)
 
-Variable required in Windmill (homeprod workspace):
-- u/admin/monitoring_kanidm_password (sensitive string)
+Variables required in Windmill (homeprod workspace):
+- u/admin/monitoring_kanidm_password  (sensitive) — account password
+- u/admin/monitoring_kanidm_totp      (sensitive) — base32 TOTP seed from setup
 
 Schedule: every 10 minutes.
 """
 
-import hashlib
 import base64
+import hashlib
+import hmac
 import secrets
+import struct
 import time
 import urllib.parse
 
@@ -146,7 +150,7 @@ APPS = [
 
 
 # ---------------------------------------------------------------------------
-# Kanidm authentication helpers
+# Helpers
 # ---------------------------------------------------------------------------
 
 def _pkce_pair() -> tuple[str, str]:
@@ -158,15 +162,37 @@ def _pkce_pair() -> tuple[str, str]:
     return verifier, challenge
 
 
-def kanidm_auth(password: str) -> tuple[requests.Session, str]:
+def _totp_now(secret_b32: str, interval: int = 30) -> int:
     """
-    Authenticate via Kanidm's step-based API (same flow as check-kanidm-oauth2.sh).
-    Returns (session, bearer_token). Session carries cookies for subsequent authorize calls.
+    Generate the current TOTP code from a base32 seed (RFC 6238 / HMAC-SHA1).
+    Pure stdlib -- no pyotp needed.
+    """
+    key = base64.b32decode(secret_b32.upper().replace(" ", ""))
+    counter = int(time.time()) // interval
+    msg = struct.pack(">Q", counter)
+    mac = hmac.new(key, msg, hashlib.sha1).digest()
+    offset = mac[-1] & 0x0F
+    code = struct.unpack(">I", mac[offset : offset + 4])[0] & 0x7FFF_FFFF
+    return code % 1_000_000
 
-    Steps mirror the shell script pattern:
+
+# ---------------------------------------------------------------------------
+# Kanidm authentication
+# ---------------------------------------------------------------------------
+
+def kanidm_auth(password: str, totp_secret: str) -> tuple[requests.Session, str]:
+    """
+    Authenticate via Kanidm's step-based API with password + TOTP.
+    Returns (session, bearer_token).
+
+    Flow (mirrors check-kanidm-oauth2.sh, extended for MFA):
       POST /v1/auth  {"step": {"init": "<username>"}}
-      POST /v1/auth  {"step": {"begin": "password"}}
-      POST /v1/auth  {"step": {"cred": {"password": "<pw>"}}}  -> .state.success = token
+      POST /v1/auth  {"step": {"begin": "password_mfa"}}
+      POST /v1/auth  {"step": {"cred": {"password": "<pw>"}}}
+        -> if state.success: done (MFA not enforced for this account)
+        -> if state.continue: TOTP required
+      POST /v1/auth  {"step": {"cred": {"totp": <6-digit-int>}}}
+        -> state.success = bearer token
     """
     session = requests.Session()
 
@@ -177,9 +203,11 @@ def kanidm_auth(password: str) -> tuple[requests.Session, str]:
     )
     r1.raise_for_status()
 
+    # Use password_mfa -- accepted by Kanidm for both password-only and
+    # password+TOTP accounts; falls back gracefully if TOTP is not configured.
     r2 = session.post(
         f"{KANIDM_URL}/v1/auth",
-        json={"step": {"begin": "password"}},
+        json={"step": {"begin": "password_mfa"}},
         timeout=10,
     )
     r2.raise_for_status()
@@ -191,10 +219,30 @@ def kanidm_auth(password: str) -> tuple[requests.Session, str]:
     )
     r3.raise_for_status()
 
-    token = r3.json().get("state", {}).get("success")
+    state = r3.json().get("state", {})
+
+    # Password-only path -- MFA not enforced for this account
+    if "success" in state:
+        return session, state["success"]
+
+    # TOTP required
+    if "continue" not in state:
+        raise RuntimeError(
+            f"Kanidm auth: unexpected state after password step: {r3.text[:300]}"
+        )
+
+    code = _totp_now(totp_secret)
+    r4 = session.post(
+        f"{KANIDM_URL}/v1/auth",
+        json={"step": {"cred": {"totp": code}}},
+        timeout=10,
+    )
+    r4.raise_for_status()
+
+    token = r4.json().get("state", {}).get("success")
     if not token:
         raise RuntimeError(
-            f"Kanidm auth failed -- no token in response: {r3.text[:300]}"
+            f"Kanidm TOTP auth failed -- no token after TOTP step: {r4.text[:300]}"
         )
     return session, token
 
@@ -326,11 +374,12 @@ def main() -> dict:
     Raises on any hard failure so Windmill marks the job failed.
     """
     password = wmill.get_variable("u/admin/monitoring_kanidm_password")
+    totp_secret = wmill.get_variable("u/admin/monitoring_kanidm_totp")
 
     # --- Authenticate to Kanidm -------------------------------------------------
     print(f"Authenticating to Kanidm as '{KANIDM_USERNAME}'...")
     try:
-        session, token = kanidm_auth(password)
+        session, token = kanidm_auth(password, totp_secret)
     except Exception as exc:
         print(f"CRITICAL: Kanidm authentication failed: {exc}")
         # Push failure for all apps so Prometheus sees the outage
