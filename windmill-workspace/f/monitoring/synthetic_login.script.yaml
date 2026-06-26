@@ -1,0 +1,6 @@
+summary: Synthetic SSO Login Monitor
+description: ''
+lock: '!inline f/monitoring/synthetic_login.script.lock'
+has_on_behalf_of: false
+kind: script
+schema: null
