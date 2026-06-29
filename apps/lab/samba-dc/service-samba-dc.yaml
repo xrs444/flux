@@ -13,7 +13,7 @@ metadata:
     advertise: bgp
 spec:
   type: LoadBalancer
-  loadBalancerIP: 172.21.0.10
+  loadBalancerIP: 172.21.0.11
   selector:
     app: samba-dc
   ports:

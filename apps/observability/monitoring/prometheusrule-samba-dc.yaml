@@ -38,7 +38,7 @@ spec:
           expr: |
             probe_success{
               job="blackbox-samba-dc",
-              instance="172.21.0.10:389"
+              instance="172.21.0.11:389"
             } == 0
           for: 5m
           labels:
@@ -47,6 +47,6 @@ spec:
           annotations:
             summary: "Samba AD DC LDAP unreachable"
             description: >
-              TCP probe to Samba AD DC LDAP (172.21.0.10:389) has been failing for
+              TCP probe to Samba AD DC LDAP (172.21.0.11:389) has been failing for
               5 minutes. This means domain authentication for lab systems will fail
               even if the pod appears healthy.

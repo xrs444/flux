@@ -9,7 +9,7 @@ data:
   # Full DNS domain / Kerberos realm — image derives NetBIOS name as first label ("AD")
   DOMAIN: "AD.LAB.XRS444.NET"
   # This DC's LoadBalancer IP — written into smb.conf and DNS records
-  HOSTIP: "172.21.0.10"
+  HOSTIP: "172.21.0.11"
   # Upstream DNS forwarder for non-AD queries (Firewalla / CoreDNS)
   DNSFORWARDER: "172.18.10.250"
   # Allow plaintext LDAP (needed for Nutanix LDAP bind without LDAPS)
