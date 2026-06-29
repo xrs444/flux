@@ -1,0 +1,35 @@
+---
+# ServiceAccount for the samba-provision CronJob
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: samba-provision
+  namespace: samba-dc
+---
+# Role: allows the CronJob to get pods and exec into them (to run provision.sh)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: samba-provision
+  namespace: samba-dc
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: samba-provision
+  namespace: samba-dc
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: samba-provision
+subjects:
+  - kind: ServiceAccount
+    name: samba-provision
+    namespace: samba-dc

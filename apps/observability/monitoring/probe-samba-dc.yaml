@@ -1,0 +1,25 @@
+---
+# Blackbox TCP probe for Samba AD DC LDAP (172.21.0.10:389).
+# Uses the existing tcp_connect module in configmap-blackbox.yaml.
+# The probe result feeds into the SambaDCLdapUnreachable alert rule.
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: samba-dc-ldap
+  namespace: monitoring
+  labels:
+    app: blackbox
+spec:
+  interval: 1m
+  scrapeTimeout: 10s
+  module: tcp_connect
+  prober:
+    url: blackbox:9115
+    scheme: http
+    path: /probe
+  targets:
+    staticConfig:
+      static:
+        - 172.21.0.10:389
+      labels:
+        job: blackbox-samba-dc

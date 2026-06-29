@@ -1,0 +1,79 @@
+---
+# External LoadBalancer service for the Samba AD DC.
+# Fixed IP 172.21.0.10 — configure lab systems (Nutanix, etc.) to use this IP
+# for both DNS (zone: ad.lab.xrs444.net) and LDAP authentication.
+# Firewalla stub zone: *.ad.lab.xrs444.net → 172.21.0.10
+apiVersion: v1
+kind: Service
+metadata:
+  name: samba-dc
+  namespace: samba-dc
+  labels:
+    app: samba-dc
+    advertise: bgp
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 172.21.0.10
+  selector:
+    app: samba-dc
+  ports:
+    # DNS — UDP first, then TCP fallback for large responses
+    - name: dns-udp
+      port: 53
+      targetPort: 53
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: 53
+      protocol: TCP
+    # Kerberos
+    - name: kerberos-udp
+      port: 88
+      targetPort: 88
+      protocol: UDP
+    - name: kerberos-tcp
+      port: 88
+      targetPort: 88
+      protocol: TCP
+    # RPC endpoint mapper
+    - name: rpc
+      port: 135
+      targetPort: 135
+      protocol: TCP
+    # LDAP (plaintext — needed for Nutanix bind)
+    - name: ldap
+      port: 389
+      targetPort: 389
+      protocol: TCP
+    - name: ldap-udp
+      port: 389
+      targetPort: 389
+      protocol: UDP
+    # SMB — SYSVOL and NETLOGON shares (required for domain join)
+    - name: smb
+      port: 445
+      targetPort: 445
+      protocol: TCP
+    # Kerberos password change
+    - name: kpasswd-tcp
+      port: 464
+      targetPort: 464
+      protocol: TCP
+    - name: kpasswd-udp
+      port: 464
+      targetPort: 464
+      protocol: UDP
+    # LDAPS (TLS)
+    - name: ldaps
+      port: 636
+      targetPort: 636
+      protocol: TCP
+    # Global Catalog
+    - name: gc
+      port: 3268
+      targetPort: 3268
+      protocol: TCP
+    - name: gcs
+      port: 3269
+      targetPort: 3269
+      protocol: TCP

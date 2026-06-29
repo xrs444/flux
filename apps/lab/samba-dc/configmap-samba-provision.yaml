@@ -1,0 +1,98 @@
+---
+# Provision script executed inside the samba-dc-0 pod by the CronJob.
+# Reads user definitions from /provision/users.txt and applies them
+# idempotently via samba-tool against the local Samba DC.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: samba-provision-scripts
+  namespace: samba-dc
+data:
+  provision.sh: |
+    #!/bin/bash
+    set -euo pipefail
+
+    echo "=== Samba DC Provisioner ==="
+
+    # Wait for Samba to be accepting LDAP connections
+    echo "Waiting for Samba DC (LDAP on 127.0.0.1:389)..."
+    for i in $(seq 1 60); do
+      if samba-tool domain info 127.0.0.1 >/dev/null 2>&1; then
+        echo "DC is ready."
+        break
+      fi
+      [ "$i" -eq 60 ] && { echo "ERROR: DC not ready after 5m"; exit 1; }
+      sleep 5
+    done
+
+    # Helper: create or update a user account
+    ensure_user() {
+      local username="$1"
+      local password="$2"
+      if samba-tool user show "$username" 2>/dev/null | grep -q "^name: "; then
+        echo "[user] $username exists — updating password"
+        samba-tool user setpassword "$username" --newpassword="$password"
+      else
+        echo "[user] creating $username"
+        samba-tool user create "$username" "$password" --use-username-as-cn
+        samba-tool user setexpiry "$username" --noexpiry
+      fi
+    }
+
+    # Helper: create a group if it doesn't exist
+    ensure_group() {
+      local groupname="$1"
+      local description="${2:-}"
+      if samba-tool group show "$groupname" 2>/dev/null | grep -q "^name: "; then
+        echo "[group] $groupname exists"
+      else
+        echo "[group] creating $groupname"
+        if [ -n "$description" ]; then
+          samba-tool group add "$groupname" --description="$description"
+        else
+          samba-tool group add "$groupname"
+        fi
+      fi
+    }
+
+    # Helper: add user to group (idempotent — ignores "already a member" error)
+    add_to_group() {
+      local username="$1"
+      local groupname="$2"
+      samba-tool group addmembers "$groupname" "$username" 2>/dev/null && \
+        echo "[membership] $username → $groupname" || \
+        echo "[membership] $username already in $groupname"
+    }
+
+    # ── Groups ─────────────────────────────────────────────────────────────
+    echo "--- Groups ---"
+    while IFS='|' read -r groupname description; do
+      [ -z "$groupname" ] && continue
+      [[ "$groupname" =~ ^#.* ]] && continue
+      ensure_group "$groupname" "$description"
+    done < /provision/groups.txt
+
+    # ── Users ──────────────────────────────────────────────────────────────
+    echo "--- Users ---"
+    while IFS= read -r username; do
+      [ -z "$username" ] && continue
+      [[ "$username" =~ ^#.* ]] && continue
+      # Password key: <username>-password (hyphen, not underscore)
+      pass_var="${username//-/_}_PASSWORD"
+      password="${!pass_var:-}"
+      if [ -z "$password" ]; then
+        echo "[user] WARNING: no password env var ${pass_var} for $username — skipping"
+        continue
+      fi
+      ensure_user "$username" "$password"
+    done < /provision/users.txt
+
+    # ── Group memberships ──────────────────────────────────────────────────
+    echo "--- Memberships ---"
+    while IFS='|' read -r username groupname; do
+      [ -z "$username" ] && continue
+      [[ "$username" =~ ^#.* ]] && continue
+      add_to_group "$username" "$groupname"
+    done < /provision/memberships.txt
+
+    echo "=== Provisioning complete ==="

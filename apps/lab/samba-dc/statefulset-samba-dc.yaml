@@ -1,0 +1,135 @@
+---
+# Samba Active Directory Domain Controller
+# Domain: AD.LAB.XRS444.NET  |  NetBIOS: LAB  |  DC hostname: dc1
+# Image: nowsci/samba-domain — handles first-run `samba-tool domain provision`
+#   automatically when /var/lib/samba/private/sam.ldb does not exist.
+# Data persisted in Longhorn PVC; the provision script is mounted read-only
+# from ConfigMap and executed by the CronJob (see cronjob-samba-provision.yaml).
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: samba-dc
+  namespace: samba-dc
+  labels:
+    app: samba-dc
+spec:
+  serviceName: samba-dc-headless
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: samba-dc
+  template:
+    metadata:
+      labels:
+        app: samba-dc
+    spec:
+      # DC hostname must be stable and short; used in Kerberos keytabs + DNS SRV records
+      hostname: dc1
+      subdomain: samba-dc-headless
+      containers:
+        - name: samba-dc
+          # Pin to a specific tag before production use; :latest used here for initial deploy
+          image: nowsci/samba-domain:latest
+          envFrom:
+            - configMapRef:
+                name: samba-dc-config
+          env:
+            - name: DOMAINPASS
+              valueFrom:
+                secretKeyRef:
+                  name: samba-dc-secrets
+                  key: admin-password
+          ports:
+            - name: dns-tcp
+              containerPort: 53
+              protocol: TCP
+            - name: dns-udp
+              containerPort: 53
+              protocol: UDP
+            - name: krb-tcp
+              containerPort: 88
+              protocol: TCP
+            - name: krb-udp
+              containerPort: 88
+              protocol: UDP
+            - name: rpc
+              containerPort: 135
+              protocol: TCP
+            - name: ldap
+              containerPort: 389
+              protocol: TCP
+            - name: ldap-udp
+              containerPort: 389
+              protocol: UDP
+            - name: smb
+              containerPort: 445
+              protocol: TCP
+            - name: kpasswd-tcp
+              containerPort: 464
+              protocol: TCP
+            - name: kpasswd-udp
+              containerPort: 464
+              protocol: UDP
+            - name: ldaps
+              containerPort: 636
+              protocol: TCP
+            - name: gc
+              containerPort: 3268
+              protocol: TCP
+            - name: gcs
+              containerPort: 3269
+              protocol: TCP
+          volumeMounts:
+            - name: samba-data
+              mountPath: /var/lib/samba
+            - name: provision-scripts
+              mountPath: /provision
+            - name: provision-users
+              mountPath: /provision/users.txt
+              subPath: users.txt
+            - name: provision-users
+              mountPath: /provision/groups.txt
+              subPath: groups.txt
+            - name: provision-users
+              mountPath: /provision/memberships.txt
+              subPath: memberships.txt
+          # Allow enough time for first-run domain provisioning (~60s typical)
+          startupProbe:
+            tcpSocket:
+              port: 389
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            tcpSocket:
+              port: 389
+            initialDelaySeconds: 0
+            periodSeconds: 30
+            failureThreshold: 5
+          readinessProbe:
+            tcpSocket:
+              port: 389
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          securityContext:
+            privileged: true
+      volumes:
+        - name: samba-data
+          persistentVolumeClaim:
+            claimName: samba-dc-data
+        - name: provision-scripts
+          configMap:
+            name: samba-provision-scripts
+            defaultMode: 0755
+        - name: provision-users
+          configMap:
+            name: samba-users

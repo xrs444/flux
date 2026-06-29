@@ -1,0 +1,24 @@
+---
+# Samba Active Directory Domain Controller for ad.lab.xrs444.net
+# LoadBalancer IP: 172.21.0.10  |  Realm: AD.LAB.XRS444.NET  |  NetBIOS: LAB
+#
+# Pre-deploy checklist:
+#   1. Seal secret-samba-dc.yaml → sealedsecret-samba-dc.yaml (see file for instructions)
+#   2. Commit sealedsecret-samba-dc.yaml and remove secret-samba-dc.yaml
+#   3. Add Firewalla dnsmasq stub: server=/ad.lab.xrs444.net/172.21.0.10
+#   4. After first deploy, run: kubectl create job -n samba-dc --from=cronjob/samba-provision samba-provision-initial
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+  - pvc-samba-dc-data.yaml
+  - configmap-samba-dc.yaml
+  - configmap-samba-users.yaml
+  - configmap-samba-provision.yaml
+  - sealedsecret-samba-dc.yaml
+  - statefulset-samba-dc.yaml
+  - service-samba-dc.yaml
+  - service-samba-dc-headless.yaml
+  - rbac-provision.yaml
+  - cronjob-samba-provision.yaml

@@ -23,6 +23,9 @@ resources:
   - ingressroute-alertmanager.yaml
   # Synthetic SSO login monitoring (PrometheusRule + dead-man alerts)
   - prometheusrule-synthetic-login.yaml
+  # Samba AD DC health (pod + LDAP reachability)
+  - probe-samba-dc.yaml
+  - prometheusrule-samba-dc.yaml
   # Sealed Secrets (must be created/sealed before deploying)
   - sealedsecret-grafana-admin.yaml
   - sealedsecret-grafana-oauth.yaml

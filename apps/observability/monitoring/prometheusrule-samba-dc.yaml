@@ -1,0 +1,52 @@
+---
+# Alerts for the Samba AD DC (ad.lab.xrs444.net).
+# Uses kube-state-metrics (pod health) + the existing blackbox tcp_connect module
+# (end-to-end LDAP reachability from within the cluster).
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: samba-dc
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: samba-dc
+      interval: 1m
+      rules:
+        # Pod-level health: fires if the StatefulSet has no ready replicas
+        - alert: SambaDCNotRunning
+          expr: |
+            kube_statefulset_status_replicas_ready{
+              namespace="samba-dc",
+              statefulset="samba-dc"
+            } < 1
+          for: 5m
+          labels:
+            severity: critical
+            category: lab
+          annotations:
+            summary: "Samba AD DC pod is not running"
+            description: >
+              The samba-dc StatefulSet in namespace samba-dc has {{ $value }} ready
+              replicas. Lab domain authentication (Nutanix, etc.) will be unavailable.
+
+        # End-to-end LDAP reachability via blackbox exporter
+        # Requires the Probe CR below — comment out if Probe CRD is not available
+        - alert: SambaDCLdapUnreachable
+          expr: |
+            probe_success{
+              job="blackbox-samba-dc",
+              instance="172.21.0.10:389"
+            } == 0
+          for: 5m
+          labels:
+            severity: critical
+            category: lab
+          annotations:
+            summary: "Samba AD DC LDAP unreachable"
+            description: >
+              TCP probe to Samba AD DC LDAP (172.21.0.10:389) has been failing for
+              5 minutes. This means domain authentication for lab systems will fail
+              even if the pod appears healthy.

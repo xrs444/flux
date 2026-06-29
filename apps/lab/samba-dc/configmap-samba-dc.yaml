@@ -1,0 +1,18 @@
+---
+# Non-secret domain configuration for nowsci/samba-domain
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: samba-dc-config
+  namespace: samba-dc
+data:
+  # Kerberos realm (uppercase, full DNS name of the AD domain)
+  REALM: "AD.LAB.XRS444.NET"
+  # NetBIOS short domain name (uppercase, ≤15 chars)
+  DOMAIN: "LAB"
+  # This DC's LoadBalancer IP — written into smb.conf and DNS records
+  HOSTIP: "172.21.0.10"
+  # Upstream DNS forwarder for non-AD queries (Firewalla / CoreDNS)
+  DNSFORWARDER: "172.18.10.250"
+  # Allow plaintext LDAP (needed for Nutanix LDAP bind without LDAPS)
+  LDAP_ALLOW_INSECURE: "true"

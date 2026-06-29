@@ -1,0 +1,25 @@
+---
+# Declarative user and group definitions for the LAB domain.
+# Edit this ConfigMap to add/remove accounts.
+# Run the samba-provision CronJob (or trigger it manually) to apply:
+#   kubectl create job -n samba-dc --from=cronjob/samba-provision samba-provision-manual
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: samba-users
+  namespace: samba-dc
+data:
+  # List of service account usernames whose passwords come from samba-dc-secrets.
+  # Format: one username per line. Each must have a corresponding key in the Secret:
+  #   <username>-password  →  samba-dc-secrets key
+  users.txt: |
+    nutanix-bind
+
+  # List of custom groups to create (beyond default AD groups).
+  # Format: groupname|description
+  groups.txt: |
+    NutanixAdmins|Nutanix cluster administrators
+
+  # Group membership: username|groupname  (one per line)
+  memberships.txt: |
+    nutanix-bind|Domain Users

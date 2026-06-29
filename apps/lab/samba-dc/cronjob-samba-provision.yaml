@@ -1,0 +1,71 @@
+---
+# Declarative account provisioner for the Samba AD DC.
+#
+# Runs daily at 02:00 to reconcile users/groups from ConfigMap samba-users.
+# Trigger on-demand after editing the ConfigMap:
+#   kubectl create job -n samba-dc --from=cronjob/samba-provision samba-provision-manual
+#
+# How it works:
+#   1. Waits for samba-dc-0 pod to be ready
+#   2. kubectl exec into samba-dc-0 and runs /provision/provision.sh
+#   3. Passes service account passwords as env vars into the exec call
+#
+# Password env var naming convention (from samba-dc-secrets Secret):
+#   username "nutanix-bind"  →  key "nutanix-bind-password"
+#   Inside provision.sh the key is looked up as ${nutanix_bind_PASSWORD}
+#   (hyphens converted to underscores, uppercased)
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: samba-provision
+  namespace: samba-dc
+  labels:
+    app: samba-provision
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: samba-provision
+          restartPolicy: OnFailure
+          containers:
+            - name: provision
+              image: bitnami/kubectl:latest
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -euo pipefail
+
+                  echo "Waiting for samba-dc-0 to be ready..."
+                  kubectl wait pod/samba-dc-0 \
+                    -n samba-dc \
+                    --for=condition=ready \
+                    --timeout=180s
+
+                  echo "Running provision script inside samba-dc-0..."
+                  kubectl exec samba-dc-0 -n samba-dc -- env \
+                    "nutanix_bind_PASSWORD=${NUTANIX_BIND_PASSWORD}" \
+                    bash /provision/provision.sh
+
+                  echo "Provisioning job complete."
+              env:
+                # Add one env var per service account in samba-users ConfigMap.
+                # Naming: <username with hyphens replaced by underscores>_PASSWORD
+                - name: NUTANIX_BIND_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: samba-dc-secrets
+                      key: nutanix-bind-password
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  cpu: 200m
+                  memory: 128Mi

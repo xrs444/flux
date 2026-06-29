@@ -1,0 +1,19 @@
+---
+# Headless service required by the StatefulSet for stable pod DNS.
+# Gives the DC pod the in-cluster hostname: dc1.samba-dc-headless.samba-dc.svc.cluster.local
+apiVersion: v1
+kind: Service
+metadata:
+  name: samba-dc-headless
+  namespace: samba-dc
+  labels:
+    app: samba-dc
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: samba-dc
+  ports:
+    - name: ldap
+      port: 389
+      protocol: TCP

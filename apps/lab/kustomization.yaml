@@ -1,0 +1,7 @@
+---
+# Lab infrastructure: Samba AD DC, and future lab-specific services
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./samba-dc

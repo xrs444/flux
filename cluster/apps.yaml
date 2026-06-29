@@ -1,5 +1,23 @@
 # yamllint disable rule:line-length
 ---
+# Lab infrastructure: Samba AD DC (ad.lab.xrs444.net) and future lab services
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-lab
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: infra-configs
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/lab
+  wait: true
+  timeout: 5m0s
+  prune: true
+---
 # Core cluster utilities: HelmRepositories, kube-system jobs, metrics, spegel, storage PVCs
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
