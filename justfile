@@ -316,3 +316,47 @@ _migrate-to-retain DRY_RUN:
     else
         echo -e "${YELLOW}[DRY RUN]${NC} Would migrate $count PVCs"
     fi
+
+# Show current A records for a lab DNS name (e.g. just dns-show-a xntnx.lab.xrs444.net.)
+dns-show-a NAME:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config/kubeconfig}"
+    PDNS_KEY=$(kubectl --kubeconfig "$KUBECONFIG" get secret -n xlab-mgmt powerdns-api-key -o jsonpath='{.data.api-key}' | base64 -d)
+    kubectl --kubeconfig "$KUBECONFIG" port-forward -n xlab-mgmt svc/powerdns-api 18081:8081 &
+    PF_PID=$!
+    trap "kill $PF_PID 2>/dev/null" EXIT
+    sleep 1
+    curl -sf http://localhost:18081/api/v1/servers/localhost/zones/lab.xrs444.net. \
+      -H "X-API-Key: $PDNS_KEY" \
+      | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+hits = [r for r in data.get('rrsets', []) if r['name'] == '{{NAME}}' and r['type'] == 'A']
+if not hits:
+    print('No A record found for {{NAME}}')
+else:
+    for rec in hits[0]['records']:
+        print(rec['content'])
+"
+
+# Set A records for a lab DNS name — replaces all existing IPs (e.g. just dns-set-a xntnx.lab.xrs444.net. 172.25.1.100 172.25.1.11)
+dns-set-a NAME +IPS:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config/kubeconfig}"
+    PDNS_KEY=$(kubectl --kubeconfig "$KUBECONFIG" get secret -n xlab-mgmt powerdns-api-key -o jsonpath='{.data.api-key}' | base64 -d)
+    kubectl --kubeconfig "$KUBECONFIG" port-forward -n xlab-mgmt svc/powerdns-api 18081:8081 &
+    PF_PID=$!
+    trap "kill $PF_PID 2>/dev/null" EXIT
+    sleep 1
+    RECORDS=$(python3 -c "
+import json, sys
+ips = '{{IPS}}'.split()
+print(json.dumps([{'content': ip, 'disabled': False} for ip in ips]))
+")
+    curl -sf -X PATCH http://localhost:18081/api/v1/servers/localhost/zones/lab.xrs444.net. \
+      -H "X-API-Key: $PDNS_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"rrsets\":[{\"name\":\"{{NAME}}\",\"type\":\"A\",\"ttl\":300,\"changetype\":\"REPLACE\",\"records\":$RECORDS}]}"
+    echo "Updated {{NAME}} → {{IPS}}"

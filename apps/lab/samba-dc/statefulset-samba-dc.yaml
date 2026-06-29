@@ -85,15 +85,9 @@ spec:
               mountPath: /var/lib/samba
             - name: provision-scripts
               mountPath: /provision
+            # Users/groups mounted separately — can't subPath into an existing mountpoint
             - name: provision-users
-              mountPath: /provision/users.txt
-              subPath: users.txt
-            - name: provision-users
-              mountPath: /provision/groups.txt
-              subPath: groups.txt
-            - name: provision-users
-              mountPath: /provision/memberships.txt
-              subPath: memberships.txt
+              mountPath: /provision-users
           # Allow enough time for first-run domain provisioning (~60s typical)
           startupProbe:
             tcpSocket:

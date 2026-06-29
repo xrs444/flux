@@ -70,7 +70,7 @@ data:
       [ -z "$groupname" ] && continue
       [[ "$groupname" =~ ^#.* ]] && continue
       ensure_group "$groupname" "$description"
-    done < /provision/groups.txt
+    done < /provision-users/groups.txt
 
     # ── Users ──────────────────────────────────────────────────────────────
     echo "--- Users ---"
@@ -85,7 +85,7 @@ data:
         continue
       fi
       ensure_user "$username" "$password"
-    done < /provision/users.txt
+    done < /provision-users/users.txt
 
     # ── Group memberships ──────────────────────────────────────────────────
     echo "--- Memberships ---"
@@ -93,6 +93,6 @@ data:
       [ -z "$username" ] && continue
       [[ "$username" =~ ^#.* ]] && continue
       add_to_group "$username" "$groupname"
-    done < /provision/memberships.txt
+    done < /provision-users/memberships.txt
 
     echo "=== Provisioning complete ==="
