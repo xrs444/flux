@@ -31,6 +31,39 @@ data:
           ]
         },
         {
+          "name": "xntnx1-ilo.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 300,
+          "records": [
+            {
+              "content": "172.25.4.1",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "xntnx2-ilo.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 300,
+          "records": [
+            {
+              "content": "172.25.4.2",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "xntnx3-ilo.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 300,
+          "records": [
+            {
+              "content": "172.25.4.3",
+              "disabled": false
+            }
+          ]
+        },
+        {
           "name": "lab.xrs444.net.",
           "type": "NS",
           "ttl": 3600,
