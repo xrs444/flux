@@ -101,9 +101,14 @@ spec:
                     # Wait for Samba to write smb.conf and start
                     until [ -f /etc/samba/smb.conf ]; do sleep 2; done
                     sleep 5
-                    # Inject interfaces setting so samba_dnsupdate registers only HOSTIP
+                    # Inject settings that samba's startup script resets on each restart
                     if ! grep -q "^[[:space:]]*interfaces" /etc/samba/smb.conf; then
-                      sed -i "/^\[global\]/a\\\\tinterfaces = lo ${HOSTIP}\n\tbind interfaces only = no" /etc/samba/smb.conf
+                      sed -i "/^\[global\]/a\\\tinterfaces = lo ${HOSTIP}\n\tbind interfaces only = no" /etc/samba/smb.conf
+                    fi
+                    # Allow simple LDAP binds — Samba AD blocks plain-text auth by default
+                    # even over TLS; this is required for OpenRSAT and Nutanix LDAP bind
+                    if ! grep -q "ldap server require strong auth" /etc/samba/smb.conf; then
+                      sed -i "/^\[global\]/a\\\tldap server require strong auth = no" /etc/samba/smb.conf
                     fi
                     # Wait for LDAP to be up, then purge pod-IP DNS records
                     POD_IP=$(hostname -I | awk '{print $1}')
