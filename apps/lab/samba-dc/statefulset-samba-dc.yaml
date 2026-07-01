@@ -88,6 +88,29 @@ spec:
             # Users/groups mounted separately — can't subPath into an existing mountpoint
             - name: provision-users
               mountPath: /provision-users
+          # After Samba starts, patch smb.conf so samba_dnsupdate only registers
+          # the LB IP (HOSTIP) instead of the pod's eth0 IP, which is not routable
+          # externally. Then delete any stale pod-IP DNS records.
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/bash
+                  - -c
+                  - |
+                    # Wait for Samba to write smb.conf and start
+                    until [ -f /etc/samba/smb.conf ]; do sleep 2; done
+                    sleep 5
+                    # Inject interfaces setting so samba_dnsupdate registers only HOSTIP
+                    if ! grep -q "^[[:space:]]*interfaces" /etc/samba/smb.conf; then
+                      sed -i "/^\[global\]/a\\\\tinterfaces = lo ${HOSTIP}\n\tbind interfaces only = no" /etc/samba/smb.conf
+                    fi
+                    # Wait for LDAP to be up, then purge pod-IP DNS records
+                    POD_IP=$(hostname -I | awk '{print $1}')
+                    until samba-tool domain info 127.0.0.1 >/dev/null 2>&1; do sleep 5; done
+                    sleep 5
+                    samba-tool dns delete 127.0.0.1 "$REALM" @ A "$POD_IP" 2>/dev/null || true
+                    samba-tool dns delete 127.0.0.1 "$REALM" "$(hostname -s)" A "$POD_IP" 2>/dev/null || true
           # Allow enough time for first-run domain provisioning (~60s typical)
           startupProbe:
             tcpSocket:
