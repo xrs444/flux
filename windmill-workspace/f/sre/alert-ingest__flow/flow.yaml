@@ -1,0 +1,157 @@
+summary: Alertmanager webhook entry point — raw ntfy immediately, then
+  deterministic routing to runbooks
+description: >-
+  Phase A alert pipeline entry point.
+
+
+  Invariants (from plan §6.2):
+
+  1. Human gets raw ntfy notification BEFORE any LLM enrichment — step 1 is
+  unconditional.
+
+  2. Deterministic label matching wins over LLM routing.
+
+  3. No autonomous execution — runbooks require ntfy approval tap.
+
+  4. LLM enrichment (f/sre/hermes-enrich) is stubbed; wires in Phase C.
+
+
+  ntfy topics: alerts-critical (severity=critical), alerts-warning (default
+  firing), alerts-resolved.
+
+  ntfy token: stored in Windmill variable f/sre/ntfy_token (set manually after
+  deploy).
+value:
+  modules:
+    - id: post_ntfy
+      summary: Post raw ntfy notification immediately — unconditional
+      value:
+        type: rawscript
+        content: '!inline post_raw_ntfy_notification_immediately_—_unconditional.ts'
+        input_transforms:
+          ntfy_base_url:
+            type: static
+            value: https://ntfy.xrs444.net
+          ntfy_token:
+            type: static
+            value: $var:f/sre/ntfy_token
+          payload:
+            type: javascript
+            expr: flow_input
+        lock: '!inline post_raw_ntfy_notification_immediately_—_unconditional.lock'
+        language: bun
+    - id: route_alert
+      summary: Deterministic routing — known patterns → runbook stubs; unknown → Phase
+        C placeholder
+      value:
+        type: branchone
+        branches:
+          - summary: Resolved — acknowledge, no runbook
+            modules:
+              - id: resolved_ack
+                value:
+                  type: rawscript
+                  content: '!inline resolved_ack.ts'
+                  input_transforms: {}
+                  lock: '!inline resolved_ack.lock'
+                  language: bun
+            expr: flow_input.status === 'resolved'
+            parallel: true
+            skip_failure: true
+          - summary: Arr queue stuck → restart-arr-queue runbook
+            modules:
+              - id: runbook_arr_stub
+                value:
+                  type: rawscript
+                  content: '!inline runbook_arr_stub.ts'
+                  input_transforms:
+                    payload:
+                      type: javascript
+                      expr: flow_input
+                  lock: '!inline runbook_arr_stub.lock'
+                  language: bun
+            expr: "['SonarrQueueStuck','RadarrQueueStuck','LidarrQueueStuck','ArrQueueStuck\
+              '].some(n => (flow_input.commonLabels?.alertname ??
+              '').includes(n) || (flow_input.alerts?.[0]?.labels?.alertname ??
+              '').includes(n))"
+            parallel: true
+            skip_failure: true
+          - summary: Backup failure → borg-check-repo runbook
+            modules:
+              - id: runbook_backup_stub
+                value:
+                  type: rawscript
+                  content: '!inline runbook_backup_stub.ts'
+                  input_transforms:
+                    payload:
+                      type: javascript
+                      expr: flow_input
+                  lock: '!inline runbook_backup_stub.lock'
+                  language: bun
+            expr: "['BackupFailed','BackupMissed','BackupStaleTooLong','BorgRepoIntegrityFa\
+              il','ResticFailed','OfflineBackupFailed'].some(n =>
+              (flow_input.commonLabels?.alertname ?? '').includes(n) ||
+              (flow_input.alerts?.[0]?.labels?.alertname ?? '').includes(n))"
+            parallel: true
+            skip_failure: true
+        default:
+          - id: no_runbook_match
+            value:
+              type: rawscript
+              content: '!inline no_runbook_match.ts'
+              input_transforms:
+                payload:
+                  type: javascript
+                  expr: flow_input
+              lock: '!inline no_runbook_match.lock'
+              language: bun
+has_on_behalf_of: false
+schema:
+  $schema: http://json-schema.org/draft-07/schema#
+  type: object
+  description: Alertmanager v4 webhook payload
+  properties:
+    version:
+      type: string
+    alerts:
+      type: array
+      items:
+        type: object
+        properties:
+          annotations:
+            type: object
+          endsAt:
+            type: string
+          fingerprint:
+            type: string
+          generatorURL:
+            type: string
+          labels:
+            type: object
+          startsAt:
+            type: string
+          status:
+            type: string
+    commonAnnotations:
+      type: object
+    commonLabels:
+      type: object
+    externalURL:
+      type: string
+    groupKey:
+      type: string
+    groupLabels:
+      type: object
+    receiver:
+      type: string
+    status:
+      type: string
+      enum:
+        - firing
+        - resolved
+    truncatedAlerts:
+      type: integer
+  required:
+    - version
+    - status
+    - alerts
