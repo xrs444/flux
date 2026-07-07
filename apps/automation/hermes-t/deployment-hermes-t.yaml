@@ -23,7 +23,7 @@ spec:
         fsGroup: 10000
       containers:
         - name: hermes-t
-          image: nousresearch/hermes-agent:latest
+          image: nousresearch/hermes-agent:v2026.7.1
           command: ["hermes", "gateway", "run"]
           ports:
             - containerPort: 8642

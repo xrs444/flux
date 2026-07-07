@@ -23,7 +23,7 @@ spec:
         fsGroup: 1001
       initContainers:
         - name: fix-permissions
-          image: busybox:latest
+          image: busybox:1.38.0
           command:
             - sh
             - -c
@@ -48,7 +48,7 @@ spec:
             runAsNonRoot: false
       containers:
         - name: borgwarehouse
-          image: borgwarehouse/borgwarehouse:latest
+          image: borgwarehouse/borgwarehouse:v3.5.0
           ports:
             - containerPort: 3000
               name: http

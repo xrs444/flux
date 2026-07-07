@@ -22,7 +22,7 @@ spec:
       initContainers:
         # Substitute @SNMP_COMMUNITY@ in the template using the Secret value
         - name: generate-snmp-config
-          image: busybox:latest
+          image: busybox:1.38.0
           command:
             - sh
             - -c
@@ -42,7 +42,7 @@ spec:
                   key: community
       containers:
         - name: snmp-exporter
-          image: prom/snmp-exporter:latest
+          image: prom/snmp-exporter:v0.30.1
           args:
             - --config.file=/etc/snmp/snmp.yml
           ports:

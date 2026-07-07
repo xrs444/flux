@@ -24,7 +24,7 @@ spec:
         runAsUser: 65534
       containers:
         - name: blackbox-exporter
-          image: prom/blackbox-exporter:latest
+          image: prom/blackbox-exporter:v0.28.0
           args:
             - --config.file=/etc/blackbox/blackbox.yml
           ports:

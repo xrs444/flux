@@ -28,7 +28,7 @@ spec:
                       - v-k8s-xsvr3
       containers:
         - name: lidarr
-          image: linuxserver/lidarr:latest
+          image: linuxserver/lidarr:2.10.3.4602-ls38
           ports:
             - containerPort: 8686
               name: http
@@ -93,7 +93,7 @@ spec:
               cpu: 2000m
               memory: 1Gi
         - name: exportarr
-          image: ghcr.io/onedr0p/exportarr:latest
+          image: ghcr.io/onedr0p/exportarr:v2.3.0
           args: ["lidarr"]
           ports:
             - containerPort: 9709

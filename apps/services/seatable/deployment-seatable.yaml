@@ -22,7 +22,7 @@ spec:
     spec:
       initContainers:
         - name: seatable-config
-          image: busybox:latest
+          image: busybox:1.38.0
           command:
             - sh
             - -c
@@ -68,7 +68,7 @@ spec:
               mountPath: /config-templates
       containers:
         - name: seatable
-          image: seatable/seatable-enterprise:latest
+          image: seatable/seatable-enterprise:6.1.8
           ports:
             - containerPort: 80
               name: http

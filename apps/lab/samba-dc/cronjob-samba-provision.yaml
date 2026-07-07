@@ -35,7 +35,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: provision
-              image: bitnami/kubectl:latest
+              image: registry.k8s.io/kubectl:v1.34.2
               command:
                 - /bin/bash
                 - -c

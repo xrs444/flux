@@ -22,7 +22,7 @@ spec:
       containers:
         - name: vikunja
           # Unified image since v0.24; single container serves API + frontend.
-          image: vikunja/vikunja:latest
+          image: vikunja/vikunja:2.3.0
           ports:
             - containerPort: 3456
               name: http

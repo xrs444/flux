@@ -32,7 +32,7 @@ spec:
                       - v-k8s-xsvr3
       containers:
         - name: linkwarden
-          image: ghcr.io/linkwarden/linkwarden:latest
+          image: ghcr.io/linkwarden/linkwarden:v2.14.1
           ports:
             - containerPort: 3000
               name: http

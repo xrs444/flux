@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: radarr
-          image: linuxserver/radarr:latest
+          image: linuxserver/radarr:6.2.1.10461-ls308
           ports:
             - containerPort: 7878
               name: http
@@ -83,7 +83,7 @@ spec:
               cpu: 2000m
               memory: 1Gi
         - name: exportarr
-          image: ghcr.io/onedr0p/exportarr:latest
+          image: ghcr.io/onedr0p/exportarr:v2.3.0
           args: ["radarr"]
           ports:
             - containerPort: 9708

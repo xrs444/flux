@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: tdarr
-          image: ghcr.io/haveagitgat/tdarr:latest
+          image: ghcr.io/haveagitgat/tdarr:2.82.02
           imagePullPolicy: IfNotPresent
           ports:
             - name: web

@@ -30,7 +30,7 @@ spec:
       containers:
         - name: samba-dc
           # Pin to a specific tag before production use; :latest used here for initial deploy
-          image: nowsci/samba-domain:latest
+          image: nowsci/samba-domain:20260701025204
           envFrom:
             - configMapRef:
                 name: samba-dc-config
