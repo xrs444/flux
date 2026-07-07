@@ -16,7 +16,7 @@ resources:
   - deployment-mcp-prometheus.yaml
   - service-mcp-prometheus.yaml
   # mcp-loki (backed by grafana/mcp-grafana --enabled-tools=loki)
-  - sealedsecret-mcp-grafana-credentials.yaml
+  # grafana-admin-secret is reflected from monitoring namespace by reflector
   - deployment-mcp-loki.yaml
   - service-mcp-loki.yaml
   # mcp-kubernetes (read-only, RBAC-enforced)

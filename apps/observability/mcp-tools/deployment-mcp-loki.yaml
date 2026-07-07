@@ -54,11 +54,16 @@ spec:
           env:
             - name: GRAFANA_URL
               value: "http://kube-prometheus-stack-grafana.monitoring.svc.cluster.local"
-            - name: GRAFANA_API_KEY
+            - name: GRAFANA_USER
               valueFrom:
                 secretKeyRef:
-                  name: mcp-grafana-credentials
-                  key: api-key
+                  name: grafana-admin-secret
+                  key: admin-user
+            - name: GRAFANA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-admin-secret
+                  key: admin-password
           resources:
             requests:
               cpu: 25m
