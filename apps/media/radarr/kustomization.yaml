@@ -6,6 +6,7 @@ kind: Kustomization
 namespace: radarr
 resources:
   - namespace.yaml
+  - sealedsecret-radarr-apikey.yaml
   - deployment-radarr.yaml
   - service-radarr.yaml
   # Metrics ClusterIP service + ServiceMonitor for Exportarr sidecar (port 9708)
