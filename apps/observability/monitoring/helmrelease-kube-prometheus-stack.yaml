@@ -137,6 +137,13 @@ spec:
                 - severity=critical
               receiver: apprise
               repeat_interval: 1h
+            # Route all warning/critical to f/sre/alert-ingest; continue=true keeps Apprise firing too.
+            # Replace WINDMILL_WEBHOOK_TOKEN after generating in Windmill UI:
+            #   windmill.xrs444.net → f/sre/alert-ingest → Triggers → Add webhook → copy token
+            - matchers:
+                - severity=~"warning|critical"
+              receiver: windmill-alert-ingest
+              continue: true
         receivers:
           - name: apprise
             webhook_configs:
@@ -145,26 +152,13 @@ spec:
                 http_config:
                   tls_config:
                     insecure_skip_verify: false
-          # Windmill remediation receiver — fires alert-triggered runbooks.
-          # The webhook token is generated in Windmill UI for f/alerts/remediate.
-          # Replace WINDMILL_WEBHOOK_TOKEN with the actual token after first deploy.
-          - name: windmill-remediate
+          - name: windmill-alert-ingest
             webhook_configs:
-              - url: https://windmill.xrs444.net/api/w/homeprod/jobs_u/run/p/f/alerts/remediate?token=WINDMILL_WEBHOOK_TOKEN
+              - url: https://windmill.xrs444.net/api/w/xrs444/jobs_u/run/f/f/sre/alert-ingest?token=WINDMILL_WEBHOOK_TOKEN
                 send_resolved: true
                 http_config:
                   tls_config:
                     insecure_skip_verify: false
-        routes:
-          - matchers:
-              - severity=critical
-            receiver: apprise
-            repeat_interval: 1h
-          # Route alerts labelled remediate=true to Windmill (and also to Apprise via continue)
-          - matchers:
-              - remediate="true"
-            receiver: windmill-remediate
-            continue: true
       ingress:
         enabled: false
 
