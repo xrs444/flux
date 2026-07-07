@@ -10,3 +10,4 @@ resources:
   - sealedsecret-hindsight-config.yaml
   - deployment-hindsight.yaml
   - service-hindsight.yaml
+  - servicemonitor-hindsight.yaml

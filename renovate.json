@@ -77,6 +77,16 @@
       "addLabels": ["infrastructure", "requires-review"]
     },
     {
+      "description": "MCP servers consumed by Hermes — tool contracts can shift between minor versions; require review to catch breaking changes in the propose→approve pipeline surface",
+      "matchPackageNames": [
+        "ghcr.io/pab1it0/prometheus-mcp-server",
+        "grafana/mcp-grafana",
+        "ghcr.io/containers/kubernetes-mcp-server"
+      ],
+      "automerge": false,
+      "addLabels": ["mcp", "requires-review"]
+    },
+    {
       "description": "Flux components are managed by update-flux.yml — skip entirely",
       "enabled": false,
       "matchPackageNames": [

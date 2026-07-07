@@ -1,0 +1,20 @@
+# Radicale is CalDAV/CardDAV — served over HTTPS on a wildcard subdomain.
+# iOS Calendar autodiscovers via `.well-known/caldav` / `.well-known/carddav`
+# 301 redirects that Radicale serves natively at the root path.
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: radicale
+  namespace: radicale
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`radicale.xrs444.net`)
+      kind: Rule
+      services:
+        - name: radicale
+          port: 5232
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

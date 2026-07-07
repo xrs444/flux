@@ -1,0 +1,15 @@
+# Vikunja - task management (family shared lists, per-user private lists).
+# CalDAV enabled so tasks round-trip to iOS Reminders / Radicale-adjacent clients.
+# OIDC via Kanidm — local registration disabled.
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-vikunja-files.yaml
+  - pvc-vikunja-postgres.yaml
+  - configmap-vikunja-config.yaml
+  - oauth2-sealedsecret-vikunja.yaml
+  - deployment-vikunja.yaml
+  - service-vikunja.yaml
+  - ingressroute-vikunja.yaml

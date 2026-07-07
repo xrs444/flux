@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-k
+  namespace: hermes-k
+spec:
+  selector:
+    app: hermes-k
+  ports:
+    - name: gateway
+      protocol: TCP
+      port: 8642
+      targetPort: 8642
+    - name: dashboard
+      protocol: TCP
+      port: 9119
+      targetPort: 9119
+  type: ClusterIP

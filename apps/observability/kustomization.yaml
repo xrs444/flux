@@ -5,4 +5,5 @@ kind: Kustomization
 resources:
   - ./monitoring
   - ./loki
+  - ./mcp-tools
   - ./prometheus-sa

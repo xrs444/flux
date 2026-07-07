@@ -12,4 +12,5 @@ resources:
   - sealedsecret-hermes-t-config.yaml
   - deployment-hermes-t.yaml
   - service-hermes-t.yaml
+  - servicemonitor-hermes-t.yaml
   - ingressroute-hermes-t.yaml

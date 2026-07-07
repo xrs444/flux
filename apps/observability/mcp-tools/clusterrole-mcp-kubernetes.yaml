@@ -1,0 +1,110 @@
+# Read-only ClusterRole for the mcp-kubernetes MCP server.
+#
+# Invariant: this role NEVER grants create/update/patch/delete/deletecollection.
+# Hermes uses this MCP for observability only — pod state, recent events,
+# describe/logs. Any mutation goes through the "propose → approve → execute"
+# pipeline (§6.2 of the family-agent plan), which runs via Windmill flows,
+# not this MCP.
+#
+# If you ever find yourself tempted to add a mutating verb here, don't.
+# Add a new, narrowly-scoped ClusterRole+Role for that specific mutation
+# and gate it behind Windmill so it inherits the approval + audit path.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mcp-kubernetes-readonly
+  labels:
+    app: mcp-kubernetes
+rules:
+  # Core objects — get/list/watch only.
+  - apiGroups: [""]
+    resources:
+      - namespaces
+      - nodes
+      - pods
+      - pods/log
+      - services
+      - endpoints
+      - configmaps        # Read-only view; values may still be sensitive.
+      - persistentvolumeclaims
+      - persistentvolumes
+      - events
+      - replicationcontrollers
+      - resourcequotas
+      - limitranges
+      - serviceaccounts
+    verbs: [get, list, watch]
+
+  # NOTE: pods/exec, pods/attach, pods/portforward, secrets are DELIBERATELY
+  # ABSENT. Hermes must not be able to shell into containers, read secret
+  # material, or open port-forwards.
+
+  # Workloads
+  - apiGroups: [apps]
+    resources:
+      - deployments
+      - daemonsets
+      - statefulsets
+      - replicasets
+    verbs: [get, list, watch]
+
+  # Batch
+  - apiGroups: [batch]
+    resources:
+      - jobs
+      - cronjobs
+    verbs: [get, list, watch]
+
+  # Autoscaling
+  - apiGroups: [autoscaling]
+    resources:
+      - horizontalpodautoscalers
+    verbs: [get, list, watch]
+
+  # Networking
+  - apiGroups: [networking.k8s.io]
+    resources:
+      - ingresses
+      - networkpolicies
+    verbs: [get, list, watch]
+
+  # Storage
+  - apiGroups: [storage.k8s.io]
+    resources:
+      - storageclasses
+      - volumeattachments
+    verbs: [get, list, watch]
+
+  # Metrics — needed for describe-style output on pods/nodes.
+  - apiGroups: [metrics.k8s.io]
+    resources:
+      - pods
+      - nodes
+    verbs: [get, list]
+
+  # Flux — Hermes should be able to see Flux state (Kustomization,
+  # HelmRelease reconciliation status) as part of alert context.
+  - apiGroups:
+      - kustomize.toolkit.fluxcd.io
+      - helm.toolkit.fluxcd.io
+      - source.toolkit.fluxcd.io
+      - notification.toolkit.fluxcd.io
+    resources: ["*"]
+    verbs: [get, list, watch]
+
+  # Traefik — IngressRoute reachability + status.
+  - apiGroups: [traefik.io]
+    resources: ["*"]
+    verbs: [get, list, watch]
+
+  # Longhorn — volume state + replicas, useful for storage-side alerts.
+  - apiGroups: [longhorn.io]
+    resources: ["*"]
+    verbs: [get, list, watch]
+
+  # SealedSecret — presence + status, NOT decrypted content (that stays
+  # in the Secret API which we do not grant).
+  - apiGroups: [bitnami.com]
+    resources: [sealedsecrets]
+    verbs: [get, list, watch]

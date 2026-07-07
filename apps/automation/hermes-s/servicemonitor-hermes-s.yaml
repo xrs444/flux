@@ -1,0 +1,21 @@
+---
+# Scrapes /metrics on the gateway port if hermes-agent exposes it.
+# Pod-level up/down is covered by kube-state-metrics regardless.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: hermes-s
+  namespace: hermes-s
+  labels:
+    app: hermes-s
+spec:
+  selector:
+    matchLabels:
+      app: hermes-s
+  namespaceSelector:
+    matchNames:
+      - hermes-s
+  endpoints:
+    - port: gateway
+      path: /metrics
+      interval: 30s

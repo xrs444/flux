@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: radicale-config
+  namespace: radicale
+data:
+  # Radicale configuration file — see https://radicale.org/v3.html#configuration
+  #
+  # Auth choice: htpasswd (per-family static credentials).
+  #
+  # Why not Kanidm OIDC? CalDAV / CardDAV protocols use HTTP Basic auth from
+  # native clients (Apple Calendar, DAVx⁵, Thunderbird). OAuth flows require
+  # an interactive redirect that clients don't support. LDAP (via Kanidm's
+  # LDAP interface) is a viable upgrade later — Radicale supports it natively
+  # via [auth] type = ldap, but requires binding-DN configuration and adds a
+  # dependency on Kanidm's LDAP surface being reachable from the pod.
+  #
+  # For Phase A: htpasswd, one entry per family member. Passwords are stored
+  # in the SealedSecret (radicale-users) and read from /etc/radicale/users.
+  # When rotating credentials, generate with:
+  #   htpasswd -B -c users xrs444
+  #   htpasswd -B users samantha
+  #   ...
+  # then seal the resulting file into the SealedSecret keyed as `users`.
+  config: |
+    [server]
+    hosts = 0.0.0.0:5232
+    max_connections = 20
+    max_content_length = 100000000
+    timeout = 30
+
+    [auth]
+    type = htpasswd
+    htpasswd_filename = /etc/radicale/users
+    htpasswd_encryption = bcrypt
+
+    [rights]
+    type = owner_only
+
+    [storage]
+    filesystem_folder = /data/collections
+
+    [logging]
+    level = info

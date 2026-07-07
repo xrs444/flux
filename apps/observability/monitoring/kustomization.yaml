@@ -27,6 +27,7 @@ resources:
   - probe-samba-dc.yaml
   - prometheusrule-samba-dc.yaml
   # Sealed Secrets (must be created/sealed before deploying)
+  - sealedsecret-alertmanager-config.yaml
   - sealedsecret-grafana-admin.yaml
   - sealedsecret-grafana-oauth.yaml
   - sealedsecret-snmp-community.yaml
@@ -129,6 +130,17 @@ configMapGenerator:
       - dashboards/app-jellyfin.json
       - dashboards/app-audiobookshelf.json
       - dashboards/app-tdarr.json
+
+  - name: grafana-dashboards-agents
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: Agents
+    files:
+      - dashboards/app-hermes.json
+      - dashboards/app-hindsight.json
 
   - name: grafana-dashboards-applications
     namespace: monitoring

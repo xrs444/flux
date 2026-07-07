@@ -1,0 +1,16 @@
+# Vikunja file storage — attachments on tasks.
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vikunja-files
+  namespace: vikunja
+  labels:
+    recurring-job-group.longhorn.io/default: enabled
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: longhorn

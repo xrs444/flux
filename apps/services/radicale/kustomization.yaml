@@ -1,0 +1,13 @@
+# Radicale - CalDAV / CardDAV server (shared family calendar and contacts).
+# htpasswd auth; syncs to iOS Calendar, Android DAVx⁵, Thunderbird, HA CalDAV.
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-radicale-data.yaml
+  - configmap-radicale-config.yaml
+  - sealedsecret-radicale-users.yaml
+  - deployment-radicale.yaml
+  - service-radicale.yaml
+  - ingressroute-radicale.yaml

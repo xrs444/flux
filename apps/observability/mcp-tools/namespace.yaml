@@ -1,0 +1,9 @@
+# Shared namespace for read-only MCP servers consumed by Hermes (t/s/k).
+# Reduces RBAC surface: one ServiceAccount per tool, all bound to strictly
+# read-only ClusterRoles. Hermes reaches each MCP over ClusterIP DNS at
+# <name>.mcp-tools.svc.cluster.local.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mcp-tools

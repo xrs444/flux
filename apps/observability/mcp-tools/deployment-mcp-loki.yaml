@@ -1,0 +1,80 @@
+# mcp-loki — HTTP MCP server exposing LogQL query tools to Hermes.
+#
+# Implementation note: uses grafana/mcp-grafana (the official Grafana MCP)
+# scoped to just Loki tools via --enabled-tools=loki. scottlepp/loki-mcp
+# was evaluated but does not publish a container image and only supports
+# SSE transport; mcp-grafana is actively maintained by Grafana Labs,
+# publishes to Docker Hub, and supports streamable-http natively.
+#
+# Because it proxies through Grafana, the Loki data source in Grafana is
+# the actual backend — this leverages the Loki datasource that's already
+# configured for dashboards. No direct Loki service dependency beyond that.
+#
+# Tools provided (Loki category only):
+#   - query_loki_logs             (LogQL query / query_range)
+#   - list_loki_label_names
+#   - list_loki_label_values
+#   - query_loki_stats
+#
+# Renovate: image tag pinned to a specific version; kubernetes manager
+# picks up updates. Loki-specific behaviour: minor grafana/mcp-grafana
+# updates could change tool contracts, so this image is on the MCP
+# review-required rule in renovate.json.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-loki
+  namespace: mcp-tools
+  labels:
+    app: mcp-loki
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mcp-loki
+  template:
+    metadata:
+      labels:
+        app: mcp-loki
+    spec:
+      containers:
+        - name: mcp-loki
+          image: docker.io/grafana/mcp-grafana:0.17.0-alpine
+          args:
+            - --transport=streamable-http
+            - --address=0.0.0.0:8080
+            - --enabled-tools=loki
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: GRAFANA_URL
+              value: "http://kube-prometheus-stack-grafana.monitoring.svc.cluster.local"
+            - name: GRAFANA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-grafana-credentials
+                  key: api-key
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3

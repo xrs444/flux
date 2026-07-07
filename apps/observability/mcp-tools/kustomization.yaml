@@ -1,0 +1,27 @@
+# Read-only MCP servers consumed by Hermes-T (and, for basic non-sensitive
+# metrics, by Hermes-S when triaging voice/UX regressions). Kid-mode hermes-k
+# never registers these tools — enforced in flux/apps/automation/hermes-k/
+# configmap-hermes-k-config.yaml `tools.denied` policy.
+#
+# Endpoints Hermes should point at:
+#   mcp-prometheus:  http://mcp-prometheus.mcp-tools.svc.cluster.local:8080
+#   mcp-loki:        http://mcp-loki.mcp-tools.svc.cluster.local:8080
+#   mcp-kubernetes:  http://mcp-kubernetes.mcp-tools.svc.cluster.local:8080
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  # mcp-prometheus
+  - deployment-mcp-prometheus.yaml
+  - service-mcp-prometheus.yaml
+  # mcp-loki (backed by grafana/mcp-grafana --enabled-tools=loki)
+  - sealedsecret-mcp-grafana-credentials.yaml
+  - deployment-mcp-loki.yaml
+  - service-mcp-loki.yaml
+  # mcp-kubernetes (read-only, RBAC-enforced)
+  - serviceaccount-mcp-kubernetes.yaml
+  - clusterrole-mcp-kubernetes.yaml
+  - clusterrolebinding-mcp-kubernetes.yaml
+  - deployment-mcp-kubernetes.yaml
+  - service-mcp-kubernetes.yaml

@@ -1,0 +1,90 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radicale
+  namespace: radicale
+  labels:
+    app: radicale
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  # Recreate strategy: ReadWriteOnce PVC — new pod can't start while old one
+  # holds the volume. Same pattern as mealie / hermes-*.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: radicale
+  template:
+    metadata:
+      labels:
+        app: radicale
+    spec:
+      securityContext:
+        # tomsquest/docker-radicale runs as UID 2999 by default (per image
+        # docs). Longhorn RWO + non-root: fsGroup so the mounted PVC is
+        # writable. Same pattern as hermes-* per the cerebrum note.
+        fsGroup: 2999
+      containers:
+        - name: radicale
+          image: tomsquest/docker-radicale:latest
+          ports:
+            - containerPort: 5232
+              name: http
+          env:
+            - name: TZ
+              value: "America/Phoenix"
+          volumeMounts:
+            - name: config
+              mountPath: /config/config
+              subPath: config
+              readOnly: true
+            - name: users
+              mountPath: /etc/radicale/users
+              subPath: users
+              readOnly: true
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: config
+          configMap:
+            name: radicale-config
+            items:
+              - key: config
+                path: config
+        - name: users
+          secret:
+            secretName: radicale-users
+            items:
+              - key: users
+                path: users
+        - name: data
+          persistentVolumeClaim:
+            claimName: radicale-data

@@ -1,0 +1,247 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": { "list": [] },
+  "description": "Hermes agent instances (Thomas / Samantha / Kid-mode): pod health, restarts, CPU/memory, logs",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] },
+          "mappings": [{ "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "UP" } }, "type": "value" }]
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "id": 2,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "max(kube_pod_status_ready{namespace=\"hermes-t\",condition=\"true\"})", "legendFormat": "hermes-t" }
+      ],
+      "title": "hermes-t Status",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] },
+          "mappings": [{ "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "UP" } }, "type": "value" }]
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "id": 3,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "max(kube_pod_status_ready{namespace=\"hermes-s\",condition=\"true\"})", "legendFormat": "hermes-s" }
+      ],
+      "title": "hermes-s Status",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] },
+          "mappings": [{ "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "UP" } }, "type": "value" }]
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "max(kube_pod_status_ready{namespace=\"hermes-k\",condition=\"true\"})", "legendFormat": "hermes-k" }
+      ],
+      "title": "hermes-k Status",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
+      "id": 5,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"hermes-t\",container=\"hermes-t\"})", "legendFormat": "restarts" }
+      ],
+      "title": "hermes-t Restarts",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
+      "id": 6,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"hermes-s\",container=\"hermes-s\"})", "legendFormat": "restarts" }
+      ],
+      "title": "hermes-s Restarts",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
+      "id": 7,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"hermes-k\",container=\"hermes-k\"})", "legendFormat": "restarts" }
+      ],
+      "title": "hermes-k Restarts",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 10,
+      "title": "Resources",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never", "spanNulls": true },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 11,
+      "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"hermes-t\",container=\"hermes-t\"}[5m]))", "legendFormat": "hermes-t" },
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"hermes-s\",container=\"hermes-s\"}[5m]))", "legendFormat": "hermes-s" },
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"hermes-k\",container=\"hermes-k\"}[5m]))", "legendFormat": "hermes-k" }
+      ],
+      "title": "CPU Usage (cores)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never", "spanNulls": true },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 12,
+      "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(container_memory_working_set_bytes{namespace=\"hermes-t\",container=\"hermes-t\"})", "legendFormat": "hermes-t" },
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(container_memory_working_set_bytes{namespace=\"hermes-s\",container=\"hermes-s\"})", "legendFormat": "hermes-s" },
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(container_memory_working_set_bytes{namespace=\"hermes-k\",container=\"hermes-k\"})", "legendFormat": "hermes-k" }
+      ],
+      "title": "Memory Working Set",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 20,
+      "title": "hermes-t Logs",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "000000002" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 15 },
+      "id": 21,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "000000002" }, "expr": "{namespace=\"hermes-t\"}", "legendFormat": "" }
+      ],
+      "title": "hermes-t Logs",
+      "type": "logs"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "id": 30,
+      "title": "hermes-s Logs",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "000000002" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "id": 31,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "000000002" }, "expr": "{namespace=\"hermes-s\"}", "legendFormat": "" }
+      ],
+      "title": "hermes-s Logs",
+      "type": "logs"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 32 },
+      "id": 40,
+      "title": "hermes-k Logs",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "000000002" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 33 },
+      "id": 41,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "000000002" }, "expr": "{namespace=\"hermes-k\"}", "legendFormat": "" }
+      ],
+      "title": "hermes-k Logs",
+      "type": "logs"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["hermes", "agents", "llm", "family-agent"],
+  "templating": { "list": [] },
+  "time": { "from": "now-3h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Hermes Agents",
+  "uid": "app-hermes",
+  "version": 1
+}

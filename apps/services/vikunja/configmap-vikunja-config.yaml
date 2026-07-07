@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vikunja-config
+  namespace: vikunja
+data:
+  # Vikunja config file — see https://vikunja.io/docs/config-options/
+  # Env vars can override any of these; kept here as a stable baseline.
+  # Sensitive fields (jwt_secret, oidc.clientsecret, postgres password) come
+  # from the SealedSecret via env variables in the Deployment, not this file.
+  config.yml: |
+    service:
+      publicurl: https://vikunja.xrs444.net
+      frontendurl: https://vikunja.xrs444.net
+      enableregistration: false  # OIDC-only signup; keeps the door closed
+      timezone: America/Phoenix
+      enabletotp: false
+      # jwt.secret provided via VIKUNJA_SERVICE_JWTSECRET env
+
+    database:
+      type: postgres
+      host: localhost
+      user: vikunja
+      # password provided via VIKUNJA_DATABASE_PASSWORD env
+      database: vikunja
+
+    files:
+      basepath: /app/vikunja/files
+
+    caldav:
+      enabled: true
+
+    auth:
+      local:
+        enabled: false          # Force OIDC — matches the family SSO model
+      openid:
+        enabled: true
+        redirecturl: https://vikunja.xrs444.net/auth/openid/
+        providers:
+          - name: Kanidm
+            authurl: https://idm.xrs444.net/oauth2/openid/oauth2_vikunja
+            # clientid + clientsecret provided via env
+            scope: openid profile email

@@ -1,0 +1,15 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: mcp-kubernetes-readonly
+  labels:
+    app: mcp-kubernetes
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: mcp-kubernetes-readonly
+subjects:
+  - kind: ServiceAccount
+    name: mcp-kubernetes
+    namespace: mcp-tools

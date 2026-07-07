@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radicale
+  namespace: radicale
+spec:
+  selector:
+    app: radicale
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5232
+      targetPort: 5232
+  type: ClusterIP

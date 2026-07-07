@@ -1,0 +1,197 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": { "list": [] },
+  "description": "Hindsight shared memory layer: pod health, CPU/memory, API metrics (if exposed), logs",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] },
+          "mappings": [{ "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "UP" } }, "type": "value" }]
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "id": 2,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "max(kube_pod_status_ready{namespace=\"hindsight\",condition=\"true\"})", "legendFormat": "hindsight" }
+      ],
+      "title": "Status",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "id": 3,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"hindsight\",container=\"hindsight\"})", "legendFormat": "restarts" }
+      ],
+      "title": "Restarts",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(container_memory_working_set_bytes{namespace=\"hindsight\",container=\"hindsight\"})", "legendFormat": "memory" }
+      ],
+      "title": "Memory",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 10,
+      "title": "Resources",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never", "spanNulls": true },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 11,
+      "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"hindsight\",container=\"hindsight\"}[5m]))", "legendFormat": "CPU cores" }
+      ],
+      "title": "CPU Usage (cores)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never", "spanNulls": true },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 12,
+      "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(container_memory_working_set_bytes{namespace=\"hindsight\",container=\"hindsight\"})", "legendFormat": "working set" },
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(container_memory_rss{namespace=\"hindsight\",container=\"hindsight\"})", "legendFormat": "RSS" }
+      ],
+      "title": "Memory",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 20,
+      "title": "API (if /metrics exposed)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 5, "lineWidth": 2, "showPoints": "never", "spanNulls": true },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
+      "id": 21,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (method, handler) (rate(http_requests_total{job=\"hindsight\"}[5m]))", "legendFormat": "{{method}} {{handler}}" }
+      ],
+      "title": "HTTP Request Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 5, "lineWidth": 2, "showPoints": "never", "spanNulls": true },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
+      "id": 22,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"hindsight\"}[5m])) by (le))", "legendFormat": "p99" },
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{job=\"hindsight\"}[5m])) by (le))", "legendFormat": "p50" }
+      ],
+      "title": "HTTP Request Latency",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "id": 30,
+      "title": "Logs",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "000000002" },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 24 },
+      "id": 31,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "000000002" }, "expr": "{namespace=\"hindsight\"}", "legendFormat": "" }
+      ],
+      "title": "Hindsight Logs",
+      "type": "logs"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["hindsight", "memory", "llm", "family-agent"],
+  "templating": { "list": [] },
+  "time": { "from": "now-3h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Hindsight",
+  "uid": "app-hindsight",
+  "version": 1
+}

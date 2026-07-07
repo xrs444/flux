@@ -1,0 +1,130 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vikunja
+  namespace: vikunja
+  labels:
+    app: vikunja
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate  # RWO PVCs on vikunja-files + vikunja-postgres
+  selector:
+    matchLabels:
+      app: vikunja
+  template:
+    metadata:
+      labels:
+        app: vikunja
+    spec:
+      containers:
+        - name: vikunja
+          # Unified image since v0.24; single container serves API + frontend.
+          image: vikunja/vikunja:latest
+          ports:
+            - containerPort: 3456
+              name: http
+          env:
+            - name: TZ
+              value: "America/Phoenix"
+            # config.yml supplied via ConfigMap; env vars fill in secrets
+            - name: VIKUNJA_SERVICE_JWTSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-vikunja
+                  key: jwt-secret
+            - name: VIKUNJA_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-vikunja
+                  key: db-password
+            # OIDC: Vikunja doesn't read clientid/clientsecret from env by
+            # default in older versions — since v0.24 there's per-provider env
+            # override. Pattern:
+            #   VIKUNJA_AUTH_OPENID_PROVIDERS_KANIDM_CLIENTID
+            #   VIKUNJA_AUTH_OPENID_PROVIDERS_KANIDM_CLIENTSECRET
+            - name: VIKUNJA_AUTH_OPENID_PROVIDERS_KANIDM_CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-vikunja
+                  key: client-id
+            - name: VIKUNJA_AUTH_OPENID_PROVIDERS_KANIDM_CLIENTSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-vikunja
+                  key: client-secret
+          volumeMounts:
+            - name: config
+              mountPath: /etc/vikunja/config.yml
+              subPath: config.yml
+              readOnly: true
+            - name: files
+              mountPath: /app/vikunja/files
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_USER
+              value: "vikunja"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-vikunja
+                  key: db-password
+            - name: POSTGRES_DB
+              value: "vikunja"
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: config
+          configMap:
+            name: vikunja-config
+            items:
+              - key: config.yml
+                path: config.yml
+        - name: files
+          persistentVolumeClaim:
+            claimName: vikunja-files
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: vikunja-postgres

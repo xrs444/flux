@@ -1,0 +1,16 @@
+# Vikunja PostgreSQL storage — task/list/user data.
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vikunja-postgres
+  namespace: vikunja
+  labels:
+    recurring-job-group.longhorn.io/default: enabled
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: longhorn

@@ -1,0 +1,71 @@
+# mcp-prometheus — HTTP MCP server exposing Prometheus query tools to Hermes.
+#
+# Tools provided:
+#   - execute_query               (instant PromQL)
+#   - execute_range_query         (range PromQL)
+#   - list_metrics, get_metric_metadata
+#   - list_labels, list_label_values
+#   - list_targets, list_alerts
+#
+# Backend: kube-prometheus-stack's Prometheus in the monitoring namespace.
+# Renovate: image tag is pinned; kubernetes manager auto-detects semver
+# updates from ghcr.io.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-prometheus
+  namespace: mcp-tools
+  labels:
+    app: mcp-prometheus
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mcp-prometheus
+  template:
+    metadata:
+      labels:
+        app: mcp-prometheus
+    spec:
+      containers:
+        - name: mcp-prometheus
+          image: ghcr.io/pab1it0/prometheus-mcp-server:1.6.1
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: PROMETHEUS_URL
+              # kube-prometheus-stack release name = "kube-prometheus-stack";
+              # standard service name in the monitoring namespace.
+              value: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090"
+            - name: PROMETHEUS_MCP_SERVER_TRANSPORT
+              value: "http"
+            - name: PROMETHEUS_MCP_BIND_HOST
+              value: "0.0.0.0"
+            - name: PROMETHEUS_MCP_BIND_PORT
+              value: "8080"
+            - name: PROMETHEUS_MCP_STATELESS_HTTP
+              value: "true"
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3

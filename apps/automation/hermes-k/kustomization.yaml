@@ -1,0 +1,22 @@
+# Hermes Agent (kid-mode) - Nous Research
+# Dashboard: https://hermes-k.xrs444.net
+# Gateway API: https://hermes-k.xrs444.net/api
+# Memory: hindsight bank_id "hermes-k" (isolated from hermes-t and hermes-s)
+#
+# Kid-mode sandbox: no infrastructure MCP tools, narrow capability set,
+# kid-safe system prompt. Routed to by HA when an identified kid speaks
+# on a Google Home / HA Voice PE, when a kid-bound tablet is the input
+# surface, or when the speaker is unidentified (safer default). Never
+# reaches destructive intents or the adults' Hindsight banks.
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-hermes-k-data.yaml
+  - configmap-hermes-k-config.yaml
+  - sealedsecret-hermes-k-config.yaml
+  - deployment-hermes-k.yaml
+  - service-hermes-k.yaml
+  - servicemonitor-hermes-k.yaml
+  - ingressroute-hermes-k.yaml

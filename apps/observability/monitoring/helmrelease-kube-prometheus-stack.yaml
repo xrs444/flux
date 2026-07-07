@@ -123,42 +123,10 @@ spec:
               resources:
                 requests:
                   storage: 2Gi
-      config:
-        global:
-          resolve_timeout: 5m
-        route:
-          receiver: apprise
-          group_by: [alertname, instance]
-          group_wait: 30s
-          group_interval: 5m
-          repeat_interval: 4h
-          routes:
-            - matchers:
-                - severity=critical
-              receiver: apprise
-              repeat_interval: 1h
-            # Route all warning/critical to f/sre/alert-ingest; continue=true keeps Apprise firing too.
-            # Replace WINDMILL_WEBHOOK_TOKEN after generating in Windmill UI:
-            #   windmill.xrs444.net → f/sre/alert-ingest → Triggers → Add webhook → copy token
-            - matchers:
-                - severity=~"warning|critical"
-              receiver: windmill-alert-ingest
-              continue: true
-        receivers:
-          - name: apprise
-            webhook_configs:
-              - url: https://apprise.xrs444.net/notify/apprise
-                send_resolved: true
-                http_config:
-                  tls_config:
-                    insecure_skip_verify: false
-          - name: windmill-alert-ingest
-            webhook_configs:
-              - url: https://windmill.xrs444.net/api/w/xrs444/jobs_u/run/f/f/sre/alert-ingest?token=WINDMILL_WEBHOOK_TOKEN
-                send_resolved: true
-                http_config:
-                  tls_config:
-                    insecure_skip_verify: false
+      # Alertmanager config is stored in sealedsecret-alertmanager-config.yaml.
+      # Full config (routing, receivers, Windmill webhook token) lives there.
+      # See secret-alertmanager-config.secret.yaml (gitignored) for the plaintext template.
+      configSecret: alertmanager-config
       ingress:
         enabled: false
 

@@ -6,4 +6,5 @@ resources:
   - ./windmill
   - ./hermes-t
   - ./hermes-s
+  - ./hermes-k
   - ./hindsight

@@ -1,0 +1,21 @@
+---
+# Hindsight (vectorize-io) FastAPI service — may expose /metrics via
+# prometheus-fastapi-instrumentator on the api port.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: hindsight
+  namespace: hindsight
+  labels:
+    app: hindsight
+spec:
+  selector:
+    matchLabels:
+      app: hindsight
+  namespaceSelector:
+    matchNames:
+      - hindsight
+  endpoints:
+    - port: api
+      path: /metrics
+      interval: 30s

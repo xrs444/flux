@@ -1,0 +1,114 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes-k
+  namespace: hermes-k
+  labels:
+    app: hermes-k
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hermes-k
+  template:
+    metadata:
+      labels:
+        app: hermes-k
+    spec:
+      securityContext:
+        # Same fsGroup pattern as hermes-t / hermes-s per the Longhorn
+        # non-root container gotcha in .wolf/cerebrum.md.
+        fsGroup: 10000
+      containers:
+        - name: hermes-k
+          image: nousresearch/hermes-agent:latest
+          command: ["hermes", "gateway", "run"]
+          ports:
+            - containerPort: 8642
+              name: gateway
+            - containerPort: 9119
+              name: dashboard
+          env:
+            - name: TZ
+              value: "America/Phoenix"
+            - name: HERMES_DASHBOARD
+              value: "1"
+            - name: HERMES_DASHBOARD_HOST
+              value: "0.0.0.0"
+            - name: HERMES_DASHBOARD_PUBLIC_URL
+              value: "https://hermes-k.xrs444.net"
+            - name: HERMES_DASHBOARD_OIDC_ISSUER
+              value: "https://idm.xrs444.net/oauth2/openid/oauth2_hermes_k"
+            - name: HERMES_DASHBOARD_OIDC_CLIENT_ID
+              value: "oauth2_hermes_k"
+            - name: HINDSIGHT_MODE
+              value: "local_external"
+            - name: HINDSIGHT_API_URL
+              value: "http://hindsight.hindsight.svc.cluster.local:8888"
+            - name: API_SERVER_ENABLED
+              value: "true"
+            - name: API_SERVER_HOST
+              value: "0.0.0.0"
+            - name: DEEPSEEK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-k-config
+                  key: DEEPSEEK_API_KEY
+            - name: HERMES_DASHBOARD_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-k-config
+                  key: OIDC_CLIENT_SECRET
+            - name: API_SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-k-config
+                  key: API_SERVER_KEY
+          volumeMounts:
+            - name: hermes-k-data
+              mountPath: /opt/data
+            - name: hermes-k-config
+              mountPath: /opt/data/config.yaml
+              subPath: config.yaml
+          resources:
+            # Lower ceiling than hermes-t/s: kid-mode is short-turn interaction,
+            # not agent loops. Bound cost, bound blast radius.
+            requests:
+              cpu: 100m
+              memory: 384Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+          startupProbe:
+            tcpSocket:
+              port: gateway
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: gateway
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: gateway
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: hermes-k-data
+          persistentVolumeClaim:
+            claimName: hermes-k-data
+        - name: hermes-k-config
+          configMap:
+            name: hermes-k-config
+            items:
+              - key: config.yaml
+                path: config.yaml

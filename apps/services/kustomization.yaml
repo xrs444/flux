@@ -13,8 +13,10 @@ resources:
   - ./netbox
   - ./omada
   - ./paperless-ngx
+  - ./radicale
   - ./rustdesk
   - ./seatable
   - ./termix
+  - ./vikunja
   - ./warpgate
   # - ./matrix

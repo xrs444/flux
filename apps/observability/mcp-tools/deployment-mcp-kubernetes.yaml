@@ -1,0 +1,80 @@
+# mcp-kubernetes — HTTP MCP server exposing read-only k8s inspection tools.
+#
+# Tools provided (per manusa/kubernetes-mcp-server):
+#   - configuration_view / contexts_list
+#   - resources_list / resources_get / resources_describe / resources_delete
+#     (delete blocked by RBAC — see clusterrole-mcp-kubernetes.yaml)
+#   - pods_list / pods_get / pods_log / pods_top / pods_run
+#   - events_list
+#   - helm_list, helm_install (Helm tools present but write ops blocked by RBAC)
+#
+# Enforcement: this ServiceAccount cannot mutate anything the ClusterRole
+# doesn't grant — verbs are get/list/watch only. Even if the image exposes
+# a mutating tool, the API call fails at kube-apiserver.
+#
+# Renovate: image tag pinned; on MCP review-required rule in renovate.json
+# because tool contracts can shift.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-kubernetes
+  namespace: mcp-tools
+  labels:
+    app: mcp-kubernetes
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mcp-kubernetes
+  template:
+    metadata:
+      labels:
+        app: mcp-kubernetes
+    spec:
+      serviceAccountName: mcp-kubernetes
+      containers:
+        - name: mcp-kubernetes
+          image: ghcr.io/containers/kubernetes-mcp-server:v0.0.63
+          args:
+            # --port enables both streamable-http (/mcp) and SSE (/sse) on
+            # the same port. Hermes uses the /mcp streamable-http endpoint
+            # per the cluster's MCP transport standard.
+            - --port=8080
+            - --log-level=1
+            # Belt-and-braces: refuse write ops at the tool layer as well as
+            # via RBAC. Read-only enforcement is the RBAC ClusterRole; this
+            # flag prevents the server from advertising destructive tools
+            # to Hermes at all.
+            - --read-only
+          ports:
+            - containerPort: 8080
+              name: http
+          resources:
+            requests:
+              cpu: 25m
+              memory: 96Mi
+            limits:
+              cpu: 500m
+              memory: 384Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: [ALL]
