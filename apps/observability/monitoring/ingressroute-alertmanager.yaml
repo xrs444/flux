@@ -10,6 +10,11 @@ spec:
   routes:
     - match: Host(`alertmanager.xrs444.net`)
       kind: Rule
+      middlewares:
+        - name: dashboard-auth
+          namespace: traefik
+        - name: dashboard-errors
+          namespace: traefik
       services:
         - name: kube-prometheus-stack-alertmanager
           port: 9093
