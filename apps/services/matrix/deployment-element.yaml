@@ -19,6 +19,7 @@ spec:
       labels:
         app: element-web
     spec:
+      enableServiceLinks: false
       containers:
         - name: element-web
           image: vectorim/element-web:latest

@@ -32,7 +32,7 @@ spec:
               cp /config-base/homeserver.yaml /etc/matrix/homeserver.yaml
               cp /config-base/log.yaml /etc/matrix/log.yaml
               cp /secrets/signing.key /etc/matrix/signing.key
-              chmod 600 /etc/matrix/signing.key
+              chmod 644 /etc/matrix/signing.key
               # Merge secrets.yaml overrides into homeserver.yaml
               yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' \
                 /etc/matrix/homeserver.yaml /secrets/secrets.yaml \
