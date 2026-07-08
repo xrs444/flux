@@ -33,10 +33,15 @@ spec:
               cp /config-base/log.yaml /etc/matrix/log.yaml
               cp /secrets/signing.key /etc/matrix/signing.key
               chmod 644 /etc/matrix/signing.key
-              # Merge secrets.yaml overrides into homeserver.yaml
-              yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' \
+              # Merge secrets.yaml overrides into homeserver.yaml. oidc_providers is
+              # excluded from the merge because yq's `*` replaces arrays wholesale
+              # rather than deep-merging them, which would drop the base config's
+              # idp_name/issuer/client_id/scopes fields; patch client_secret in instead.
+              yq eval-all 'select(fileIndex == 0) * (select(fileIndex == 1) | del(.oidc_providers))' \
                 /etc/matrix/homeserver.yaml /secrets/secrets.yaml \
                 > /tmp/merged.yaml && mv /tmp/merged.yaml /etc/matrix/homeserver.yaml
+              yq eval -i '.oidc_providers[0].client_secret = load("/secrets/secrets.yaml").oidc_providers[0].client_secret' \
+                /etc/matrix/homeserver.yaml
           volumeMounts:
             - name: config-base
               mountPath: /config-base
