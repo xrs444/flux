@@ -19,4 +19,4 @@ resources:
   - ./termix
   - ./vikunja
   - ./warpgate
-  # - ./matrix
+  - ./matrix
