@@ -19,6 +19,10 @@ spec:
       labels:
         app: paperless-ngx
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -36,6 +40,8 @@ spec:
             - containerPort: 8000
               name: http
           env:
+            - name: USER_IS_NON_ROOT
+              value: "true"
             - name: PAPERLESS_URL
               value: "https://paperless.xrs444.net"
             - name: PAPERLESS_TIME_ZONE

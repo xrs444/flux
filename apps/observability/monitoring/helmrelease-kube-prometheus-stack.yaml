@@ -68,6 +68,11 @@ spec:
         enabled: true
         storageClassName: longhorn-retain
         size: 5Gi
+      # Longhorn PVC is ReadWriteOnce and single-replica, so a RollingUpdate deadlocks:
+      # the new pod can't mount the volume until the old pod releases it, but the old
+      # pod won't terminate until the new one is Ready. Recreate avoids the deadlock.
+      deploymentStrategy:
+        type: Recreate
       admin:
         existingSecret: grafana-admin-secret
         userKey: admin-user
