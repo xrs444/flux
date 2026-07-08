@@ -19,6 +19,10 @@ spec:
       labels:
         app: audiobookshelf
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -31,7 +35,11 @@ spec:
                       - v-k8s-xsvr3
       containers:
         - name: audiobookshelf
-          image: ghcr.io/advplyr/audiobookshelf:v2.35.1
+          image: ghcr.io/advplyr/audiobookshelf:2.35.1
+          securityContext:
+            capabilities:
+              add:
+                - NET_BIND_SERVICE
           ports:
             - containerPort: 80
               name: http
