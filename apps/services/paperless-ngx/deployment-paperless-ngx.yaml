@@ -97,6 +97,9 @@ spec:
             failureThreshold: 3
         - name: redis
           image: redis:8-alpine
+          args:
+            - "--save"
+            - ""
           ports:
             - containerPort: 6379
               name: redis
