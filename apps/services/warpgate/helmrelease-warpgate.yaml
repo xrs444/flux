@@ -69,6 +69,9 @@ spec:
       enabled: true
       type: podinit
       recordSessions: true
+      # containerPort for the http port comes from setup.http, not
+      # service.ports.http -- both must be kept in sync (see 443 note below).
+      http: 443
 
     # Service configuration (web UI - ClusterIP for Traefik)
     service:
