@@ -12,7 +12,7 @@ spec:
       kind: Rule
       services:
         - name: warpgate
-          port: 8888
+          port: 443
           scheme: https
           serversTransport: warpgate-https
   tls:

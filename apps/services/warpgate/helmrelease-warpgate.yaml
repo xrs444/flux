@@ -74,7 +74,7 @@ spec:
     service:
       type: ClusterIP
       ports:
-        http: 8888
+        http: 443
         ssh: 2222
         mysql: 33306
         postgresql: 55432
@@ -106,7 +106,7 @@ spec:
 
       http:
         enable: true
-        listen: "0.0.0.0:8888"
+        listen: "0.0.0.0:443"
         trust_x_forwarded_headers: true
         certificate: /data/tls.certificate.pem
         key: /data/tls.key.pem
@@ -147,6 +147,17 @@ spec:
     # Security context
     podSecurityContext:
       fsGroup: 1000
+
+    # Warpgate derives its own SSO redirect_uri from whatever port it's
+    # actually listening on (upstream bug, warp-tech/warpgate#1252 -- it
+    # ignores external_host for this). Listening on 443 directly makes it
+    # emit a port-less redirect_uri that resolves through Traefik's existing
+    # websecure entrypoint, instead of an unreachable :8888. NET_BIND_SERVICE
+    # lets the non-root container bind that privileged port.
+    securityContext:
+      capabilities:
+        add:
+          - NET_BIND_SERVICE
 
     # Resource limits
     resources:
