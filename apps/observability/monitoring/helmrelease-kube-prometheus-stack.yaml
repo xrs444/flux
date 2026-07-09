@@ -88,7 +88,7 @@ spec:
           client_id: oauth2_grafana
           client_secret: ${GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
           scopes: openid profile email groups
-          auth_url: https://idm.xrs444.net/oauth2/authorise
+          auth_url: https://idm.xrs444.net/ui/oauth2
           token_url: https://idm.xrs444.net/oauth2/token
           api_url: https://idm.xrs444.net/oauth2/openid/oauth2_grafana/userinfo
           use_pkce: true
