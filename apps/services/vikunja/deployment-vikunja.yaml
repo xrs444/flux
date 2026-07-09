@@ -19,6 +19,8 @@ spec:
       labels:
         app: vikunja
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: vikunja
           # Unified image since v0.24; single container serves API + frontend.
