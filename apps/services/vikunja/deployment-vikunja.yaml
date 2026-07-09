@@ -42,11 +42,10 @@ spec:
                 secretKeyRef:
                   name: oauth2-secret-vikunja
                   key: db-password
-            # OIDC: Vikunja doesn't read clientid/clientsecret from env by
-            # default in older versions — since v0.24 there's per-provider env
-            # override. Pattern:
-            #   VIKUNJA_AUTH_OPENID_PROVIDERS_KANIDM_CLIENTID
-            #   VIKUNJA_AUTH_OPENID_PROVIDERS_KANIDM_CLIENTSECRET
+            # OIDC: providers in configmap-vikunja-config.yaml is a map keyed
+            # by provider id "kanidm" — these env vars merge clientid/secret
+            # into that same key. Must match case-insensitively or the
+            # provider silently drops out of /api/v1/info (see bug-395).
             - name: VIKUNJA_AUTH_OPENID_PROVIDERS_KANIDM_CLIENTID
               valueFrom:
                 secretKeyRef:

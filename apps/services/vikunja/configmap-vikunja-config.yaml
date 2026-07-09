@@ -37,8 +37,15 @@ data:
       openid:
         enabled: true
         redirecturl: https://vikunja.xrs444.net/auth/openid/
+        # providers is a MAP keyed by provider id (not a list) — the key
+        # ("kanidm") must match the env var segment below case-insensitively,
+        # otherwise Vikunja can't merge the YAML fields with the env-provided
+        # secret and silently drops the provider as incomplete (empty
+        # providers[] in /api/v1/info, no login button on the frontend).
         providers:
-          - name: Kanidm
+          kanidm:
+            name: Kanidm
             authurl: https://idm.xrs444.net/oauth2/openid/oauth2_vikunja
-            # clientid + clientsecret provided via env
+            # clientid + clientsecret provided via env:
+            # VIKUNJA_AUTH_OPENID_PROVIDERS_KANIDM_CLIENTID / CLIENTSECRET
             scope: openid profile email
