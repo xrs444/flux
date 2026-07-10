@@ -51,7 +51,11 @@ spec:
   values:
     image:
       repository: ghcr.io/warp-tech/warpgate
-      tag: "0.26.1"
+      tag: "0.25.5" # Pinned back from Renovate's 0.26.1 bump (PR #72, merged mid-SSO-debug) --
+      # 0.26.1 introduced a new pod-initiated /oauth2/authorise call we haven't
+      # investigated yet; reverting to isolate that variable while confirming
+      # the client_secret wiring fix (see 7167ea0) actually works. Revisit once
+      # SSO is confirmed stable on 0.25.5.
       pullPolicy: IfNotPresent
 
     replicaCount: 1
