@@ -174,4 +174,3 @@ configMapGenerator:
       - dashboards/app-seatable.json
       - dashboards/app-syncthing.json
       - dashboards/app-termix.json
-      - dashboards/app-warpgate.json

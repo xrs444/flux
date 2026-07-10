@@ -18,5 +18,4 @@ resources:
   - ./seatable
   - ./termix
   - ./vikunja
-  - ./warpgate
   - ./matrix

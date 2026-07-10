@@ -7,5 +7,4 @@ resources:
   - ./helmrepository-metrics-server.yaml
   - ./helmrepository-rm3l.yaml
   - ./helmrepository-spegel.yaml
-  - ./helmrepository-warpgate.yaml
   - ./helmrepository-prometheus-community.yaml
