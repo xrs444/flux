@@ -1,0 +1,33 @@
+summary: Read-only integrity check of the xsvr2 offsite restic repo
+description: >-
+  Read-only verification — always safe to auto-run (same class as the plan's
+  §6.5 borg-check-repo, but for the actual live backup path: restic→Synology
+  from xsvr2, not Borg, which currently has zero client repos configured
+  anywhere).
+
+
+  Runs over SSH as the `automation` user (nix/modules/users/automation.nix — key
+  already mounted at /root/.ssh/id_ed25519 on Windmill's "default" worker group)
+  into xsvr2, invoking a single fixed, sudo-scoped, no-argument command: `sudo
+  /etc/restic-offsite-check`. That wrapper
+  (nix/hosts/nixos/xsvr2/offsite-backup.nix) runs `restic check`
+  (structure-only, no --read-data) against
+  sftp:restic@cmrnas.xrs444.net:/home/restic-xsvr2, reading RESTIC_PASSWORD_FILE
+  from the same sops secret the real backup job uses. Nothing is mutated; the
+  sudoers rule only permits this exact command.
+
+
+  The restic repo credentials never leave xsvr2 — Windmill only holds SSH access
+  to run one fixed, read-only, root-scoped command there (decision made
+  2026-07-10 in preference to duplicating the Synology-facing restic key into
+  Windmill).
+
+
+  BLOCKED until the xsvr2 nix changes (sudoers rule + /etc/restic-offsite-check
+  + automation SSH access) are deployed via deploy-rs. Until then this will fail
+  with a permission or command-not-found error — that's expected, not a bug in
+  this script.
+lock: ''
+has_on_behalf_of: false
+kind: script
+schema: null
