@@ -29,6 +29,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
         with:
+          token: ${{ secrets.RENOVATE_TOKEN }}
           branch: update-flux
           commit-message: Update to ${{ steps.update.outputs.flux_version }}
           title: Update to ${{ steps.update.outputs.flux_version }}
