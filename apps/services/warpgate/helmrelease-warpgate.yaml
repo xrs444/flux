@@ -72,6 +72,14 @@ spec:
       # containerPort for the http port comes from setup.http, not
       # service.ports.http -- both must be kept in sync (see 443 note below).
       http: 443
+      # The init container's setup script copies overrides_config into
+      # /data/warpgate.yaml and (if config_env_var_replace is set) does a
+      # literal `sed` substitution of $VARNAME using its OWN environment --
+      # not the main container's. This is the only place a values-level
+      # 'env:' key (which this chart doesn't support at all for either
+      # container) could have worked; it has to go through envFromSecret.
+      envFromSecret:
+        WARPGATE_OIDC_SECRET: "warpgate-oidc/client-secret"
 
     # Service configuration (web UI - ClusterIP for Traefik)
     service:
@@ -135,17 +143,13 @@ spec:
           provider:
             type: custom
             client_id: oauth2_warpgate
-            client_secret: ${WARPGATE_OIDC_SECRET}
+            client_secret: $WARPGATE_OIDC_SECRET
             issuer_url: https://idm.xrs444.net/oauth2/openid/oauth2_warpgate
             scopes: ["openid", "email"]
 
-    # Environment variables for secret injection
-    env:
-      - name: WARPGATE_OIDC_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: warpgate-oidc
-            key: client-secret
+    # Drives the init container's `sed` substitution of $WARPGATE_OIDC_SECRET
+    # in overrides_config using the value from setup.envFromSecret above.
+    config_env_var_replace: "WARPGATE_OIDC_SECRET"
 
     # Security context
     podSecurityContext:
