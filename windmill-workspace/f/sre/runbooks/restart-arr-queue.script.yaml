@@ -8,8 +8,13 @@ description: >-
   the given arr app, and — unless dry_run — removes each from the client without
   blocklisting, which lets Sonarr/Radarr/Lidarr automatically re-search and
   re-grab. This is the standard community "restart a stuck download" pattern for
-  the v3 arr API (DELETE
-  /api/v3/queue/{id}?removeFromClient=true&blocklist=false).
+  the arr APIs (DELETE .../queue/{id}?removeFromClient=true&blocklist=false).
+
+
+  Sonarr and Radarr use API v3; Lidarr (linuxserver.io build, packageVersion
+  2.10.3.4602) is still on API v1 — verified live against all three (`GET
+  /api/v3/queue` returns 200 for sonarr/radarr, 404 for lidarr; `GET
+  /api/v1/queue` is the correct lidarr path).
 
 
   Defaults to dry_run=true: no ntfy Approve-button loop exists yet (Phase C), so

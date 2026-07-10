@@ -7,4 +7,4 @@ locks:
   f/sre/alert-ingest__flow+resolved_ack.ts: b2dd5e05d6d3702edeeceb23e56f4d192b57f62ec9ab824d275399774b4f692c
   f/sre/alert-ingest__flow+runbook_arr_stub.ts: fb4398d8650eb6d5396ee5b76c9bc916326a9c92d0c2e27ad2879ea10cc5eb5d
   f/sre/alert-ingest__flow+runbook_backup_stub.ts: 2eae09f6e851c7c312a317751a6c1ff75e755efbc4a3edd57931c8afcfe29540
-  f/sre/runbooks/restart-arr-queue: f25d49cc567136772027ba27b4de8ca86054ba29195d9010ba1c0d569e200fbb
+  f/sre/runbooks/restart-arr-queue: 84715a6fb7dd801bf931a1311871dccfd9f632b3e15d35340eb6e93bf659b82b
