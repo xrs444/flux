@@ -40,6 +40,10 @@ spec:
               mountPath: /config/config
               subPath: config
               readOnly: true
+            - name: rights
+              mountPath: /etc/radicale/rights
+              subPath: rights
+              readOnly: true
             - name: users
               mountPath: /etc/radicale/users
               subPath: users
@@ -79,6 +83,12 @@ spec:
             items:
               - key: config
                 path: config
+        - name: rights
+          configMap:
+            name: radicale-config
+            items:
+              - key: rights
+                path: rights
         - name: users
           secret:
             secretName: radicale-users

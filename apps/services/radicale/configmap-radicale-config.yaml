@@ -16,13 +16,35 @@ data:
   # via [auth] type = ldap, but requires binding-DN configuration and adds a
   # dependency on Kanidm's LDAP surface being reachable from the pod.
   #
-  # For Phase A: htpasswd, one entry per family member. Passwords are stored
-  # in the SealedSecret (radicale-users) and read from /etc/radicale/users.
-  # When rotating credentials, generate with:
+  # For Phase A: htpasswd, one entry per family member plus one service
+  # account (homeassistant, read-only — see [rights] below). Passwords are
+  # stored in the SealedSecret (radicale-users) and read from
+  # /etc/radicale/users. When rotating credentials, generate with:
   #   htpasswd -B -c users xrs444
   #   htpasswd -B users samantha
   #   ...
   # then seal the resulting file into the SealedSecret keyed as `users`.
+  #
+  # Rights: moved from the built-in `owner_only` to a custom rights file
+  # (2026-07-10) so a dedicated `homeassistant` service user can read every
+  # family member's calendars for HA dashboards/automations without sharing
+  # anyone's personal password. `homeassistant` gets R/r (read) only — no W/w
+  # (write) — least privilege, since HA's CalDAV use case here is reading,
+  # not creating events. Each human user still has full RW/rw on their own
+  # collections, unchanged from owner_only's behavior. See rights key below
+  # and https://radicale.org/v3.html#authentication-and-rights for the
+  # permission-letter reference (R/W = collections, r/w = calendar/addressbook
+  # items, {user} = the authenticated username).
+  #
+  # Shared "family" pseudo-principal (2026-07-10): xrs444 and samantha both
+  # get full RW on a collection tree that isn't owned by either login —
+  # /family/ — so a shared address book (or calendar, if wanted later) syncs
+  # between them instead of one owning it and the other being a read-only
+  # guest. CardDAV needs no separate enablement: Radicale's r/w permissions
+  # cover address book collections the same as calendar collections, and the
+  # collection itself is created on first write from whichever CardDAV
+  # client adds it (e.g. Apple Contacts pointed at
+  # https://radicale.xrs444.net/family/contacts/).
   config: |
     [server]
     hosts = 0.0.0.0:5232
@@ -36,10 +58,46 @@ data:
     htpasswd_encryption = bcrypt
 
     [rights]
-    type = owner_only
+    type = from_file
+    file = /etc/radicale/rights
 
     [storage]
     filesystem_folder = /data/collections
 
     [logging]
     level = info
+  rights: |
+    [root]
+    user: .+
+    collection:
+    permissions: R
+
+    [principal]
+    user: .+
+    collection: {user}
+    permissions: RW
+
+    [calendars]
+    user: .+
+    collection: {user}/[^/]+
+    permissions: rw
+
+    [homeassistant-principals-read]
+    user: homeassistant
+    collection: (xrs444|samantha|rowan|greyson)
+    permissions: R
+
+    [homeassistant-calendars-read]
+    user: homeassistant
+    collection: (xrs444|samantha|rowan|greyson)/[^/]+
+    permissions: r
+
+    [family-shared-principal]
+    user: (xrs444|samantha)
+    collection: family
+    permissions: RW
+
+    [family-shared-collections]
+    user: (xrs444|samantha)
+    collection: family/[^/]+
+    permissions: rw

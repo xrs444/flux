@@ -131,10 +131,14 @@ spec:
               resources:
                 requests:
                   storage: 2Gi
-      # Alertmanager config is stored in sealedsecret-alertmanager-config.yaml.
-      # Full config (routing, receivers, Windmill webhook token) lives there.
-      # See secret-alertmanager-config.secret.yaml (gitignored) for the plaintext template.
-      configSecret: alertmanager-config
+        # Alertmanager config is stored in sealedsecret-alertmanager-config.yaml.
+        # Full config (routing, receivers, Windmill webhook token) lives there.
+        # See secret-alertmanager-config.secret.yaml for the plaintext template.
+        # NOTE: configSecret belongs under alertmanagerSpec, not as a sibling of
+        # it — a sibling-level configSecret is silently ignored by the chart and
+        # Alertmanager falls back to its auto-generated default config secret
+        # (alertmanager-<name>), which is what happened here until 2026-07-10.
+        configSecret: alertmanager-config
       ingress:
         enabled: false
 

@@ -20,3 +20,13 @@ data:
         mode: local_external
         api_url: http://hindsight.hindsight.svc.cluster.local:8888
         bank_id: hermes-s
+
+    # Only mcp-prometheus — Hermes-S is scoped to basic non-sensitive
+    # metrics for triaging voice/UX regressions (see
+    # flux/apps/observability/mcp-tools/kustomization.yaml). Loki logs and
+    # k8s inspection stay hermes-t-only; verified /mcp path against the
+    # live pod, same as hermes-t.
+    mcp_servers:
+      mcp-prometheus:
+        url: http://mcp-prometheus.mcp-tools.svc.cluster.local:8080/mcp
+        enabled: true

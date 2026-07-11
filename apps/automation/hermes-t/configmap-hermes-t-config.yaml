@@ -20,3 +20,19 @@ data:
         mode: local_external
         api_url: http://hindsight.hindsight.svc.cluster.local:8888
         bank_id: hermes-t
+
+    # Read-only observability MCPs from flux/apps/observability/mcp-tools/.
+    # /mcp is the streamable-http path (cluster's MCP transport standard —
+    # verified live against the running mcp-prometheus/mcp-loki/mcp-kubernetes
+    # pods; see their deployment manifests for tool lists and RBAC scoping).
+    # hermes-k never gets this block — kid-mode denies these tools by policy.
+    mcp_servers:
+      mcp-prometheus:
+        url: http://mcp-prometheus.mcp-tools.svc.cluster.local:8080/mcp
+        enabled: true
+      mcp-loki:
+        url: http://mcp-loki.mcp-tools.svc.cluster.local:8080/mcp
+        enabled: true
+      mcp-kubernetes:
+        url: http://mcp-kubernetes.mcp-tools.svc.cluster.local:8080/mcp
+        enabled: true
