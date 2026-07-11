@@ -11,7 +11,9 @@ description: >-
 
   2. Deterministic label matching wins over LLM routing.
 
-  3. No autonomous execution — runbooks require ntfy approval tap.
+  3. No autonomous execution — runbooks require ntfy approval tap. EXCEPTION:
+  read-only, always-safe-to-auto-run checks (restic-check-repo) are invoked
+  directly, matching plan §6.5's own carve-out for borg-check-repo.
 
   4. LLM enrichment (f/sre/hermes-enrich) is stubbed; wires in Phase C.
 
@@ -21,6 +23,19 @@ description: >-
 
   ntfy token: stored in Windmill variable f/sre/ntfy_token (set manually after
   deploy).
+
+
+  Backup branch (2026-07-10): now actually invokes
+  f/sre/runbooks/backup/restic-check-repo and posts the result to ntfy — Borg
+  has zero client repos configured anywhere so borg-check-repo was dropped in
+  favor of the real restic→Synology path. BLOCKED until the xsvr2 nix changes
+  (automation sudoers rule) deploy.
+
+
+  Arr-queue branch is still a stub — f/sre/runbooks/restart-arr-queue exists and
+  is real, but auto-invoking it means mutating arr state with no ntfy
+  Approve-button loop yet (Phase C), so it stays log-only until that gate
+  exists.
 value:
   modules:
     - id: post_ntfy
@@ -58,7 +73,8 @@ value:
             expr: flow_input.status === 'resolved'
             parallel: true
             skip_failure: true
-          - summary: Arr queue stuck → restart-arr-queue runbook
+          - summary: Arr queue stuck → restart-arr-queue runbook exists, not yet
+              auto-invoked (Phase C)
             modules:
               - id: runbook_arr_stub
                 value:
@@ -76,22 +92,36 @@ value:
               '').includes(n))"
             parallel: true
             skip_failure: true
-          - summary: Backup failure → borg-check-repo runbook
+          - summary: Backup failure → run restic-check-repo (read-only, always safe) and
+              report result
             modules:
-              - id: runbook_backup_stub
+              - id: runbook_restic_check
+                summary: Run read-only restic-check-repo — always safe to auto-run
+                value:
+                  type: script
+                  input_transforms: {}
+                  path: f/sre/runbooks/backup/restic-check-repo
+              - id: post_restic_check_result
+                summary: Post restic-check-repo result to ntfy thread
                 value:
                   type: rawscript
-                  content: '!inline runbook_backup_stub.ts'
+                  content: '!inline post_restic-check-repo_result_to_ntfy_thread.ts'
                   input_transforms:
-                    payload:
+                    check_result:
                       type: javascript
-                      expr: flow_input
-                  lock: '!inline runbook_backup_stub.lock'
+                      expr: results.runbook_restic_check
+                    ntfy_base_url:
+                      type: static
+                      value: https://ntfy.xrs444.net
+                    ntfy_token:
+                      type: static
+                      value: $var:f/sre/ntfy_token
+                  lock: '!inline post_restic-check-repo_result_to_ntfy_thread.lock'
                   language: bun
-            expr: "['BackupFailed','BackupMissed','BackupStaleTooLong','BorgRepoIntegrityFa\
-              il','ResticFailed','OfflineBackupFailed'].some(n =>
-              (flow_input.commonLabels?.alertname ?? '').includes(n) ||
-              (flow_input.alerts?.[0]?.labels?.alertname ?? '').includes(n))"
+            expr: "['BackupFailed','BackupMissed','BackupStaleTooLong','ResticFailed','Offl\
+              ineBackupFailed'].some(n => (flow_input.commonLabels?.alertname ??
+              '').includes(n) || (flow_input.alerts?.[0]?.labels?.alertname ??
+              '').includes(n))"
             parallel: true
             skip_failure: true
         default:
@@ -106,52 +136,4 @@ value:
               lock: '!inline no_runbook_match.lock'
               language: bun
 has_on_behalf_of: false
-schema:
-  $schema: http://json-schema.org/draft-07/schema#
-  type: object
-  description: Alertmanager v4 webhook payload
-  properties:
-    version:
-      type: string
-    alerts:
-      type: array
-      items:
-        type: object
-        properties:
-          annotations:
-            type: object
-          endsAt:
-            type: string
-          fingerprint:
-            type: string
-          generatorURL:
-            type: string
-          labels:
-            type: object
-          startsAt:
-            type: string
-          status:
-            type: string
-    commonAnnotations:
-      type: object
-    commonLabels:
-      type: object
-    externalURL:
-      type: string
-    groupKey:
-      type: string
-    groupLabels:
-      type: object
-    receiver:
-      type: string
-    status:
-      type: string
-      enum:
-        - firing
-        - resolved
-    truncatedAlerts:
-      type: integer
-  required:
-    - version
-    - status
-    - alerts
+schema: null

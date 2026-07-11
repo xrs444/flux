@@ -1,0 +1,32 @@
+summary: Restart a stuck Sonarr/Radarr/Lidarr queue item
+description: >-
+  Phase A worked-example runbook (plan §14, Phase A step 9 / Phase C step 1 —
+  low blast radius, easy to induce).
+
+
+  Finds queue items in warning/failed status (or carrying an error message) for
+  the given arr app, and — unless dry_run — removes each from the client without
+  blocklisting, which lets Sonarr/Radarr/Lidarr automatically re-search and
+  re-grab. This is the standard community "restart a stuck download" pattern for
+  the arr APIs (DELETE .../queue/{id}?removeFromClient=true&blocklist=false).
+
+
+  Sonarr and Radarr use API v3; Lidarr (linuxserver.io build, packageVersion
+  2.10.3.4602) is still on API v1 — verified live against all three (`GET
+  /api/v3/queue` returns 200 for sonarr/radarr, 404 for lidarr; `GET
+  /api/v1/queue` is the correct lidarr path).
+
+
+  Defaults to dry_run=true: no ntfy Approve-button loop exists yet (Phase C), so
+  until that's wired this script reports what it *would* do rather than mutating
+  anything when invoked automatically. Run with dry_run=false explicitly (manual
+  invocation) to actually restart items.
+
+
+  Not yet wired into f/sre/alert-ingest's routing — that flow still only logs a
+  runbook_queued stub for ArrQueueStuck-class alerts. Wiring the Approve-gated
+  auto-invocation is Phase C scope.
+lock: '!inline f/sre/runbooks/restart-arr-queue.script.lock'
+has_on_behalf_of: false
+kind: script
+schema: null

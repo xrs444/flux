@@ -1,9 +1,11 @@
 version: v2
 locks:
   f/monitoring/synthetic_login: 17044ca4d0b6358e05697fbda20bac11e93d6acfe58770adbd7378ab5e961ae2
-  f/sre/alert-ingest__flow+__flow_hash: d7d3957eb30bff52fd47806446f7948a7a0da324e06a0b9d6a648e0ee233a0fe
-  f/sre/alert-ingest__flow+no_runbook_match.ts: 2586e48fa4d5a267a53d150a0ebe75bd5b0b53aa8a1f37e1239e828676df5a14
+  f/sre/alert-ingest__flow+__flow_hash: 7ada427041e252754589c8b7e0fe4af0ff558f209d5256c1f495bbeef68d66e2
+  f/sre/alert-ingest__flow+no_runbook_match.ts: 42f2e64cce5207246dea1664922ec65180fee813b3541492859d353d6ff4103f
   f/sre/alert-ingest__flow+post_raw_ntfy_notification_immediately_—_unconditional.ts: ed430e4635267cb16fcc346d5e85c43a3a420341c4816594b340f4aa1f25ba6b
+  f/sre/alert-ingest__flow+post_restic-check-repo_result_to_ntfy_thread.ts: 644119ccdf8fc06c43d27d68cb40df2a65f1c9112d8d797ab5267312fea87833
   f/sre/alert-ingest__flow+resolved_ack.ts: b2dd5e05d6d3702edeeceb23e56f4d192b57f62ec9ab824d275399774b4f692c
-  f/sre/alert-ingest__flow+runbook_arr_stub.ts: fb4398d8650eb6d5396ee5b76c9bc916326a9c92d0c2e27ad2879ea10cc5eb5d
-  f/sre/alert-ingest__flow+runbook_backup_stub.ts: 2eae09f6e851c7c312a317751a6c1ff75e755efbc4a3edd57931c8afcfe29540
+  f/sre/alert-ingest__flow+runbook_arr_stub.ts: 10995c63b3c8456e11a4bc5c71f3474bacc5fb7a4597cea152f44252f486db8b
+  f/sre/runbooks/backup/restic-check-repo: 033f3e6a94b945de33f8143752b2a117d51f8d041f5fa58b6f00f06467244005
+  f/sre/runbooks/restart-arr-queue: 84715a6fb7dd801bf931a1311871dccfd9f632b3e15d35340eb6e93bf659b82b
