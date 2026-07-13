@@ -43,7 +43,7 @@ spec:
     spec:
       containers:
         - name: mcp-loki
-          image: docker.io/grafana/mcp-grafana:0.17.0-alpine
+          image: docker.io/grafana/mcp-grafana:0.17.1-alpine
           args:
             - --transport=streamable-http
             - --address=0.0.0.0:8080
