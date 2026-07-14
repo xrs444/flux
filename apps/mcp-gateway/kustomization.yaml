@@ -15,6 +15,6 @@ resources:
   - sealedsecret-mcp-omada-credentials.yaml
   - deployment-mcp-omada.yaml
   - service-mcp-omada.yaml
-  # ingressroute-mcpjungle.yaml (external access for Claude Code) is Phase 4
-  # of the MCP gateway migration plan — added once a hostname is chosen and
-  # firewalla/omada/mcpjungle are verified working in-cluster first.
+  # External access for Claude Code (Hermes reaches mcpjungle in-cluster via
+  # ClusterIP directly). Requires a manual DNS record for mcp.xrs444.net.
+  - ingressroute-mcpjungle.yaml

@@ -1,0 +1,27 @@
+# External access for Claude Code (off-cluster, on the Mac — can't resolve
+# ClusterIP DNS like Hermes can). MCPJungle's own enterprise-mode bearer
+# token is the auth layer here, not Kanidm/oauth2-proxy — this is agent/API
+# traffic (Authorization: Bearer header), not browser SSO, so a forwardAuth
+# middleware doesn't apply the way it does for Grafana/Prometheus dashboards.
+#
+# Requires a DNS record for mcp.xrs444.net -> the Traefik LoadBalancer VIP
+# (same one windmill.xrs444.net uses, 172.21.0.2) — this repo doesn't manage
+# Cloudflare DNS records as code (only cert-manager's DNS-01 ACME challenge
+# token), so that record needs to be added manually.
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mcpjungle
+  namespace: mcp-gateway
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`mcp.xrs444.net`)
+      kind: Rule
+      services:
+        - name: mcpjungle
+          port: 8080
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net
