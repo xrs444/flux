@@ -87,6 +87,16 @@
       "addLabels": ["mcp", "requires-review"]
     },
     {
+      "description": "MCP gateway (mcp-gateway namespace) — higher-trust integrations (network control, write access) and the gateway itself; tool-contract and auth-surface changes always require review",
+      "matchPackageNames": [
+        "amittell/firewalla-mcp-server",
+        "jmtvms/tplink-omada-mcp",
+        "ghcr.io/mcpjungle/mcpjungle"
+      ],
+      "automerge": false,
+      "addLabels": ["mcp", "requires-review"]
+    },
+    {
       "description": "Flux components are managed by update-flux.yml — skip entirely",
       "enabled": false,
       "matchPackageNames": [

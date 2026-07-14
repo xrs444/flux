@@ -1,0 +1,74 @@
+# mcpjungle — the actual MCP gateway. One unified /mcp endpoint for both
+# Claude Code (external, via ingressroute-mcp-gateway.yaml) and Hermes
+# (in-cluster, via ClusterIP). Runs in --enterprise mode: per-client bearer
+# tokens + server allow-lists are the auth layer (not Kanidm/oauth2-proxy —
+# this is agent/API traffic, not browser SSO).
+#
+# Interim image: stock `-stdio` tag (has npx/uvx for arr/homeassistant/
+# jellyfin stdio backends). Swaps to a custom image once netbox-mcp-rw's
+# source is baked in (Phase 3 of the MCP gateway migration plan).
+#
+# firewalla/omada are registered as streamable_http upstreams pointing at
+# their own Deployments in this namespace. arr/homeassistant/jellyfin/
+# netbox are registered as stdio upstreams that mcpjungle spawns itself
+# (registration is a one-time `mcpjungle register`/`mcpjungle create
+# mcp-client` CLI step via `kubectl exec`, not declared here).
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcpjungle
+  namespace: mcp-gateway
+  labels:
+    app: mcpjungle
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mcpjungle
+  template:
+    metadata:
+      labels:
+        app: mcpjungle
+    spec:
+      containers:
+        - name: mcpjungle
+          image: ghcr.io/mcpjungle/mcpjungle:0.4.5-stdio
+          args:
+            - start
+            - --enterprise
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: SQLITE_DB_PATH
+              value: "/data/mcpjungle.db"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mcpjungle-data

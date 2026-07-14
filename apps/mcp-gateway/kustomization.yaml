@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  # mcpjungle — the gateway itself
+  - pvc-mcpjungle-data.yaml
+  - deployment-mcpjungle.yaml
+  - service-mcpjungle.yaml
+  # mcp-firewalla (HTTP-native upstream, registered into mcpjungle)
+  - sealedsecret-mcp-firewalla-credentials.yaml
+  - deployment-mcp-firewalla.yaml
+  - service-mcp-firewalla.yaml
+  # mcp-omada (HTTP-native upstream, registered into mcpjungle)
+  # credentials rotated 2026-07-13 — see .wolf/security-backlog.md H7
+  - sealedsecret-mcp-omada-credentials.yaml
+  - deployment-mcp-omada.yaml
+  - service-mcp-omada.yaml
+  # ingressroute-mcpjungle.yaml (external access for Claude Code) is Phase 4
+  # of the MCP gateway migration plan — added once a hostname is chosen and
+  # firewalla/omada/mcpjungle are verified working in-cluster first.

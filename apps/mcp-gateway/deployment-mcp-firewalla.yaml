@@ -1,0 +1,66 @@
+# mcp-firewalla — HTTP MCP server exposing Firewalla network monitoring/
+# control tools. Registered into MCPJungle as a streamable_http upstream
+# (see mcpjungle-registration configmap in this kustomization).
+#
+# No documented HTTP health-check path exists in this image (confirmed by
+# inspecting dist/server.js: any request not matching MCP_HTTP_PATH returns
+# a bare 404, and the HealthCheckManager class isn't wired to an HTTP
+# route) — using a TCP socket probe instead of guessing a path.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-firewalla
+  namespace: mcp-gateway
+  labels:
+    app: mcp-firewalla
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mcp-firewalla
+  template:
+    metadata:
+      labels:
+        app: mcp-firewalla
+    spec:
+      containers:
+        - name: mcp-firewalla
+          image: amittell/firewalla-mcp-server:1.3.0
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: MCP_TRANSPORT
+              value: "http"
+            - name: MCP_HTTP_PORT
+              value: "8080"
+            - name: MCP_HTTP_PATH
+              value: "/mcp"
+            - name: FIREWALLA_MSP_ID
+              value: "dn-j3almw.firewalla.net"
+            - name: FIREWALLA_MSP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-firewalla-credentials
+                  key: msp-token
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3

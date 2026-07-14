@@ -1,0 +1,89 @@
+# mcp-omada — HTTP MCP server exposing TP-Link Omada SDN controller tools
+# (device/network admin). Registered into MCPJungle as a streamable_http
+# upstream.
+#
+# Credentials: see sealedsecret-mcp-omada-credentials.yaml. These were
+# rotated as part of this migration (previously hardcoded in plaintext in
+# nix/homemanager/users/xrs444/default.nix — see .wolf/security-backlog.md
+# H7).
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-omada
+  namespace: mcp-gateway
+  labels:
+    app: mcp-omada
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mcp-omada
+  template:
+    metadata:
+      labels:
+        app: mcp-omada
+    spec:
+      containers:
+        - name: mcp-omada
+          image: jmtvms/tplink-omada-mcp:v0.15.0
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: MCP_SERVER_USE_HTTP
+              value: "true"
+            - name: MCP_HTTP_PORT
+              value: "8080"
+            - name: MCP_HTTP_BIND_ADDR
+              value: "0.0.0.0"
+            - name: MCP_HTTP_PATH
+              value: "/mcp"
+            - name: MCP_HTTP_ENABLE_HEALTHCHECK
+              value: "true"
+            - name: OMADA_BASE_URL
+              value: "https://omada.xrs444.net"
+            - name: OMADA_STRICT_SSL
+              value: "false"
+            - name: OMADA_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-omada-credentials
+                  key: client-id
+            - name: OMADA_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-omada-credentials
+                  key: client-secret
+            - name: OMADA_OMADAC_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-omada-credentials
+                  key: omadac-id
+            - name: OMADA_SITE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-omada-credentials
+                  key: site-id
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3

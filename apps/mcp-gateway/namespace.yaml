@@ -1,0 +1,11 @@
+# MCP gateway for higher-trust integrations (Firewalla, Omada, NetBox-rw,
+# arr, Home Assistant, Jellyfin) — distinct from mcp-tools (read-only,
+# ambient-trust-fine observability MCPs). MCPJungle is the single gateway:
+# one /mcp endpoint, per-client bearer tokens + server allow-lists,
+# consumed by both Claude Code (external, via IngressRoute) and Hermes
+# (in-cluster, via ClusterIP).
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mcp-gateway
