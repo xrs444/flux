@@ -1,0 +1,55 @@
+# yamllint disable rule:line-length rule:truthy
+---
+name: Build MCP Gateway Custom Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      mcpjungle_version:
+        description: 'MCPJungle stdio base image tag (e.g. 0.4.5-stdio)'
+        required: true
+        default: '0.4.5-stdio'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/mcp-gateway/custom-image/**'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/mcpjungle-custom
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set MCPJungle base version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VER="${{ github.event.inputs.mcpjungle_version }}"
+            echo "mcpjungle_version=${VER}" >> "$GITHUB_OUTPUT"
+          else
+            echo "mcpjungle_version=0.4.5-stdio" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: apps/mcp-gateway/custom-image
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.mcpjungle_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
