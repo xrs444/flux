@@ -15,6 +15,14 @@
 # netbox are registered as stdio upstreams that mcpjungle spawns itself
 # (registration is a one-time `mcpjungle register`/`mcpjungle create
 # mcp-client` CLI step via `kubectl exec`, not declared here).
+#
+# HOME=/data/home: `mcpjungle login`/`init-server` (run via `kubectl exec`)
+# write the admin access token to $HOME/.mcpjungle.conf. Without this, that
+# token lives on the container's ephemeral root filesystem and is lost on
+# every restart (hit this directly — the image swap above wiped it),
+# forcing a full re-init since `init-server` isn't idempotent. Pointing HOME
+# at the PVC makes the token survive pod restarts like the registered-server
+# state already does.
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -48,6 +56,8 @@ spec:
           env:
             - name: SQLITE_DB_PATH
               value: "/data/mcpjungle.db"
+            - name: HOME
+              value: "/data/home"
           volumeMounts:
             - name: data
               mountPath: /data
