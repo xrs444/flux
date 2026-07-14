@@ -4,9 +4,11 @@
 # tokens + server allow-lists are the auth layer (not Kanidm/oauth2-proxy —
 # this is agent/API traffic, not browser SSO).
 #
-# Interim image: stock `-stdio` tag (has npx/uvx for arr/homeassistant/
-# jellyfin stdio backends). Swaps to a custom image once netbox-mcp-rw's
-# source is baked in (Phase 3 of the MCP gateway migration plan).
+# Image: custom build (apps/mcp-gateway/custom-image/, built by
+# .github/workflows/build-mcp-gateway-image.yml) — the stock mcpjungle
+# `-stdio` base already ships uv/uvx/npx/node/python3, this just adds the
+# vendored netbox-mcp-rw source on top so it can be registered as a stdio
+# backend without a code change.
 #
 # firewalla/omada are registered as streamable_http upstreams pointing at
 # their own Deployments in this namespace. arr/homeassistant/jellyfin/
@@ -36,7 +38,7 @@ spec:
     spec:
       containers:
         - name: mcpjungle
-          image: ghcr.io/mcpjungle/mcpjungle:0.4.5-stdio
+          image: ghcr.io/xrs444/mcpjungle-custom:0.4.5-stdio
           args:
             - start
             - --enterprise
