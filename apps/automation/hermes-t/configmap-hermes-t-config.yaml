@@ -36,3 +36,20 @@ data:
       mcp-kubernetes:
         url: http://mcp-kubernetes.mcp-tools.svc.cluster.local:8080/mcp
         enabled: true
+
+      # mcpjungle: higher-trust MCP gateway (flux/apps/mcp-gateway/) fronting
+      # Firewalla, Omada, arr, Home Assistant, Jellyfin, NetBox (read-write).
+      # Auth is a per-client bearer token (MCPJungle's own enterprise-mode
+      # access control, scoped via `mcpjungle create mcp-client hermes-t
+      # --allow "firewalla,omada,arr,homeassistant,jellyfin,netbox"`), not
+      # Kanidm/oauth2-proxy — verified live against the running hermes-t pod
+      # (`hermes mcp add --auth header`, schema confirmed via mcp_tool.py:
+      # `headers: {Authorization: "Bearer ${VAR}"}`, `${VAR}` resolved from
+      # the MCP_MCPJUNGLE_API_KEY env var, itself sourced from
+      # sealedsecret-hermes-t-config.yaml like DEEPSEEK_API_KEY/etc above).
+      mcpjungle:
+        url: http://mcpjungle.mcp-gateway.svc.cluster.local:8080/mcp
+        enabled: true
+        auth: header
+        headers:
+          Authorization: "Bearer ${MCP_MCPJUNGLE_API_KEY}"

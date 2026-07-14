@@ -66,6 +66,11 @@ spec:
                 secretKeyRef:
                   name: hermes-t-config
                   key: API_SERVER_KEY
+            - name: MCP_MCPJUNGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-t-config
+                  key: MCP_MCPJUNGLE_API_KEY
           volumeMounts:
             - name: hermes-t-data
               mountPath: /opt/data
