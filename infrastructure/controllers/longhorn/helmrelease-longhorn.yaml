@@ -97,8 +97,10 @@ spec:
       snapshotterReplicaCount: 3
 
     # Storage class configuration
+    # defaultClass is false because longhorn-retain (storageclass-longhorn-reclaim.yaml)
+    # is the intended cluster default, not this chart-managed "longhorn" class
     persistence:
-      defaultClass: true
+      defaultClass: false
       defaultClassReplicaCount: 2
 
     # Disable pre-upgrade checker for Talos (it checks for iSCSI)
