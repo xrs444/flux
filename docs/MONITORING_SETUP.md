@@ -18,7 +18,7 @@ This guide covers the complete setup of Prometheus, Grafana, and Apprise for mon
 
 ### Monitoring Targets
 
-- **NixOS Hosts**: xsvr1, xsvr2, xsvr3, xlabmgmt, xts1, xts2, xcomm1, xdash1, xhac-radio
+- **NixOS Hosts**: xsvr1, xsvr2, xsvr3, xts1, xts2, xcomm1, xdash1, xhac-radio
 - **Talos VMs**: 172.20.3.10, 172.20.3.20, 172.20.3.30
 - **Kubernetes Cluster**: Pods, nodes, deployments, services, etc.
 

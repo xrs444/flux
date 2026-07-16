@@ -34,7 +34,7 @@
       "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
         { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\",instance=~\"172.20.1.10:9100|172.20.1.20:9100|172.20.1.30:9100\"}[5m])) * 100)", "legendFormat": "{{instance}}" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\",instance=~\"xts1.lan:9100|xts2.lan:9100|v-xlabmgmt.lan:9100|xcomm1.lan:9100|xpbx1.lan:9100|cmrpi1.lan:9100\"}[5m])) * 100)", "legendFormat": "{{instance}}" }
+        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\",instance=~\"xts1.lan:9100|xts2.lan:9100|xcomm1.lan:9100|xpbx1.lan:9100|cmrpi1.lan:9100\"}[5m])) * 100)", "legendFormat": "{{instance}}" }
       ],
       "title": "CPU Usage",
       "type": "timeseries"
