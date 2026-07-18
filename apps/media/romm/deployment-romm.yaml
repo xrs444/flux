@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: romm
-          image: rommapp/romm:4.9.2
+          image: rommapp/romm:5.0.0
           ports:
             - containerPort: 8080
               name: http
