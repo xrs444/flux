@@ -77,3 +77,90 @@ spec:
       port: 3269
       targetPort: 3269
       protocol: TCP
+    # Narrowed RPC dynamic port range — see statefulset postStart hook. Required
+    # for domain-join RPC callbacks (e.g. DNS record registration) that use an
+    # ephemeral port negotiated via the endpoint mapper on 135.
+    - name: rpc-dyn-49152
+      port: 49152
+      targetPort: 49152
+      protocol: TCP
+    - name: rpc-dyn-49153
+      port: 49153
+      targetPort: 49153
+      protocol: TCP
+    - name: rpc-dyn-49154
+      port: 49154
+      targetPort: 49154
+      protocol: TCP
+    - name: rpc-dyn-49155
+      port: 49155
+      targetPort: 49155
+      protocol: TCP
+    - name: rpc-dyn-49156
+      port: 49156
+      targetPort: 49156
+      protocol: TCP
+    - name: rpc-dyn-49157
+      port: 49157
+      targetPort: 49157
+      protocol: TCP
+    - name: rpc-dyn-49158
+      port: 49158
+      targetPort: 49158
+      protocol: TCP
+    - name: rpc-dyn-49159
+      port: 49159
+      targetPort: 49159
+      protocol: TCP
+    - name: rpc-dyn-49160
+      port: 49160
+      targetPort: 49160
+      protocol: TCP
+    - name: rpc-dyn-49161
+      port: 49161
+      targetPort: 49161
+      protocol: TCP
+    - name: rpc-dyn-49162
+      port: 49162
+      targetPort: 49162
+      protocol: TCP
+    - name: rpc-dyn-49163
+      port: 49163
+      targetPort: 49163
+      protocol: TCP
+    - name: rpc-dyn-49164
+      port: 49164
+      targetPort: 49164
+      protocol: TCP
+    - name: rpc-dyn-49165
+      port: 49165
+      targetPort: 49165
+      protocol: TCP
+    - name: rpc-dyn-49166
+      port: 49166
+      targetPort: 49166
+      protocol: TCP
+    - name: rpc-dyn-49167
+      port: 49167
+      targetPort: 49167
+      protocol: TCP
+    - name: rpc-dyn-49168
+      port: 49168
+      targetPort: 49168
+      protocol: TCP
+    - name: rpc-dyn-49169
+      port: 49169
+      targetPort: 49169
+      protocol: TCP
+    - name: rpc-dyn-49170
+      port: 49170
+      targetPort: 49170
+      protocol: TCP
+    - name: rpc-dyn-49171
+      port: 49171
+      targetPort: 49171
+      protocol: TCP
+    - name: rpc-dyn-49172
+      port: 49172
+      targetPort: 49172
+      protocol: TCP

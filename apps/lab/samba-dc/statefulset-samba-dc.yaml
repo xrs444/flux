@@ -80,6 +80,72 @@ spec:
             - name: gcs
               containerPort: 3269
               protocol: TCP
+            # Narrowed RPC dynamic port range (see postStart hook below) — exposed
+            # so domain-join RPC callbacks (e.g. DNS record registration) can reach
+            # the ephemeral port negotiated via the endpoint mapper on 135.
+            - name: rpc-dyn-49152
+              containerPort: 49152
+              protocol: TCP
+            - name: rpc-dyn-49153
+              containerPort: 49153
+              protocol: TCP
+            - name: rpc-dyn-49154
+              containerPort: 49154
+              protocol: TCP
+            - name: rpc-dyn-49155
+              containerPort: 49155
+              protocol: TCP
+            - name: rpc-dyn-49156
+              containerPort: 49156
+              protocol: TCP
+            - name: rpc-dyn-49157
+              containerPort: 49157
+              protocol: TCP
+            - name: rpc-dyn-49158
+              containerPort: 49158
+              protocol: TCP
+            - name: rpc-dyn-49159
+              containerPort: 49159
+              protocol: TCP
+            - name: rpc-dyn-49160
+              containerPort: 49160
+              protocol: TCP
+            - name: rpc-dyn-49161
+              containerPort: 49161
+              protocol: TCP
+            - name: rpc-dyn-49162
+              containerPort: 49162
+              protocol: TCP
+            - name: rpc-dyn-49163
+              containerPort: 49163
+              protocol: TCP
+            - name: rpc-dyn-49164
+              containerPort: 49164
+              protocol: TCP
+            - name: rpc-dyn-49165
+              containerPort: 49165
+              protocol: TCP
+            - name: rpc-dyn-49166
+              containerPort: 49166
+              protocol: TCP
+            - name: rpc-dyn-49167
+              containerPort: 49167
+              protocol: TCP
+            - name: rpc-dyn-49168
+              containerPort: 49168
+              protocol: TCP
+            - name: rpc-dyn-49169
+              containerPort: 49169
+              protocol: TCP
+            - name: rpc-dyn-49170
+              containerPort: 49170
+              protocol: TCP
+            - name: rpc-dyn-49171
+              containerPort: 49171
+              protocol: TCP
+            - name: rpc-dyn-49172
+              containerPort: 49172
+              protocol: TCP
           volumeMounts:
             - name: samba-data
               mountPath: /var/lib/samba
@@ -109,6 +175,15 @@ spec:
                     # even over TLS; this is required for OpenRSAT and Nutanix LDAP bind
                     if ! grep -q "ldap server require strong auth" /etc/samba/smb.conf; then
                       sed -i "/^\[global\]/a\\\tldap server require strong auth = no" /etc/samba/smb.conf
+                    fi
+                    # Narrow the RPC dynamic port range so it can be exposed through the
+                    # LoadBalancer Service. Without this, only the endpoint mapper (135)
+                    # is reachable — the actual RPC callback (e.g. DsrUpdateReadOnlyServerDnsRecord
+                    # during domain join) gets an ephemeral port from Samba's default
+                    # 49152-65535 range that is never routed, and the client sees
+                    # "RPC server unavailable".
+                    if ! grep -q "rpc server dynamic port range" /etc/samba/smb.conf; then
+                      sed -i "/^\[global\]/a\\\trpc server dynamic port range = 49152-49172" /etc/samba/smb.conf
                     fi
                     # Wait for LDAP to be up, then purge pod-IP DNS records
                     POD_IP=$(hostname -I | awk '{print $1}')
