@@ -38,7 +38,7 @@ spec:
       serviceAccountName: mcp-kubernetes
       containers:
         - name: mcp-kubernetes
-          image: ghcr.io/containers/kubernetes-mcp-server:v0.0.64
+          image: ghcr.io/containers/kubernetes-mcp-server:v0.0.65
           args:
             # --port enables both streamable-http (/mcp) and SSE (/sse) on
             # the same port. Hermes uses the /mcp streamable-http endpoint
