@@ -7,6 +7,10 @@ kind: Kustomization
 namespace: craftycontroller
 resources:
   - namespace.yaml
+  - oauth2-proxy-sealedsecret-craftycontroller.yaml
   - helmrelease.yaml
+  - helmrelease-craftycontroller-oauth2.yaml
+  - ingressroute-craftycontroller-oauth2.yaml
+  - ingressroute-craftycontroller-ui.yaml
   - service-minecraft.yaml
   - pv-craftycontroller-nfs.yaml

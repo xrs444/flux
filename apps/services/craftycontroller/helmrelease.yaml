@@ -22,14 +22,7 @@ spec:
       retries: 3
   values:
     ingress:
-      annotations:
-        traefik.ingress.kubernetes.io/router.middlewares: >-
-          craftycontroller-auth-crafty@kubernetescrd
-      hosts:
-        - host: crafty.xrs444.net
-          paths:
-            - path: /
-              pathType: Prefix
+      enabled: false
     persistence:
       size: 50Gi
     extraVolumeMounts:

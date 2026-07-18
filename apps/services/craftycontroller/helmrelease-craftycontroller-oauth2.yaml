@@ -1,0 +1,58 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: craftycontroller-oauth2-proxy
+  namespace: craftycontroller
+spec:
+  chart:
+    spec:
+      chart: oauth2-proxy
+      version: "10.7.0"
+      sourceRef:
+        kind: HelmRepository
+        name: oauth2-proxy
+        namespace: flux-system
+  interval: 5m
+  values:
+    nameOverride: craftycontroller-oauth2-proxy
+    fullnameOverride: craftycontroller-oauth2-proxy
+    extraArgs:
+      - --provider=oidc
+      - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/oauth2_craftycontroller
+      - --redirect-url=https://crafty.xrs444.net/oauth2/callback
+      - --email-domain=*
+      - --upstream=https://craftycontroller.craftycontroller.svc.cluster.local:8443/
+      - --ssl-upstream-insecure-skip-verify=true
+      - --scope=openid email profile groups
+      - --cookie-domain=.xrs444.net
+      - --cookie-secure=true
+      - --cookie-samesite=lax
+      - --code-challenge-method=S256
+      - --skip-provider-button=true
+      - --reverse-proxy=true
+      - --pass-host-header=true
+      - --pass-access-token=true
+      - --set-authorization-header=true
+    config:
+      existingSecret: oauth2-proxy-secret-craftycontroller
+    probes:
+      liveness:
+        enabled: true
+        initialDelaySeconds: 30
+        timeoutSeconds: 5
+      readiness:
+        enabled: true
+        initialDelaySeconds: 10
+        timeoutSeconds: 5
+        periodSeconds: 10
+      startup:
+        enabled: true
+        initialDelaySeconds: 0
+        timeoutSeconds: 5
+        periodSeconds: 10
+        failureThreshold: 60
+    ingress:
+      enabled: false
+    service:
+      type: ClusterIP
+      portNumber: 4180
