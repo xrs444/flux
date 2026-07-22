@@ -19,6 +19,16 @@ data:
   #     playtime, deflect anything sensitive back to a parent).
   #   - Routed to by HA when: speaker ID = kid, kid-bound tablet is the
   #     input surface, or speaker is unidentified (defensive default).
+  #
+  # VERIFIED 2026-07-21 (kubectl exec into the live hermes-k pod): the
+  # `tools.allowed/denied` block below is NOT parsed by the hermes-agent CLI
+  # (`hermes mcp list` shows zero servers regardless of this file). The real,
+  # working enforcement is that this configmap has NO `mcp_servers:` block at
+  # all (unlike hermes-t/hermes-s) and the Deployment's env has no
+  # MCP_MCPJUNGLE_API_KEY — so hermes-k has no tool to call and no credential
+  # to reach the gateway even if it did. This is enforcement-by-omission, not
+  # an explicit deny: DO NOT copy an `mcp_servers:` block onto this file from
+  # hermes-t/hermes-s without deliberately deciding kid-mode should have it.
   config.yaml: |
     model:
       default: deepseek-v4-flash
