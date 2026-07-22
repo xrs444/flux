@@ -19,4 +19,5 @@ resources:
   - deployment-romm.yaml
   - service-romm-mariadb.yaml
   - service-romm.yaml
+  - middleware-romm-coop-coep.yaml
   - ingressroute-romm.yaml

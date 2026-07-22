@@ -13,5 +13,7 @@ spec:
       services:
         - name: romm
           port: 8080
+      middlewares:
+        - name: romm-coop-coep
   tls:
     secretName: letsencrypt-wildcard-cert-xrs444.net
