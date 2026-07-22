@@ -29,6 +29,49 @@ spec:
                     operator: NotIn
                     values:
                       - v-k8s-xsvr3
+      # Runs before the main container starts, on the same PVC. Patches a
+      # known API key (from the SealedSecret) directly into config.xml so
+      # the postStart hook below can authenticate on first boot, without
+      # ever needing to read the *existing* API key off the live pod (that
+      # specific read is blocked by a credential-handling guard — see
+      # sealedsecret-syncthing.yaml's header comment for why this sidesteps
+      # it). Does not touch cert.pem/key.pem — xsvr1's device identity
+      # (BMTUKUC-...) survives purely because nothing here reads or
+      # rewrites those files. No-op if config.xml is missing entirely (a
+      # from-scratch PVC) — that edge case isn't handled here; Syncthing
+      # would generate its own fresh identity+key in that scenario, same as
+      # before this change existed.
+      initContainers:
+        - name: patch-api-key
+          image: alpine:3
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              CONFIG=/var/syncthing/config/config.xml
+              if [ -f "$CONFIG" ]; then
+                if grep -q "<apikey>${SYNCTHING_API_KEY}</apikey>" "$CONFIG"; then
+                  echo "API key already up to date."
+                else
+                  sed -i "s|<apikey>.*</apikey>|<apikey>${SYNCTHING_API_KEY}</apikey>|" "$CONFIG"
+                  echo "Patched GUI API key in config.xml."
+                fi
+              else
+                echo "config.xml not found (fresh PVC) -- skipping; Syncthing will generate its own identity+key on first boot."
+              fi
+          env:
+            - name: SYNCTHING_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: syncthing-api-key
+                  key: api-key
+          volumeMounts:
+            - name: data
+              mountPath: /var/syncthing
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
       containers:
         - name: syncthing
           image: syncthing/syncthing:2.1.1
@@ -51,9 +94,53 @@ spec:
               value: "1000"
             - name: PGID
               value: "1000"
+            - name: SYNCTHING_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: syncthing-api-key
+                  key: api-key
+          # Reconciles the declared device/folder state (config/*.json,
+          # mounted below) via Syncthing's own REST config API on every
+          # container start — self-healing on restart, and re-applied
+          # whenever config/*.json changes (the configMapGenerator hash
+          # suffix in kustomization.yaml forces a rollout on any edit).
+          # Bulk endpoints (PUT .../config/devices, PUT .../config/folders/{id})
+          # are used so no JSON parsing is needed in this shell script — the
+          # mounted files are already shaped as the exact request bodies.
+          # A failing postStart is treated by Kubernetes as a failed
+          # container start (it'll retry via restart), so this is bounded
+          # rather than an infinite wait.
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    set -e
+                    API="http://127.0.0.1:8384"
+                    echo "Waiting for Syncthing API..."
+                    tries=0
+                    until curl -sf "$API/rest/noauth/health" >/dev/null 2>&1; do
+                      tries=$((tries + 1))
+                      if [ "$tries" -ge 60 ]; then
+                        echo "Timed out waiting for Syncthing API." >&2
+                        exit 1
+                      fi
+                      sleep 2
+                    done
+                    echo "Syncthing ready, reconciling desired config..."
+                    curl -sf -X PUT -H "X-API-Key: ${SYNCTHING_API_KEY}" -H "Content-Type: application/json" \
+                      -d @/etc/syncthing-desired/devices.json "$API/rest/config/devices"
+                    curl -sf -X PUT -H "X-API-Key: ${SYNCTHING_API_KEY}" -H "Content-Type: application/json" \
+                      -d @/etc/syncthing-desired/folder.json "$API/rest/config/folders/xrs444-obsidian"
+                    echo "Syncthing config reconciled."
           volumeMounts:
             - name: data
               mountPath: /var/syncthing
+            - name: desired-state
+              mountPath: /etc/syncthing-desired
+              readOnly: true
           resources:
             requests:
               cpu: 100m
@@ -87,3 +174,9 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: syncthing-data
+        # Populated by kustomization.yaml's configMapGenerator (name gets a
+        # content-hash suffix — Kustomize rewrites this reference
+        # automatically, no need to hardcode the generated name here).
+        - name: desired-state
+          configMap:
+            name: syncthing-desired-state

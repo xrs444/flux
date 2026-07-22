@@ -12,3 +12,16 @@ resources:
   # NFS storage
   - pv-syncthing-data.yaml
   - pvc-syncthing-data.yaml
+  # Declarative device/folder reconciliation (see deployment-syncthing.yaml's
+  # initContainer + postStart hook)
+  - sealedsecret-syncthing.yaml
+
+# Content-hash suffix so editing config/*.json actually rolls the Deployment
+# (a plain ConfigMap edit alone does not restart anything) — precedent:
+# flux/apps/observability/monitoring/kustomization.yaml.
+configMapGenerator:
+  - name: syncthing-desired-state
+    namespace: syncthing
+    files:
+      - config/devices.json
+      - config/folder.json

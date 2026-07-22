@@ -1,0 +1,10 @@
+{
+  "id": "xrs444-obsidian",
+  "label": "Obsidian",
+  "path": "/var/syncthing/xrs444/obsidian",
+  "devices": [
+    { "deviceID": "KR5364I-V6A6WVX-JXQS3XX-IQROL3Q-E654SM3-UVYOZZ3-L5XMEQ7-IOUHKQV" },
+    { "deviceID": "IQ2OA2T-XE3O23R-FDHNVHS-KTM35FF-Q3ZMZYS-BMS4RLP-GIN5PLB-APVJ7QK" },
+    { "deviceID": "X4L5ZWN-HCUKYPU-J2Q77M3-E5R5IHF-CL3UGUN-IMDOZRU-U6BZNYF-TINVTQD" }
+  ]
+}
