@@ -35,7 +35,7 @@ spec:
                       - v-k8s-xsvr3
       containers:
         - name: hbbr
-          image: rustdesk/rustdesk-server:1.1.15
+          image: rustdesk/rustdesk-server:1.1.16
           command: ["hbbr"]
           ports:
             - containerPort: 21117
