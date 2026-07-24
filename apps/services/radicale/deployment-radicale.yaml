@@ -28,7 +28,7 @@ spec:
         fsGroup: 2999
       containers:
         - name: radicale
-          image: tomsquest/docker-radicale:3.7.5.0
+          image: tomsquest/docker-radicale:3.7.6.0
           ports:
             - containerPort: 5232
               name: http
