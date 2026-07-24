@@ -74,7 +74,7 @@ spec:
             runAsGroup: 1000
       containers:
         - name: syncthing
-          image: syncthing/syncthing:2.1.1
+          image: syncthing/syncthing:2.1.2
           ports:
             - containerPort: 8384
               name: http
