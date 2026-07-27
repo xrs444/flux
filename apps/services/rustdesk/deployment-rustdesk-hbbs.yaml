@@ -26,7 +26,7 @@ spec:
                       - v-k8s-xsvr3
       containers:
         - name: hbbs
-          image: rustdesk/rustdesk-server:1.1.15
+          image: rustdesk/rustdesk-server:1.1.16
           command: ["hbbs"]
           args:
             - "-r"
