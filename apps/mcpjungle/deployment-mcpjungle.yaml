@@ -1,11 +1,11 @@
 # mcpjungle — the actual MCP gateway. One unified /mcp endpoint for both
-# Claude Code (external, via ingressroute-mcp-gateway.yaml) and Hermes
+# Claude Code (external, via ingressroute-mcpjungle.yaml) and Hermes
 # (in-cluster, via ClusterIP). Runs in --enterprise mode: per-client bearer
 # tokens + server allow-lists are the auth layer (not Kanidm/oauth2-proxy —
 # this is agent/API traffic, not browser SSO).
 #
-# Image: custom build (apps/mcp-gateway/custom-image/, built by
-# .github/workflows/build-mcp-gateway-image.yml) — the stock mcpjungle
+# Image: custom build (apps/mcpjungle/custom-image/, built by
+# .github/workflows/build-mcpjungle-image.yml) — the stock mcpjungle
 # `-stdio` base already ships uv/uvx/npx/node/python3, this just adds the
 # vendored netbox-mcp-rw source on top so it can be registered as a stdio
 # backend without a code change.

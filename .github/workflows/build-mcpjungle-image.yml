@@ -1,6 +1,6 @@
 # yamllint disable rule:line-length rule:truthy
 ---
-name: Build MCP Gateway Custom Image
+name: Build MCPJungle Custom Image
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/mcp-gateway/custom-image/**'
+      - 'apps/mcpjungle/custom-image/**'
 
 env:
   REGISTRY: ghcr.io
@@ -48,7 +48,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
-          context: apps/mcp-gateway/custom-image
+          context: apps/mcpjungle/custom-image
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.mcpjungle_version }}

@@ -134,7 +134,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apps-mcp-gateway
+  name: apps-mcpjungle
   namespace: flux-system
 spec:
   interval: 10m0s
@@ -143,7 +143,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./apps/mcp-gateway
+  path: ./apps/mcpjungle
   wait: true
   timeout: 5m0s
   prune: true
