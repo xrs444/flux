@@ -11,6 +11,15 @@ system:
   platforms:
     # Maps the 'dos' library folder to the MS-DOS IGDB platform slug.
     dos: "dos"
+    # PS1 IGDB slug changed to 'psx' as of RomM 4.1.0 (was 'ps').
+    ps1: "psx"
+    # Friendlier folder name than the IGDB slug 'win'. Catalog-only in RomM —
+    # no EmulatorJS core for Windows PC games, download to play on a PC.
+    pc: "win"
+    # Unverified against this instance — confirm under Settings > Platforms
+    # after the first scan and fix this mapping if RomM reports differently.
+    # Catalog-only, same as pc (no EmulatorJS core for original Xbox).
+    xbox: "xbox"
 
 exclude:
   roms:
