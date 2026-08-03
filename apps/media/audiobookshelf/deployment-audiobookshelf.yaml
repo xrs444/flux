@@ -35,7 +35,7 @@ spec:
                       - v-k8s-xsvr3
       containers:
         - name: audiobookshelf
-          image: ghcr.io/advplyr/audiobookshelf:2.35.1
+          image: ghcr.io/advplyr/audiobookshelf:2.36.0
           securityContext:
             capabilities:
               add:
