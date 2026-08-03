@@ -46,7 +46,7 @@ spec:
             runAsNonRoot: false
       containers:
         - name: borgwarehouse
-          image: borgwarehouse/borgwarehouse:v3.5.0
+          image: borgwarehouse/borgwarehouse:v3.6.0
           ports:
             - containerPort: 3000
               name: http
