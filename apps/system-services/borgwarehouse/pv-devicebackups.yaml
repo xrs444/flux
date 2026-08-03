@@ -13,8 +13,16 @@ spec:
   nfs:
     path: /zfs/devicebackups
     server: 172.20.3.201
+  # nfsvers=4 removed 2026-08-03: NFSv4 requires ID-mapping (idmapd) to
+  # translate numeric UIDs to user@domain strings on the wire. The k8s
+  # nodes and xsvr1 don't share a matching idmapd domain, so UID 1000
+  # silently resolved to "nobody" server-side -- `ls` showed correct
+  # ownership (1000:1000, mode 755) but writes as UID 1000 failed with
+  # Permission denied (confirmed via a throwaway debug pod). Other NFS
+  # PVs in this cluster (e.g. syncthing's) don't pin a version and
+  # negotiate NFSv3, which uses raw numeric UIDs with no ID-mapping step
+  # -- dropping the pin here matches that already-working pattern.
   mountOptions:
-    - nfsvers=4
     - hard
     - intr
 ---
