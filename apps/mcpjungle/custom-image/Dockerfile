@@ -8,7 +8,7 @@
 #
 # netbox-mcp-rw source: vendored copy of https://github.com/alexkiwi1/netbox-mcp-rw
 # (a fork of netboxlabs/netbox-mcp-server with write/CRUD tools added).
-FROM ghcr.io/mcpjungle/mcpjungle:0.4.5-stdio
+FROM ghcr.io/mcpjungle/mcpjungle:0.4.6-stdio
 
 COPY netbox-mcp-rw /opt/netbox-mcp-rw
 RUN cd /opt/netbox-mcp-rw && uv sync --frozen
