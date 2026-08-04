@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: mcp-prometheus
-          image: ghcr.io/pab1it0/prometheus-mcp-server:1.6.1
+          image: ghcr.io/pab1it0/prometheus-mcp-server:1.6.2
           ports:
             - containerPort: 8080
               name: http
