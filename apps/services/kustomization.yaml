@@ -15,6 +15,7 @@ resources:
   - ./paperless-ngx
   - ./radicale
   - ./rustdesk
+  - ./scanopy
   - ./seatable
   - ./termix
   - ./vikunja

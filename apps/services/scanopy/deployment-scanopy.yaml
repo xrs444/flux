@@ -1,0 +1,120 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scanopy
+  namespace: scanopy
+  labels:
+    app: scanopy
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate # RWO PVCs on scanopy-data + scanopy-postgres
+  selector:
+    matchLabels:
+      app: scanopy
+  template:
+    metadata:
+      labels:
+        app: scanopy
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: scanopy
+          # TODO: pin to a real released tag before deploying — see
+          # https://github.com/scanopy/scanopy/releases (never ship :latest).
+          image: ghcr.io/scanopy/scanopy/server:latest
+          ports:
+            - containerPort: 60072
+              name: http
+          env:
+            - name: TZ
+              value: "America/Phoenix"
+            - name: SCANOPY_PUBLIC_URL
+              value: "https://scanopy.xrs444.net"
+            - name: SCANOPY_WEB_EXTERNAL_PATH
+              value: "/app/static"
+            # Remote DaemonPoll daemon runs on xfw (Firewalla) — no bundled
+            # integrated daemon. If the server hard-requires
+            # SCANOPY_INTEGRATED_DAEMON_URL to start, that's an open item to
+            # resolve (see .wolf/memory.md / the deployment plan).
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sealedsecret-scanopy
+                  key: db-password
+            # $(DB_PASSWORD) is k8s env-var interpolation, not a shell
+            # expansion — requires DB_PASSWORD to be defined earlier in this
+            # same container's env list (it is, immediately above).
+            - name: SCANOPY_DATABASE_URL
+              value: "postgresql://postgres:$(DB_PASSWORD)@localhost:5432/scanopy"
+            - name: SCANOPY_OIDC_PROVIDERS
+              valueFrom:
+                secretKeyRef:
+                  name: sealedsecret-scanopy
+                  key: oidc-providers
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+        - name: postgres
+          image: postgres:17-alpine # Scanopy requires PostgreSQL 17
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sealedsecret-scanopy
+                  key: db-password
+            - name: POSTGRES_DB
+              value: "scanopy"
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: scanopy-data
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: scanopy-postgres

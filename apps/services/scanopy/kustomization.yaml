@@ -1,0 +1,15 @@
+# Scanopy - self-hosted network discovery & live topology map.
+# Server runs here; a remote DaemonPoll scanning daemon runs on xfw (Firewalla,
+# the default gateway on every VLAN) via nixible — see nix/hosts/nixable/xfw/.
+# OIDC via Kanidm — see nix/modules/services/kanidm/provision.nix (oauth2_scanopy).
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvc-scanopy-postgres.yaml
+  - pvc-scanopy-data.yaml
+  - sealedsecret-scanopy.yaml
+  - deployment-scanopy.yaml
+  - service-scanopy.yaml
+  - ingressroute-scanopy.yaml

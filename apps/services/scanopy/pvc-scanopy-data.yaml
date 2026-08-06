@@ -1,0 +1,14 @@
+# Scanopy server /data — retained separately from postgres (backups, exports).
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: scanopy-data
+  namespace: scanopy
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-retain

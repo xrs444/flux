@@ -1,0 +1,16 @@
+# Scanopy PostgreSQL storage — hosts/services/topology data, discovery history.
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: scanopy-postgres
+  namespace: scanopy
+  labels:
+    recurring-job-group.longhorn.io/default: enabled
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: longhorn

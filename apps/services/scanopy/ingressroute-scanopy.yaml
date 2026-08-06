@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: scanopy
+  namespace: scanopy
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`scanopy.xrs444.net`)
+      kind: Rule
+      services:
+        - name: scanopy
+          port: 60072
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net
