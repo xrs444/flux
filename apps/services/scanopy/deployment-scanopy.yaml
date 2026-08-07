@@ -50,14 +50,17 @@ spec:
             # same container's env list (it is, immediately above).
             - name: SCANOPY_DATABASE_URL
               value: "postgresql://postgres:$(DB_PASSWORD)@localhost:5432/scanopy"
-            - name: SCANOPY_OIDC_PROVIDERS
-              valueFrom:
-                secretKeyRef:
-                  name: sealedsecret-scanopy
-                  key: oidc-providers
           volumeMounts:
             - name: data
               mountPath: /data
+            # Scanopy reads OIDC config from a TOML FILE (Figment merges
+            # "../oidc.toml" relative to the binary's CWD, which is /app —
+            # i.e. /oidc.toml here), NOT an env var. See
+            # sealedsecret-scanopy.yaml's header comment for the bug this fixes.
+            - name: oidc-config
+              mountPath: /oidc.toml
+              subPath: oidc.toml
+              readOnly: true
           resources:
             requests:
               cpu: 100m
@@ -118,3 +121,9 @@ spec:
         - name: postgres-data
           persistentVolumeClaim:
             claimName: scanopy-postgres
+        - name: oidc-config
+          secret:
+            secretName: sealedsecret-scanopy
+            items:
+              - key: oidc-toml
+                path: oidc.toml
