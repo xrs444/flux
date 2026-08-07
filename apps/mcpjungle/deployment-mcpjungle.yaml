@@ -46,11 +46,18 @@ spec:
     spec:
       containers:
         - name: mcpjungle
-          image: ghcr.io/xrs444/mcpjungle-custom:0.4.5-stdio
-          # build-mcpjungle-image.yml reuses this same tag on every build (no
-          # version bump), so IfNotPresent (the default) would never notice a
-          # new image landed under it — Always forces a fresh pull on every
-          # pod (re)start, needed to actually pick up scanopy-mcp-rw below.
+          # Pinned by digest, not the floating :0.4.5-stdio tag.
+          # build-mcpjungle-image.yml reuses that same tag on every build (no
+          # version bump). Confirmed live: even with imagePullPolicy: Always,
+          # the cluster's Spegel P2P registry mirror (namespace `spegel`) kept
+          # serving a stale cached digest under that tag after a rebuild — the
+          # running pod's actual imageID didn't match what the build had just
+          # pushed. Digest-pinning sidesteps that class of staleness entirely
+          # (a rebuild always produces a new digest, so there's nothing to
+          # cache-hit on by mistake). Update this digest after every rebuild
+          # of apps/mcpjungle/custom-image/ — copy it from the "Digest" line
+          # in that GitHub Actions run's "Build and push" step log.
+          image: ghcr.io/xrs444/mcpjungle-custom@sha256:e7e081b21eb71235fc98fde4afb007bab318e98c9a02ccb9acb67210b3df8fab
           imagePullPolicy: Always
           args:
             - start
