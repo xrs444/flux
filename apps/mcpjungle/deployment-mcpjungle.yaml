@@ -47,6 +47,11 @@ spec:
       containers:
         - name: mcpjungle
           image: ghcr.io/xrs444/mcpjungle-custom:0.4.5-stdio
+          # build-mcpjungle-image.yml reuses this same tag on every build (no
+          # version bump), so IfNotPresent (the default) would never notice a
+          # new image landed under it — Always forces a fresh pull on every
+          # pod (re)start, needed to actually pick up scanopy-mcp-rw below.
+          imagePullPolicy: Always
           args:
             - start
             - --enterprise
