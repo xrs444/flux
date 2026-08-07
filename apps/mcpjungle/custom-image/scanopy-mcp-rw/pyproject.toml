@@ -5,6 +5,12 @@ description = "A read/write MCP server for Scanopy (network topology/discovery)"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "mcp[cli]>=1.3.0",
+    # <2.0.0 pinned deliberately: mcp 2.0.0 removed/renamed the
+    # mcp.server.fastmcp import path this server (and ../netbox-mcp-rw/) uses
+    # — confirmed live via ModuleNotFoundError when uv lock resolved to 2.0.0
+    # unpinned. netbox-mcp-rw has the identical unbounded ">=1.3.0" constraint
+    # and is only safe today because its existing uv.lock predates 2.0.0's
+    # release — regenerating its lock would hit this same break.
+    "mcp[cli]>=1.3.0,<2.0.0",
     "requests>=2.31.0",
 ]
