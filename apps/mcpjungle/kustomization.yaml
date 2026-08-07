@@ -6,6 +6,10 @@ resources:
   - pvc-mcpjungle-data.yaml
   - deployment-mcpjungle.yaml
   - service-mcpjungle.yaml
+  # scanopy-mcp-rw (stdio upstream, vendored into the mcpjungle image itself —
+  # no separate Deployment/Service. This SealedSecret is encrypted-at-rest
+  # storage only; see its header comment for the manual registration steps).
+  - sealedsecret-scanopy-mcp-credentials.yaml
   # mcp-firewalla (HTTP-native upstream, registered into mcpjungle)
   - sealedsecret-mcp-firewalla-credentials.yaml
   - deployment-mcp-firewalla.yaml
