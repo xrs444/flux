@@ -57,7 +57,7 @@ spec:
           # cache-hit on by mistake). Update this digest after every rebuild
           # of apps/mcpjungle/custom-image/ — copy it from the "Digest" line
           # in that GitHub Actions run's "Build and push" step log.
-          image: ghcr.io/xrs444/mcpjungle-custom@sha256:c54db1ed9a75bf0eb09c2ba4f2135a41e0f574348b5136360c997c56d370d018
+          image: ghcr.io/xrs444/mcpjungle-custom@sha256:3d3d1c167dfc25b6934e829a121cab77a28f5f7e51484cb2dd9348af03a90c75
           imagePullPolicy: Always
           args:
             - start
