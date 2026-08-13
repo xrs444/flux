@@ -25,7 +25,10 @@ spec:
         - name: scanopy
           # TODO: pin to a real released tag before deploying — see
           # https://github.com/scanopy/scanopy/releases (never ship :latest).
-          image: ghcr.io/scanopy/scanopy/server:latest
+          # Pinned (digest-verified identical to the previously-running
+          # :latest). Bump together with the xfw daemon in
+          # nix/hosts/nixable/xfw/default.nix.
+          image: ghcr.io/scanopy/scanopy/server:v0.17.9
           ports:
             - containerPort: 60072
               name: http
