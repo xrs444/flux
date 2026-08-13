@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - pv-devicebackups.yaml
   - pvc-config.yaml
+  - oauth2-sealedsecret-borgwarehouse.yaml
   - deployment-borgwarehouse.yaml
   - service-borgwarehouse.yaml
   - ingressroute-borgwarehouse.yaml

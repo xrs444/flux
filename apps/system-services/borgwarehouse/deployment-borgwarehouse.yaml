@@ -82,6 +82,24 @@ spec:
           env:
             - name: TZ
               value: "America/Phoenix"
+            # Kanidm SSO (generic OIDC) — password login stays enabled
+            # alongside it (DISABLE_PASSWORD_LOGIN unset) until OIDC login
+            # has actually been verified end to end, to avoid a repeat
+            # lockout if the SSO config turns out to be wrong.
+            - name: OIDC_ISSUER_URL
+              value: "https://idm.xrs444.net/oauth2/openid/oauth2_borgwarehouse"
+            - name: OIDC_PROVIDER_NAME
+              value: "Kanidm"
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-borgwarehouse
+                  key: client-id
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-borgwarehouse
+                  key: client-secret
           volumeMounts:
             - name: borgwarehouse-config
               mountPath: /home/borgwarehouse/app/config
