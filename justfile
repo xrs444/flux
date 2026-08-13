@@ -330,15 +330,15 @@ dns-show-a NAME:
     curl -sf http://localhost:18081/api/v1/servers/localhost/zones/lab.xrs444.net. \
       -H "X-API-Key: $PDNS_KEY" \
       | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-hits = [r for r in data.get('rrsets', []) if r['name'] == '{{NAME}}' and r['type'] == 'A']
-if not hits:
-    print('No A record found for {{NAME}}')
-else:
-    for rec in hits[0]['records']:
-        print(rec['content'])
-"
+    import sys, json
+    data = json.load(sys.stdin)
+    hits = [r for r in data.get('rrsets', []) if r['name'] == '{{NAME}}' and r['type'] == 'A']
+    if not hits:
+        print('No A record found for {{NAME}}')
+    else:
+        for rec in hits[0]['records']:
+            print(rec['content'])
+    "
 
 # Set A records for a lab DNS name — replaces all existing IPs (e.g. just dns-set-a xntnx.lab.xrs444.net. 172.25.1.100 172.25.1.11)
 dns-set-a NAME +IPS:
@@ -351,10 +351,10 @@ dns-set-a NAME +IPS:
     trap "kill $PF_PID 2>/dev/null" EXIT
     sleep 1
     RECORDS=$(python3 -c "
-import json, sys
-ips = '{{IPS}}'.split()
-print(json.dumps([{'content': ip, 'disabled': False} for ip in ips]))
-")
+    import json, sys
+    ips = '{{IPS}}'.split()
+    print(json.dumps([{'content': ip, 'disabled': False} for ip in ips]))
+    ")
     curl -sf -X PATCH http://localhost:18081/api/v1/servers/localhost/zones/lab.xrs444.net. \
       -H "X-API-Key: $PDNS_KEY" \
       -H "Content-Type: application/json" \
