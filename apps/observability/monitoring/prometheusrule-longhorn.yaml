@@ -1,0 +1,111 @@
+---
+# Longhorn storage health alerts.
+#
+# Added 2026-08-13 after a real incident: xsvr1's Longhorn replica/engine
+# layer started throwing write failures (confirmed via kernel medium-error
+# logs and replica failedAt timestamps) while the disk itself and Talos's
+# own health checks (longhorn_disk_health, SMART) stayed green throughout.
+# 62/65 volumes sat degraded for hours with nothing paging, and at least one
+# app (netbox-valkey) silently corrupted its data (AOF) running on a single
+# surviving replica before anyone noticed. These rules exist to catch the
+# next one from the robustness signal, since disk-level health checks alone
+# won't.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: longhorn
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: longhorn
+      interval: 1m
+      rules:
+        # Single volume degraded (missing/failed replica) for a sustained period.
+        # A brief degraded state during a normal rebuild is expected; 15m is
+        # long enough to skip that noise but still catch a stuck rebuild loop.
+        - alert: LonghornVolumeDegraded
+          expr: |
+            max by (volume, pvc, pvc_namespace, node) (
+              longhorn_volume_robustness{state="degraded"}
+            ) == 1
+          for: 15m
+          labels:
+            severity: warning
+            category: storage
+          annotations:
+            summary: "Longhorn volume {{ $labels.pvc }} degraded for 15m+"
+            description: >
+              Volume {{ $labels.volume }} (PVC {{ $labels.pvc_namespace }}/{{ $labels.pvc }},
+              current node {{ $labels.node }}) has been degraded for over 15 minutes —
+              it's missing at least one healthy replica. Check
+              `kubectl get replicas.longhorn.io -n longhorn-system -l longhornvolume={{ $labels.volume }}`.
+
+        # Volume has zero healthy replicas — data is at risk of loss on the next write/read.
+        - alert: LonghornVolumeFaulted
+          expr: |
+            max by (volume, pvc, pvc_namespace, node) (
+              longhorn_volume_robustness{state="faulted"}
+            ) == 1
+          for: 2m
+          labels:
+            severity: critical
+            category: storage
+          annotations:
+            summary: "Longhorn volume {{ $labels.pvc }} has NO healthy replica"
+            description: >
+              Volume {{ $labels.volume }} (PVC {{ $labels.pvc_namespace }}/{{ $labels.pvc }})
+              is faulted — it has no healthy replica left. Data loss risk is immediate;
+              do not wait for the next scheduled check.
+
+        # Many volumes degraded on the same node at once is a node/disk-level
+        # problem, not isolated volume noise — this is the exact shape of the
+        # 2026-08-13 xsvr1 incident (dozens of volumes, one node in common).
+        - alert: LonghornNodeMassVolumeDegradation
+          expr: |
+            count by (node) (
+              longhorn_volume_robustness{state="degraded"} == 1
+            ) >= 5
+          for: 10m
+          labels:
+            severity: critical
+            category: storage
+          annotations:
+            summary: "{{ $value }} Longhorn volumes degraded on node {{ $labels.node }}"
+            description: >
+              Node {{ $labels.node }} has {{ $value }} degraded Longhorn volumes at once.
+              This points at a node- or disk-level problem (replica engine write
+              failures, resource pressure) rather than isolated volume issues —
+              check `talosctl -n <node-ip> dmesg` for medium errors even if
+              longhorn_disk_health still reports the disk as healthy.
+
+        # Longhorn's own disk health check (SMART-derived) failing.
+        - alert: LonghornDiskUnhealthy
+          expr: longhorn_disk_health == 0
+          for: 5m
+          labels:
+            severity: critical
+            category: storage
+          annotations:
+            summary: "Longhorn disk {{ $labels.disk }} on {{ $labels.node }} reports unhealthy"
+            description: >
+              longhorn_disk_health for disk {{ $labels.disk }} on node {{ $labels.node }}
+              has been 0 for 5m+. Longhorn's own SMART-based check considers this disk
+              failing.
+
+        # A node disk sitting non-schedulable for a long time usually means
+        # someone disabled it during an incident and forgot to re-enable it.
+        - alert: LonghornNodeNotSchedulable
+          expr: longhorn_node_status{condition="schedulable"} == 0
+          for: 6h
+          labels:
+            severity: warning
+            category: storage
+          annotations:
+            summary: "Longhorn node {{ $labels.node }} not schedulable for 6h+"
+            description: >
+              Node {{ $labels.node }} has been marked not-schedulable in Longhorn for
+              over 6 hours. If this was a deliberate incident mitigation, confirm the
+              underlying issue is resolved and re-enable scheduling.

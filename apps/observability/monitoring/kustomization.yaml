@@ -26,6 +26,8 @@ resources:
   # Samba AD DC health (pod + LDAP reachability)
   - probe-samba-dc.yaml
   - prometheusrule-samba-dc.yaml
+  # Longhorn storage health (volume robustness, disk health)
+  - prometheusrule-longhorn.yaml
   # Sealed Secrets (must be created/sealed before deploying)
   - sealedsecret-alertmanager-config.yaml
   - sealedsecret-grafana-admin.yaml
