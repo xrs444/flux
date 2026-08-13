@@ -35,13 +35,19 @@ spec:
             - name: XMPP_SERVER
               value: "localhost"
             - name: JICOFO_COMPONENT_SECRET
-              value: "jicofo-secret"  # TODO: Generate secure secret
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-xmpp-credentials
+                  key: jicofo-component-secret
             - name: JICOFO_AUTH_USER
               value: "focus"
             - name: JVB_AUTH_USER
               value: "jvb"
             - name: JVB_AUTH_PASSWORD
-              value: "jvb-password"  # TODO: Generate secure secret
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-xmpp-credentials
+                  key: jvb-auth-password
           volumeMounts:
             - name: jitsi-config
               mountPath: /config
@@ -75,11 +81,20 @@ spec:
             - name: XMPP_INTERNAL_MUC_DOMAIN
               value: "internal-muc.meet.jitsi"
             - name: JICOFO_COMPONENT_SECRET
-              value: "jicofo-secret"
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-xmpp-credentials
+                  key: jicofo-component-secret
             - name: JICOFO_AUTH_PASSWORD
-              value: "jicofo-password"  # TODO: Generate secure secret
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-xmpp-credentials
+                  key: jicofo-auth-password
             - name: JVB_AUTH_PASSWORD
-              value: "jvb-password"
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-xmpp-credentials
+                  key: jvb-auth-password
           resources:
             requests:
               cpu: 100m
@@ -103,9 +118,15 @@ spec:
             - name: XMPP_INTERNAL_MUC_DOMAIN
               value: "internal-muc.meet.jitsi"
             - name: JICOFO_COMPONENT_SECRET
-              value: "jicofo-secret"
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-xmpp-credentials
+                  key: jicofo-component-secret
             - name: JICOFO_AUTH_PASSWORD
-              value: "jicofo-password"
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-xmpp-credentials
+                  key: jicofo-auth-password
             - name: JVB_BREWERY_MUC
               value: "jvbbrewery"
           resources:
@@ -161,7 +182,10 @@ spec:
             - name: JVB_AUTH_USER
               value: "jvb"
             - name: JVB_AUTH_PASSWORD
-              value: "jvb-password"
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-xmpp-credentials
+                  key: jvb-auth-password
             - name: JVB_BREWERY_MUC
               value: "jvbbrewery"
             - name: JVB_PORT
