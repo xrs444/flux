@@ -9,7 +9,7 @@ resources:
   # OAuth2 credentials for UI
   - ./oauth2-proxy-sealedsecret-longhorn.yaml
   # CIFS/SMB credentials for backups
-  - ./secret-cifs-credentials.yaml
+  - ./sealedsecret-cifs-credentials.yaml
   - ./helmrelease-longhorn.yaml  # Main Longhorn deployment
   - ./namespace-longhorn.yaml
   - ./kustomization-longhorn.yaml               # Flux Kustomization
