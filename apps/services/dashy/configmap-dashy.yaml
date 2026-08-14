@@ -72,6 +72,38 @@ data:
             statusCheck: true
             id: 0_4_immich
 
+          - title: Booklore
+            description: Ebook and comic library management
+            icon: fas fa-book
+            url: https://booklore.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 0_5_booklore
+
+          - title: Radarr
+            description: Movie collection manager
+            icon: hl-radarr
+            url: https://radarr.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 0_6_radarr
+
+          - title: Sonarr
+            description: TV show collection manager
+            icon: hl-sonarr
+            url: https://sonarr.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 0_7_sonarr
+
+          - title: Lidarr
+            description: Music collection manager
+            icon: hl-lidarr
+            url: https://lidarr.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 0_8_lidarr
+
       - name: Productivity & Organisation
         icon: fas fa-tasks
         displayData:
@@ -118,6 +150,22 @@ data:
             statusCheck: true
             id: 1_5_netbox
 
+          - title: Vikunja
+            description: Task and to-do list management
+            icon: hl-vikunja
+            url: https://vikunja.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 1_6_vikunja
+
+          - title: Radicale
+            description: CalDAV/CardDAV calendar and contacts server
+            icon: fas fa-calendar-alt
+            url: https://radicale.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 1_7_radicale
+
       - name: Communication & Collaboration
         icon: fas fa-comments
         displayData:
@@ -132,20 +180,20 @@ data:
             statusCheck: true
             id: 3_1_jitsi
 
+          - title: Matrix
+            description: Matrix chat homeserver (Synapse)
+            icon: hl-matrix
+            url: https://matrix.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 3_3_matrix
+
       - name: Infrastructure
         icon: fas fa-network-wired
         displayData:
           collapsed: false
           rows: 2
         items:
-          - title: FreePBX
-            description: VoIP PBX system
-            icon: fas fa-phone
-            url: https://freepbx.xrs444.net
-            target: newtab
-            statusCheck: true
-            id: 4_1_freepbx
-
           - title: Omada Controller
             description: Network management
             icon: hl-omada
@@ -229,7 +277,7 @@ data:
           - title: Grafana
             description: Metrics and observability dashboards
             icon: hl-grafana
-            url: http://xsvr1.lan:3000
+            url: https://grafana.xrs444.net
             target: newtab
             statusCheck: true
             id: 4_9_grafana
@@ -237,7 +285,7 @@ data:
           - title: Prometheus
             description: Metrics collection and alerting
             icon: hl-prometheus
-            url: http://xsvr1.lan:9090
+            url: https://prometheus.xrs444.net
             target: newtab
             statusCheck: true
             id: 4_10_prometheus
@@ -256,6 +304,76 @@ data:
             target: newtab
             statusCheck: false
             id: 4_12_firewallamsp
+
+          - title: Termix
+            description: Web-based SSH terminal client
+            icon: fas fa-terminal
+            url: https://termix.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_13_termix
+
+          - title: Syncthing
+            description: Continuous file synchronization
+            icon: hl-syncthing
+            url: https://syncthing.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_14_syncthing
+
+          - title: CUPS
+            description: Print server management
+            icon: fas fa-print
+            url: https://cups.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_15_cups
+
+          - title: Scanopy
+            description: Network asset and device inventory
+            icon: fas fa-sitemap
+            url: https://scanopy.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 4_16_scanopy
+
+      - name: Automation
+        icon: fas fa-robot
+        displayData:
+          collapsed: false
+          rows: 1
+        items:
+          - title: Windmill
+            description: Workflow automation and scripting platform
+            icon: hl-windmill
+            url: https://windmill.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 8_1_windmill
+
+          - title: Hermes-T
+            description: Family AI assistant (Thomas)
+            icon: fas fa-robot
+            url: https://hermes-t.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 8_2_hermest
+
+          - title: Hermes-S
+            description: Family AI assistant (Samantha)
+            icon: fas fa-robot
+            url: https://hermes-s.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 8_3_hermess
+
+          - title: Hermes-K
+            description: Family AI assistant (Kids)
+            icon: fas fa-robot
+            url: https://hermes-k.xrs444.net
+            target: newtab
+            statusCheck: true
+            id: 8_4_hermesk
 
       - name: Gaming & Entertainment
         icon: fas fa-gamepad
@@ -311,7 +429,7 @@ data:
           - title: Home Assistant
             description: Home automation platform
             icon: hl-homeassistant
-            url: http://hass.xrs444.net
+            url: https://hass.xrs444.net
             target: newtab
             statusCheck: true
             id: 7_1_homeassistant
