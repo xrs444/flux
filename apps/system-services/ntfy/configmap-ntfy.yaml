@@ -13,6 +13,12 @@ data:
     auth-default-access: deny-all
     behind-proxy: true
 
+    # Upstream base URL: required for the official Android/iOS ntfy app to
+    # receive background push via FCM/APNs. Without this, self-hosted ntfy
+    # has no push path and messages are only delivered while the app has an
+    # open "Instant delivery" WebSocket (or not at all, on iOS).
+    upstream-base-url: https://ntfy.sh
+
     # Prometheus metrics
     enable-metrics: true
 

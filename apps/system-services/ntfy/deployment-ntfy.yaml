@@ -56,6 +56,13 @@ spec:
               ntfy access greyson greyson read-only
               ntfy access rowan rowan read-only
               ntfy access dog "*" read-write
+
+              # Shared Alertmanager/Windmill alert topics (see
+              # flux/windmill-workspace/f/sre/alert-ingest__flow/) — grant
+              # xrs444 read access so alerts posted here reach the phone.
+              ntfy access xrs444 alerts-critical read-only
+              ntfy access xrs444 alerts-warning read-only
+              ntfy access xrs444 alerts-resolved read-only
           env:
             - name: NTFY_AUTH_FILE
               value: "/var/lib/ntfy/user.db"
@@ -90,6 +97,8 @@ spec:
               value: "deny-all"
             - name: NTFY_BEHIND_PROXY
               value: "true"
+            - name: NTFY_UPSTREAM_BASE_URL
+              value: "https://ntfy.sh"
           volumeMounts:
             - name: ntfy-data
               mountPath: /var/cache/ntfy
