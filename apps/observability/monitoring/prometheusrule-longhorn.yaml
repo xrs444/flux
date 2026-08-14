@@ -109,3 +109,30 @@ spec:
               Node {{ $labels.node }} has been marked not-schedulable in Longhorn for
               over 6 hours. If this was a deliberate incident mitigation, confirm the
               underlying issue is resolved and re-enable scheduling.
+
+        # Root cause of bug-232 (2026-06-18): a volume accumulated 249
+        # snapshots after snapshot-purge settings drifted off, and rebuilding
+        # that replica saturated xsvr1's SATA SSD for 60+ seconds, cascading
+        # 9 volumes into degraded within 13 seconds. Every rebuild re-transfers
+        # the full snapshot history, not just live data, so unbounded snapshot
+        # growth directly multiplies disk wear and rebuild risk on whichever
+        # node ends up doing the work. Catch it long before it gets near 249.
+        - alert: LonghornVolumeExcessiveSnapshots
+          expr: |
+            count by (volume) (
+              longhorn_snapshot_actual_size_bytes
+            ) > 20
+          for: 30m
+          labels:
+            severity: warning
+            category: storage
+          annotations:
+            summary: "Longhorn volume {{ $labels.volume }} has {{ $value }} snapshots"
+            description: >
+              Volume {{ $labels.volume }} has accumulated {{ $value }} snapshots. This is
+              exactly the pattern behind bug-232 (249 snapshots -> 60s+ rebuild saturation
+              -> 9 volumes cascaded degraded). Check
+              `disable-snapshot-purge` and `auto-cleanup-system-generated-snapshot` Longhorn
+              settings haven't drifted, and manually prune old snapshots for this volume
+              (`kubectl get snapshots.longhorn.io -n longhorn-system -l longhornvolume={{ $labels.volume }}`)
+              before it needs a rebuild.
