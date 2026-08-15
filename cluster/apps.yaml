@@ -90,7 +90,7 @@ spec:
   timeout: 5m0s
   prune: true
 ---
-# Services: Atuin, Craftycontroller, Dashy, Garage, Jitsi, Linkwarden, Lubelogger,
+# Services: Atuin, Craftycontroller, Dashy, Garage, Linkwarden, Lubelogger,
 #           Mealie, Netbox, Omada, Paperless-ngx, Rustdesk, Seatable, Termix, Warpgate
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

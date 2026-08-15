@@ -172,14 +172,6 @@ data:
           collapsed: false
           rows: 1
         items:
-          - title: Jitsi
-            description: Video conferencing
-            icon: hl-jitsi
-            url: https://jitsi.xrs444.net
-            target: newtab
-            statusCheck: true
-            id: 3_1_jitsi
-
           - title: Matrix
             description: Matrix chat homeserver (Synapse)
             icon: hl-matrix

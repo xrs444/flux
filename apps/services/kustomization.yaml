@@ -6,7 +6,6 @@ resources:
   - ./atuin
   - ./craftycontroller
   - ./dashy
-  - ./jitsi
   - ./linkwarden
   - ./lubelogger
   - ./mealie
