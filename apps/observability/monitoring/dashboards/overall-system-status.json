@@ -890,7 +890,7 @@
             "type": "prometheus",
             "uid": "000000001"
           },
-          "expr": "homeprod:talos-node:state{instance=\"172.20.3.10:9100\"}",
+          "expr": "homeprod:talos_node:state{instance=\"172.20.3.10:9100\"}",
           "legendFormat": ""
         }
       ]
@@ -976,7 +976,7 @@
             "type": "prometheus",
             "uid": "000000001"
           },
-          "expr": "homeprod:talos-node:state{instance=\"172.20.3.20:9100\"}",
+          "expr": "homeprod:talos_node:state{instance=\"172.20.3.20:9100\"}",
           "legendFormat": ""
         }
       ]
@@ -1062,7 +1062,7 @@
             "type": "prometheus",
             "uid": "000000001"
           },
-          "expr": "homeprod:talos-node:state{instance=\"172.20.3.30:9100\"}",
+          "expr": "homeprod:talos_node:state{instance=\"172.20.3.30:9100\"}",
           "legendFormat": ""
         }
       ]
@@ -1148,7 +1148,7 @@
             "type": "prometheus",
             "uid": "000000001"
           },
-          "expr": "homeprod:talos-node:state{instance=\"172.20.3.40:9100\"}",
+          "expr": "homeprod:talos_node:state{instance=\"172.20.3.40:9100\"}",
           "legendFormat": ""
         }
       ]

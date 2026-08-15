@@ -42,7 +42,7 @@ spec:
 
         # Talos Kubernetes VM nodes — binary up/down (node health detail is
         # covered separately by the "Nodes Ready" / "Pods Not Running" tiles).
-        - record: homeprod:talos-node:state
+        - record: homeprod:talos_node:state
           expr: 2 * up{job="talos-node"}
 
         # Network devices (core stack, edge switches, APs) — ICMP liveness only
