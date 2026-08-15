@@ -1,0 +1,24 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pushgateway
+  namespace: monitoring
+  labels:
+    app: pushgateway
+spec:
+  selector:
+    matchLabels:
+      app: pushgateway
+  namespaceSelector:
+    matchNames:
+      - monitoring
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      # Required for Pushgateway: without this, Prometheus overwrites the
+      # job/instance labels pushed by clients (e.g. job="synthetic_login")
+      # with its own scrape target labels (job="pushgateway"), silently
+      # breaking any alert that queries on the pushed job label.
+      honorLabels: true

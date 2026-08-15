@@ -9,6 +9,7 @@ resources:
   # Pushgateway
   - deployment-pushgateway.yaml
   - service-pushgateway.yaml
+  - servicemonitor-pushgateway.yaml
   # Blackbox exporter
   - configmap-blackbox.yaml
   - deployment-blackbox.yaml
