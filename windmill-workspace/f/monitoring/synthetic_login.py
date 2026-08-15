@@ -6,21 +6,7 @@ an OAuth2 PKCE authorize round-trip against each app's Kanidm client. Pushes
 pass/fail metrics to Prometheus Pushgateway so alerts fire the moment a login
 breaks.
 
-What this tests:
-- Kanidm is reachable and the monitoring account is not locked
-- Each app's OAuth2 client is registered in Kanidm
-- The monitoring account has scope-map access to each app
-- Each app's redirect_uri is registered (Kanidm validates at the authorize step)
-
-What this does NOT test (Phase 2):
-- Token exchange (doesn't catch rotated client secrets; needs client_id+secret)
-
-Prometheus metrics pushed (job=synthetic_login, per-app grouping):
-- synthetic_login_success{app}        : 1 = ok, 0 = failed
-- synthetic_login_duration_seconds{app}: wall-clock time for the authorize step
-- Pushgateway auto-adds push_time_seconds{job="synthetic_login"} (dead-man switch)
-
-Variables required in Windmill (admins workspace):
+Variables required in Windmill (xrs444 workspace):
 - u/admin/monitoring_kanidm_password  (sensitive) -- account password
 - u/admin/monitoring_kanidm_totp      (sensitive) -- base32 TOTP seed from setup
 
@@ -54,7 +40,6 @@ APPS = [
     {"name": "seatable",       "client_id": "oauth2_seatable",       "redirect_uri": "https://seatable.xrs444.net/oauth/callback/",                                "scopes": "openid profile email"},
     {"name": "linkwarden",     "client_id": "oauth2_linkwarden",     "redirect_uri": "https://linkwarden.xrs444.net/api/v1/auth/callback/keycloak",                "scopes": "openid profile email"},
     {"name": "termix",         "client_id": "oauth2_termix",         "redirect_uri": "https://termix.xrs444.net/users/oidc/callback",                             "scopes": "openid profile email"},
-    {"name": "warpgate",       "client_id": "oauth2_warpgate",       "redirect_uri": "https://warpgate.xrs444.net/@warpgate/api/sso/return",                      "scopes": "openid email"},
     {"name": "manyfold",       "client_id": "oauth2_manyfold",       "redirect_uri": "https://manyfold.xrs444.net/users/auth/openid_connect/callback",             "scopes": "openid profile email"},
     {"name": "windmill",       "client_id": "oauth2_windmill",       "redirect_uri": "https://windmill.xrs444.net/user/login_callback/kanidm",                    "scopes": "openid profile email"},
     {"name": "longhorn",       "client_id": "oauth2_longhorn",       "redirect_uri": "https://longhorn.xrs444.net/oauth2/callback",                               "scopes": "openid profile email groups"},
@@ -68,7 +53,6 @@ def _pkce_pair() -> tuple[str, str]:
 
 
 def _totp_now(secret_b32: str, interval: int = 30) -> int:
-    """RFC 6238 TOTP (HMAC-SHA1). Handles unpadded base32 seeds."""
     s = secret_b32.upper().replace(" ", "").replace("-", "")
     s += "=" * ((8 - len(s) % 8) % 8)
     key = base64.b32decode(s)
@@ -79,15 +63,9 @@ def _totp_now(secret_b32: str, interval: int = 30) -> int:
 
 
 def kanidm_auth(password: str, totp_secret: str) -> tuple[requests.Session, str]:
-    """
-    Kanidm passwordmfa auth flow (confirmed by probing live API):
-      init -> begin "passwordmfa" -> cred {totp} -> cred {password} -> token
-    Kanidm requests TOTP first, then password.
-    """
     session = requests.Session()
     session.post(f"{KANIDM_URL}/v1/auth", json={"step": {"init": KANIDM_USERNAME}}, timeout=10).raise_for_status()
     session.post(f"{KANIDM_URL}/v1/auth", json={"step": {"begin": "passwordmfa"}}, timeout=10).raise_for_status()
-
     code = _totp_now(totp_secret)
     r3 = session.post(f"{KANIDM_URL}/v1/auth", json={"step": {"cred": {"totp": code}}}, timeout=10)
     r3.raise_for_status()
@@ -96,7 +74,6 @@ def kanidm_auth(password: str, totp_secret: str) -> tuple[requests.Session, str]
         return session, state["success"]
     if "continue" not in state:
         raise RuntimeError(f"Unexpected state after TOTP: {r3.text[:300]}")
-
     r4 = session.post(f"{KANIDM_URL}/v1/auth", json={"step": {"cred": {"password": password}}}, timeout=10)
     r4.raise_for_status()
     token = r4.json().get("state", {}).get("success")
@@ -121,7 +98,6 @@ def check_authorize(session: requests.Session, token: str, app: dict) -> tuple[b
         return False, "timeout"
     except requests.RequestException as exc:
         return False, f"network error: {exc}"
-
     location = resp.headers.get("Location", "")
     if resp.status_code == 302:
         if "error=" in location:
@@ -152,7 +128,6 @@ def push_metrics(metrics: list[dict]) -> None:
 def main() -> dict:
     password = wmill.get_variable("u/admin/monitoring_kanidm_password")
     totp_secret = wmill.get_variable("u/admin/monitoring_kanidm_totp")
-
     print(f"Authenticating to Kanidm as '{KANIDM_USERNAME}'...")
     try:
         session, token = kanidm_auth(password, totp_secret)
@@ -163,7 +138,6 @@ def main() -> dict:
         except Exception:
             pass
         raise
-
     print("Authenticated.\n")
     metrics, failures = [], []
     for app in APPS:
@@ -174,10 +148,8 @@ def main() -> dict:
         metrics.append({"app": app["name"], "success": 1 if ok else 0, "duration": duration})
         if not ok:
             failures.append(app["name"])
-
     print(f"\nPushing {len(metrics)} metrics...")
     push_metrics(metrics)
-
     summary = {"total": len(APPS), "ok": len(metrics) - len(failures), "failed": len(failures), "failing_apps": failures}
     print(f"Result: {summary['ok']}/{summary['total']} OK")
     if failures:
