@@ -31,6 +31,10 @@ spec:
       enabled: false
     kubeStateMetrics:
       enabled: false
+    # Cilium replaces kube-proxy on this cluster (Talos cluster.proxy.disabled: true
+    # in Talos/controlplane.yaml) — no kube-proxy exists to scrape, ever.
+    kubeProxy:
+      enabled: false
 
     # Prometheus configuration
     prometheus:
