@@ -85,6 +85,14 @@ spec:
         auth:
           disable_login_form: false
           oauth_auto_login: false
+        auth.anonymous:
+          # Anonymous access is org-wide in Grafana (can't be scoped to one
+          # dashboard) — LAN-only exposure is enforced instead by the
+          # grafana-lan-only Traefik middleware on ingressroute-grafana.yaml.
+          enabled: true
+          org_name: "Main Org."
+          org_role: Viewer
+          hide_version: true
         auth.generic_oauth:
           enabled: true
           name: Kanidm

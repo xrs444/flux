@@ -17,3 +17,9 @@ spec:
     - port: metrics
       path: /metrics
       interval: 30s
+      # Without this, Prometheus's target-namespace label ("monitoring", where
+      # this KSM pod runs) collides with KSM's own per-resource `namespace`
+      # label and wins, demoting the real value to `exported_namespace`. Every
+      # kube_pod_info/kube_deployment_* series then reports namespace="monitoring"
+      # regardless of which namespace the described resource is actually in.
+      honorLabels: true

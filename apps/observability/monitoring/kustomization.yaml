@@ -22,6 +22,8 @@ resources:
   - ingressroute-grafana.yaml
   - ingressroute-prometheus.yaml
   - ingressroute-alertmanager.yaml
+  # LAN-only access for Grafana's anonymous Viewer auth
+  - middleware-grafana-lan.yaml
   # Synthetic SSO login monitoring (PrometheusRule + dead-man alerts)
   - prometheusrule-synthetic-login.yaml
   # Samba AD DC health (pod + LDAP reachability)
@@ -29,6 +31,8 @@ resources:
   - prometheusrule-samba-dc.yaml
   # Longhorn storage health (volume robustness, disk health)
   - prometheusrule-longhorn.yaml
+  # Overall System Status dashboard state (0/1/2 GOOD/CAUTION/WARNING recording rules)
+  - prometheusrule-status-state.yaml
   # Sealed Secrets (must be created/sealed before deploying)
   - sealedsecret-alertmanager-config.yaml
   - sealedsecret-grafana-admin.yaml
