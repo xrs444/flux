@@ -82,6 +82,12 @@ spec:
         server:
           domain: grafana.xrs444.net
           root_url: https://grafana.xrs444.net/
+        security:
+          # Grafana sends X-Frame-Options: deny by default, blocking iframe
+          # embedding (e.g. a Home Assistant dashboard card). Safe to allow
+          # here since grafana-lan-only already restricts who can load the
+          # page at all (LAN/Tailscale only, no public internet).
+          allow_embedding: true
         auth:
           disable_login_form: false
           oauth_auto_login: false
