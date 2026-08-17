@@ -19,6 +19,12 @@ spec:
       labels:
         app: firewalla-exporter
     spec:
+      # Kubernetes auto-injects <SERVICE_NAME>_PORT-style env vars into every
+      # pod in the namespace for every Service that exists — collided with our
+      # own FIREWALLA_EXPORTER_PORT var (now renamed to FIREWALLA_METRICS_PORT
+      # to dodge it), crash-looping with "invalid literal for int(): tcp://...".
+      # Belt-and-suspenders: also disable the injection outright.
+      enableServiceLinks: false
       containers:
         - name: firewalla-exporter
           # Built by .github/workflows/build-firewalla-exporter-image.yml on every push

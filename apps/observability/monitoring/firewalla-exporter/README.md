@@ -15,7 +15,7 @@ this exporter runs as an ordinary k8s Deployment. No flash-wear concerns.
 | `FIREWALLA_MSP_ID` | yes | — | MSP domain, e.g. `dn-j3almw.firewalla.net` |
 | `FIREWALLA_MSP_TOKEN` | yes | — | Personal access token |
 | `FIREWALLA_POLL_INTERVAL_SECONDS` | no | `60` | How often to poll the MSP API, independent of Prometheus's scrape_interval |
-| `FIREWALLA_EXPORTER_PORT` | no | `9878` | `/metrics` listen port |
+| `FIREWALLA_METRICS_PORT` | no | `9878` | `/metrics` listen port |
 | `FIREWALLA_PER_DEVICE_METRICS` | no | `true` | Set `false` to drop per-device series (~113 devices × 3 series) and keep only box-level summaries |
 
 ## Metrics

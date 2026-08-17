@@ -22,7 +22,7 @@ from prometheus_client.core import REGISTRY, GaugeMetricFamily, CounterMetricFam
 MSP_ID = os.environ["FIREWALLA_MSP_ID"]
 MSP_TOKEN = os.environ["FIREWALLA_MSP_TOKEN"]
 POLL_INTERVAL = int(os.environ.get("FIREWALLA_POLL_INTERVAL_SECONDS", "60"))
-LISTEN_PORT = int(os.environ.get("FIREWALLA_EXPORTER_PORT", "9878"))
+LISTEN_PORT = int(os.environ.get("FIREWALLA_METRICS_PORT", "9878"))
 PER_DEVICE_METRICS = os.environ.get("FIREWALLA_PER_DEVICE_METRICS", "true").lower() == "true"
 
 BASE_URL = f"https://{MSP_ID}/v2"
