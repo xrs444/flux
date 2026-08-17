@@ -1,5 +1,82 @@
 summary: Rack Power Off (UPS power-loss / smoke-alarm shutdown)
-description: ''
+description: >-
+  Ordered graceful shutdown of the UPS-backed rack, triggered by Home Assistant
+  on either (a) sustained UPS on-battery + low charge/runtime, or (b) a
+  smoke-alarm signal (emergency=true).
+
+
+  Order: xsvr2, xsvr3, xsvr4, xcog1, xpbx1, xts1, xts2, then xsvr1 last. xsvr1
+  hosts the Talos VM that runs Windmill itself (and has no Tailscale —
+  console/IPMI only if SSH is unreachable), so it goes last deliberately:
+  everything else is down before Windmill's own execution environment
+  disappears. Once xsvr1 powers off this job cannot report completion — that is
+  expected, not a bug; the goal (system off) is already achieved by that point.
+
+
+  Talos VMs are NOT shut down via a separate talosctl step —
+  virtualisation.libvirtd.onShutdown = "shutdown" (confirmed live via `nix eval`
+  against xsvr1's config) means libvirt-guests.service already stops them
+  gracefully as an ordinary part of each KVM host's own systemd shutdown
+  sequence, before poweroff. No talosconfig credential needs to live in Windmill
+  for this.
+
+
+  Each NixOS host (xsvr1-4, xpbx1, xts1, xts2) is powered off via a fixed,
+  no-argument, NOPASSWD-scoped sudo command — `sudo /etc/rack-shutdown` (wraps
+  `systemctl poweroff`) — set up per-host by
+  nix/modules/services/rack-shutdown/default.nix, mirroring the existing
+  f/sre/runbooks/backup/restic-check-repo pattern (SSH as the `automation` user,
+  key already mounted at /root/.ssh/id_ed25519 on Windmill's "default" worker
+  group). BLOCKED until that nix module is imported into
+  modules/services/default.nix and deployed via deploy-rs — until then every
+  NixOS host step will fail with a permission or command-not-found error, which
+  is expected, not a bug in this script.
+
+
+  xcog1 (Mac Mini) has no equivalent wrapper/sudoers set up yet (nix-darwin uses
+  a different mechanism than NixOS's security.sudo.extraRules) — its step runs a
+  plain `sudo shutdown -h now` and is allowed to fail without aborting the rest
+  of the sequence (`ignore_errors: true`); Mac Minis with SSDs tolerate an
+  unclean power loss safely, and Phase 4's restore path relies on macOS's own
+  "restart automatically after a power failure" setting rather than a clean
+  shutdown here. Fix xcog1's sudoers (or accept the UPS just cutting its power)
+  as a follow-up.
+
+
+  xswcore (switch) and xfw (Firewalla) are NOT touched by this script — they're
+  left to run until the UPS itself dies, since they auto-boot on power restore
+  and HA's Phase 4 restore sequencing depends on them coming back first.
+
+
+  dry_run (default true): logs what each step WOULD do without opening any SSH
+  connection or running any command — matches the no-autonomous-execution
+  invariant already established in f/sre/alert-ingest and
+  f/sre/runbooks/restart-arr-queue. Must be explicitly set to dry_run=false to
+  actually shut anything down.
+
+
+  emergency (default false): when true, used only for the ntfy/log message text
+  ("SMOKE ALARM — emergency shutdown") — the actual sequence and timing are
+  identical either way; there is no grace period to skip since this script never
+  waited on anything to begin with (each poweroff command returns immediately,
+  it doesn't block on the target actually finishing shutdown). The calling Home
+  Assistant automation is responsible for also invoking the existing
+  f/lab/lab_power_off flow in the emergency case (this script only covers the
+  rack, not the Nutanix lab).
+
+
+  Schema note: extra_vars (dry_run/emergency) are declared at the top of
+  content, but Windmill's schema field only gets populated when the script is
+  opened and saved once in the Web IDE (schema parsing appears to run
+  client-side, not via API deploys) — until then, invoke with explicit
+  extra-vars; Ansible's own `| default()` filters make this functionally
+  identical either way.
+
+
+  NOT YET WIRED into any HA automation or Alertmanager route — this is the
+  manual-invocation script Phase 3 of the UPS shutdown plan; HA-side triggers
+  are a separate deliverable (HA YAML, applied by the user directly, since
+  Claude has no HA access in this session).
 lock: '!inline f/sre/rack_power_off.script.lock'
 kind: script
 schema: null
