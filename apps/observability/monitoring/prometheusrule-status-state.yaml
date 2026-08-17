@@ -56,12 +56,23 @@ spec:
         # 14 days (1) / healthy (2). The `< bool` comparison is required: a
         # plain `<` filters out non-matching series instead of returning 0,
         # which collapsed the whole expression to empty whenever no cert was
-        # near expiry (the common case).
+        # near expiry (the common case). `on(instance)` also drops the `job`
+        # label from its output, so the left-hand term is reduced to just
+        # `instance` too (sum by) to keep both sides of the `-` on an
+        # identical label set — same class of bug as homeprod:app:state.
+        # The `or (... * 0)` fallback keeps a target in the result even when
+        # probe_success=0 has no matching cert-expiry series at all (a down
+        # target would otherwise vanish from the metric entirely instead of
+        # showing red).
         - record: homeprod:endpoint:state
           expr: |
             clamp_min(
-              (2 * probe_success{job="blackbox-ssl"})
-              - (probe_success{job="blackbox-ssl"} * on(instance) (probe_ssl_earliest_cert_expiry{job="blackbox-ssl"} - time() < bool 14 * 86400)),
+              sum by (instance) (2 * probe_success{job="blackbox-ssl"})
+              - (
+                  (probe_success{job="blackbox-ssl"} * on(instance) (probe_ssl_earliest_cert_expiry{job="blackbox-ssl"} - time() < bool 14 * 86400))
+                  or
+                  (sum by (instance) (probe_success{job="blackbox-ssl"} * 0))
+                ),
               0
             )
 
