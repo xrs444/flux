@@ -1,0 +1,11 @@
+{
+  "name": "scanopy",
+  "transport": "stdio",
+  "description": "Scanopy network discovery/topology (read/write)",
+  "command": "uv",
+  "args": ["run", "--directory", "/opt/scanopy-mcp-rw", "server.py"],
+  "env": {
+    "SCANOPY_URL": "https://scanopy.xrs444.net",
+    "SCANOPY_TOKEN": "${SCANOPY_TOKEN}"
+  }
+}
