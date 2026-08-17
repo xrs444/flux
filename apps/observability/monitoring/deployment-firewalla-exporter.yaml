@@ -25,6 +25,11 @@ spec:
       # to dodge it), crash-looping with "invalid literal for int(): tcp://...".
       # Belt-and-suspenders: also disable the injection outright.
       enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: firewalla-exporter
           # Built by .github/workflows/build-firewalla-exporter-image.yml on every push
@@ -34,6 +39,10 @@ spec:
           # deployment-mcpjungle.yaml does.
           image: ghcr.io/xrs444/firewalla-exporter:latest
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
             - name: FIREWALLA_MSP_ID
               value: "dn-j3almw.firewalla.net"
