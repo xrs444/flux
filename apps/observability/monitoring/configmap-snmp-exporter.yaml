@@ -167,3 +167,97 @@ data:
                 labelname: ifName
                 oid: 1.3.6.1.2.1.31.1.1.1.1
                 type: DisplayString
+
+      # RFC1628 UPS-MIB — standard across vendors (Eaton SPX2200 network card
+      # supports it alongside its proprietary XUPS-MIB). Single-line/single-phase
+      # UPS, so input/output tables only ever have one row (index 1).
+      ups:
+        walk:
+          - 1.3.6.1.2.1.33.1.2   # upsBattery group
+          - 1.3.6.1.2.1.33.1.3   # upsInput group
+          - 1.3.6.1.2.1.33.1.4   # upsOutput group
+          - 1.3.6.1.2.1.33.1.6   # upsAlarm group
+        get:
+          - 1.3.6.1.2.1.1.5.0     # sysName
+          - 1.3.6.1.2.1.33.1.1.1.0 # upsIdentManufacturer
+          - 1.3.6.1.2.1.33.1.1.2.0 # upsIdentModel
+        metrics:
+          - name: upsBatteryStatus
+            oid: 1.3.6.1.2.1.33.1.2.1
+            type: gauge
+            help: "Battery status. 1=unknown 2=normal 3=low 4=depleted"
+
+          - name: upsSecondsOnBattery
+            oid: 1.3.6.1.2.1.33.1.2.2
+            type: gauge
+            help: "Seconds currently running on battery power. 0 if on mains."
+
+          - name: upsEstimatedMinutesRemaining
+            oid: 1.3.6.1.2.1.33.1.2.3
+            type: gauge
+            help: "Estimated runtime remaining on battery, in minutes."
+
+          - name: upsEstimatedChargeRemaining
+            oid: 1.3.6.1.2.1.33.1.2.4
+            type: gauge
+            help: "Estimated battery charge remaining, percent of full charge."
+
+          - name: upsBatteryVoltage
+            oid: 1.3.6.1.2.1.33.1.2.5
+            type: gauge
+            help: "Battery voltage, in 0.1V DC units."
+
+          - name: upsBatteryTemperature
+            oid: 1.3.6.1.2.1.33.1.2.7
+            type: gauge
+            help: "Battery temperature, degrees Celsius."
+
+          - name: upsInputFrequency
+            oid: 1.3.6.1.2.1.33.1.3.3.1.2
+            type: gauge
+            help: "Input line frequency, in 0.1Hz units."
+            indexes:
+              - labelname: upsInputLineIndex
+                type: gauge
+
+          - name: upsInputVoltage
+            oid: 1.3.6.1.2.1.33.1.3.3.1.3
+            type: gauge
+            help: "Input line voltage, in RMS volts."
+            indexes:
+              - labelname: upsInputLineIndex
+                type: gauge
+
+          - name: upsOutputSource
+            oid: 1.3.6.1.2.1.33.1.4.1
+            type: gauge
+            help: >-
+              Output power source. 1=other 2=none 3=normal 4=bypass
+              5=battery 6=booster 7=reducer
+              (5=battery is the "on battery, mains lost" state to alert on)
+
+          - name: upsOutputFrequency
+            oid: 1.3.6.1.2.1.33.1.4.2
+            type: gauge
+            help: "Output frequency, in 0.1Hz units."
+
+          - name: upsOutputVoltage
+            oid: 1.3.6.1.2.1.33.1.4.4.1.2
+            type: gauge
+            help: "Output line voltage, in RMS volts."
+            indexes:
+              - labelname: upsOutputLineIndex
+                type: gauge
+
+          - name: upsOutputPercentLoad
+            oid: 1.3.6.1.2.1.33.1.4.4.1.5
+            type: gauge
+            help: "Output load, percent of rated capacity."
+            indexes:
+              - labelname: upsOutputLineIndex
+                type: gauge
+
+          - name: upsAlarmsPresent
+            oid: 1.3.6.1.2.1.33.1.6.1
+            type: gauge
+            help: "Number of active alarm conditions on the UPS."
