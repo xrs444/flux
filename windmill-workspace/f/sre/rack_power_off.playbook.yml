@@ -1,3 +1,10 @@
+extra_vars:
+  dry_run:
+    type: boolean
+    default: true
+  emergency:
+    type: boolean
+    default: false
 ---
 - name: Power off the UPS-backed rack in order
   hosts: localhost
