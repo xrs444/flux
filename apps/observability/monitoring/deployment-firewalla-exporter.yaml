@@ -33,12 +33,14 @@ spec:
       containers:
         - name: firewalla-exporter
           # Built by .github/workflows/build-firewalla-exporter-image.yml on every push
-          # to apps/observability/monitoring/firewalla-exporter/. Floating :latest tag —
-          # if staleness ever bites (Spegel P2P mirror caching an old digest under the
-          # same tag, seen live with mcpjungle-custom), switch to digest-pinning like
-          # deployment-mcpjungle.yaml does.
-          image: ghcr.io/xrs444/firewalla-exporter:latest
-          imagePullPolicy: Always
+          # to apps/observability/monitoring/firewalla-exporter/, tagged by both :latest
+          # and :<commit-sha>. Pinned to the sha tag deliberately, not :latest -- hit the
+          # exact Spegel P2P mirror staleness issue mcpjungle's own comment warns about
+          # (a :latest re-push kept serving the old cached digest after rollout restart).
+          # A sha-tagged image is unique per build, so there's nothing to cache-hit on by
+          # mistake. Update this tag after every rebuild of firewalla-exporter/.
+          image: ghcr.io/xrs444/firewalla-exporter:a1e73daedc0c253649575492ae06cae7459e2b93
+          imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
