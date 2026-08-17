@@ -1,5 +1,7 @@
 # NetBox + Diode - Helm Chart Deployment
 
+> **⚠️ REMOVED — DO NOT USE.** Diode + the discovery agent described in this document were deployed and then **removed** — they didn't work well in this deployment. There is no `diode-agent` namespace, no `diode-server` pod, and `helmrelease-diode.yaml`/`diode-agent/` are not in this directory or in `kustomization.yaml`. The live NetBox deployment is just [helmrelease-netbox.yaml](helmrelease-netbox.yaml) — no Diode. This file is kept for historical reference only; the `auto-discovered`/`orb-agent` tags still visible on some NetBox devices are leftover residue from when this was briefly live, not evidence it's running. (2026-08-17)
+
 Official Helm chart-based deployment of NetBox with Diode for automated network discovery.
 
 ## Why Helm Charts?

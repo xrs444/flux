@@ -1,5 +1,7 @@
 # NetBox Helm Chart Migration - Complete Summary
 
+> **⚠️ REMOVED — DO NOT USE.** The Diode portions of this migration were removed — didn't work well in this deployment. See the banner in [README.md](README.md). Kept for historical reference only. (2026-08-17)
+
 ## What We Built
 
 A complete refactoring of your NetBox deployment to use **official Helm charts** from NetBox Community and NetBox Labs, replacing manual Kubernetes manifests.

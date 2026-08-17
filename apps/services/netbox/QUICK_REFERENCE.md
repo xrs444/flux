@@ -1,5 +1,7 @@
 # NetBox + Diode Helm Deployment - Quick Reference
 
+> **⚠️ REMOVED — DO NOT USE.** Diode was removed — didn't work well in this deployment. See the banner in [README.md](README.md). Kept for historical reference only. (2026-08-17)
+
 ## 🚀 Quick Deploy
 
 ```bash
