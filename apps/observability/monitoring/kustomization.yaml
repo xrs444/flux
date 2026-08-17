@@ -61,6 +61,7 @@ configMapGenerator:
       - dashboards/server-detail.json
       - dashboards/prometheus-stats.json
       - dashboards/zfs.json
+      - dashboards/ups.json
 
   - name: grafana-dashboards-system-node-exporter
     namespace: monitoring
