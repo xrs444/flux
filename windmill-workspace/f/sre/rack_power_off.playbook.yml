@@ -1,0 +1,78 @@
+---
+- name: Power off the UPS-backed rack in order
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    dry_run: "{{ dry_run | default(true) }}"
+    emergency: "{{ emergency | default(false) }}"
+    ssh_common_args: >-
+      -o StrictHostKeyChecking=no
+      -o UserKnownHostsFile=/dev/null
+
+    # Order matters: everything else goes down before xsvr1, which hosts the
+    # Talos VM running Windmill itself. Once xsvr1 powers off this job's own
+    # execution environment disappears — that's expected, not a failure.
+    nixos_rack_hosts:
+      - xsvr2.lan
+      - xsvr3.lan
+      - xsvr4.lan
+      - xpbx1.lan
+      - xts1.lan
+      - xts2.lan
+      - xsvr1.lan
+
+  tasks:
+    - name: Announce run mode
+      ansible.builtin.debug:
+        msg: >-
+          {{ 'SMOKE ALARM — emergency shutdown' if emergency else 'UPS power-loss shutdown' }}
+          {{ '(DRY RUN — no commands will be executed)' if (dry_run | bool) else '(LIVE)' }}
+
+    - name: "[DRY RUN] Report what would happen — xcog1 (Mac Mini)"
+      ansible.builtin.debug:
+        msg: "Would SSH to automation@xcog1.lan and run: sudo shutdown -h now"
+      when: dry_run | bool
+
+    - name: Shut down xcog1 (Mac Mini) — best-effort, no sudoers set up yet
+      ansible.builtin.command:
+        cmd: >-
+          ssh {{ ssh_common_args }}
+          -i /root/.ssh/id_ed25519
+          automation@xcog1.lan
+          sudo shutdown -h now
+      when: not (dry_run | bool)
+      ignore_errors: true
+      changed_when: true
+
+    - name: "[DRY RUN] Report what would happen — NixOS rack hosts"
+      ansible.builtin.debug:
+        msg: "Would SSH to automation@{{ item }} and run: sudo /etc/rack-shutdown"
+      loop: "{{ nixos_rack_hosts }}"
+      when: dry_run | bool
+
+    - name: Power off each NixOS rack host in order
+      ansible.builtin.command:
+        cmd: >-
+          ssh {{ ssh_common_args }}
+          -i /root/.ssh/id_ed25519
+          automation@{{ item }}
+          sudo /etc/rack-shutdown
+      loop: "{{ nixos_rack_hosts }}"
+      loop_control:
+        label: "{{ item }}"
+      when: not (dry_run | bool)
+      # A host that's already down (e.g. re-run after partial failure) or
+      # xsvr1 dropping the connection mid-poweroff both look like non-zero
+      # exit here — don't let one host block the rest of the sequence.
+      ignore_errors: true
+      changed_when: true
+
+    - name: Done
+      ansible.builtin.debug:
+        msg: >-
+          Rack shutdown sequence complete (or xsvr1 — last in the order — has
+          powered off, ending this job's own execution environment, whichever
+          came first).
+      when: not (dry_run | bool)

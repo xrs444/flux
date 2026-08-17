@@ -7,5 +7,6 @@ locks:
   f/sre/alert-ingest__flow+post_restic-check-repo_result_to_ntfy_thread.ts: 644119ccdf8fc06c43d27d68cb40df2a65f1c9112d8d797ab5267312fea87833
   f/sre/alert-ingest__flow+resolved_ack.ts: b2dd5e05d6d3702edeeceb23e56f4d192b57f62ec9ab824d275399774b4f692c
   f/sre/alert-ingest__flow+runbook_arr_stub.ts: 10995c63b3c8456e11a4bc5c71f3474bacc5fb7a4597cea152f44252f486db8b
+  f/sre/rack_power_off: ef000d2e16945a45ee3548867709fe877b50808efa55521b61f4458ba8ee579a
   f/sre/runbooks/backup/restic-check-repo: 033f3e6a94b945de33f8143752b2a117d51f8d041f5fa58b6f00f06467244005
   f/sre/runbooks/restart-arr-queue: 84715a6fb7dd801bf931a1311871dccfd9f632b3e15d35340eb6e93bf659b82b
