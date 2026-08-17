@@ -1,0 +1,82 @@
+---
+# UPS alerts for the two power sources being monitored:
+#   - xups.lan (Eaton SPX2200, rack UPS) via SNMP UPS-MIB — see the "ups"
+#     module in configmap-snmp-exporter.yaml and the "snmp-ups" scrape job.
+#   - xdt1-t's USB UPS via NUT (nix/modules/services/nut) — see the "nut"
+#     scrape job. Metric names use the network_ups_tools_ prefix and a
+#     ups.status flag label (OB=on battery, LB=low battery, RB=replace
+#     battery) per DRuggeri/nut_exporter's convention.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ups
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: ups
+      interval: 1m
+      rules:
+        - alert: UPSOnBattery
+          expr: |
+            upsOutputSource{instance="xups.lan"} == 5
+            or network_ups_tools_ups_status{instance=~"xdt1-t.*", flag="OB"} == 1
+          for: 30s
+          labels:
+            severity: warning
+            category: power
+          annotations:
+            summary: "{{ $labels.instance }} is running on battery power"
+            description: >
+              {{ $labels.instance }} lost mains power and is running on battery.
+              This is the trigger condition the power-loss shutdown automation
+              watches for.
+
+        - alert: UPSLowBattery
+          expr: |
+            upsBatteryStatus{instance="xups.lan"} == 3
+            or upsEstimatedChargeRemaining{instance="xups.lan"} < 20
+            or upsEstimatedMinutesRemaining{instance="xups.lan"} < 10
+            or network_ups_tools_ups_status{instance=~"xdt1-t.*", flag="LB"} == 1
+            or network_ups_tools_battery_charge{instance=~"xdt1-t.*"} < 20
+          for: 30s
+          labels:
+            severity: critical
+            category: power
+          annotations:
+            summary: "{{ $labels.instance }} battery critically low"
+            description: >
+              {{ $labels.instance }} battery charge/runtime has dropped below the
+              safe threshold. A graceful shutdown should already be underway.
+
+        - alert: UPSCommunicationLost
+          expr: |
+            up{job=~"snmp-ups|nut"} == 0
+          for: 5m
+          labels:
+            severity: warning
+            category: power
+          annotations:
+            summary: "Lost monitoring connection to {{ $labels.instance }}"
+            description: >
+              Prometheus has not been able to scrape {{ $labels.instance }} for 5
+              minutes. This is a dead-man's-switch alert — it fires whether the
+              UPS itself is down or just unreachable, since either way we've lost
+              visibility into its power state.
+
+        - alert: UPSBatteryNeedsReplacement
+          expr: |
+            upsAlarmsPresent{instance="xups.lan"} > 0
+            or network_ups_tools_ups_status{instance=~"xdt1-t.*", flag="RB"} == 1
+          for: 10m
+          labels:
+            severity: warning
+            category: power
+          annotations:
+            summary: "{{ $labels.instance }} reports a battery/alarm condition"
+            description: >
+              {{ $labels.instance }} has an active alarm or a "replace battery"
+              status flag. Runtime-on-battery may be shorter than expected until
+              addressed.

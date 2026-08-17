@@ -33,6 +33,8 @@ resources:
   - prometheusrule-longhorn.yaml
   # Overall System Status dashboard state (0/1/2 GOOD/CAUTION/WARNING recording rules)
   - prometheusrule-status-state.yaml
+  # UPS alerts (xups.lan via SNMP, xdt1-t via NUT)
+  - prometheusrule-ups.yaml
   # Sealed Secrets (must be created/sealed before deploying)
   - sealedsecret-alertmanager-config.yaml
   - sealedsecret-grafana-admin.yaml
