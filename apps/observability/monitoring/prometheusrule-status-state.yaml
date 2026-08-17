@@ -53,12 +53,15 @@ spec:
           expr: 2 * probe_success{job="blackbox-icmp-net"}
 
         # HTTPS endpoints — down (0) / reachable but TLS cert expiring within
-        # 14 days (1) / healthy (2).
+        # 14 days (1) / healthy (2). The `< bool` comparison is required: a
+        # plain `<` filters out non-matching series instead of returning 0,
+        # which collapsed the whole expression to empty whenever no cert was
+        # near expiry (the common case).
         - record: homeprod:endpoint:state
           expr: |
             clamp_min(
               (2 * probe_success{job="blackbox-ssl"})
-              - (probe_success{job="blackbox-ssl"} * on(instance) (probe_ssl_earliest_cert_expiry{job="blackbox-ssl"} - time() < 14 * 86400)),
+              - (probe_success{job="blackbox-ssl"} * on(instance) (probe_ssl_earliest_cert_expiry{job="blackbox-ssl"} - time() < bool 14 * 86400)),
               0
             )
 
@@ -80,19 +83,27 @@ spec:
         # Apps without a dedicated metrics job — replica-count based, one series
         # per (namespace, deployment) or (namespace, statefulset): 0 = no ready
         # replicas, 1 = partially available, 2 = fully available.
+        # `sum by (namespace, deployment/statefulset)` on every term keeps both
+        # sides of each `+` on an identical label set — `on(...)` alone drops
+        # every label except the ones listed, so adding it to an un-reduced
+        # term (full kube-state-metrics label set) never found a match and
+        # the whole expression came out empty. `bool` is required on both
+        # comparisons for the same reason as homeprod:endpoint:state. The
+        # statefulset desired-replica metric is kube_statefulset_replicas,
+        # not kube_statefulset_spec_replicas (that name doesn't exist).
         - record: homeprod:app:state
           expr: |
             clamp_min(
               (
-                (kube_deployment_status_replicas_available > 0)
+                (sum by (namespace, deployment) (kube_deployment_status_replicas_available) > bool 0)
                 +
-                (kube_deployment_status_replicas_available >= on(namespace, deployment) kube_deployment_spec_replicas)
+                (sum by (namespace, deployment) (kube_deployment_status_replicas_available) >= bool on(namespace, deployment) sum by (namespace, deployment) (kube_deployment_spec_replicas))
               )
               or
               (
-                (kube_statefulset_status_replicas_ready > 0)
+                (sum by (namespace, statefulset) (kube_statefulset_status_replicas_ready) > bool 0)
                 +
-                (kube_statefulset_status_replicas_ready >= on(namespace, statefulset) kube_statefulset_spec_replicas)
+                (sum by (namespace, statefulset) (kube_statefulset_status_replicas_ready) >= bool on(namespace, statefulset) sum by (namespace, statefulset) (kube_statefulset_replicas))
               ),
               0
             )
