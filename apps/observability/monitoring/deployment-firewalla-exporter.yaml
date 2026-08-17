@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firewalla-exporter
+  namespace: monitoring
+  labels:
+    app: firewalla-exporter
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: firewalla-exporter
+  template:
+    metadata:
+      labels:
+        app: firewalla-exporter
+    spec:
+      containers:
+        - name: firewalla-exporter
+          # Built by .github/workflows/build-firewalla-exporter-image.yml on every push
+          # to apps/observability/monitoring/firewalla-exporter/. Floating :latest tag —
+          # if staleness ever bites (Spegel P2P mirror caching an old digest under the
+          # same tag, seen live with mcpjungle-custom), switch to digest-pinning like
+          # deployment-mcpjungle.yaml does.
+          image: ghcr.io/xrs444/firewalla-exporter:latest
+          imagePullPolicy: Always
+          env:
+            - name: FIREWALLA_MSP_ID
+              value: "dn-j3almw.firewalla.net"
+            - name: FIREWALLA_MSP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: firewalla-msp-credentials
+                  key: msp-token
+          ports:
+            - containerPort: 9878
+              name: http
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3

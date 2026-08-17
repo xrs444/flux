@@ -1,0 +1,10 @@
+[project]
+name = "firewalla-exporter"
+version = "0.1.0"
+description = "Prometheus exporter for the Firewalla MSP API"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "requests>=2.31.0",
+    "prometheus-client>=0.20.0",
+]

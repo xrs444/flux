@@ -18,6 +18,9 @@ resources:
   - configmap-snmp-exporter.yaml
   - deployment-snmp-exporter.yaml
   - service-snmp-exporter.yaml
+  # Firewalla exporter (MSP API — box/device/alarm telemetry, not host OS metrics)
+  - deployment-firewalla-exporter.yaml
+  - service-firewalla-exporter.yaml
   # IngressRoutes
   - ingressroute-grafana.yaml
   - ingressroute-prometheus.yaml
@@ -43,6 +46,7 @@ resources:
   - sealedsecret-ha-bearer-token.yaml
   - sealedsecret-netbox-api-token.yaml
   - sealedsecret-additional-scrape-configs.yaml
+  - sealedsecret-firewalla-msp-credentials.yaml
 
 # Dashboard ConfigMaps — loaded by Grafana sidecar (label: grafana_dashboard=1)
 # Large dashboards (node-exporter-full: 668K, alertmanager: 304K) are isolated
