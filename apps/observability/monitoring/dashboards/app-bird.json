@@ -25,7 +25,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -71,7 +71,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum(bird_protocol_up{job=\"bird\", bird_role=\"exit-node\", proto=\"BGP\"})",
           "legendFormat": ""
@@ -83,7 +83,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -129,7 +129,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum(bird_protocol_up{job=\"bird\", bird_role=\"gateway\", proto=\"BGP\"})",
           "legendFormat": ""
@@ -141,7 +141,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {},
@@ -164,7 +164,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "bird_protocol_up{job=\"bird\"}",
           "legendFormat": "",
@@ -173,7 +173,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "bird_protocol_uptime{job=\"bird\", proto=\"BGP\"}",
           "legendFormat": "",
@@ -182,7 +182,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "bird_protocol_prefix_import_count{job=\"bird\", proto=\"BGP\"}",
           "legendFormat": "",
@@ -191,7 +191,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "bird_protocol_prefix_export_count{job=\"bird\", proto=\"BGP\"}",
           "legendFormat": "",
@@ -222,7 +222,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -262,7 +262,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "bird_protocol_prefix_import_count{job=\"bird\", proto=\"BGP\"}",
           "legendFormat": "{{instance}} {{name}} ({{bird_role}})"
@@ -274,7 +274,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -314,7 +314,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "bird_protocol_prefix_export_count{job=\"bird\", proto=\"BGP\"}",
           "legendFormat": "{{instance}} {{name}} ({{bird_role}})"
@@ -338,7 +338,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -378,7 +378,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "rate(bird_protocol_changes_update_import_accept_count{job=\"bird\"}[5m])",
           "legendFormat": "{{instance}} {{name}} update-accept"
@@ -386,7 +386,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "rate(bird_protocol_changes_withdraw_import_accept_count{job=\"bird\"}[5m])",
           "legendFormat": "{{instance}} {{name}} withdraw-accept"
@@ -398,7 +398,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -438,7 +438,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "rate(bird_protocol_changes_update_export_accept_count{job=\"bird\"}[5m])",
           "legendFormat": "{{instance}} {{name}} update-accept"
@@ -446,7 +446,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "rate(bird_protocol_changes_withdraw_export_accept_count{job=\"bird\"}[5m])",
           "legendFormat": "{{instance}} {{name}} withdraw-accept"
@@ -470,7 +470,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -510,7 +510,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "bird_protocol_uptime{job=\"bird\", proto=\"BGP\"}",
           "legendFormat": "{{instance}} {{name}}"

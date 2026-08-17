@@ -17,7 +17,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -30,13 +30,13 @@
       "id": 2,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "up{job=\"loki\"}", "legendFormat": "Loki" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "up{job=\"loki\"}", "legendFormat": "Loki" }
       ],
       "title": "Status",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -49,13 +49,13 @@
       "id": 3,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(loki_ingester_bytes_received_total[5m]))", "legendFormat": "Ingest" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(loki_ingester_bytes_received_total[5m]))", "legendFormat": "Ingest" }
       ],
       "title": "Ingest Rate",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -68,13 +68,13 @@
       "id": 4,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(loki_ingester_log_lines_received_total[5m]))", "legendFormat": "Lines/s" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(loki_ingester_log_lines_received_total[5m]))", "legendFormat": "Lines/s" }
       ],
       "title": "Log Lines/s",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -87,13 +87,13 @@
       "id": 5,
       "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.99, sum(rate(loki_request_duration_seconds_bucket{route=~\"loki_api_v1_query.*\"}[5m])) by (le))", "legendFormat": "p99" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.99, sum(rate(loki_request_duration_seconds_bucket{route=~\"loki_api_v1_query.*\"}[5m])) by (le))", "legendFormat": "p99" }
       ],
       "title": "Query p99 Latency",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -106,7 +106,7 @@
       "id": 6,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "loki_ingester_streams_created_total - loki_ingester_streams_removed_total", "legendFormat": "Streams" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "loki_ingester_streams_created_total - loki_ingester_streams_removed_total", "legendFormat": "Streams" }
       ],
       "title": "Active Streams",
       "type": "stat"
@@ -119,7 +119,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -132,13 +132,13 @@
       "id": 11,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "topk(10, sum by (namespace) (rate(loki_ingester_bytes_received_total[5m])))", "legendFormat": "{{namespace}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "topk(10, sum by (namespace) (rate(loki_ingester_bytes_received_total[5m])))", "legendFormat": "{{namespace}}" }
       ],
       "title": "Ingest Rate by Namespace (top 10)",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -151,8 +151,8 @@
       "id": 12,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(loki_ingester_log_lines_received_total[5m]))", "legendFormat": "Total" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(loki_discarded_samples_total[5m]))", "legendFormat": "Discarded" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(loki_ingester_log_lines_received_total[5m]))", "legendFormat": "Total" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(loki_discarded_samples_total[5m]))", "legendFormat": "Discarded" }
       ],
       "title": "Log Lines/s vs Discarded",
       "type": "timeseries"
@@ -165,7 +165,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -178,14 +178,14 @@
       "id": 21,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.99, sum by (le, route) (rate(loki_request_duration_seconds_bucket[5m])))", "legendFormat": "p99 {{route}}" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.50, sum by (le, route) (rate(loki_request_duration_seconds_bucket[5m])))", "legendFormat": "p50 {{route}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.99, sum by (le, route) (rate(loki_request_duration_seconds_bucket[5m])))", "legendFormat": "p99 {{route}}" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.50, sum by (le, route) (rate(loki_request_duration_seconds_bucket[5m])))", "legendFormat": "p50 {{route}}" }
       ],
       "title": "Request Latency by Route",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -198,7 +198,7 @@
       "id": 22,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (status_code) (rate(loki_request_duration_seconds_count[5m]))", "legendFormat": "{{status_code}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (status_code) (rate(loki_request_duration_seconds_count[5m]))", "legendFormat": "{{status_code}}" }
       ],
       "title": "Requests by Status Code",
       "type": "timeseries"
@@ -211,7 +211,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -224,14 +224,14 @@
       "id": 31,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(loki_chunk_store_stored_chunks_total[5m]))", "legendFormat": "Chunks stored/s" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(loki_chunk_store_fetched_chunks_total[5m]))", "legendFormat": "Chunks fetched/s" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(loki_chunk_store_stored_chunks_total[5m]))", "legendFormat": "Chunks stored/s" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(loki_chunk_store_fetched_chunks_total[5m]))", "legendFormat": "Chunks fetched/s" }
       ],
       "title": "Chunk Store Activity",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -244,7 +244,7 @@
       "id": 32,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(loki_ingester_chunk_size_bytes)", "legendFormat": "Ingester chunk size" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(loki_ingester_chunk_size_bytes)", "legendFormat": "Ingester chunk size" }
       ],
       "title": "Ingester Memory (Chunks)",
       "type": "timeseries"

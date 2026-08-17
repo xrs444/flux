@@ -25,7 +25,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {},
@@ -48,7 +48,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "zfs_pool_health{job=\"zfs\"}",
           "legendFormat": "{{instance}} \u2014 {{pool}} health",
@@ -57,7 +57,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "zfs_pool_size_bytes{job=\"zfs\"}",
           "legendFormat": "{{pool}} size",
@@ -66,7 +66,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "zfs_pool_free_bytes{job=\"zfs\"}",
           "legendFormat": "{{pool}} free",
@@ -75,7 +75,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "zfs_pool_allocated_bytes{job=\"zfs\"}",
           "legendFormat": "{{pool}} allocated",
@@ -84,7 +84,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "zfs_pool_fragmentation_ratio{job=\"zfs\"}",
           "legendFormat": "{{pool}} frag",
@@ -103,7 +103,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -143,7 +143,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "zfs_pool_allocated_bytes{job=\"zfs\"}",
           "legendFormat": "{{instance}} {{pool}}"
@@ -155,7 +155,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -195,7 +195,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "zfs_pool_free_bytes{job=\"zfs\"}",
           "legendFormat": "{{instance}} {{pool}}"
@@ -219,7 +219,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {},
@@ -242,7 +242,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "zfs_dataset_used_bytes{job=\"zfs\", type=\"filesystem\"}",
           "legendFormat": "{{name}} used",
@@ -251,7 +251,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "zfs_dataset_available_bytes{job=\"zfs\", type=\"filesystem\"}",
           "legendFormat": "{{name}} available",
@@ -260,7 +260,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "zfs_dataset_referenced_bytes{job=\"zfs\", type=\"filesystem\"}",
           "legendFormat": "{{name}} referenced",
@@ -279,7 +279,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -319,7 +319,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "irate(zfs_dataset_written_bytes{job=\"zfs\", type=\"filesystem\"}[5m])",
           "legendFormat": "{{instance}} {{name}}"

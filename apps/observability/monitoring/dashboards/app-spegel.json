@@ -17,7 +17,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -30,13 +30,13 @@
       "id": 2,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "up{job=\"spegel\"}", "legendFormat": "Spegel" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "up{job=\"spegel\"}", "legendFormat": "Spegel" }
       ],
       "title": "Status",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -49,13 +49,13 @@
       "id": 3,
       "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(spegel_registry_requests_total{cache=\"hit\"}[5m])) / sum(rate(spegel_registry_requests_total[5m]))", "legendFormat": "Hit Rate" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(spegel_registry_requests_total{cache=\"hit\"}[5m])) / sum(rate(spegel_registry_requests_total[5m]))", "legendFormat": "Hit Rate" }
       ],
       "title": "Cache Hit Rate",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -68,13 +68,13 @@
       "id": 4,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(spegel_registry_bytes_total{source=\"peer\"}[5m]))", "legendFormat": "Peer bytes/s" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(spegel_registry_bytes_total{source=\"peer\"}[5m]))", "legendFormat": "Peer bytes/s" }
       ],
       "title": "Bandwidth from Peers",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -87,7 +87,7 @@
       "id": 5,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(up{job=\"spegel\"})", "legendFormat": "Nodes" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(up{job=\"spegel\"})", "legendFormat": "Nodes" }
       ],
       "title": "Mirror Nodes",
       "type": "stat"
@@ -100,7 +100,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -113,13 +113,13 @@
       "id": 11,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (cache) (rate(spegel_registry_requests_total[5m]))", "legendFormat": "{{cache}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (cache) (rate(spegel_registry_requests_total[5m]))", "legendFormat": "{{cache}}" }
       ],
       "title": "Registry Requests by Cache Result",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -132,7 +132,7 @@
       "id": 12,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (source) (rate(spegel_registry_bytes_total[5m]))", "legendFormat": "{{source}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (source) (rate(spegel_registry_bytes_total[5m]))", "legendFormat": "{{source}}" }
       ],
       "title": "Registry Bytes by Source (peer vs upstream)",
       "type": "timeseries"

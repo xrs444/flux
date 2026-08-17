@@ -17,7 +17,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -30,13 +30,13 @@
       "id": 2,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "up{job=\"immich\"}", "legendFormat": "Immich" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "up{job=\"immich\"}", "legendFormat": "Immich" }
       ],
       "title": "Status",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -49,13 +49,13 @@
       "id": 3,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "immich_assets_total", "legendFormat": "Assets" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "immich_assets_total", "legendFormat": "Assets" }
       ],
       "title": "Total Assets",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -68,13 +68,13 @@
       "id": 4,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "immich_users_total", "legendFormat": "Users" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "immich_users_total", "legendFormat": "Users" }
       ],
       "title": "Total Users",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -87,13 +87,13 @@
       "id": 5,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(immich_storage_used_bytes)", "legendFormat": "Used" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(immich_storage_used_bytes)", "legendFormat": "Used" }
       ],
       "title": "Storage Used",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -106,7 +106,7 @@
       "id": 6,
       "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"immich\"}[5m])) by (le))", "legendFormat": "p99" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"immich\"}[5m])) by (le))", "legendFormat": "p99" }
       ],
       "title": "API p99 Latency",
       "type": "stat"
@@ -119,7 +119,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -132,13 +132,13 @@
       "id": 11,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (method) (rate(http_requests_total{job=\"immich\"}[5m]))", "legendFormat": "{{method}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (method) (rate(http_requests_total{job=\"immich\"}[5m]))", "legendFormat": "{{method}}" }
       ],
       "title": "API Request Rate by Method",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -151,7 +151,7 @@
       "id": 12,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (status_code) (rate(http_requests_total{job=\"immich\", status_code=~\"4..|5..\"}[5m]))", "legendFormat": "HTTP {{status_code}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (status_code) (rate(http_requests_total{job=\"immich\", status_code=~\"4..|5..\"}[5m]))", "legendFormat": "HTTP {{status_code}}" }
       ],
       "title": "API Error Rate by Status",
       "type": "timeseries"
@@ -164,7 +164,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -177,13 +177,13 @@
       "id": 21,
       "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "immich_job_queue_size", "legendFormat": "{{queue}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "immich_job_queue_size", "legendFormat": "{{queue}}" }
       ],
       "title": "Job Queue Size",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -196,7 +196,7 @@
       "id": 22,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "rate(immich_job_queue_finished[5m])", "legendFormat": "{{queue}} finished/s" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(immich_job_queue_finished[5m])", "legendFormat": "{{queue}} finished/s" }
       ],
       "title": "Job Completion Rate",
       "type": "timeseries"
@@ -209,7 +209,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -225,13 +225,13 @@
       "id": 31,
       "options": { "footer": { "show": false }, "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Storage" }] },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "immich_storage_used_bytes", "legendFormat": "{{user}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "immich_storage_used_bytes", "legendFormat": "{{user}}", "instant": true }
       ],
       "title": "Storage by User",
       "type": "table"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -245,7 +245,7 @@
       "id": 32,
       "options": { "footer": { "show": false }, "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Assets" }] },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "immich_assets_by_user", "legendFormat": "{{user}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "immich_assets_by_user", "legendFormat": "{{user}}", "instant": true }
       ],
       "title": "Assets by User",
       "type": "table"

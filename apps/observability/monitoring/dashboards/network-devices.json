@@ -26,7 +26,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -118,7 +118,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "probe_success{job=\"blackbox-ssl\"}",
           "legendFormat": "{{instance}}",
@@ -149,7 +149,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -219,7 +219,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "probe_ssl_earliest_cert_expiry{job=\"blackbox-ssl\"} - time()",
           "legendFormat": "{{instance}}",
@@ -250,7 +250,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -295,7 +295,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "probe_duration_seconds{job=\"blackbox-ssl\"}",
           "legendFormat": "{{instance}}"
@@ -319,7 +319,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -423,7 +423,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "bird_protocol_up{job=\"bird\"}",
           "legendFormat": "{{instance}} {{name}} ({{proto}})",
@@ -436,7 +436,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -480,7 +480,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "rate(bird_protocol_prefix_import_count{job=\"bird\", proto=\"BGP\"}[5m])",
           "legendFormat": "{{instance}} {{name}} import"
@@ -488,7 +488,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "rate(bird_protocol_prefix_export_count{job=\"bird\", proto=\"BGP\"}[5m])",
           "legendFormat": "{{instance}} {{name}} export"
@@ -500,7 +500,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -544,7 +544,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "rate(bird_protocol_changes_update_import_accept_count{job=\"bird\"}[5m])",
           "legendFormat": "{{instance}} {{name}} {{action}}"
@@ -568,7 +568,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,

@@ -17,7 +17,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -30,13 +30,13 @@
       "id": 2,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "up{job=\"longhorn\"}", "legendFormat": "Longhorn" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "up{job=\"longhorn\"}", "legendFormat": "Longhorn" }
       ],
       "title": "Status",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -49,13 +49,13 @@
       "id": 3,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(longhorn_volume_robustness == 0)", "legendFormat": "Healthy" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(longhorn_volume_robustness == 0)", "legendFormat": "Healthy" }
       ],
       "title": "Healthy Volumes",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -68,13 +68,13 @@
       "id": 4,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(longhorn_volume_robustness > 0) or vector(0)", "legendFormat": "Degraded" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(longhorn_volume_robustness > 0) or vector(0)", "legendFormat": "Degraded" }
       ],
       "title": "Degraded/Faulted Volumes",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -87,13 +87,13 @@
       "id": 5,
       "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["max"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "max((longhorn_disk_usage_bytes / longhorn_disk_capacity_bytes) * 100)", "legendFormat": "Max disk %" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "max((longhorn_disk_usage_bytes / longhorn_disk_capacity_bytes) * 100)", "legendFormat": "Max disk %" }
       ],
       "title": "Max Disk Usage",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -106,7 +106,7 @@
       "id": 6,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(longhorn_volume_actual_size_bytes)", "legendFormat": "Used" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(longhorn_volume_actual_size_bytes)", "legendFormat": "Used" }
       ],
       "title": "Total Storage Used",
       "type": "stat"
@@ -119,7 +119,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -136,13 +136,13 @@
       "id": 11,
       "options": { "footer": { "show": false }, "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Robustness" }] },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "longhorn_volume_robustness", "legendFormat": "{{volume}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "longhorn_volume_robustness", "legendFormat": "{{volume}}", "instant": true }
       ],
       "title": "Volume Robustness",
       "type": "table"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -158,7 +158,7 @@
       "id": 12,
       "options": { "footer": { "show": false }, "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Usage %" }] },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "(longhorn_volume_actual_size_bytes / longhorn_volume_capacity_bytes) * 100", "legendFormat": "{{volume}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "(longhorn_volume_actual_size_bytes / longhorn_volume_capacity_bytes) * 100", "legendFormat": "{{volume}}", "instant": true }
       ],
       "title": "Volume Fill Level",
       "type": "table"
@@ -171,7 +171,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -188,13 +188,13 @@
       "id": 21,
       "options": { "footer": { "show": false }, "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Usage %" }] },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "(longhorn_disk_usage_bytes / longhorn_disk_capacity_bytes) * 100", "legendFormat": "{{node}} / {{disk}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "(longhorn_disk_usage_bytes / longhorn_disk_capacity_bytes) * 100", "legendFormat": "{{node}} / {{disk}}", "instant": true }
       ],
       "title": "Disk Usage by Node",
       "type": "table"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -207,7 +207,7 @@
       "id": 22,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (node) (longhorn_disk_usage_bytes)", "legendFormat": "{{node}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (node) (longhorn_disk_usage_bytes)", "legendFormat": "{{node}}" }
       ],
       "title": "Storage Used per Node",
       "type": "timeseries"
@@ -220,7 +220,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -233,14 +233,14 @@
       "id": 31,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "topk(10, rate(longhorn_volume_read_iops[5m]))", "legendFormat": "{{volume}} R" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "topk(10, rate(longhorn_volume_write_iops[5m]))", "legendFormat": "{{volume}} W" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "topk(10, rate(longhorn_volume_read_iops[5m]))", "legendFormat": "{{volume}} R" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "topk(10, rate(longhorn_volume_write_iops[5m]))", "legendFormat": "{{volume}} W" }
       ],
       "title": "Volume IOPS (top 10)",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -253,8 +253,8 @@
       "id": 32,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "topk(10, rate(longhorn_volume_read_throughput[5m]))", "legendFormat": "{{volume}} R" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "topk(10, rate(longhorn_volume_write_throughput[5m]))", "legendFormat": "{{volume}} W" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "topk(10, rate(longhorn_volume_read_throughput[5m]))", "legendFormat": "{{volume}} R" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "topk(10, rate(longhorn_volume_write_throughput[5m]))", "legendFormat": "{{volume}} W" }
       ],
       "title": "Volume Throughput (top 10)",
       "type": "timeseries"
@@ -267,7 +267,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -280,7 +280,7 @@
       "id": 41,
       "options": { "footer": { "show": false }, "showHeader": true },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "longhorn_backup_state", "legendFormat": "{{volume}} / {{backup}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "longhorn_backup_state", "legendFormat": "{{volume}} / {{backup}}", "instant": true }
       ],
       "title": "Backup State",
       "type": "table"

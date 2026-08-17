@@ -17,7 +17,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -30,13 +30,13 @@
       "id": 2,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "up{job=\"homeassistant\"}", "legendFormat": "HA" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "up{job=\"homeassistant\"}", "legendFormat": "HA" }
       ],
       "title": "Status",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -49,13 +49,13 @@
       "id": 3,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "homeassistant_entities", "legendFormat": "Entities" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "homeassistant_entities", "legendFormat": "Entities" }
       ],
       "title": "Total Entities",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -68,13 +68,13 @@
       "id": 4,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "homeassistant_automation_triggered_total", "legendFormat": "Automations" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "homeassistant_automation_triggered_total", "legendFormat": "Automations" }
       ],
       "title": "Automations Triggered (total)",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -87,13 +87,13 @@
       "id": 5,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "homeassistant_integrations", "legendFormat": "Integrations" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "homeassistant_integrations", "legendFormat": "Integrations" }
       ],
       "title": "Integrations",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -106,7 +106,7 @@
       "id": 6,
       "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.99, sum(rate(homeassistant_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p99" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.99, sum(rate(homeassistant_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p99" }
       ],
       "title": "HTTP p99 Latency",
       "type": "stat"
@@ -119,7 +119,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -132,13 +132,13 @@
       "id": 11,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (domain) (rate(homeassistant_state_changed_total[5m]) * 60)", "legendFormat": "{{domain}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (domain) (rate(homeassistant_state_changed_total[5m]) * 60)", "legendFormat": "{{domain}}" }
       ],
       "title": "State Changes per Minute by Domain",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -151,7 +151,7 @@
       "id": 12,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "rate(homeassistant_automation_triggered_total[5m]) * 60", "legendFormat": "Triggers/min" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(homeassistant_automation_triggered_total[5m]) * 60", "legendFormat": "Triggers/min" }
       ],
       "title": "Automation Trigger Rate",
       "type": "timeseries"
@@ -164,7 +164,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -177,13 +177,13 @@
       "id": 21,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (method) (rate(homeassistant_http_requests_total[5m]))", "legendFormat": "{{method}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (method) (rate(homeassistant_http_requests_total[5m]))", "legendFormat": "{{method}}" }
       ],
       "title": "HTTP Requests by Method",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -196,8 +196,8 @@
       "id": 22,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.99, sum(rate(homeassistant_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p99" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.50, sum(rate(homeassistant_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p50" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.99, sum(rate(homeassistant_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p99" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.50, sum(rate(homeassistant_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p50" }
       ],
       "title": "HTTP Latency",
       "type": "timeseries"

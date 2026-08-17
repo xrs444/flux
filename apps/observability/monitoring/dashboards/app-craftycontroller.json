@@ -26,7 +26,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -86,7 +86,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "count(kube_pod_status_phase{namespace=\"craftycontroller\", phase=\"Running\"})",
           "legendFormat": "Running Pods"
@@ -98,7 +98,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -148,7 +148,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"craftycontroller\"})",
           "legendFormat": "Restarts"
@@ -160,7 +160,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -210,7 +210,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"craftycontroller\", container!=\"\", container!=\"POD\"}[5m]))",
           "legendFormat": "CPU"
@@ -222,7 +222,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -272,7 +272,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum(container_memory_working_set_bytes{namespace=\"craftycontroller\", container!=\"\", container!=\"POD\"})",
           "legendFormat": "Memory"
@@ -296,7 +296,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -341,7 +341,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum by (pod, container) (rate(container_cpu_usage_seconds_total{namespace=\"craftycontroller\", container!=\"\", container!=\"POD\"}[5m]))",
           "legendFormat": "{{pod}}/{{container}}"
@@ -353,7 +353,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -398,7 +398,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum by (pod, container) (container_memory_working_set_bytes{namespace=\"craftycontroller\", container!=\"\", container!=\"POD\"})",
           "legendFormat": "{{pod}}/{{container}}"
@@ -422,7 +422,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -466,7 +466,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum by (pod) (rate(container_network_receive_bytes_total{namespace=\"craftycontroller\"}[5m]))",
           "legendFormat": "{{pod}} RX"
@@ -478,7 +478,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -522,7 +522,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{namespace=\"craftycontroller\"}[5m]))",
           "legendFormat": "{{pod}} TX"

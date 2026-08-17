@@ -17,7 +17,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -33,8 +33,8 @@
       "id": 201,
       "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\",instance=~\"172.20.1.10:9100|172.20.1.20:9100|172.20.1.30:9100\"}[5m])) * 100)", "legendFormat": "{{instance}}" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\",instance=~\"xts1.lan:9100|xts2.lan:9100|xcomm1.lan:9100|xpbx1.lan:9100|cmrpi1.lan:9100\"}[5m])) * 100)", "legendFormat": "{{instance}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\",instance=~\"172.20.1.10:9100|172.20.1.20:9100|172.20.1.30:9100\"}[5m])) * 100)", "legendFormat": "{{instance}}" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\",instance=~\"xts1.lan:9100|xts2.lan:9100|xcomm1.lan:9100|xpbx1.lan:9100|cmrpi1.lan:9100\"}[5m])) * 100)", "legendFormat": "{{instance}}" }
       ],
       "title": "CPU Usage",
       "type": "timeseries"
@@ -47,7 +47,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -63,7 +63,7 @@
       "id": 211,
       "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100", "legendFormat": "{{instance}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100", "legendFormat": "{{instance}}" }
       ],
       "title": "Memory Usage",
       "type": "timeseries"
@@ -76,7 +76,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -90,7 +90,7 @@
       "id": 221,
       "options": { "footer": { "fields": "", "reducer": ["sum"], "show": false }, "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Usage %" }] },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "100 - ((node_filesystem_avail_bytes{fstype!~\"tmpfs|fuse.lxcfs|squashfs|vfat|devtmpfs\",mountpoint!~\"/boot.*\"} / node_filesystem_size_bytes) * 100)", "legendFormat": "{{instance}} {{mountpoint}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "100 - ((node_filesystem_avail_bytes{fstype!~\"tmpfs|fuse.lxcfs|squashfs|vfat|devtmpfs\",mountpoint!~\"/boot.*\"} / node_filesystem_size_bytes) * 100)", "legendFormat": "{{instance}} {{mountpoint}}", "instant": true }
       ],
       "title": "Disk Usage by Mount",
       "transformations": [{ "id": "sortBy", "options": { "fields": [{ "desc": true, "displayName": "Value" }] } }],
@@ -104,7 +104,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -117,13 +117,13 @@
       "id": 231,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "irate(node_network_receive_bytes_total{device=~\"bond0|eth0|enp.*\",instance=~\"172.20.1.10:9100|172.20.1.20:9100|172.20.1.30:9100\"}[5m])", "legendFormat": "{{instance}} RX" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "irate(node_network_receive_bytes_total{device=~\"bond0|eth0|enp.*\",instance=~\"172.20.1.10:9100|172.20.1.20:9100|172.20.1.30:9100\"}[5m])", "legendFormat": "{{instance}} RX" }
       ],
       "title": "Network Receive (Servers)",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -136,7 +136,7 @@
       "id": 232,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "irate(node_network_transmit_bytes_total{device=~\"bond0|eth0|enp.*\",instance=~\"172.20.1.10:9100|172.20.1.20:9100|172.20.1.30:9100\"}[5m])", "legendFormat": "{{instance}} TX" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "irate(node_network_transmit_bytes_total{device=~\"bond0|eth0|enp.*\",instance=~\"172.20.1.10:9100|172.20.1.20:9100|172.20.1.30:9100\"}[5m])", "legendFormat": "{{instance}} TX" }
       ],
       "title": "Network Transmit (Servers)",
       "type": "timeseries"
@@ -149,7 +149,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -163,7 +163,7 @@
       "id": 241,
       "options": { "showHeader": true },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "time() - node_boot_time_seconds", "legendFormat": "{{instance}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "time() - node_boot_time_seconds", "legendFormat": "{{instance}}", "instant": true }
       ],
       "title": "System Uptime",
       "type": "table"

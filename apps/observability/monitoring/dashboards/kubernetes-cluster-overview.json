@@ -10,7 +10,7 @@
   "links": [],
   "panels": [
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -24,10 +24,10 @@
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "title": "Nodes Ready",
       "type": "stat",
-      "targets": [{ "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"})", "legendFormat": "" }]
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"})", "legendFormat": "" }]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -41,10 +41,10 @@
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "title": "Pods Not Running",
       "type": "stat",
-      "targets": [{ "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(kube_pod_status_phase{phase!~\"Running|Succeeded\"}) or vector(0)", "legendFormat": "" }]
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(kube_pod_status_phase{phase!~\"Running|Succeeded\"} == 1) or vector(0)", "legendFormat": "" }]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -58,10 +58,10 @@
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "title": "Total Pods Running",
       "type": "stat",
-      "targets": [{ "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(kube_pod_status_phase{phase=\"Running\"})", "legendFormat": "" }]
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(kube_pod_status_phase{phase=\"Running\"} == 1)", "legendFormat": "" }]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -75,10 +75,10 @@
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "title": "CrashLoop Pods",
       "type": "stat",
-      "targets": [{ "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\"}) or vector(0)", "legendFormat": "" }]
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\"}) or vector(0)", "legendFormat": "" }]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -92,10 +92,10 @@
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "title": "Certs Expiring (<14d)",
       "type": "stat",
-      "targets": [{ "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(certmanager_certificate_expiration_timestamp_seconds - time() < 1209600) or vector(0)", "legendFormat": "" }]
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(certmanager_certificate_expiration_timestamp_seconds - time() < 1209600) or vector(0)", "legendFormat": "" }]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -109,10 +109,10 @@
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "title": "PVCs Bound",
       "type": "stat",
-      "targets": [{ "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(kube_persistentvolumeclaim_status_phase{phase=\"Bound\"})", "legendFormat": "" }]
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(kube_persistentvolumeclaim_status_phase{phase=\"Bound\"})", "legendFormat": "" }]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -126,7 +126,7 @@
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "title": "PVCs Not Bound",
       "type": "stat",
-      "targets": [{ "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(kube_persistentvolumeclaim_status_phase{phase!=\"Bound\"}) or vector(0)", "legendFormat": "" }]
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(kube_persistentvolumeclaim_status_phase{phase!=\"Bound\"}) or vector(0)", "legendFormat": "" }]
     },
     {
       "collapsed": false,
@@ -136,7 +136,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -150,13 +150,13 @@
       "id": 101,
       "options": { "showHeader": true },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\",job=\"talos-node\"}[5m])) * 100)", "legendFormat": "{{instance}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\",job=\"talos-node\"}[5m])) * 100)", "legendFormat": "{{instance}}", "instant": true }
       ],
       "title": "Node CPU Usage %",
       "type": "table"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -170,7 +170,7 @@
       "id": 102,
       "options": { "showHeader": true },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "(1 - (node_memory_MemAvailable_bytes{job=\"talos-node\"} / node_memory_MemTotal_bytes{job=\"talos-node\"})) * 100", "legendFormat": "{{instance}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "(1 - (node_memory_MemAvailable_bytes{job=\"talos-node\"} / node_memory_MemTotal_bytes{job=\"talos-node\"})) * 100", "legendFormat": "{{instance}}", "instant": true }
       ],
       "title": "Node Memory Usage %",
       "type": "table"
@@ -183,7 +183,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -196,13 +196,13 @@
       "id": 111,
       "options": { "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Value" }] },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (namespace) (kube_pod_status_phase{phase=\"Running\"})", "legendFormat": "{{namespace}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (namespace) (kube_pod_status_phase{phase=\"Running\"} == 1)", "legendFormat": "{{namespace}}", "instant": true }
       ],
       "title": "Running Pods by Namespace",
       "type": "table"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -215,7 +215,7 @@
       "id": 112,
       "options": { "showHeader": true },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "kube_pod_status_phase{phase!~\"Running|Succeeded\"}", "legendFormat": "{{namespace}}/{{pod}} {{phase}}", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "kube_pod_status_phase{phase!~\"Running|Succeeded\"} == 1", "legendFormat": "{{namespace}}/{{pod}} {{phase}}", "instant": true }
       ],
       "title": "Non-Running Pods",
       "type": "table"
@@ -228,7 +228,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -241,13 +241,13 @@
       "id": 121,
       "options": { "legend": { "calcs": ["mean"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (verb) (rate(apiserver_request_total[5m]))", "legendFormat": "{{verb}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (verb) (rate(apiserver_request_total[5m]))", "legendFormat": "{{verb}}" }
       ],
       "title": "API Server Request Rate",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -260,8 +260,8 @@
       "id": 122,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.99, sum by (le, verb) (rate(apiserver_request_duration_seconds_bucket{verb!~\"WATCH\"}[5m])))", "legendFormat": "p99 {{verb}}" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.50, sum by (le, verb) (rate(apiserver_request_duration_seconds_bucket{verb!~\"WATCH\"}[5m])))", "legendFormat": "p50 {{verb}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.99, sum by (le, verb) (rate(apiserver_request_duration_seconds_bucket{verb!~\"WATCH\"}[5m])))", "legendFormat": "p99 {{verb}}" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.50, sum by (le, verb) (rate(apiserver_request_duration_seconds_bucket{verb!~\"WATCH\"}[5m])))", "legendFormat": "p50 {{verb}}" }
       ],
       "title": "API Server Latency",
       "type": "timeseries"
@@ -274,7 +274,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -287,13 +287,13 @@
       "id": 131,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (router) (rate(traefik_router_requests_total[5m]))", "legendFormat": "{{router}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (router) (rate(traefik_router_requests_total[5m]))", "legendFormat": "{{router}}" }
       ],
       "title": "Traefik Request Rate by Router",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -306,7 +306,7 @@
       "id": 132,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (code) (rate(traefik_router_requests_total{code!~\"2..\"}[5m]))", "legendFormat": "HTTP {{code}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (code) (rate(traefik_router_requests_total{code!~\"2..\"}[5m]))", "legendFormat": "HTTP {{code}}" }
       ],
       "title": "Traefik Error Rate by Code",
       "type": "timeseries"
@@ -319,7 +319,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -333,7 +333,7 @@
       "id": 141,
       "options": { "showHeader": true, "sortBy": [{ "desc": false, "displayName": "Value" }] },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "certmanager_certificate_expiration_timestamp_seconds - time()", "legendFormat": "{{name}} ({{namespace}})", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "certmanager_certificate_expiration_timestamp_seconds - time()", "legendFormat": "{{name}} ({{namespace}})", "instant": true }
       ],
       "title": "Certificate Expiry",
       "type": "table"

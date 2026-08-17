@@ -17,7 +17,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -30,13 +30,13 @@
       "id": 2,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "up{job=\"ntfy\"}", "legendFormat": "ntfy" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "up{job=\"ntfy\"}", "legendFormat": "ntfy" }
       ],
       "title": "Status",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -49,13 +49,13 @@
       "id": 3,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "ntfy_topics_total", "legendFormat": "Topics" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "ntfy_topics_total", "legendFormat": "Topics" }
       ],
       "title": "Total Topics",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -68,13 +68,13 @@
       "id": 4,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "ntfy_subscribers_total", "legendFormat": "Subscribers" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "ntfy_subscribers_total", "legendFormat": "Subscribers" }
       ],
       "title": "Active Subscribers",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -87,7 +87,7 @@
       "id": 5,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "ntfy_published_messages_total", "legendFormat": "Total msgs" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "ntfy_published_messages_total", "legendFormat": "Total msgs" }
       ],
       "title": "Total Messages Published",
       "type": "stat"
@@ -100,7 +100,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -113,14 +113,14 @@
       "id": 11,
       "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "rate(ntfy_published_messages_total[5m])", "legendFormat": "Published/s" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "rate(ntfy_delivered_messages_total[5m])", "legendFormat": "Delivered/s" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(ntfy_published_messages_total[5m])", "legendFormat": "Published/s" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(ntfy_delivered_messages_total[5m])", "legendFormat": "Delivered/s" }
       ],
       "title": "Message Rate",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -133,8 +133,8 @@
       "id": 12,
       "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "ntfy_topics_total", "legendFormat": "Topics" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "ntfy_subscribers_total", "legendFormat": "Subscribers" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "ntfy_topics_total", "legendFormat": "Topics" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "ntfy_subscribers_total", "legendFormat": "Subscribers" }
       ],
       "title": "Topics & Subscribers",
       "type": "timeseries"
@@ -147,7 +147,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -160,13 +160,13 @@
       "id": 21,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (method) (rate(ntfy_http_requests_total[5m]))", "legendFormat": "{{method}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (method) (rate(ntfy_http_requests_total[5m]))", "legendFormat": "{{method}}" }
       ],
       "title": "HTTP Requests by Method",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -179,8 +179,8 @@
       "id": 22,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.99, sum(rate(ntfy_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p99" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.50, sum(rate(ntfy_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p50" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.99, sum(rate(ntfy_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p99" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.50, sum(rate(ntfy_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p50" }
       ],
       "title": "HTTP Request Latency",
       "type": "timeseries"

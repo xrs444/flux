@@ -17,7 +17,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -30,13 +30,13 @@
       "id": 2,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(cilium_endpoint_state{endpoint_state=\"ready\"})", "legendFormat": "Ready Endpoints" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(cilium_endpoint_state{endpoint_state=\"ready\"})", "legendFormat": "Ready Endpoints" }
       ],
       "title": "Ready Endpoints",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -49,13 +49,13 @@
       "id": 3,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(cilium_endpoint_state{endpoint_state!=\"ready\"})", "legendFormat": "Not Ready" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(cilium_endpoint_state{endpoint_state!=\"ready\"})", "legendFormat": "Not Ready" }
       ],
       "title": "Not-Ready Endpoints",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -68,13 +68,13 @@
       "id": 4,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(cilium_drop_count_total[5m]))", "legendFormat": "Drops/s" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(cilium_drop_count_total[5m]))", "legendFormat": "Drops/s" }
       ],
       "title": "Total Drop Rate",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -87,13 +87,13 @@
       "id": 5,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum(rate(cilium_forward_count_total[5m]))", "legendFormat": "Fwd/s" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(cilium_forward_count_total[5m]))", "legendFormat": "Fwd/s" }
       ],
       "title": "Total Forward Rate",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -106,7 +106,7 @@
       "id": 6,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "count(cilium_policy_count)", "legendFormat": "Policies" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(cilium_policy_count)", "legendFormat": "Policies" }
       ],
       "title": "Network Policies",
       "type": "stat"
@@ -119,7 +119,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -132,13 +132,13 @@
       "id": 11,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (direction) (rate(cilium_forward_count_total[5m]))", "legendFormat": "{{direction}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (direction) (rate(cilium_forward_count_total[5m]))", "legendFormat": "{{direction}}" }
       ],
       "title": "Forwarded Packets by Direction",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -151,7 +151,7 @@
       "id": 12,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (direction) (rate(cilium_forward_bytes_total[5m]))", "legendFormat": "{{direction}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (direction) (rate(cilium_forward_bytes_total[5m]))", "legendFormat": "{{direction}}" }
       ],
       "title": "Forwarded Bytes by Direction",
       "type": "timeseries"
@@ -164,7 +164,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -177,13 +177,13 @@
       "id": 21,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (reason) (rate(cilium_drop_count_total[5m]))", "legendFormat": "{{reason}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (reason) (rate(cilium_drop_count_total[5m]))", "legendFormat": "{{reason}}" }
       ],
       "title": "Dropped Packets by Reason",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -196,7 +196,7 @@
       "id": 22,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (endpoint_state) (cilium_endpoint_state)", "legendFormat": "{{endpoint_state}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (endpoint_state) (cilium_endpoint_state)", "legendFormat": "{{endpoint_state}}" }
       ],
       "title": "Endpoint States",
       "type": "timeseries"
@@ -209,7 +209,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -222,14 +222,14 @@
       "id": 31,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (family) (cilium_bpf_ct_global_max_entries)", "legendFormat": "Max {{family}}" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "sum by (family) (cilium_bpf_ct_entries)", "legendFormat": "Used {{family}}" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (family) (cilium_bpf_ct_global_max_entries)", "legendFormat": "Max {{family}}" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (family) (cilium_bpf_ct_entries)", "legendFormat": "Used {{family}}" }
       ],
       "title": "CT Table Utilization",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -242,8 +242,8 @@
       "id": 32,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.99, rate(cilium_policy_regeneration_time_stats_seconds_bucket[5m]))", "legendFormat": "p99 regen" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "histogram_quantile(0.50, rate(cilium_policy_regeneration_time_stats_seconds_bucket[5m]))", "legendFormat": "p50 regen" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.99, rate(cilium_policy_regeneration_time_stats_seconds_bucket[5m]))", "legendFormat": "p99 regen" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.50, rate(cilium_policy_regeneration_time_stats_seconds_bucket[5m]))", "legendFormat": "p50 regen" }
       ],
       "title": "Policy Regeneration Latency",
       "type": "timeseries"

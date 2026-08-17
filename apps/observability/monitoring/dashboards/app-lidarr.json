@@ -17,7 +17,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -30,13 +30,13 @@
       "id": 2,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "up{job=\"lidarr\"}", "legendFormat": "Lidarr" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "up{job=\"lidarr\"}", "legendFormat": "Lidarr" }
       ],
       "title": "Status",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -49,13 +49,13 @@
       "id": 3,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "lidarr_artist_total", "legendFormat": "Artists" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "lidarr_artist_total", "legendFormat": "Artists" }
       ],
       "title": "Total Artists",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -68,13 +68,13 @@
       "id": 4,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "lidarr_album_total", "legendFormat": "Albums" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "lidarr_album_total", "legendFormat": "Albums" }
       ],
       "title": "Total Albums",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -87,13 +87,13 @@
       "id": 5,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "lidarr_missing_album_total", "legendFormat": "Missing" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "lidarr_missing_album_total", "legendFormat": "Missing" }
       ],
       "title": "Missing Albums",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -106,7 +106,7 @@
       "id": 6,
       "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "lidarr_queue_total", "legendFormat": "Queue" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "lidarr_queue_total", "legendFormat": "Queue" }
       ],
       "title": "Queue Size",
       "type": "stat"
@@ -119,7 +119,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -132,14 +132,14 @@
       "id": 11,
       "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "lidarr_album_total", "legendFormat": "Total albums" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "lidarr_missing_album_total", "legendFormat": "Missing" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "lidarr_album_total", "legendFormat": "Total albums" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "lidarr_missing_album_total", "legendFormat": "Missing" }
       ],
       "title": "Album Counts",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -152,8 +152,8 @@
       "id": 12,
       "options": { "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "lidarr_queue_total", "legendFormat": "Queue total" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "lidarr_queue_downloading", "legendFormat": "Downloading" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "lidarr_queue_total", "legendFormat": "Queue total" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "lidarr_queue_downloading", "legendFormat": "Downloading" }
       ],
       "title": "Download Queue",
       "type": "timeseries"

@@ -17,7 +17,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -30,13 +30,13 @@
       "id": 2,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "upsBatteryStatus{instance=\"xups.lan\"}", "legendFormat": "Battery" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "upsBatteryStatus{instance=\"xups.lan\"}", "legendFormat": "Battery" }
       ],
       "title": "Battery Status",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -49,13 +49,13 @@
       "id": 3,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "upsOutputSource{instance=\"xups.lan\"}", "legendFormat": "Output source" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "upsOutputSource{instance=\"xups.lan\"}", "legendFormat": "Output source" }
       ],
       "title": "Power Source",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -70,13 +70,13 @@
       "id": 4,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "upsEstimatedChargeRemaining{instance=\"xups.lan\"}", "legendFormat": "Charge" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "upsEstimatedChargeRemaining{instance=\"xups.lan\"}", "legendFormat": "Charge" }
       ],
       "title": "Battery Charge",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -89,13 +89,13 @@
       "id": 5,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "upsEstimatedMinutesRemaining{instance=\"xups.lan\"}", "legendFormat": "Runtime" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "upsEstimatedMinutesRemaining{instance=\"xups.lan\"}", "legendFormat": "Runtime" }
       ],
       "title": "Runtime Remaining",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -110,13 +110,13 @@
       "id": 6,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "upsOutputPercentLoad{instance=\"xups.lan\"}", "legendFormat": "Load" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "upsOutputPercentLoad{instance=\"xups.lan\"}", "legendFormat": "Load" }
       ],
       "title": "Output Load",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -129,13 +129,13 @@
       "id": 7,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "upsAlarmsPresent{instance=\"xups.lan\"}", "legendFormat": "Alarms" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "upsAlarmsPresent{instance=\"xups.lan\"}", "legendFormat": "Alarms" }
       ],
       "title": "Active Alarms",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -150,13 +150,13 @@
       "id": 8,
       "options": { "legend": { "calcs": ["mean", "min"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "upsEstimatedChargeRemaining{instance=\"xups.lan\"}", "legendFormat": "Charge %" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "upsEstimatedChargeRemaining{instance=\"xups.lan\"}", "legendFormat": "Charge %" }
       ],
       "title": "Battery Charge Over Time",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -169,8 +169,8 @@
       "id": 9,
       "options": { "legend": { "calcs": ["mean", "min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "upsInputVoltage{instance=\"xups.lan\"}", "legendFormat": "Input" },
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "upsOutputVoltage{instance=\"xups.lan\"}", "legendFormat": "Output" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "upsInputVoltage{instance=\"xups.lan\"}", "legendFormat": "Input" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "upsOutputVoltage{instance=\"xups.lan\"}", "legendFormat": "Output" }
       ],
       "title": "Input / Output Voltage",
       "type": "timeseries"
@@ -183,7 +183,7 @@
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -195,13 +195,13 @@
       "id": 21,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "network_ups_tools_ups_status{instance=~\"xdt1-t.*\", flag=\"OB\"}", "legendFormat": "On Battery" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "network_ups_tools_ups_status{instance=~\"xdt1-t.*\", flag=\"OB\"}", "legendFormat": "On Battery" }
       ],
       "title": "On Battery",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -216,13 +216,13 @@
       "id": 22,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "network_ups_tools_battery_charge{instance=~\"xdt1-t.*\"}", "legendFormat": "Charge" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "network_ups_tools_battery_charge{instance=~\"xdt1-t.*\"}", "legendFormat": "Charge" }
       ],
       "title": "Battery Charge",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -235,13 +235,13 @@
       "id": 23,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "network_ups_tools_battery_runtime{instance=~\"xdt1-t.*\"}", "legendFormat": "Runtime" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "network_ups_tools_battery_runtime{instance=~\"xdt1-t.*\"}", "legendFormat": "Runtime" }
       ],
       "title": "Runtime Remaining",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -256,13 +256,13 @@
       "id": 24,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "network_ups_tools_ups_load{instance=~\"xdt1-t.*\"}", "legendFormat": "Load" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "network_ups_tools_ups_load{instance=~\"xdt1-t.*\"}", "legendFormat": "Load" }
       ],
       "title": "Output Load",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "000000001" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -277,7 +277,7 @@
       "id": 25,
       "options": { "legend": { "calcs": ["mean", "min"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "000000001" }, "expr": "network_ups_tools_battery_charge{instance=~\"xdt1-t.*\"}", "legendFormat": "Charge %" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "network_ups_tools_battery_charge{instance=~\"xdt1-t.*\"}", "legendFormat": "Charge %" }
       ],
       "title": "Battery Charge Over Time",
       "type": "timeseries"
