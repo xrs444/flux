@@ -19,6 +19,10 @@ resources:
   - sealedsecret-mcp-omada-credentials.yaml
   - deployment-mcp-omada.yaml
   - service-mcp-omada.yaml
+  # homeassistant (sse upstream, HA's own native MCP Server integration —
+  # no separate Deployment/Service. This SealedSecret is encrypted-at-rest
+  # storage only; see its header comment for the manual registration steps).
+  - sealedsecret-homeassistant-mcp-credentials.yaml
   # External access for Claude Code (Hermes reaches mcpjungle in-cluster via
   # ClusterIP directly). Requires a manual DNS record for mcp.xrs444.net.
   - ingressroute-mcpjungle.yaml
