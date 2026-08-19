@@ -20,14 +20,17 @@ spec:
         app: snmp-exporter
     spec:
       initContainers:
-        # Substitute @SNMP_COMMUNITY@ in the template using the Secret value
+        # Substitute @SNMP_COMMUNITY@ / @SNMPV3_RO_*@ in the template using Secret values
         - name: generate-snmp-config
           image: busybox:1.38.0
           command:
             - sh
             - -c
             - |
-              sed "s/@SNMP_COMMUNITY@/$SNMP_COMMUNITY/g" \
+              sed -e "s/@SNMP_COMMUNITY@/$SNMP_COMMUNITY/g" \
+                  -e "s/@SNMPV3_RO_USERNAME@/$SNMPV3_RO_USERNAME/g" \
+                  -e "s/@SNMPV3_RO_AUTH_PASSWORD@/$SNMPV3_RO_AUTH_PASSWORD/g" \
+                  -e "s/@SNMPV3_RO_PRIV_PASSWORD@/$SNMPV3_RO_PRIV_PASSWORD/g" \
                 /etc/snmp-template/snmp.yml.template > /etc/snmp/snmp.yml
           volumeMounts:
             - name: snmp-template
@@ -40,6 +43,21 @@ spec:
                 secretKeyRef:
                   name: snmp-community
                   key: community
+            - name: SNMPV3_RO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-v3-credentials
+                  key: ro_username
+            - name: SNMPV3_RO_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-v3-credentials
+                  key: ro_auth_password
+            - name: SNMPV3_RO_PRIV_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-v3-credentials
+                  key: ro_priv_password
       containers:
         - name: snmp-exporter
           image: prom/snmp-exporter:v0.30.1

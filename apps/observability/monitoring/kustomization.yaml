@@ -43,6 +43,7 @@ resources:
   - sealedsecret-grafana-admin.yaml
   - sealedsecret-grafana-oauth.yaml
   - sealedsecret-snmp-community.yaml
+  - sealedsecret-snmp-v3-credentials.yaml
   - sealedsecret-ha-bearer-token.yaml
   - sealedsecret-netbox-api-token.yaml
   - sealedsecret-additional-scrape-configs.yaml

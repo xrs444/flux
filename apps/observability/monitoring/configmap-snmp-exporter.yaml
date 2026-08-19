@@ -16,6 +16,20 @@ data:
         priv_protocol: DES
         version: 2
 
+      # Shared read-only SNMPv3 credentials for any device that is v1/v3-only
+      # (no v2c support) — first consumer is xups.lan (Eaton SPX2200, only
+      # offers v1 or v3 in its network card's SNMP settings). Reuse this same
+      # auth for any future v1/v3-only device rather than minting a new one
+      # per device, matching the single shared snmp_community above.
+      snmpv3_ro:
+        version: 3
+        security_level: authPriv
+        username: @SNMPV3_RO_USERNAME@
+        auth_protocol: SHA
+        password: @SNMPV3_RO_AUTH_PASSWORD@
+        priv_protocol: AES
+        priv_password: @SNMPV3_RO_PRIV_PASSWORD@
+
     modules:
       if_mib:
         walk:
