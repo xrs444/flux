@@ -21,13 +21,20 @@ data:
       # offers v1 or v3 in its network card's SNMP settings). Reuse this same
       # auth for any future v1/v3-only device rather than minting a new one
       # per device, matching the single shared snmp_community above.
+      #
+      # MD5/DES, not SHA/AES: the Eaton card's SNMPv3 UI takes no protocol
+      # selection at all (fixed internally) — confirmed by testing every
+      # combination net-snmp's snmpget supports directly against xups.lan;
+      # only auth_protocol=MD5 + priv_protocol=DES got a real response
+      # (sysName), everything else timed out. Don't assume SHA/AES for
+      # similar older embedded UPS/network cards without testing first.
       snmpv3_ro:
         version: 3
         security_level: authPriv
         username: @SNMPV3_RO_USERNAME@
-        auth_protocol: SHA
+        auth_protocol: MD5
         password: @SNMPV3_RO_AUTH_PASSWORD@
-        priv_protocol: AES
+        priv_protocol: DES
         priv_password: @SNMPV3_RO_PRIV_PASSWORD@
 
     modules:
