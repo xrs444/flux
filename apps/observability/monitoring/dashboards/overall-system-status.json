@@ -526,7 +526,7 @@
         },
         "textMode": "auto"
       },
-      "title": "xts2 (HA standby)",
+      "title": "xts2",
       "type": "stat",
       "targets": [
         {
