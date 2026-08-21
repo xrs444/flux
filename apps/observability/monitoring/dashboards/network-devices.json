@@ -425,7 +425,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "bird_protocol_up{job=\"bird\", instance!~\"172.18.10.1:9324|172.18.10.2:9324\"}",
+          "expr": "bird_protocol_up{job=\"bird\", instance!~\"172.18.10.1:9324\"}",
           "legendFormat": "{{instance}} {{name}} ({{proto}})",
           "instant": true
         }
@@ -482,7 +482,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(bird_protocol_prefix_import_count{job=\"bird\", instance!~\"172.18.10.1:9324|172.18.10.2:9324\", proto=\"BGP\"}[5m])",
+          "expr": "rate(bird_protocol_prefix_import_count{job=\"bird\", instance!~\"172.18.10.1:9324\", proto=\"BGP\"}[5m])",
           "legendFormat": "{{instance}} {{name}} import"
         },
         {
@@ -490,7 +490,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(bird_protocol_prefix_export_count{job=\"bird\", instance!~\"172.18.10.1:9324|172.18.10.2:9324\", proto=\"BGP\"}[5m])",
+          "expr": "rate(bird_protocol_prefix_export_count{job=\"bird\", instance!~\"172.18.10.1:9324\", proto=\"BGP\"}[5m])",
           "legendFormat": "{{instance}} {{name}} export"
         }
       ],
@@ -546,7 +546,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(bird_protocol_changes_update_import_accept_count{job=\"bird\", instance!~\"172.18.10.1:9324|172.18.10.2:9324\"}[5m])",
+          "expr": "rate(bird_protocol_changes_update_import_accept_count{job=\"bird\", instance!~\"172.18.10.1:9324\"}[5m])",
           "legendFormat": "{{instance}} {{name}} {{action}}"
         }
       ],

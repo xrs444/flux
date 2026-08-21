@@ -402,7 +402,8 @@ This document summarizes the comprehensive telemetry and logging improvements im
 #### Metrics (Prometheus on xsvr1)
 - System metrics (CPU, RAM, disk, network) - All NixOS hosts ✅
 - ZFS pool health & scrub status - xsvr1, xsvr2 ✅
-- BGP session state - xts1, xts2 ✅
+- BGP session state - xts1, xts2 ✅ (**stale**: BGP moved to `xfw` 2026-08-19; xts2
+  renamed to `xidm1`/repurposed as a Kanidm replica 2026-08-21, no longer runs bird)
 - Kubernetes cluster state - kube-state-metrics ✅
 - Kubernetes node/pod metrics - Talos VMs ✅
 - **KVM/libvirt VMs - xsvr1, xsvr2, xsvr3 ✅ NEW**

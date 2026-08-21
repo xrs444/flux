@@ -5,7 +5,7 @@ description: >-
   smoke-alarm signal (emergency=true).
 
 
-  Order: xsvr2, xsvr3, xsvr4, xcog1, xpbx1, xts1, xts2, then xsvr1 last. xsvr1
+  Order: xsvr2, xsvr3, xsvr4, xcog1, xpbx1, xts1, xidm1, then xsvr1 last. xsvr1
   hosts the Talos VM that runs Windmill itself (and has no Tailscale —
   console/IPMI only if SSH is unreachable), so it goes last deliberately:
   everything else is down before Windmill's own execution environment
@@ -21,7 +21,7 @@ description: >-
   for this.
 
 
-  Each NixOS host (xsvr1-4, xpbx1, xts1, xts2) is powered off via a fixed,
+  Each NixOS host (xsvr1-4, xpbx1, xts1, xidm1) is powered off via a fixed,
   no-argument, NOPASSWD-scoped sudo command — `sudo /etc/rack-shutdown` (wraps
   `systemctl poweroff`) — set up per-host by
   nix/modules/services/rack-shutdown/default.nix, mirroring the existing

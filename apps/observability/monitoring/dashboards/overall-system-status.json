@@ -526,7 +526,7 @@
         },
         "textMode": "auto"
       },
-      "title": "xts2",
+      "title": "xidm1",
       "type": "stat",
       "targets": [
         {
@@ -534,7 +534,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "homeprod:host:state{instance=\"172.18.10.2:9100\"}",
+          "expr": "homeprod:host:state{instance=\"172.20.1.111:9100\"}",
           "legendFormat": ""
         }
       ]

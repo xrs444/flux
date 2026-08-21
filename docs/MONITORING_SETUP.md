@@ -13,12 +13,15 @@ This guide covers the complete setup of Prometheus, Grafana, and Apprise for mon
 5. **ntfy** (Kubernetes) - Push notification service
 6. **Node Exporters** - System metrics from all hosts
 7. **ZFS Exporters** - ZFS pool metrics (xsvr1, xsvr2)
-8. **Bird Exporters** - BGP metrics (xts1, xts2)
+8. **Bird Exporters** - BGP metrics (xts1, xts2) — **stale**: BGP moved from the
+   xts1/xts2 BIRD+keepalived pair to a Tailscale container on `xfw` (2026-08-19);
+   xts2 was renamed to `xidm1` and repurposed as a Kanidm replica (2026-08-21) and no
+   longer runs bird. Confirm whether `xfw` exposes bird metrics before relying on this.
 9. **kube-state-metrics** - Kubernetes object metrics
 
 ### Monitoring Targets
 
-- **NixOS Hosts**: xsvr1, xsvr2, xsvr3, xts1, xts2, xcomm1, xdash1
+- **NixOS Hosts**: xsvr1, xsvr2, xsvr3, xts1, xidm1, xcomm1, xdash1
 - **Talos VMs**: 172.20.3.10, 172.20.3.20, 172.20.3.30
 - **Kubernetes Cluster**: Pods, nodes, deployments, services, etc.
 
@@ -108,7 +111,7 @@ kubectl exec -n monitoring -it $(kubectl get pod -n monitoring -l app=apprise -o
 | `node` | All NixOS hosts:9100 | 15s | System metrics (CPU, RAM, disk) |
 | `talos-node` | Talos VMs:9100 | 15s | Talos node system metrics |
 | `zfs` | xsvr1, xsvr2:9134 | 15s | ZFS pool metrics |
-| `bird` | xts1, xts2:9324 | 15s | BGP routing metrics |
+| `bird` | xts1, xts2:9324 | 15s | BGP routing metrics — **stale, see note above** |
 | `kubelet` | Talos VMs:10250 | 15s | Kubernetes pod/container metrics |
 | `kubernetes-apiserver` | 172.20.3.10:6443 | 15s | K8s control plane metrics |
 | `kube-state-metrics` | 172.20.3.10:30080 | 30s | K8s object state metrics |
