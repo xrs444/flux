@@ -76,8 +76,12 @@ spec:
           size: 10Gi
 
     # Valkey (Redis-compatible) configuration
+    # architecture: standalone — NetBox only uses valkey as a cache/RQ broker;
+    # the default replication tier flapped (replicas couldn't sync to primary)
+    # and its stalled StatefulSet wedged every Helm upgrade since 2026-08-03.
     valkey:
       enabled: true
+      architecture: standalone
       auth:
         enabled: true
         existingSecret: netbox-secret
