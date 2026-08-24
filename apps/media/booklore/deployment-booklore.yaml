@@ -81,6 +81,10 @@ spec:
                   key: client-secret
             - name: BL_OAUTH2_REDIRECT_URI
               value: "https://booklore.xrs444.net/oauth2-callback"
+            # v3.3 added SSRF protection blocking OIDC discovery calls to
+            # internal/reserved-range hosts (idm.xrs444.net); explicitly allow it
+            - name: APP_OIDC_ALLOW_UNSAFE_HOSTS
+              value: "true"
           volumeMounts:
             - name: booklore-config
               mountPath: /config
