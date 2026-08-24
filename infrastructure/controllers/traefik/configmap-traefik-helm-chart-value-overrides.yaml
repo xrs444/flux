@@ -377,9 +377,9 @@ data:
         noColor: false
       access:
         # -- To enable access logs
-        enabled: false
+        enabled: true
         # -- Set [access log format](https://doc.traefik.io/traefik/observability/access-logs/#format)
-        format:  # @schema enum:["common", "json", null]; type:[string, null]; default: "common"
+        format: json  # @schema enum:["common", "json", null]; type:[string, null]; default: "common"
         # filePath: "/var/log/traefik/access.log
         # -- Set [bufferingSize](https://doc.traefik.io/traefik/observability/access-logs/#bufferingsize)
         bufferingSize:  # @schema type:[integer, null]
@@ -403,7 +403,11 @@ data:
           headers:
             # -- Set default mode for fields.headers
             defaultmode: drop  # @schema enum:[keep, drop, redact]; default: drop
-            names: {}
+            # Redact Authorization so we can see a request carried credentials
+            # without ever writing the credential value itself to logs.
+            names:
+              Authorization: redact
+              User-Agent: keep
 
     metrics:
       # -- Enable metrics for internal resources. Default: false
