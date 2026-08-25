@@ -32,6 +32,9 @@ resources:
   # Samba AD DC health (pod + LDAP reachability)
   - probe-samba-dc.yaml
   - prometheusrule-samba-dc.yaml
+  # xcog1 family-agent LLM host health (node + LiteLLM liveliness + disk) — D11
+  - probe-xcog1-litellm.yaml
+  - prometheusrule-xcog1.yaml
   # Longhorn storage health (volume robustness, disk health)
   - prometheusrule-longhorn.yaml
   # Overall System Status dashboard state (0/1/2 GOOD/CAUTION/WARNING recording rules)

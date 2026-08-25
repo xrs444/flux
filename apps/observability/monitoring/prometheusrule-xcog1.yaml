@@ -1,0 +1,74 @@
+---
+# Alerts for xcog1 (Mac Mini M4 Pro — family-agent LLM host: MLX + LiteLLM +
+# Wyoming voice pipeline). Uses node_exporter (host health) + the existing
+# blackbox http_2xx module (end-to-end LiteLLM front-door reachability).
+# Plan reference: nix/docs/xcog1-llm-deployment-plan.md §D11/§D3.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: xcog1
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: xcog1
+      interval: 1m
+      rules:
+        # Host-level health: node_exporter target unreachable
+        - alert: Xcog1NodeDown
+          expr: |
+            up{job="node", instance="xcog1.lan:9100"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            category: xcog1
+          annotations:
+            summary: "xcog1 node_exporter unreachable"
+            description: >
+              Prometheus has not been able to scrape xcog1's node_exporter for 5
+              minutes. The family-agent LLM host (MLX/LiteLLM/voice) may be down
+              or unreachable.
+
+        # End-to-end LiteLLM front-door reachability via blackbox http_2xx probe
+        - alert: Xcog1LiteLLMDown
+          expr: |
+            probe_success{job="blackbox-xcog1-litellm"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            category: xcog1
+          annotations:
+            summary: "xcog1 LiteLLM unreachable"
+            description: >
+              The blackbox probe against xcog1's LiteLLM liveliness endpoint
+              (http://xcog1.lan:4000/health/liveliness) has been failing for 5
+              minutes. Hermes and Home Assistant LLM/voice requests routed
+              through LiteLLM will fail even if the host itself is up.
+
+        # Disk usage on xcog1's data volume (model weights under /var/models).
+        # NOTE (verify after first scrape, plan §D11): confirm the actual
+        # mountpoint/fstype labels macOS node_exporter reports for this host
+        # (e.g. "/" vs "/System/Volumes/Data") and adjust the selector below
+        # if it doesn't match — written against mountpoint="/" as the current
+        # best assumption for where /var/models resolves.
+        - alert: Xcog1DiskFull
+          expr: |
+            (
+              100 - (
+                node_filesystem_avail_bytes{instance="xcog1.lan:9100", mountpoint="/"}
+                / node_filesystem_size_bytes{instance="xcog1.lan:9100", mountpoint="/"}
+                * 100
+              )
+            ) > 85
+          for: 15m
+          labels:
+            severity: warning
+            category: xcog1
+          annotations:
+            summary: "xcog1 disk usage above 85%"
+            description: >
+              xcog1's root filesystem (model weights live under /var/models,
+              internal disk) has been above 85% used for 15 minutes. MLX model
+              downloads/re-downloads will fail once the disk fills.

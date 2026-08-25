@@ -1,0 +1,27 @@
+---
+# Blackbox HTTP probe for xcog1's LiteLLM front door (family-agent LLM host).
+# Uses the existing http_2xx module in configmap-blackbox.yaml. LiteLLM's own
+# /metrics callback is enterprise-gated in current releases (plan §D3), so
+# liveliness is checked via blackbox instead. Endpoint returns 200 with no
+# auth required. The probe result feeds into the Xcog1LiteLLMDown alert rule.
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: xcog1-litellm
+  namespace: monitoring
+  labels:
+    app: blackbox
+spec:
+  interval: 1m
+  scrapeTimeout: 10s
+  module: http_2xx
+  prober:
+    url: blackbox:9115
+    scheme: http
+    path: /probe
+  targets:
+    staticConfig:
+      static:
+        - http://xcog1.lan:4000/health/liveliness
+      labels:
+        job: blackbox-xcog1-litellm
