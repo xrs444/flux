@@ -30,9 +30,14 @@ data:
   # an explicit deny: DO NOT copy an `mcp_servers:` block onto this file from
   # hermes-t/hermes-s without deliberately deciding kid-mode should have it.
   config.yaml: |
+    # xcog1 (Mac Mini) LiteLLM front door — local qwen3-30b-a3b via mlx-lm.
+    # Kid policy: local model ONLY. Never add a deepseek-hard alias or any
+    # other cloud-tier model here — hermes-k must not reach cloud inference.
     model:
-      default: deepseek-v4-flash
-      provider: deepseek
+      default: qwen3-30b-a3b
+      provider: custom
+      base_url: http://xcog1.lan:4000/v1
+      api_key: "${LITELLM_MASTER_KEY}"
 
     terminal:
       backend: local

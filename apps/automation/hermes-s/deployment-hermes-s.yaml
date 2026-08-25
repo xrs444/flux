@@ -56,6 +56,11 @@ spec:
                 secretKeyRef:
                   name: hermes-s-config
                   key: DEEPSEEK_API_KEY
+            - name: LITELLM_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-s-config
+                  key: LITELLM_MASTER_KEY
             - name: HERMES_DASHBOARD_OIDC_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:

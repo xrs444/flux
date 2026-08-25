@@ -6,9 +6,23 @@ metadata:
   namespace: hermes-t
 data:
   config.yaml: |
+    # xcog1 (Mac Mini) LiteLLM front door — local qwen3-30b-a3b via mlx-lm.
+    # provider: custom is hermes-agent's generic OpenAI-compatible slot;
+    # api_key uses ${VAR} env interpolation (same mechanism as
+    # MCP_MCPJUNGLE_API_KEY below), resolved from LITELLM_MASTER_KEY at
+    # runtime — verified live against config.py's _expand_env_vars, which
+    # applies to any string value in config.yaml, not just mcp headers.
+    # deepseek-hard escalation tier deliberately NOT wired yet — hermes-agent's
+    # model_aliases don't inherit model.api_key via the credential pool
+    # (verified live: get_compatible_custom_providers only reads
+    # custom_providers:/providers:, not model:), so a naive alias would
+    # silently resolve to "no-key-required" and 401 against xcog1's LiteLLM.
+    # Needs a proper custom_providers: pool entry — follow-up, not this pass.
     model:
-      default: deepseek-v4-flash
-      provider: deepseek
+      default: qwen3-30b-a3b
+      provider: custom
+      base_url: http://xcog1.lan:4000/v1
+      api_key: "${LITELLM_MASTER_KEY}"
 
     terminal:
       backend: local
