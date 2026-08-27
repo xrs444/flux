@@ -4,6 +4,12 @@
 # /metrics callback is enterprise-gated in current releases (plan §D3), so
 # liveliness is checked via blackbox instead. Endpoint returns 200 with no
 # auth required. The probe result feeds into the Xcog1LiteLLMDown alert rule.
+# Pinned to 172.20.1.130 (not xcog1.lan): the hostname round-robins across 3
+# A records (xcog1 is multi-homed — LAN + Tailscale), and only .130 is
+# actually reachable from the cluster's pod network — confirmed live via
+# `kubectl run --rm -i busybox -- nc -zv <ip> 4000` against each address;
+# the other two time out. Using the bare hostname made the probe fail
+# non-deterministically depending on which A record got resolved.
 apiVersion: monitoring.coreos.com/v1
 kind: Probe
 metadata:
@@ -23,6 +29,6 @@ spec:
   targets:
     staticConfig:
       static:
-        - http://xcog1.lan:4000/health/liveliness
+        - http://172.20.1.130:4000/health/liveliness
       labels:
         job: blackbox-xcog1-litellm
