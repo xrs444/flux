@@ -9,6 +9,7 @@ metadata:
   namespace: monitoring
   labels:
     app: blackbox
+    release: kube-prometheus-stack
 spec:
   interval: 1m
   scrapeTimeout: 10s
