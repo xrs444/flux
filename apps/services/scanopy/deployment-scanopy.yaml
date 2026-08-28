@@ -28,7 +28,7 @@ spec:
           # Pinned (digest-verified identical to the previously-running
           # :latest). Bump together with the xfw daemon in
           # nix/hosts/nixable/xfw/default.nix.
-          image: ghcr.io/scanopy/scanopy/server:v0.17.9
+          image: ghcr.io/scanopy/scanopy/server:v0.17.13
           ports:
             - containerPort: 60072
               name: http
