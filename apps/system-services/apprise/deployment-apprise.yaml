@@ -47,7 +47,7 @@ spec:
               mountPath: /config
       containers:
         - name: apprise
-          image: caronc/apprise:v1.5.1
+          image: caronc/apprise:v1.5.2
           ports:
             - containerPort: 8000
               name: http
