@@ -313,14 +313,6 @@ data:
             statusCheck: true
             id: 4_14_syncthing
 
-          - title: CUPS
-            description: Print server management
-            icon: fas fa-print
-            url: https://cups.xrs444.net
-            target: newtab
-            statusCheck: true
-            id: 4_15_cups
-
           - title: Scanopy
             description: Network asset and device inventory
             icon: fas fa-sitemap

@@ -174,7 +174,6 @@ configMapGenerator:
       - dashboards/app-booklore.json
       - dashboards/app-borgwarehouse.json
       - dashboards/app-craftycontroller.json
-      - dashboards/app-cups.json
       - dashboards/app-dashy.json
       - dashboards/app-homeassistant.json
       - dashboards/app-immich.json
