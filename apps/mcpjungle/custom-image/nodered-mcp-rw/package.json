@@ -1,0 +1,42 @@
+{
+  "name": "node-red-mcp-server",
+  "version": "1.0.2",
+  "description": "Model Context Protocol (MCP) server for interacting with Node-RED",
+  "license": "MIT",
+  "main": "lib/server.mjs",
+  "type": "module",
+  "bin": {
+    "node-red-mcp-server": "./bin/node-red-mcp-server.mjs"
+  },
+  "scripts": {
+    "test": "echo \"No tests yet, but passing for now!\" && exit 0",
+    "start": "node ./bin/node-red-mcp-server.mjs"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "node-red",
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "llm",
+    "claude",
+    "gpt"
+  ],
+  "author": "Evgeniy Karavaev <karavaev.evgeniy@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karavaev-evgeniy/node-red-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/karavaev-evgeniy/node-red-mcp-server/issues"
+  },
+  "homepage": "https://github.com/karavaev-evgeniy/node-red-mcp-server#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.0",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "zod": "^3.24.4"
+  }
+}

@@ -23,6 +23,10 @@ resources:
   # no separate Deployment/Service. This SealedSecret is encrypted-at-rest
   # storage only; see its header comment for the manual registration steps).
   - sealedsecret-homeassistant-mcp-credentials.yaml
+  # nodered (stdio, patched fork vendored into the mcpjungle image itself —
+  # no separate Deployment/Service. This SealedSecret is encrypted-at-rest
+  # storage only; see its header comment for the manual registration steps).
+  - sealedsecret-nodered-mcp-credentials.yaml
   # External access for Claude Code (Hermes reaches mcpjungle in-cluster via
   # ClusterIP directly). Requires a manual DNS record for mcp.xrs444.net.
   - ingressroute-mcpjungle.yaml

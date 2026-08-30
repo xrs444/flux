@@ -1,0 +1,12 @@
+{
+  "name": "nodered",
+  "transport": "stdio",
+  "description": "Home Assistant Node-RED add-on (hass.xrs444.net direct-access :1880, HTTP Basic Auth via HA user) — flows/nodes/settings control, patched fork of karavaev-evgeniy/node-red-mcp-server",
+  "command": "node",
+  "args": ["/opt/nodered-mcp-rw/bin/node-red-mcp-server.mjs"],
+  "env": {
+    "NODE_RED_URL": "https://hass.xrs444.net:1880",
+    "NODE_RED_USERNAME": "${NODE_RED_USERNAME}",
+    "NODE_RED_PASSWORD": "${NODE_RED_PASSWORD}"
+  }
+}
