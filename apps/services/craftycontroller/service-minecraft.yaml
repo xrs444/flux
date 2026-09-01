@@ -4,6 +4,8 @@ kind: Service
 metadata:
   name: craftycontroller-minecraft
   namespace: craftycontroller
+  labels:
+    advertise: bgp
   annotations:
     metallb.universe.tf/allow-shared-ip: minecraft
 spec:
