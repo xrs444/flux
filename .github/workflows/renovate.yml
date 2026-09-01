@@ -20,3 +20,4 @@ jobs:
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
           RENOVATE_REPOSITORIES: xrs444/flux
+          LOG_LEVEL: debug
