@@ -69,6 +69,9 @@
       "matchPackageNames": [
         "cilium",
         "cert-manager",
+        "quay.io/jetstack/cert-manager-webhook",
+        "quay.io/jetstack/cert-manager-controller",
+        "quay.io/jetstack/cert-manager-cainjector",
         "longhorn",
         "sealed-secrets",
         "traefik"
@@ -80,7 +83,7 @@
       "description": "MCP servers consumed by Hermes — tool contracts can shift between minor versions; require review to catch breaking changes in the propose→approve pipeline surface",
       "matchPackageNames": [
         "ghcr.io/pab1it0/prometheus-mcp-server",
-        "grafana/mcp-grafana",
+        "docker.io/grafana/mcp-grafana",
         "ghcr.io/containers/kubernetes-mcp-server"
       ],
       "automerge": false,
