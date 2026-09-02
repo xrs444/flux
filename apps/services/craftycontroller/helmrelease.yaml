@@ -33,7 +33,7 @@ spec:
     extraVolumes:
       - name: crafty-servers
         persistentVolumeClaim:
-          claimName: craftycontroller-servers-pvc
+          claimName: craftycontroller-servers-lh
       - name: crafty-backups
         persistentVolumeClaim:
           claimName: craftycontroller-backups-pvc

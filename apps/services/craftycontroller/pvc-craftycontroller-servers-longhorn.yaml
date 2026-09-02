@@ -1,0 +1,18 @@
+---
+# World/runtime storage for Crafty's Minecraft servers, on Longhorn (NVMe-backed
+# containerstore disk) rather than the NFS/ZFS HDD pool. The ZFS pool is a
+# sync-exported, no-SLOG HDD mirror that stalls under monthly scrub load,
+# which was blocking the Paper save thread long enough to trip its watchdog
+# and kill the JVM (see bug-<TBD> in buglog.json). Backups remain on NFS.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: craftycontroller-servers-lh
+  namespace: craftycontroller
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-retain
+  resources:
+    requests:
+      storage: 20Gi

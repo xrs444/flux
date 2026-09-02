@@ -1,37 +1,9 @@
 ---
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: craftycontroller-servers-pv
-spec:
-  capacity:
-    storage: 1Ti
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs
-  nfs:
-    path: /zfs/system/crafty
-    server: 172.20.3.201
-  mountOptions:
-    - nfsvers=4
-    - hard
-    - intr
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: craftycontroller-servers-pvc
-  namespace: craftycontroller
-spec:
-  accessModes:
-    - ReadWriteMany
-  storageClassName: nfs
-  resources:
-    requests:
-      storage: 1Ti
-  volumeName: craftycontroller-servers-pv
----
+# NOTE: craftycontroller-servers-pv/-pvc (world/runtime data) moved to Longhorn
+# — see pvc-craftycontroller-servers-longhorn.yaml. NFS/ZFS sync exports on this
+# HDD pool stalled Paper's save thread past its watchdog timeout during scrubs.
+# This PV is Retain-reclaimed and untouched at /zfs/system/crafty on xsvr1 for
+# manual cleanup once the new server is confirmed good.
 apiVersion: v1
 kind: PersistentVolume
 metadata:
