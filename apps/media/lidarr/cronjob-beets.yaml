@@ -19,7 +19,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: beets
-              image: lscr.io/linuxserver/beets:2.12.0
+              image: lscr.io/linuxserver/beets:2.13.1
               command: ["/bin/sh", "-c"]
               args:
                 - |
