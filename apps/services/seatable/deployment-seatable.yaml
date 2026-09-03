@@ -68,7 +68,7 @@ spec:
               mountPath: /config-templates
       containers:
         - name: seatable
-          image: seatable/seatable-enterprise:6.1.8
+          image: seatable/seatable-enterprise:6.2.13
           ports:
             - containerPort: 80
               name: http
