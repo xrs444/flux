@@ -95,6 +95,15 @@ spec:
                 secretKeyRef:
                   name: hermes-t-config
                   key: MCP_MCPJUNGLE_API_KEY
+            - name: MATRIX_HOMESERVER
+              value: "http://synapse.matrix.svc.cluster.local:8008"
+            - name: MATRIX_ALLOWED_USERS
+              value: "@xrs444:matrix.xrs444.net"
+            - name: MATRIX_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-t-config
+                  key: MATRIX_ACCESS_TOKEN
           volumeMounts:
             - name: hermes-t-data
               mountPath: /opt/data

@@ -90,6 +90,13 @@ spec:
                 secretKeyRef:
                   name: hermes-s-config
                   key: API_SERVER_KEY
+            - name: MATRIX_HOMESERVER
+              value: "http://synapse.matrix.svc.cluster.local:8008"
+            - name: MATRIX_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-s-config
+                  key: MATRIX_ACCESS_TOKEN
           volumeMounts:
             - name: hermes-s-data
               mountPath: /opt/data
