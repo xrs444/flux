@@ -92,6 +92,8 @@ spec:
                   key: API_SERVER_KEY
             - name: MATRIX_HOMESERVER
               value: "http://synapse.matrix.svc.cluster.local:8008"
+            - name: MATRIX_E2EE_MODE
+              value: "optional"
             - name: MATRIX_ACCESS_TOKEN
               valueFrom:
                 secretKeyRef:
