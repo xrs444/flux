@@ -21,6 +21,25 @@ spec:
     spec:
       securityContext:
         fsGroup: 10000
+      initContainers:
+        # ConfigMap volumes are always mounted read-only by Kubernetes, even
+        # with subPath. hermes writes its own config.yaml back to disk when
+        # the dashboard toggles state (e.g. enabling a plugin), so the
+        # ConfigMap can only ever be a one-time seed onto the writable PVC,
+        # never the live mount. Copy-if-missing keeps the ConfigMap as the
+        # source of truth for the *initial* config without clobbering
+        # in-place edits hermes makes afterward. (bug-895)
+        - name: seed-config
+          image: nousresearch/hermes-agent:v2026.8.31
+          command:
+            - sh
+            - -c
+            - "[ -f /opt/data/config.yaml ] || cp /opt/config-seed/config.yaml /opt/data/config.yaml"
+          volumeMounts:
+            - name: hermes-s-data
+              mountPath: /opt/data
+            - name: hermes-s-config
+              mountPath: /opt/config-seed
       containers:
         - name: hermes-s
           image: nousresearch/hermes-agent:v2026.8.31
@@ -74,9 +93,6 @@ spec:
           volumeMounts:
             - name: hermes-s-data
               mountPath: /opt/data
-            - name: hermes-s-config
-              mountPath: /opt/data/config.yaml
-              subPath: config.yaml
           resources:
             requests:
               cpu: 250m
