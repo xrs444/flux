@@ -101,13 +101,16 @@ spec:
               value: "@xrs444:matrix.xrs444.net"
             - name: MATRIX_E2EE_MODE
               value: "optional"
-            - name: MATRIX_RECOVERY_KEY_OUTPUT_FILE
-              value: "/opt/data/platforms/matrix/store/recovery-key.txt"
             - name: MATRIX_ACCESS_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: hermes-t-config
                   key: MATRIX_ACCESS_TOKEN
+            - name: MATRIX_RECOVERY_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-t-config
+                  key: MATRIX_RECOVERY_KEY
           volumeMounts:
             - name: hermes-t-data
               mountPath: /opt/data
