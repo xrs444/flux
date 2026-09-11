@@ -3,3 +3,15 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: hermes-k
+  labels:
+    # Network-segmentation project, T1 onboarding (first namespace onboarded).
+    # Activates the three CiliumClusterwideNetworkPolicy baselines (DNS egress,
+    # kubelet-health ingress, observability ingress) — see
+    # infrastructure/configs/network-policies/. Combined with
+    # ciliumnetworkpolicy-hermes-k.yaml, this converts hermes-k's previous
+    # enforcement-by-omission (no mcp_servers: block, no MCP_MCPJUNGLE_API_KEY
+    # — see configmap-hermes-k-config.yaml) into real network-layer enforcement:
+    # even a prompted/tricked attempt to reach mcp-gateway, mcp-tools, or the
+    # other hermes agents is blocked at the network layer now, not just
+    # unreachable for lack of credentials.
+    netpol.homeprod/enforce: "true"

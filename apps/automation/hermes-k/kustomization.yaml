@@ -20,3 +20,4 @@ resources:
   - service-hermes-k.yaml
   - servicemonitor-hermes-k.yaml
   - ingressroute-hermes-k.yaml
+  - ciliumnetworkpolicy-hermes-k.yaml

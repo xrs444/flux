@@ -1,0 +1,63 @@
+# Network-segmentation project, T1 onboarding — first namespace onboarded.
+# Presence of ingress: and egress: rules makes Cilium default-deny both
+# directions for anything not explicitly allowed here or by the three
+# baselines in infrastructure/configs/network-policies/ (which apply because
+# this namespace carries netpol.homeprod/enforce: "true" — see namespace.yaml).
+#
+# Deliberately absent: any rule reaching mcp-gateway, mcp-tools, hermes-t, or
+# hermes-s. That absence is the point — hermes-k's isolation was previously
+# enforcement-by-omission only (no mcp_servers: block, no
+# MCP_MCPJUNGLE_API_KEY, per configmap-hermes-k-config.yaml's own comment).
+# This makes it real: even a prompted/tricked hermes-k (terminal.backend:
+# local — an LLM-driven shell) cannot reach those services over the network,
+# not just lacking a credential to authenticate once there.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: hermes-k
+  namespace: hermes-k
+spec:
+  endpointSelector:
+    matchLabels:
+      app: hermes-k
+  ingress:
+    # Traefik IngressRoute (hermes-k.xrs444.net) proxies both the gateway API
+    # (/v1) and the dashboard to this pod on their respective ports.
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "8642"
+              protocol: TCP
+            - port: "9119"
+              protocol: TCP
+  egress:
+    # Hindsight memory backend (own bank_id: hermes-k, isolated from hermes-t/s).
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: hindsight
+            k8s:app: hindsight
+      toPorts:
+        - ports:
+            - port: "8888"
+              protocol: TCP
+    # xcog1 LiteLLM front door — local qwen3-30b-a3b only (kid policy: no
+    # cloud-tier model). toFQDNs relies on the DNS-visibility rule in
+    # baseline-dns-egress (same matchPattern: "*") to resolve this correctly —
+    # both apply to this endpoint once the namespace label is active.
+    - toFQDNs:
+        - matchName: xcog1.lan
+      toPorts:
+        - ports:
+            - port: "4000"
+              protocol: TCP
+    # Dashboard OIDC (HERMES_DASHBOARD_OIDC_ISSUER) — discovery + token
+    # exchange happen server-side in this pod, not just browser-side.
+    - toFQDNs:
+        - matchName: idm.xrs444.net
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
