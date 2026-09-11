@@ -1,6 +1,6 @@
 version: v2
 locks:
-  f/lab/lab_power_on: 58ed7811d895e4f496e4f1fb9264ff8f114a2b4d07eaa0f40b73eca9abcb8d2f
+  f/lab/lab_power_on: 060a12405ef7ceb2cbd01a90480ca22bccd8642e32f59dbecf74d91651663f16
   f/monitoring/synthetic_login: 657fdbfca13976791cf85ec7e2618ca8aa6b259f9fd965f1797cb869c7938838
   f/sre/alert-ingest__flow+__flow_hash: 7ada427041e252754589c8b7e0fe4af0ff558f209d5256c1f495bbeef68d66e2
   f/sre/alert-ingest__flow+no_runbook_match.ts: 42f2e64cce5207246dea1664922ec65180fee813b3541492859d353d6ff4103f

@@ -6,7 +6,7 @@ description: >-
 
   2. Waits for lab switch (xswlab, 172.18.11.249) to be reachable on port 22
 
-  3. Powers on all three nodes via HP iLO 5 Redfish
+  3. Powers on all three nodes via HP iLO 5 Redfish (session-token auth)
 
   4. Waits for CVMs (172.25.1.11/21/31) to be reachable on SSH
 
