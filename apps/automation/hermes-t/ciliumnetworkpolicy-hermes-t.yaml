@@ -1,0 +1,89 @@
+# Network-segmentation project, T1 onboarding.
+#
+# hermes-t is the most-trusted of the three hermes agents: full mcp-tools
+# set (mcp-prometheus/mcp-loki/mcp-kubernetes) plus mcpjungle, the
+# higher-trust gateway fronting Firewalla/Omada/arr/HA/Jellyfin/NetBox
+# (bearer-auth scoped by mcpjungle itself, not by this policy — this policy
+# only controls whether hermes-t can reach the gateway's Service at all).
+#
+# When mcp-personal (per-identity Vikunja/CalDAV MCP servers) ships, this
+# policy needs an egress rule to mcp-vikunja-t.mcp-personal and
+# mcp-caldav-t.mcp-personal specifically — NOT the -s variants. That's the
+# isolation this whole project traces back to; don't add it speculatively
+# before those Services exist, but don't forget it either.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: hermes-t
+  namespace: hermes-t
+spec:
+  endpointSelector:
+    matchLabels:
+      app: hermes-t
+  ingress:
+    # Traefik IngressRoute (hermes-t.xrs444.net) proxies the gateway API
+    # (/v1) and the dashboard to this pod on their respective ports.
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "8642"
+              protocol: TCP
+            - port: "9119"
+              protocol: TCP
+  egress:
+    # Hindsight memory backend (own bank_id: hermes-t).
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: hindsight
+            k8s:app: hindsight
+      toPorts:
+        - ports:
+            - port: "8888"
+              protocol: TCP
+    # Read-only observability MCPs (mcp-prometheus/mcp-loki/mcp-kubernetes).
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-tools
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # mcpjungle — higher-trust gateway, bearer-auth scoped by mcpjungle
+    # itself (see comment above).
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-gateway
+            k8s:app: mcpjungle
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Matrix homeserver (synapse).
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: matrix
+            k8s:app: synapse
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+    # xcog1 LiteLLM front door (local model). toFQDNs relies on the DNS-
+    # visibility rule in baseline-dns-egress (matchPattern: "*"), same
+    # composability already proven for hermes-k/-s.
+    - toFQDNs:
+        - matchName: xcog1.lan
+      toPorts:
+        - ports:
+            - port: "4000"
+              protocol: TCP
+    # Dashboard OIDC — discovery + token exchange happen server-side in
+    # this pod.
+    - toFQDNs:
+        - matchName: idm.xrs444.net
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
