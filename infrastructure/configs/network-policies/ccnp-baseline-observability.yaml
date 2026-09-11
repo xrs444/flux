@@ -1,0 +1,29 @@
+# Network-segmentation project, Phase 1 baseline. See ccnp-baseline-dns.yaml
+# for the opt-in label mechanism.
+#
+# kube-prometheus-stack runs with serviceMonitorSelectorNilUsesHelmValues:
+# false / podMonitorSelectorNilUsesHelmValues: false / ruleSelectorNilUsesHelmValues:
+# false (flux/apps/observability/monitoring/helmrelease-kube-prometheus-stack.yaml),
+# so Prometheus scrapes ServiceMonitors/PodMonitors from every namespace, not
+# just ones that opted in here. Confirmed live via Hubble 2026-09-11:
+# `pod:monitoring -> *` on app-specific metrics ports across traefik,
+# kube-system, cert-manager, spegel, longhorn-system.
+#
+# Deliberately L3-only (no port restriction): the scrape port varies per app
+# and enumerating every one here would defeat the point of a shared baseline.
+# Narrower per-app egress-from-monitoring rules can be added later without
+# conflicting with this — Cilium unions rules from multiple policies that
+# select the same endpoint.
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: baseline-observability-ingress
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.namespace.labels.netpol.homeprod/enforce: "true"
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: monitoring

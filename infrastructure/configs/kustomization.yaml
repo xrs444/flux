@@ -9,3 +9,4 @@ resources:
   - ./cluster-issuers       # Let's Encrypt certificate issuers
   - ./reflector             # Secret/ConfigMap replication across namespaces
   - ./coredns               # CoreDNS custom configuration for idm.xrs444.net
+  - ./network-policies      # CiliumClusterwideNetworkPolicy baselines (network-segmentation project)

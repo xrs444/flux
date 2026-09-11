@@ -1,0 +1,10 @@
+# CiliumClusterwideNetworkPolicy baselines for the network-segmentation
+# project. Cluster-scoped resources — no `namespace:` here. Select only
+# namespaces labeled netpol.homeprod/enforce: "true"; see ccnp-baseline-dns.yaml.
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ccnp-baseline-dns.yaml
+  - ccnp-baseline-health.yaml
+  - ccnp-baseline-observability.yaml

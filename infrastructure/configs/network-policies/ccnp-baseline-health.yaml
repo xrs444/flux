@@ -1,0 +1,28 @@
+# Network-segmentation project, Phase 1 baseline. See ccnp-baseline-dns.yaml
+# for the opt-in label mechanism.
+#
+# Liveness/readiness/startup probes originate from the kubelet on the node —
+# the `host` entity, not a pod identity — and exec'd/httpGet probes land on
+# whatever port the app itself serves on, which varies per app. Confirmed
+# live via Hubble 2026-09-11: `host -> pod:<ns>` traffic on each app's own
+# serving port (8642 hermes, 8888 hindsight, 3456 vikunja, 5232 radicale,
+# 8080 mcp-gateway/mcp-tools, etc.) was the single most common cross-identity
+# pattern across ~35 namespaces sampled. Omitting this is the most common way
+# a first NetworkPolicy rollout takes a cluster down — every pod would start
+# failing its own health checks and get killed.
+#
+# remote-node covers cross-node kubelet traffic (a probe or kube-proxy-
+# replacement health path originating from a different node than the pod).
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: baseline-kubelet-health-ingress
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.namespace.labels.netpol.homeprod/enforce: "true"
+  ingress:
+    - fromEntities:
+        - host
+        - remote-node
