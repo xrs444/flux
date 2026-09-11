@@ -56,25 +56,47 @@
       register: ilo_sessions
       no_log: true
 
-    - name: Power on nodes via HP iLO 5 Redfish (session-token auth)
+    - name: Get current power state for each iLO
       ansible.builtin.uri:
-        url: "https://{{ item.item.host }}/redfish/v1/Systems/1/Actions/ComputerSystem.Reset"
-        method: POST
+        url: "https://{{ item.item.host }}/redfish/v1/Systems/1"
+        method: GET
         headers:
           X-Auth-Token: "{{ item.x_auth_token }}"
+        validate_certs: false
+        return_content: true
+      loop: "{{ ilo_sessions.results }}"
+      loop_control:
+        label: "{{ item.item.host }}"
+      register: ilo_power_state
+      no_log: true
+
+    # iLO returns 400 if ResetType:On is sent to a node already powered on —
+    # confirmed live 2026-09-11 re-running against already-booted nodes.
+    # Skip nodes that are already On instead of guessing at error-message text.
+    - name: Power on nodes via HP iLO 5 Redfish (session-token auth)
+      ansible.builtin.uri:
+        url: "https://{{ ilo_sessions.results[idx].item.host }}/redfish/v1/Systems/1/Actions/ComputerSystem.Reset"
+        method: POST
+        headers:
+          X-Auth-Token: "{{ ilo_sessions.results[idx].x_auth_token }}"
         validate_certs: false
         body_format: json
         body:
           ResetType: "On"
         status_code: [200, 202, 204]
-      loop: "{{ ilo_sessions.results }}"
+      loop: "{{ range(ilo_sessions.results | length) | list }}"
       loop_control:
-        label: "{{ item.item.host }}"
+        loop_var: idx
+        label: "{{ ilo_sessions.results[idx].item.host }}"
+      when: (ilo_power_state.results[idx].json.PowerState | default('')) != 'On'
       no_log: true
 
+    # item.location is the Location header from session creation, which HPE
+    # returns as a full absolute URL already — do not re-prefix with the host
+    # (that produced a malformed double-URL and a DNS lookup failure).
     - name: Close Redfish sessions
       ansible.builtin.uri:
-        url: "https://{{ item.item.host }}{{ item.location }}"
+        url: "{{ item.location }}"
         method: DELETE
         headers:
           X-Auth-Token: "{{ item.x_auth_token }}"
