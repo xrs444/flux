@@ -16,14 +16,23 @@ data:
   # via [auth] type = ldap, but requires binding-DN configuration and adds a
   # dependency on Kanidm's LDAP surface being reachable from the pod.
   #
-  # For Phase A: htpasswd, one entry per family member plus one service
-  # account (homeassistant, read-only — see [rights] below). Passwords are
-  # stored in the SealedSecret (radicale-users) and read from
-  # /etc/radicale/users. When rotating credentials, generate with:
-  #   htpasswd -B -c users xrs444
-  #   htpasswd -B users samantha
-  #   ...
-  # then seal the resulting file into the SealedSecret keyed as `users`.
+  # For Phase A: htpasswd, one entry per family member plus service accounts
+  # (homeassistant read-only, hermes-t/hermes-s read-write — see [rights]
+  # below). Passwords are stored in the SealedSecret (radicale-users) and
+  # read from /etc/radicale/users. sealed-secrets decrypts back to a normal
+  # Secret, so the current file is always recoverable live — you do NOT
+  # need to reset everyone's password to rotate or add one entry:
+  #   kubectl get secret radicale-users -n radicale -o jsonpath='{.data.users}' \
+  #     | base64 -d > users
+  #   htpasswd -bB users <name> <password>   # -b -B; NEVER -c, it truncates
+  #                                           # the file and wipes every
+  #                                           # other user's password
+  # then reseal the resulting file into the SealedSecret keyed as `users`
+  # (kubectl create secret generic radicale-users -n radicale
+  #  --from-file=users=users --dry-run=client -o yaml | kubeseal ...).
+  # Note: deployment-radicale.yaml mounts this via subPath, which Kubernetes
+  # never live-updates — `kubectl rollout restart deploy/radicale -n
+  # radicale` is required after any change here or to the users Secret.
   #
   # Rights: moved from the built-in `owner_only` to a custom rights file
   # (2026-07-10) so a dedicated `homeassistant` service user can read every
@@ -99,5 +108,69 @@ data:
 
     [family-shared-collections]
     user: (xrs444|samantha)
+    collection: family/[^/]+
+    permissions: rw
+
+    # Hermes agent service principals (2026-09-11). hermes-t acts for
+    # xrs444, hermes-s for samantha, from the MCP pods in the mcp-personal
+    # namespace (flux/apps/automation/mcp-personal/). Dedicated principals
+    # rather than reusing the humans' logins so an agent credential can be
+    # rotated or revoked without touching anybody's phone/desktop CalDAV
+    # clients.
+    #
+    # ORDER MATTERS: Radicale's from_file backend returns the FIRST section
+    # whose user AND collection regexes both fullmatch. These stanzas must
+    # stay at the END of this file — moving them above [principal]/
+    # [calendars] would shadow those rules for these users.
+    #
+    # Note the generic [principal]/[calendars] rules above are `user: .+`,
+    # so hermes-t and hermes-s each automatically get RW on their own
+    # /hermes-t/, /hermes-s/ tree too. That is intentional and in fact
+    # REQUIRED: the caldav-mcp server these principals authenticate as does
+    # current-user-principal -> calendar-home-set discovery at startup and
+    # exits if that home is unreachable, so each service principal needs a
+    # reachable, writable home of its own. That home is a scratch tree the
+    # agents own; it is NOT where the user's real data lives — see the
+    # bootstrap step in apps/automation/mcp-personal/kustomization.yaml.
+    #
+    # RW by design — the agents create/complete events and todos, not just
+    # read them.
+    [hermes-t-xrs444-principal]
+    user: hermes-t
+    collection: xrs444
+    permissions: RW
+
+    [hermes-t-xrs444-collections]
+    user: hermes-t
+    collection: xrs444/[^/]+
+    permissions: rw
+
+    [hermes-t-family-principal]
+    user: hermes-t
+    collection: family
+    permissions: RW
+
+    [hermes-t-family-collections]
+    user: hermes-t
+    collection: family/[^/]+
+    permissions: rw
+
+    [hermes-s-samantha-principal]
+    user: hermes-s
+    collection: samantha
+    permissions: RW
+
+    [hermes-s-samantha-collections]
+    user: hermes-s
+    collection: samantha/[^/]+
+    permissions: rw
+
+    [hermes-s-family-principal]
+    user: hermes-s
+    collection: family
+    permissions: RW
+
+    [hermes-s-family-collections]
+    user: hermes-s
     collection: family/[^/]+
     permissions: rw
