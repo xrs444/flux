@@ -3,3 +3,8 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: hermes-s
+  labels:
+    # Network-segmentation project, T1 onboarding. See
+    # infrastructure/configs/network-policies/ for the baselines this
+    # activates, and ciliumnetworkpolicy-hermes-s.yaml for app-specific rules.
+    netpol.homeprod/enforce: "true"

@@ -1,0 +1,75 @@
+# Network-segmentation project, T1 onboarding.
+#
+# Deliberately absent: any rule reaching mcp-gateway (mcpjungle), mcp-loki,
+# mcp-kubernetes, hermes-t, or hermes-k — hermes-s's ConfigMap only ever
+# registers mcp-prometheus (see configmap-hermes-s-config.yaml's own
+# comment: "Loki logs and k8s inspection stay hermes-t-only"). This makes
+# that scoping a real network-layer restriction, not just a matter of which
+# MCP server URLs happen to be in its config.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: hermes-s
+  namespace: hermes-s
+spec:
+  endpointSelector:
+    matchLabels:
+      app: hermes-s
+  ingress:
+    # Traefik IngressRoute (hermes-s.xrs444.net) proxies the gateway API
+    # (/v1) and the dashboard to this pod on their respective ports.
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "8642"
+              protocol: TCP
+            - port: "9119"
+              protocol: TCP
+  egress:
+    # Hindsight memory backend (own bank_id: hermes-s).
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: hindsight
+            k8s:app: hindsight
+      toPorts:
+        - ports:
+            - port: "8888"
+              protocol: TCP
+    # mcp-prometheus only — see comment above.
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-tools
+            k8s:app: mcp-prometheus
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Matrix homeserver (synapse) — Samantha's messaging platform.
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: matrix
+            k8s:app: synapse
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+    # xcog1 LiteLLM front door (local model). toFQDNs relies on the DNS-
+    # visibility rule in baseline-dns-egress (matchPattern: "*"), same
+    # composability already proven for hermes-k.
+    - toFQDNs:
+        - matchName: xcog1.lan
+      toPorts:
+        - ports:
+            - port: "4000"
+              protocol: TCP
+    # Dashboard OIDC — discovery + token exchange happen server-side in
+    # this pod.
+    - toFQDNs:
+        - matchName: idm.xrs444.net
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
