@@ -11,3 +11,4 @@ resources:
   - deployment-hindsight.yaml
   - service-hindsight.yaml
   - servicemonitor-hindsight.yaml
+  - ciliumnetworkpolicy-hindsight.yaml

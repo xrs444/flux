@@ -1,0 +1,64 @@
+# Network-segmentation project, T1 onboarding.
+#
+# Ingress restricted to the three hermes agents (hermes-t/-s/-k all use this
+# as their shared memory backend — the kustomization.yaml header comment
+# only mentions hermes-t/-s, but hermes-k's config.yaml also points here
+# with bank_id: hermes-k, confirmed live 2026-09-11 by curling it from the
+# hermes-k pod during that namespace's onboarding). Each hermes gets its own
+# bank_id, so this is shared infrastructure, not shared data — Hindsight
+# itself is responsible for bank isolation, not this policy.
+#
+# `control` port 9999 has no known consumer anywhere in the repo and is
+# deliberately left with no ingress rule. Revisit if something needs it.
+#
+# Egress: HINDSIGHT_API_LLM_BASE_URL is DeepSeek (cloud) for memory
+# extraction. HINDSIGHT_API_EMBEDDINGS_LOCAL_MODEL ("local") is misleading —
+# it's downloaded from HuggingFace Hub at container startup into
+# /home/hindsight/.cache/huggingface, which is NOT on the PVC (only .pg0
+# is), so this is a recurring egress need on every pod restart, not a
+# one-time bootstrap. Confirmed live: the pod already had bge-small-en-v1.5
+# and a cross-encoder reranker cached. HF's actual file-transfer CDN (the
+# hf_xet package, a compiled binary) gets its real download domain
+# dynamically via an API response header rather than a fixed constant, so
+# this can't be pinned to one exact FQDN from static analysis — hence the
+# wildcard on both huggingface.co and hf.co. Verify by forcing a real pod
+# restart (wipes the ephemeral cache) after this lands, not just checking
+# the already-warm pod.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: hindsight
+  namespace: hindsight
+spec:
+  endpointSelector:
+    matchLabels:
+      app: hindsight
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: hermes-t
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: hermes-s
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: hermes-k
+      toPorts:
+        - ports:
+            - port: "8888"
+              protocol: TCP
+  egress:
+    - toFQDNs:
+        - matchName: api.deepseek.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: huggingface.co
+        - matchPattern: "*.huggingface.co"
+        - matchName: hf.co
+        - matchPattern: "*.hf.co"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
