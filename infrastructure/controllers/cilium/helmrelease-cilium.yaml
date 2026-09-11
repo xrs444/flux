@@ -64,6 +64,19 @@ spec:
         enabled: true
       peerService:
         clusterDomain: cluster.local
+      # Phase 0 of the network-segmentation project (see docs/network-segmentation.md):
+      # default buffer was 4095 flows, wrapping in ~6s at observed cluster flow rates
+      # (680 flows/s) — too small to build an observed flow matrix before writing
+      # NetworkPolicies. 65535 is the chart's documented maximum.
+      eventBufferCapacity: "65535"
+      metrics:
+        enabled:
+          - flow
+          - drop
+          - policy-verdict
+        enableOpenMetrics: true
+        serviceMonitor:
+          enabled: true
     etcd:
       clusterDomain: cluster.local
     kubeProxyReplacement: true
@@ -114,7 +127,12 @@ spec:
       config:
         nonMasqueradeCIDRs:
           - 10.244.0.0/16   # Pod CIDR - no masquerade for pod-to-pod
-          - 10.96.0.0/12    # Service CIDR - no masquerade for pod-to-service
+          # Service CIDR - no masquerade for pod-to-service. Was 10.96.0.0/12, which
+          # is disjoint from the range Talos actually allocates (controlplane.yaml
+          # serviceSubnets: 10.0.0.0/12 -> ClusterIPs in 10.0-10.15.x.x). Corrected
+          # 2026-09-11 during the network-segmentation project; see
+          # docs/network-segmentation.md.
+          - 10.0.0.0/12
           - 172.21.0.0/24   # LoadBalancer IPs - BGP routed via BGP
         masqLinkLocal: false
 

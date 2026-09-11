@@ -112,3 +112,16 @@ spec:
       serviceMonitor:
         enabled: true
         interval: 30s
+
+    # Chart default (restrictInternalTraffic: true) ships default-deny-ingress
+    # NetworkPolicies on longhorn-manager/webhook/backing-image-* with no exception
+    # for the monitoring namespace's Prometheus scrape (longhorn-backend:9500) or for
+    # anything outside Longhorn's own pods. These policies already exist live and were
+    # previously inert only because Cilium's cluster-wide policyAuditMode was on — the
+    # moment that flips off (network-segmentation project, docs/network-segmentation.md)
+    # they enforce and Longhorn metrics go dark. Disabled here; longhorn-system is
+    # reassessed for a proper CiliumNetworkPolicy replacement when it's onboarded to
+    # the segmentation rollout (T0 tier, last).
+    networkPolicies:
+      enabled: false
+      restrictInternalTraffic: false
