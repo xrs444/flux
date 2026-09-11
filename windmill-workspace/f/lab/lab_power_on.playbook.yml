@@ -25,12 +25,13 @@
         status_code: [200, 201, 202, 204]
         timeout: 30
 
-    # xswlab = Brocade ICX 6610 at 172.18.11.249; change port to 23 if SSH is disabled
+    # xswlab = Brocade ICX 6610 at 172.18.11.249; confirmed 2026-09-11 that a cold
+    # boot genuinely takes longer than 180s to accept SSH — bumped to 5 min.
     - name: Wait for lab switch (xswlab) to be reachable
       ansible.builtin.wait_for:
         host: 172.18.11.249
         port: 22
-        timeout: 180
+        timeout: 300
         sleep: 5
 
     - name: Power on nodes via HP iLO 5 Redfish
