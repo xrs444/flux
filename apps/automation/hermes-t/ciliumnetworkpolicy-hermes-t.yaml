@@ -79,6 +79,19 @@ spec:
         - ports:
             - port: "4000"
               protocol: TCP
+    # Home Assistant (hass.xrs444.net = 172.18.7.1, VLAN 17). NOT in any
+    # git-tracked ConfigMap or env var — discovered live 2026-09-11 as a
+    # real, currently-blocked "Policy denied DROPPED" flow after this CNP
+    # first landed. platforms.homeassistant.enabled: true is set directly on
+    # the pod's /opt/data/config.yaml (dashboard/CLI live edit, per bug-895 —
+    # never reflected back to git). Confirms the mcp-personal plan's own
+    # documented gap: live config drift is real, not hypothetical.
+    - toFQDNs:
+        - matchName: hass.xrs444.net
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
     # Dashboard OIDC — discovery + token exchange happen server-side in
     # this pod.
     - toFQDNs:
