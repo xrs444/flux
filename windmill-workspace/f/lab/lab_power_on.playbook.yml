@@ -1,0 +1,107 @@
+---
+# Lab Power On — boots the Nutanix cluster from cold in the correct sequence.
+# Args (from Windmill resource bindings): ha_webhook, ilo1, ilo2, ilo3, cvm, prism
+
+- name: Power on lab infrastructure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Register CVM in dynamic inventory
+      ansible.builtin.add_host:
+        name: cvm_node
+        ansible_host: "{{ cvm.host }}"
+        ansible_user: "{{ cvm.username }}"
+        ansible_ssh_private_key_file: /root/.ssh/id_ed25519
+        ansible_ssh_common_args: >-
+          -o StrictHostKeyChecking=no
+          -o UserKnownHostsFile=/dev/null
+
+    - name: Power on lab smart plug via HA webhook
+      ansible.builtin.uri:
+        url: "{{ ha_webhook.power_on_url }}"
+        method: POST
+        status_code: [200, 201, 202, 204]
+        timeout: 30
+
+    # xswlab = Brocade ICX 6610 at 172.18.11.249; change port to 23 if SSH is disabled
+    - name: Wait for lab switch (xswlab) to be reachable
+      ansible.builtin.wait_for:
+        host: 172.18.11.249
+        port: 22
+        timeout: 180
+        sleep: 5
+
+    - name: Power on nodes via HP iLO 5 Redfish
+      ansible.builtin.uri:
+        url: "https://{{ item.host }}/redfish/v1/Systems/1/Actions/ComputerSystem.Reset"
+        method: POST
+        user: "{{ item.username }}"
+        password: "{{ item.password }}"
+        force_basic_auth: true
+        validate_certs: false
+        body_format: json
+        body:
+          ResetType: "On"
+        status_code: [200, 202, 204]
+      loop:
+        - "{{ ilo1 }}"
+        - "{{ ilo2 }}"
+        - "{{ ilo3 }}"
+      loop_control:
+        label: "{{ item.host }}"
+
+    - name: Wait for CVMs to be reachable on SSH port 22
+      ansible.builtin.wait_for:
+        host: "{{ item }}"
+        port: 22
+        timeout: 600
+        sleep: 15
+      loop:
+        - 172.25.1.11
+        - 172.25.1.21
+        - 172.25.1.31
+
+- name: Start Nutanix cluster via CVM SSH
+  hosts: cvm_node
+  gather_facts: false
+
+  tasks:
+    - name: Start cluster services
+      ansible.builtin.command: cluster start
+      register: cluster_start
+      changed_when: true
+
+    - name: Wait for cluster to reach Up state
+      ansible.builtin.command: cluster status
+      register: cluster_status
+      until: "'Cluster Status: Up' in cluster_status.stdout"
+      retries: 20
+      delay: 30
+
+    - name: Boot Prism Central VM
+      ansible.builtin.command: bash -c "source /etc/profile && acli vm.on xntnx-pc"
+      register: pc_boot
+      # acli returns non-zero if VM is already on; that is not an error here
+      failed_when: >-
+        pc_boot.rc != 0 and
+        'already on' not in (pc_boot.stderr | lower) and
+        'already on' not in (pc_boot.stdout | lower)
+
+- name: Wait for Prism Central and confirm lab is up
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Wait for Prism Central on port 9440
+      ansible.builtin.wait_for:
+        host: 172.25.2.100
+        port: 9440
+        timeout: 600
+        sleep: 20
+
+    - name: Lab power-on complete
+      ansible.builtin.debug:
+        msg: "Lab is up. Prism Central at https://172.25.2.100:9440"
