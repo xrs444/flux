@@ -34,24 +34,57 @@
         timeout: 300
         sleep: 5
 
-    - name: Power on nodes via HP iLO 5 Redfish
+    # iLO 5 rejects Basic Auth on state-changing Actions (401/NoValidSession)
+    # even when it accepts it for reads (confirmed live 2026-09-11, ruled out
+    # password mismatch first). Use a proper Redfish session token instead.
+    - name: Create Redfish session for each iLO
       ansible.builtin.uri:
-        url: "https://{{ item.host }}/redfish/v1/Systems/1/Actions/ComputerSystem.Reset"
+        url: "https://{{ item.host }}/redfish/v1/SessionService/Sessions"
         method: POST
-        user: "{{ item.username }}"
-        password: "{{ item.password }}"
-        force_basic_auth: true
-        validate_certs: false
         body_format: json
         body:
-          ResetType: "On"
-        status_code: [200, 202, 204]
+          UserName: "{{ item.username }}"
+          Password: "{{ item.password }}"
+        validate_certs: false
+        status_code: [200, 201]
       loop:
         - "{{ ilo1 }}"
         - "{{ ilo2 }}"
         - "{{ ilo3 }}"
       loop_control:
         label: "{{ item.host }}"
+      register: ilo_sessions
+      no_log: true
+
+    - name: Power on nodes via HP iLO 5 Redfish (session-token auth)
+      ansible.builtin.uri:
+        url: "https://{{ item.item.host }}/redfish/v1/Systems/1/Actions/ComputerSystem.Reset"
+        method: POST
+        headers:
+          X-Auth-Token: "{{ item.x_auth_token }}"
+        validate_certs: false
+        body_format: json
+        body:
+          ResetType: "On"
+        status_code: [200, 202, 204]
+      loop: "{{ ilo_sessions.results }}"
+      loop_control:
+        label: "{{ item.item.host }}"
+      no_log: true
+
+    - name: Close Redfish sessions
+      ansible.builtin.uri:
+        url: "https://{{ item.item.host }}{{ item.location }}"
+        method: DELETE
+        headers:
+          X-Auth-Token: "{{ item.x_auth_token }}"
+        validate_certs: false
+        status_code: [200, 202, 204]
+      loop: "{{ ilo_sessions.results }}"
+      loop_control:
+        label: "{{ item.item.host }}"
+      ignore_errors: true
+      no_log: true
 
     - name: Wait for CVMs to be reachable on SSH port 22
       ansible.builtin.wait_for:
