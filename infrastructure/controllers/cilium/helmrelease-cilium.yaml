@@ -41,7 +41,17 @@ spec:
 
     identityAllocationMode: crd
     enablePolicy: default
-    policyAuditMode: true
+    # Flipped false 2026-09-11 (network-segmentation project, Phase 1). Verified
+    # safe first: the only CiliumNetworkPolicy/CCNP objects that exist are the
+    # three baselines under infrastructure/configs/network-policies/, gated on
+    # the netpol.homeprod/enforce namespace label, and zero namespaces carry
+    # that label (kubectl get ns -l netpol.homeprod/enforce returns empty).
+    # Cilium's CNP engine only evaluates endpoints actually selected by a
+    # policy, so with nothing selected this is a no-op until namespaces start
+    # getting onboarded one at a time. Standard networking.k8s.io/v1
+    # NetworkPolicy (atuin, flux-system, netbox) was never gated by this flag
+    # and is unaffected either way.
+    policyAuditMode: false
     enableMetrics: true
     enablePolicySecretsSync: true
     policySecretsNamespace: cilium-secrets
