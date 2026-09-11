@@ -56,9 +56,16 @@ spec:
 
       workerGroups:
         # default: privileged, SSH-enabled, in-cluster kubectl via windmill-runner SA
+        # image: windmill-full (not the chart-default slim windmill image) — this
+        # group runs the ansible-language lab/rack power scripts (f/lab/lab_power_on,
+        # f/sre/rack_power_off), which need the bundled ansible-playbook binary
+        # (bug-905: slim image has no /usr/local/bin/ansible-playbook, every ansible
+        # job failed instantly). Tag intentionally left unset — falls back to
+        # windmill.tag / Chart.AppVersion, same as the slim image.
         - name: default
           replicas: 1
           privileged: true
+          image: "ghcr.io/windmill-labs/windmill-full"
           serviceAccountName: windmill-runner
           volumes:
             - name: ssh-key

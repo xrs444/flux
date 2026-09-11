@@ -16,6 +16,15 @@
       "/(^|/)infrastructure/.+\\.ya?ml$/"
     ]
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "npm packages pinned in MCP custom-image Dockerfiles (mcpjungle, mcp-personal)",
+      "managerFilePatterns": ["/(^|/)apps/.+/custom-image/Dockerfile$/"],
+      "matchStrings": ["(?<depName>(?:@[a-z0-9._-]+/)?[a-z0-9._-]+)@(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s"],
+      "datasourceTemplate": "npm"
+    }
+  ],
   "automerge": true,
   "automergeType": "pr",
   "packageRules": [
@@ -95,6 +104,17 @@
         "amittell/firewalla-mcp-server",
         "jmtvms/tplink-omada-mcp",
         "ghcr.io/mcpjungle/mcpjungle"
+      ],
+      "automerge": false,
+      "addLabels": ["mcp", "requires-review"]
+    },
+    {
+      "description": "Personal-scope MCP servers (apps/automation/mcp-personal) — read-write access to real Vikunja tasks and Radicale calendars/contacts; tool-contract changes always require review. caldav-mcp is pre-1.0, so every minor bump is potentially breaking and the never-automerge-major rule above doesn't catch it — this rule is what actually protects it.",
+      "matchDatasources": ["npm"],
+      "matchPackageNames": [
+        "caldav-mcp",
+        "@democratize-technology/vikunja-mcp",
+        "supergateway"
       ],
       "automerge": false,
       "addLabels": ["mcp", "requires-review"]
