@@ -1,0 +1,27 @@
+# Network-segmentation project, T1 onboarding.
+#
+# Consumed only by hermes-t. Talks to the apiserver via its own
+# ServiceAccount + read-only ClusterRole (clusterrole-mcp-kubernetes.yaml) —
+# toEntities: kube-apiserver is the correct Cilium selector for that
+# reserved identity, not a toEndpoints/toCIDR rule.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mcp-kubernetes
+  namespace: mcp-tools
+spec:
+  endpointSelector:
+    matchLabels:
+      app: mcp-kubernetes
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: hermes-t
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toEntities:
+        - kube-apiserver

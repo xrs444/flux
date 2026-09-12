@@ -15,13 +15,16 @@ resources:
   # mcp-prometheus
   - deployment-mcp-prometheus.yaml
   - service-mcp-prometheus.yaml
+  - ciliumnetworkpolicy-mcp-prometheus.yaml
   # mcp-loki (backed by grafana/mcp-grafana --enabled-tools=loki)
   # grafana-admin-secret is reflected from monitoring namespace by reflector
   - deployment-mcp-loki.yaml
   - service-mcp-loki.yaml
+  - ciliumnetworkpolicy-mcp-loki.yaml
   # mcp-kubernetes (read-only, RBAC-enforced)
   - serviceaccount-mcp-kubernetes.yaml
   - clusterrole-mcp-kubernetes.yaml
   - clusterrolebinding-mcp-kubernetes.yaml
   - deployment-mcp-kubernetes.yaml
   - service-mcp-kubernetes.yaml
+  - ciliumnetworkpolicy-mcp-kubernetes.yaml

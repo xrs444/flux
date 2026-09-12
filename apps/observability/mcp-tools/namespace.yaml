@@ -7,3 +7,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: mcp-tools
+  labels:
+    # Network-segmentation project, T1 onboarding. See
+    # infrastructure/configs/network-policies/ for the baselines this
+    # activates, and ciliumnetworkpolicy-{mcp-prometheus,mcp-loki,
+    # mcp-kubernetes}.yaml for app-specific rules.
+    netpol.homeprod/enforce: "true"
