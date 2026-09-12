@@ -124,13 +124,17 @@
   gather_facts: false
 
   tasks:
+    # cluster/acli/ncli only land on PATH via /etc/profile (Nutanix's own
+    # env setup), and command: doesn't source shell profiles -- confirmed
+    # live 2026-09-12: "[Errno 2] No such file or directory: b'cluster'".
+    # Match the existing acli task's bash -c "source /etc/profile && ..." pattern.
     - name: Start cluster services
-      ansible.builtin.command: cluster start
+      ansible.builtin.command: bash -c "source /etc/profile && cluster start"
       register: cluster_start
       changed_when: true
 
     - name: Wait for cluster to reach Up state
-      ansible.builtin.command: cluster status
+      ansible.builtin.command: bash -c "source /etc/profile && cluster status"
       register: cluster_status
       until: "'Cluster Status: Up' in cluster_status.stdout"
       retries: 20
