@@ -31,11 +31,18 @@
 #
 # search.nixos.org/nixos-search.netlify.app + api.github.com: mcp-nixos's
 # own live backend query and its "Branch HEAD ... fetched from GitHub"
-# behavior (confirmed in the tool's own response text). No PyPI/
-# files.pythonhosted.org contact was observed across two isolated
-# invocations — uvx's cached mcp-nixos install apparently doesn't
-# re-resolve on each call, unlike npm's one-time check. Not added
-# defensively; if a cold uv cache ever needs it, it'll surface as a drop.
+# behavior (confirmed in the tool's own response text).
+#
+# CORRECTION, caught by this policy actually enforcing (not predicted in
+# advance): initially believed no PyPI contact occurred, based on an
+# isolated pre-enforcement test whose 151.101.x.223 (Fastly) destination
+# was inferred to be search.nixos.org without verifying the actual DNS
+# query name. Once this policy went live, the "nixos" tool started timing
+# out — a precise DNS-query capture during the real failure showed the
+# query was for pypi.org all along, not search.nixos.org. mcp-nixos (uvx)
+# makes a live PyPI call on every invocation, likely a self-version check.
+# Lesson: attribute egress targets from the actual DNS query text in
+# Hubble, never from IP-range inference.
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -95,6 +102,18 @@ spec:
         - matchName: search.nixos.org
         - matchName: nixos-search.netlify.app
         - matchName: api.github.com
+        # Found live via a caught regression, not predicted: 151.101.x.223
+        # (Fastly) was first mis-attributed to search.nixos.org by inference
+        # from an earlier unrestricted test. A precise DNS-query capture
+        # during an actual DROPPED failure showed the real query name is
+        # pypi.org — mcp-nixos (uvx-installed) makes a live PyPI call on
+        # every invocation, likely a self-version check. files.pythonhosted.org
+        # added alongside it since that's PyPI's actual package-file CDN and
+        # the same client would need it for any real package fetch (a cold
+        # uv cache after an image/pod rebuild), even though only pypi.org
+        # itself was observed in this specific capture.
+        - matchName: pypi.org
+        - matchName: files.pythonhosted.org
       toPorts:
         - ports:
             - port: "443"
