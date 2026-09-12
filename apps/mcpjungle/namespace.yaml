@@ -9,3 +9,10 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: mcp-gateway
+  labels:
+    # Network-segmentation project, T1 onboarding. See
+    # infrastructure/configs/network-policies/ for the baselines this
+    # activates, and ciliumnetworkpolicy-{mcpjungle,mcp-firewalla,mcp-omada}.yaml
+    # for app-specific rules — one CNP per Deployment, same granularity as
+    # the existing deployment-*.yaml files in this directory.
+    netpol.homeprod/enforce: "true"

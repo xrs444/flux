@@ -1,0 +1,101 @@
+# Network-segmentation project, T1 onboarding.
+#
+# All external egress targets below were determined empirically, not from
+# static config, by invoking each mcpjungle-registered tool live and
+# watching Hubble — the live `mcpjungle list servers` state already
+# diverged from every git-tracked file (registration is imperative SQLite
+# state on the PVC; see deployment-mcpjungle.yaml's own header comment). A
+# 7th server, "nixos" (mcp-nixos via uvx), isn't mentioned in any git file
+# at all — pure live drift, same class of finding as hermes-t's
+# undocumented Home Assistant plugin during its own onboarding.
+#
+# netbox/scanopy are stdio upstreams mcpjungle spawns itself (uv run
+# --directory /opt/{netbox,scanopy}-mcp-rw) that then call out to real
+# services over HTTPS via their public hostnames — NOT in-cluster ClusterIP
+# DNS, confirmed live: netbox.xrs444.net and scanopy.xrs444.net both
+# resolve to the Traefik LB IP (172.21.0.2), so this is real WAN-shaped
+# egress even though the destination is technically in-cluster.
+#
+# homeassistant is `npx -y supergateway --sse https://hass.xrs444.net/mcp_server/sse`
+# (SSE->stdio bridge, spawned by mcpjungle). nodered is a stdio server
+# pointed at NODE_RED_URL: https://hass.xrs444.net:1880 — same host,
+# different port, both on VLAN 17 (172.18.7.1).
+#
+# registry.npmjs.org: even with a warm npx cache (HOME=/data/home is
+# PVC-backed), a live invocation still made one real connection to it —
+# confirmed via isolated Hubble capture, resolved via IPv4 (104.16.9.34,
+# Cloudflare) despite `getent hosts` only showing AAAA records for this
+# domain in this environment (see bug-915 — narrower than first feared;
+# Node's resolver falls back to IPv4 fine here, unlike whatever hindsight's
+# Python stack does for bug-913's raw.githubusercontent.com case).
+#
+# search.nixos.org/nixos-search.netlify.app + api.github.com: mcp-nixos's
+# own live backend query and its "Branch HEAD ... fetched from GitHub"
+# behavior (confirmed in the tool's own response text). No PyPI/
+# files.pythonhosted.org contact was observed across two isolated
+# invocations — uvx's cached mcp-nixos install apparently doesn't
+# re-resolve on each call, unlike npm's one-time check. Not added
+# defensively; if a cold uv cache ever needs it, it'll surface as a drop.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mcpjungle
+  namespace: mcp-gateway
+spec:
+  endpointSelector:
+    matchLabels:
+      app: mcpjungle
+  ingress:
+    # Traefik (external Claude Code access via mcp.xrs444.net) and hermes-t
+    # (in-cluster, the only hermes with mcpjungle registered).
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: traefik
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: hermes-t
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-gateway
+            k8s:app: mcp-firewalla
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-gateway
+            k8s:app: mcp-omada
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: netbox.xrs444.net
+        - matchName: scanopy.xrs444.net
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: hass.xrs444.net
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "1880"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: registry.npmjs.org
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: search.nixos.org
+        - matchName: nixos-search.netlify.app
+        - matchName: api.github.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

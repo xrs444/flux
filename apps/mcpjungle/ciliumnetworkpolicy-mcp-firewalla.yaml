@@ -1,0 +1,36 @@
+# Network-segmentation project, T1 onboarding.
+#
+# FIREWALLA_MSP_ID (dn-j3almw.firewalla.net) is Firewalla's own cloud MSP
+# API, not the local Firewalla box — confirmed live via isolated Hubble
+# capture during a real tool invocation (65.8.20.58:443, an AWS/CloudFront
+# edge IP; reverse lookup shows dn-j3almw.firewalla.net ->
+# d2evrbsy3jirnq.cloudfront.net). CloudFront edge selection rotates IPs
+# across requests — confirmed by seeing 3 different IPs across separate
+# invocations during this same investigation — so this must be toFQDNs,
+# never a pinned IP/CIDR.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mcp-firewalla
+  namespace: mcp-gateway
+spec:
+  endpointSelector:
+    matchLabels:
+      app: mcp-firewalla
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-gateway
+            k8s:app: mcpjungle
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toFQDNs:
+        - matchName: dn-j3almw.firewalla.net
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

@@ -1,0 +1,38 @@
+# Network-segmentation project, T1 onboarding.
+#
+# OMADA_BASE_URL is https://omada.xrs444.net, which resolves to 172.21.0.7 —
+# a direct (non-Traefik) Cilium LoadBalancer IP for the in-cluster `omada`
+# namespace, per the network-segmentation plan's "direct-LoadBalancer
+# ingress" finding. Confirmed live during a real tool invocation that
+# Cilium resolves this hairpin correctly to the actual backend pod identity
+# (destination reported as omada/omada-controller, not an external IP) —
+# so this is a normal toEndpoints rule, not toFQDNs/toCIDR, despite the
+# public-looking hostname.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mcp-omada
+  namespace: mcp-gateway
+spec:
+  endpointSelector:
+    matchLabels:
+      app: mcp-omada
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-gateway
+            k8s:app: mcpjungle
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: omada
+            k8s:app: omada-controller
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

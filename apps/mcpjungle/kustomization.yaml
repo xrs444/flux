@@ -30,3 +30,7 @@ resources:
   # External access for Claude Code (Hermes reaches mcpjungle in-cluster via
   # ClusterIP directly). Requires a manual DNS record for mcp.xrs444.net.
   - ingressroute-mcpjungle.yaml
+  # Network-segmentation project — one CiliumNetworkPolicy per Deployment.
+  - ciliumnetworkpolicy-mcpjungle.yaml
+  - ciliumnetworkpolicy-mcp-firewalla.yaml
+  - ciliumnetworkpolicy-mcp-omada.yaml
