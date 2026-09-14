@@ -146,8 +146,14 @@
       retries: 20
       delay: 30
 
+    # Real VM name is Nutanix's auto-generated one-click-PC-deployment name,
+    # not a friendly hostname -- "xntnx-pc" never existed (`acli vm.list`
+    # returned no match). Confirmed live 2026-09-14: `acli vm.on` is also
+    # naturally idempotent (rc=0 whether already on or not), so the
+    # failed_when tolerance below never actually triggers, but is harmless
+    # to leave in case behavior differs on a future AOS version.
     - name: Boot Prism Central VM
-      ansible.builtin.command: bash -c "source /etc/profile && acli vm.on xntnx-pc"
+      ansible.builtin.command: bash -c "source /etc/profile && acli vm.on NTNX-172-25-2-100-PCVM-1782768949"
       register: pc_boot
       # acli returns non-zero if VM is already on; that is not an error here
       failed_when: >-
