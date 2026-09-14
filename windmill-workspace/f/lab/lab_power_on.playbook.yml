@@ -133,10 +133,16 @@
       register: cluster_start
       changed_when: true
 
+    # Real AOS output is "The state of the cluster: start" (Nutanix's own
+    # terminology for a running cluster) -- "Cluster Status: Up" does not
+    # appear anywhere in actual output. Confirmed live 2026-09-14: retry
+    # loop exhausted all 20x30s=600s looking for a string that never
+    # existed, even though the cluster was already fully up within
+    # minutes of "cluster start".
     - name: Wait for cluster to reach Up state
       ansible.builtin.command: bash -c "source /etc/profile && cluster status"
       register: cluster_status
-      until: "'Cluster Status: Up' in cluster_status.stdout"
+      until: "'The state of the cluster: start' in cluster_status.stdout"
       retries: 20
       delay: 30
 
