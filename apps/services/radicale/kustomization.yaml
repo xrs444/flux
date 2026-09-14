@@ -11,3 +11,4 @@ resources:
   - deployment-radicale.yaml
   - service-radicale.yaml
   - ingressroute-radicale.yaml
+  - ciliumnetworkpolicy-radicale.yaml

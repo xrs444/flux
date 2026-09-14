@@ -1,0 +1,35 @@
+# Network-segmentation project, T1 onboarding — last T1 namespace.
+#
+# No egress rule beyond the baselines (DNS/kubelet-health/observability):
+# htpasswd auth (no OIDC/external IdP), PVC-backed storage, no external API
+# dependency at all. iOS Calendar/DAVx⁵/Thunderbird/HA CalDAV clients
+# (deployment-radicale.yaml's header comment) all reach this over the
+# public hostname via Traefik — no direct LoadBalancer IP exists for this
+# namespace (unlike the six "direct-LoadBalancer" namespaces the plan
+# tracks separately), so a single ingress rule covers every consumer.
+#
+# When mcp-personal ships, hermes-t/-s reach the per-identity CalDAV MCP
+# bridge pods in mcp-personal, which in turn call radicale directly — not
+# hermes. That's a change on BOTH sides: mcp-personal's own CNP needs the
+# egress rule, AND this namespace's ingress rule needs to add
+# fromEndpoints for mcp-personal alongside traefik. Not added
+# speculatively before those Services exist — same "both sides" note as
+# vikunja's CNP carries for its own mcp-personal integration.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: radicale
+  namespace: radicale
+spec:
+  endpointSelector:
+    matchLabels:
+      app: radicale
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "5232"
+              protocol: TCP

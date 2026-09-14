@@ -3,3 +3,8 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: radicale
+  labels:
+    # Network-segmentation project, T1 onboarding (last T1 namespace). See
+    # infrastructure/configs/network-policies/ for the baselines this
+    # activates, and ciliumnetworkpolicy-radicale.yaml for app-specific rules.
+    netpol.homeprod/enforce: "true"
