@@ -13,3 +13,4 @@ resources:
   - deployment-vikunja.yaml
   - service-vikunja.yaml
   - ingressroute-vikunja.yaml
+  - ciliumnetworkpolicy-vikunja.yaml

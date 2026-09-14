@@ -1,0 +1,42 @@
+# Network-segmentation project, T1 onboarding.
+#
+# Single Deployment, two containers (vikunja + postgres) sharing one pod
+# network namespace — postgres is reached via `database.host: localhost`
+# (configmap-vikunja-config.yaml), so it needs no CNP rule of its own; this
+# one endpointSelector (app: vikunja) covers the whole pod.
+#
+# mcp-personal (per-identity Vikunja MCP servers for hermes-t/-s) has only
+# its Docker build infrastructure landed so far (apps/automation/
+# mcp-personal/custom-image/) — not wired into the parent kustomization,
+# no Deployments live. When it ships, this namespace needs an ingress rule
+# from mcp-personal for whichever pods hold the Vikunja API tokens, and
+# hermes-t/hermes-s's own CNPs need the matching egress rule. Not added
+# speculatively before those Services exist — this is the isolation the
+# whole network-segmentation project traces back to (see hermes-t's CNP
+# comment for the same note from the other side).
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: vikunja
+  namespace: vikunja
+spec:
+  endpointSelector:
+    matchLabels:
+      app: vikunja
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "3456"
+              protocol: TCP
+  egress:
+    # Kanidm OIDC — auth.openid.providers.kanidm.authurl.
+    - toFQDNs:
+        - matchName: idm.xrs444.net
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
