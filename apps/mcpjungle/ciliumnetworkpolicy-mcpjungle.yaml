@@ -43,6 +43,24 @@
 # makes a live PyPI call on every invocation, likely a self-version check.
 # Lesson: attribute egress targets from the actual DNS query text in
 # Hubble, never from IP-range inference.
+#
+# CORRECTION 2026-09-14 (bug-916): the netbox/scanopy toFQDNs rule above
+# never actually worked. Cilium enforces by IDENTITY, not CIDR, once an
+# IP is in its own ipcache — and netbox.xrs444.net/scanopy.xrs444.net
+# resolve to the Traefik LoadBalancer IP (172.21.0.2), which Cilium
+# recognizes as the `traefik` namespace's own pod identity. toFQDNs-learned
+# CIDR allows are only consulted for "world"-identified (genuinely
+# external) destinations; an in-cluster-identified IP skips straight to
+# default-deny regardless of a matching toFQDNs entry. Confirmed live via
+# Hubble: every mcpjungle -> traefik-*:8443 SYN was "Policy denied DROPPED"
+# for the full 60s until mcpjungle's own subprocess timeout killed the
+# stdio call — indistinguishable from NetBox itself being down. Fixed by
+# adding an explicit toEndpoints rule below for the traefik namespace on
+# 8443 (its HTTPS entrypoint), same identity-match pattern already used
+# for the ingress rule above. hass.xrs444.net is unaffected by this same
+# bug because it resolves to 172.18.7.1, a real external VLAN 17 device,
+# not a Traefik-fronted in-cluster IP — genuinely "world" traffic, so
+# toFQDNs works as intended there.
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -83,6 +101,17 @@ spec:
       toPorts:
         - ports:
             - port: "443"
+              protocol: TCP
+    # netbox.xrs444.net/scanopy.xrs444.net resolve to Traefik's LB IP, an
+    # in-cluster identity the toFQDNs rule above can't actually cover
+    # (see bug-916 correction above) — this identity-based rule is the
+    # real allow for that traffic.
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: traefik
+      toPorts:
+        - ports:
+            - port: "8443"
               protocol: TCP
     - toFQDNs:
         - matchName: hass.xrs444.net
