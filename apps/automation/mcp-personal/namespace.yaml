@@ -1,0 +1,32 @@
+# Per-identity, credential-bearing MCP servers. Unlike apps/observability/
+# mcp-tools/ (read-only, shared, identity-agnostic), every Deployment here
+# carries ONE person's read-write credentials and is consumed by exactly ONE
+# hermes instance:
+#
+#   mcp-vikunja-t / mcp-caldav-t  ->  hermes-t only  (xrs444)
+#   mcp-vikunja-s / mcp-caldav-s  ->  hermes-s only  (samantha)
+#
+# Deliberately NOT registered behind mcpjungle (apps/mcpjungle/): MCPJungle's
+# access control is a per-client allow-list of *server names*, which cannot
+# express "hermes-t may reach the Vikunja server but only as xrs444" — the
+# credential lives with the server, so per-identity isolation has to be
+# per-server. Each hermes registers these directly in its own mcp_servers:
+# block instead.
+#
+# Isolation between t and s is enforced at three layers:
+#   1. Vikunja: each tk_ token is owned by its user; Vikunja scopes every
+#      response to the token owner.
+#   2. Radicale: dedicated hermes-t / hermes-s htpasswd principals with
+#      explicit rights stanzas (apps/services/radicale/
+#      configmap-radicale-config.yaml).
+#   3. Config: hermes-s's configmap simply never names the -t endpoints.
+# Layer 3 is omission, not a network control. These Services are plain
+# ClusterIP with no auth — any pod that knows the DNS name can reach them.
+# A NetworkPolicy restricting ingress to the hermes-t/hermes-s namespaces
+# would close that gap; no app in this repo ships one yet, so it's tracked
+# as a follow-up rather than bolted on here.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mcp-personal

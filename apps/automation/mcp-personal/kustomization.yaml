@@ -1,0 +1,55 @@
+# Per-identity personal-scope MCP servers: Vikunja tasks + Radicale
+# calendars/contacts, one pair per hermes identity, each authenticating as
+# that human. Read-write. Registered directly in each hermes's own
+# mcp_servers: block, NOT via the MCPJungle gateway — see namespace.yaml
+# for why.
+#
+# Endpoints Hermes should point at:
+#   hermes-t (xrs444):
+#     mcp-vikunja-t:  http://mcp-vikunja-t.mcp-personal.svc.cluster.local:8080/mcp
+#     mcp-caldav-t:   http://mcp-caldav-t.mcp-personal.svc.cluster.local:8080/mcp
+#   hermes-s (samantha):
+#     mcp-vikunja-s:  http://mcp-vikunja-s.mcp-personal.svc.cluster.local:8080/mcp
+#     mcp-caldav-s:   http://mcp-caldav-s.mcp-personal.svc.cluster.local:8080/mcp
+#
+# hermes-k gets NOTHING from this namespace. Enforcement is by omission (no
+# mcp_servers: block in its configmap at all) — the same model documented
+# in ../hermes-k/configmap-hermes-k-config.yaml.
+#
+# BOOTSTRAP: each caldav-mcp instance calls getCalendars() at startup and
+# exits if its own principal's calendar home (/hermes-t/ or /hermes-s/) is
+# unreachable. Verified live 2026-09-11: Radicale auto-creates the home on
+# first authenticated PROPFIND, no manual MKCOL needed — the preflight
+# initContainer in deployment-mcp-caldav-{t,s}.yaml exercises exactly that
+# request before the main container starts.
+#
+# NOT YET IMPLEMENTED — network-layer isolation. These Services are plain
+# ClusterIP with no auth, so any pod in the cluster that knows the DNS name
+# can read and write xrs444's tasks and calendar. The mcp-tools namespace
+# has the same property but is read-only and non-personal; here it is
+# read-write personal data. A NetworkPolicy restricting ingress on this
+# namespace to the hermes-t / hermes-s namespaces is the right fix. No app
+# in this repo currently ships a NetworkPolicy, so this would be a new
+# pattern — tracked separately rather than bolted on here.
+#
+# custom-image/ is intentionally not a resource: it is build input for
+# ../../../.github/workflows/build-mcp-personal-image.yml, same
+# arrangement as ../../mcpjungle/custom-image/.
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  # credentials (per identity, shared by that identity's two Deployments)
+  - sealedsecret-mcp-personal-t.yaml
+  - sealedsecret-mcp-personal-s.yaml
+  # hermes-t (xrs444)
+  - deployment-mcp-vikunja-t.yaml
+  - service-mcp-vikunja-t.yaml
+  - deployment-mcp-caldav-t.yaml
+  - service-mcp-caldav-t.yaml
+  # hermes-s (samantha)
+  - deployment-mcp-vikunja-s.yaml
+  - service-mcp-vikunja-s.yaml
+  - deployment-mcp-caldav-s.yaml
+  - service-mcp-caldav-s.yaml

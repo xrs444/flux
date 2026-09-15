@@ -1,0 +1,115 @@
+# mcp-vikunja-t — Vikunja task tools for hermes-t, authenticating as a
+# dedicated tk_ API token minted as xrs444 in the Vikunja UI (Settings ->
+# API Tokens). Read-write: token scopes are Tasks (read_all/create/update/
+# delete), Projects (read_all/read_one), Labels (read_all).
+#
+# Tool package: @democratize-technology/vikunja-mcp 0.2.0, stdio-only,
+# bridged to streamable-http on /mcp by supergateway — same stateless
+# pattern as deployment-mcp-caldav-t.yaml (see that file's header for the
+# full rationale on stateless-vs-stateful and the custom image).
+#
+# CAVEAT — tk_ tokens cannot reach user-context endpoints (vikunja_users,
+# the export tools); those need a JWT. Acceptable here: not needed for
+# task capture/triage. If any bucket/kanban-aware tool 403s, it's likely
+# hitting a /views/{view}/tasks endpoint that also needs a JWT — see the
+# comment in ../../../../nix/homemanager/users/xrs444/scripts/
+# sync-vikunja-tasks.sh, which hit the same wall.
+#
+# Health probe: see deployment-mcp-caldav-t.yaml — same /healthz caveat
+# (proves the gateway is up, not that the token is valid). The preflight
+# initContainer below catches a bad/revoked token at deploy time instead.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-vikunja-t
+  namespace: mcp-personal
+  labels:
+    app: mcp-vikunja-t
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mcp-vikunja-t
+  template:
+    metadata:
+      labels:
+        app: mcp-vikunja-t
+    spec:
+      initContainers:
+        - name: preflight
+          image: ghcr.io/xrs444/mcp-personal@sha256:74138d4463804c122231b975dbf914ca671ad97fef117663520219456e419bd8
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              code=$(curl -s -o /dev/null -w '%{http_code}' \
+                -H "Authorization: Bearer $VIKUNJA_API_TOKEN" \
+                "${VIKUNJA_URL}/api/v1/projects")
+              echo "GET /api/v1/projects -> $code"
+              case "$code" in 200) exit 0 ;; *) exit 1 ;; esac
+          env:
+            - name: VIKUNJA_URL
+              value: "http://vikunja.vikunja.svc.cluster.local:3456"
+            - name: VIKUNJA_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-personal-t
+                  key: VIKUNJA_API_TOKEN
+      containers:
+        - name: mcp-vikunja-t
+          # Pinned by digest — see deployment-mcp-caldav-t.yaml.
+          image: ghcr.io/xrs444/mcp-personal@sha256:74138d4463804c122231b975dbf914ca671ad97fef117663520219456e419bd8
+          command: ["supergateway"]
+          args:
+            - --stdio
+            - "vikunja-mcp"
+            - --outputTransport
+            - streamableHttp
+            - --streamableHttpPath
+            - "/mcp"
+            - --port
+            - "8080"
+            - --healthEndpoint
+            - "/healthz"
+            - --logLevel
+            - "info"
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            # Base URL, NO /api/v1 suffix — vikunja-mcp appends it itself.
+            - name: VIKUNJA_URL
+              value: "http://vikunja.vikunja.svc.cluster.local:3456"
+            - name: VIKUNJA_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-personal-t
+                  key: VIKUNJA_API_TOKEN
+            - name: NODE_ENV
+              value: "production"
+            - name: LOG_LEVEL
+              value: "info"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3

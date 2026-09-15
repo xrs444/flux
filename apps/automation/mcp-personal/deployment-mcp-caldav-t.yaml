@@ -1,0 +1,154 @@
+# mcp-caldav-t — Radicale CalDAV/CardDAV tools for hermes-t, authenticating
+# as the dedicated `hermes-t` service principal (apps/services/radicale/
+# configmap-radicale-config.yaml).
+#
+# Tools provided (caldav-mcp 0.10.0):
+#   list-calendars
+#   list-events, create-event, update-event, delete-event
+#   list-todos, create-todo, update-todo, complete-todo, delete-todo
+#
+# Transport: caldav-mcp is stdio-only. supergateway (baked into
+# custom-image/) bridges it to streamable-http on /mcp, the cluster's MCP
+# transport standard.
+#
+# STATELESS (no --stateful): supergateway's stateful gateway 400s any POST
+# that arrives without an Mcp-Session-Id header, and hermes-agent is not
+# confirmed to echo that header back — the one MCP server proven to work
+# with hermes here (../../../observability/mcp-tools/deployment-mcp-
+# prometheus.yaml) is explicitly PROMETHEUS_MCP_STATELESS_HTTP=true. The
+# cost is that supergateway spawns the stdio child inside the POST handler,
+# i.e. once per tool call; that's why the packages are baked into the
+# image (custom-image/Dockerfile) instead of being npx'd at runtime.
+#
+# KNOWN LIMITATION — list-calendars is blind to xrs444/ and family/.
+# ts-caldav (caldav-mcp's client library) resolves the calendar home
+# strictly via current-user-principal -> calendar-home-set, which for the
+# hermes-t principal is /hermes-t/ regardless of what the Radicale rights
+# file grants. Every OTHER tool takes an explicit calendarUrl and passes it
+# through unvalidated, so read-write against /xrs444/<uuid>/ and
+# /family/<name>/ works fine — the agent just has to be told the URLs.
+# They're pinned into hermes-t's config (../hermes-t/configmap-hermes-t-
+# config.yaml).
+#
+# BOOTSTRAP: caldav-mcp calls getCalendars() at startup and exits if the
+# calendar home is unreachable. Verified live 2026-09-11: Radicale
+# auto-creates /hermes-t/ on first authenticated request (PROPFIND
+# Depth:0 -> 207), no manual MKCOL needed.
+#
+# Health probe: supergateway's --healthEndpoint registers a plain
+# `res.send('ok')` express route (verified against supergateway source)
+# and IS wired in streamableHttp mode despite the README implying SSE/WS
+# only. It proves the gateway is listening, NOT that Radicale is reachable
+# or the credential is valid — the stdio child doesn't exist until a
+# request arrives (see the preflight initContainer below). Do not probe
+# /mcp directly: GET /mcp returns 405 by design.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-caldav-t
+  namespace: mcp-personal
+  labels:
+    app: mcp-caldav-t
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mcp-caldav-t
+  template:
+    metadata:
+      labels:
+        app: mcp-caldav-t
+    spec:
+      initContainers:
+        # Fail fast on a bad credential. The /healthz readiness probe can't
+        # catch this: supergateway doesn't spawn caldav-mcp until a request
+        # arrives, and caldav-mcp's own exit-on-auth-failure happens inside
+        # that lazily-spawned child, invisible to Kubernetes.
+        - name: preflight
+          image: ghcr.io/xrs444/mcp-personal@sha256:74138d4463804c122231b975dbf914ca671ad97fef117663520219456e419bd8
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              code=$(curl -s -o /dev/null -w '%{http_code}' -u "$CALDAV_USERNAME:$CALDAV_PASSWORD" \
+                -X PROPFIND -H 'Depth: 0' "${CALDAV_BASE_URL}${CALDAV_USERNAME}/")
+              echo "PROPFIND ${CALDAV_USERNAME}/ -> $code"
+              case "$code" in 20*|207) exit 0 ;; *) exit 1 ;; esac
+          env:
+            - name: CALDAV_BASE_URL
+              value: "http://radicale.radicale.svc.cluster.local:5232/"
+            - name: CALDAV_USERNAME
+              value: "hermes-t"
+            - name: CALDAV_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-personal-t
+                  key: CALDAV_PASSWORD
+      containers:
+        - name: mcp-caldav-t
+          # Pinned by digest, not a floating tag — same rationale as
+          # ../../mcpjungle/deployment-mcpjungle.yaml (the cluster's Spegel
+          # P2P registry mirror served a stale digest under a reused tag).
+          # Update from the "Print digest for deployment pinning" step of
+          # the Build MCP Personal Image run after every custom-image/
+          # change.
+          image: ghcr.io/xrs444/mcp-personal@sha256:74138d4463804c122231b975dbf914ca671ad97fef117663520219456e419bd8
+          command: ["supergateway"]
+          args:
+            - --stdio
+            - "caldav-mcp"
+            - --outputTransport
+            - streamableHttp
+            - --streamableHttpPath
+            - "/mcp"
+            - --port
+            - "8080"
+            - --healthEndpoint
+            - "/healthz"
+            - --logLevel
+            - "info"
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            # Host root, not a subpath: ts-caldav's discovery absolutizes
+            # /.well-known/caldav against the origin and discards any path
+            # prefix, so a subpath baseUrl buys nothing.
+            - name: CALDAV_BASE_URL
+              value: "http://radicale.radicale.svc.cluster.local:5232/"
+            - name: CALDAV_USERNAME
+              value: "hermes-t"
+            - name: CALDAV_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-personal-t
+                  key: CALDAV_PASSWORD
+            - name: TZ
+              value: "America/Phoenix"
+          resources:
+            # Higher than the mcp-tools/ baseline (25m/64Mi, 500m/256Mi):
+            # stateless mode forks a node process per tool call, so
+            # concurrent calls mean concurrent interpreters.
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3

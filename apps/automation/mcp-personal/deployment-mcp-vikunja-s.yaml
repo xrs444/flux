@@ -1,0 +1,96 @@
+# mcp-vikunja-s — Vikunja task tools for hermes-s, authenticating as a
+# dedicated tk_ API token minted as samantha. Same shape, scopes, and
+# caveats as deployment-mcp-vikunja-t.yaml — see that file's header.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-vikunja-s
+  namespace: mcp-personal
+  labels:
+    app: mcp-vikunja-s
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mcp-vikunja-s
+  template:
+    metadata:
+      labels:
+        app: mcp-vikunja-s
+    spec:
+      initContainers:
+        - name: preflight
+          image: ghcr.io/xrs444/mcp-personal@sha256:74138d4463804c122231b975dbf914ca671ad97fef117663520219456e419bd8
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              code=$(curl -s -o /dev/null -w '%{http_code}' \
+                -H "Authorization: Bearer $VIKUNJA_API_TOKEN" \
+                "${VIKUNJA_URL}/api/v1/projects")
+              echo "GET /api/v1/projects -> $code"
+              case "$code" in 200) exit 0 ;; *) exit 1 ;; esac
+          env:
+            - name: VIKUNJA_URL
+              value: "http://vikunja.vikunja.svc.cluster.local:3456"
+            - name: VIKUNJA_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-personal-s
+                  key: VIKUNJA_API_TOKEN
+      containers:
+        - name: mcp-vikunja-s
+          image: ghcr.io/xrs444/mcp-personal@sha256:74138d4463804c122231b975dbf914ca671ad97fef117663520219456e419bd8
+          command: ["supergateway"]
+          args:
+            - --stdio
+            - "vikunja-mcp"
+            - --outputTransport
+            - streamableHttp
+            - --streamableHttpPath
+            - "/mcp"
+            - --port
+            - "8080"
+            - --healthEndpoint
+            - "/healthz"
+            - --logLevel
+            - "info"
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: VIKUNJA_URL
+              value: "http://vikunja.vikunja.svc.cluster.local:3456"
+            - name: VIKUNJA_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-personal-s
+                  key: VIKUNJA_API_TOKEN
+            - name: NODE_ENV
+              value: "production"
+            - name: LOG_LEVEL
+              value: "info"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
