@@ -12,9 +12,16 @@ resources:
   - ./crds/orders.cert-manager.io.yaml
   - ./helmrelease-cert-manager.yaml
   - ./kustomization-cert-manager.yaml
-  - ./deployments.cert-manager.yaml
-  - ./webhooks.cert-manager.io.yaml
-  - ./users-rbac-cert-manager.yaml
-  - ./services.cert-manager.io.yaml
   - ./sealedsecret-cloudflare-api-token-secret.yaml
   # ServiceMonitor enabled via Helm values (prometheus.servicemonitor)
+  # deployments.cert-manager.yaml, webhooks.cert-manager.io.yaml,
+  # users-rbac-cert-manager.yaml, services.cert-manager.io.yaml removed:
+  # frozen `helm template` output from chart v1.18.1, checked in before this
+  # moved to a HelmRelease and never deleted. Renovate kept bumping just the
+  # image tags in the dead file, and it and helm-controller were both
+  # server-side-apply field managers on the same Deployments/Services/RBAC/
+  # webhook configs, racing every 15m — cluster was actually running the
+  # stale raw-manifest image (v1.20.3) despite Helm reporting v1.21.1
+  # "deployed". The chart alone renders a superset of these resources
+  # (plus ServiceMonitor and the startupapicheck Job), so Helm is now the
+  # sole owner.
