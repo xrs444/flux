@@ -73,3 +73,18 @@ spec:
         - ports:
             - port: "443"
               protocol: TCP
+    # mcp-personal (2026-09-15): samantha's own Vikunja tasks + Radicale
+    # calendar/contacts, via the mcp-vikunja-s / mcp-caldav-s bridge pods
+    # only — NOT the -t variants. Same isolation the network-segmentation
+    # project traces back to (see hermes-t's CNP for the fuller note).
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-personal
+            k8s:app: mcp-vikunja-s
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-personal
+            k8s:app: mcp-caldav-s
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP

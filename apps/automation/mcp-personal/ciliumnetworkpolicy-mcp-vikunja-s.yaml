@@ -1,0 +1,30 @@
+# Network-segmentation project. Same shape as
+# ciliumnetworkpolicy-mcp-vikunja-t.yaml — see that file's header — mirrored
+# for samantha: ingress from hermes-s only, egress to vikunja only.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mcp-vikunja-s
+  namespace: mcp-personal
+spec:
+  endpointSelector:
+    matchLabels:
+      app: mcp-vikunja-s
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: hermes-s
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: vikunja
+            k8s:app: vikunja
+      toPorts:
+        - ports:
+            - port: "3456"
+              protocol: TCP

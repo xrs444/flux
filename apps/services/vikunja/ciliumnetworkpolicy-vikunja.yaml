@@ -5,15 +5,13 @@
 # (configmap-vikunja-config.yaml), so it needs no CNP rule of its own; this
 # one endpointSelector (app: vikunja) covers the whole pod.
 #
-# mcp-personal (per-identity Vikunja MCP servers for hermes-t/-s) has only
-# its Docker build infrastructure landed so far (apps/automation/
-# mcp-personal/custom-image/) — not wired into the parent kustomization,
-# no Deployments live. When it ships, this namespace needs an ingress rule
-# from mcp-personal for whichever pods hold the Vikunja API tokens, and
-# hermes-t/hermes-s's own CNPs need the matching egress rule. Not added
-# speculatively before those Services exist — this is the isolation the
-# whole network-segmentation project traces back to (see hermes-t's CNP
-# comment for the same note from the other side).
+# mcp-personal (2026-09-15): per-identity Vikunja MCP bridge pods for
+# hermes-t/-s. mcp-vikunja-t / mcp-vikunja-s are each restricted on their
+# own side (apps/automation/mcp-personal/ciliumnetworkpolicy-mcp-vikunja-
+# {t,s}.yaml) to accept ingress only from hermes-t / hermes-s respectively
+# — this is the isolation the whole network-segmentation project traces
+# back to (see hermes-t's CNP comment for the same note from the other
+# side), so this rule doesn't need to re-derive it.
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -28,6 +26,12 @@ spec:
     - fromEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: traefik
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-personal
+            k8s:app: mcp-vikunja-t
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-personal
+            k8s:app: mcp-vikunja-s
       toPorts:
         - ports:
             - port: "3456"

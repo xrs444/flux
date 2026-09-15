@@ -1,0 +1,39 @@
+# Network-segmentation project. Per-Deployment CNP, matching the existing
+# granularity in apps/mcpjungle/ and apps/observability/mcp-tools/.
+#
+# Ingress restricted to hermes-t only — NOT hermes-s. This is the isolation
+# the whole network-segmentation project traces back to: before this,
+# hermes-s's pod could curl this Service's ClusterIP DNS name directly and
+# read xrs444's Vikunja tasks, with only config omission (never naming this
+# endpoint in hermes-s's own mcp_servers: block) stopping it.
+#
+# Egress to vikunja only — the token embedded in this pod's env
+# (sealedsecret-mcp-personal-t.yaml) is itself scoped to xrs444 by Vikunja,
+# but this pod has no other reason to talk to anything else.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mcp-vikunja-t
+  namespace: mcp-personal
+spec:
+  endpointSelector:
+    matchLabels:
+      app: mcp-vikunja-t
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: hermes-t
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: vikunja
+            k8s:app: vikunja
+      toPorts:
+        - ports:
+            - port: "3456"
+              protocol: TCP

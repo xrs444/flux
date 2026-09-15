@@ -6,11 +6,9 @@
 # (bearer-auth scoped by mcpjungle itself, not by this policy — this policy
 # only controls whether hermes-t can reach the gateway's Service at all).
 #
-# When mcp-personal (per-identity Vikunja/CalDAV MCP servers) ships, this
-# policy needs an egress rule to mcp-vikunja-t.mcp-personal and
-# mcp-caldav-t.mcp-personal specifically — NOT the -s variants. That's the
-# isolation this whole project traces back to; don't add it speculatively
-# before those Services exist, but don't forget it either.
+# mcp-personal (2026-09-15): per-identity Vikunja/CalDAV MCP servers.
+# Egress below is to mcp-vikunja-t and mcp-caldav-t specifically — NOT the
+# -s variants. That's the isolation this whole project traces back to.
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -99,4 +97,18 @@ spec:
       toPorts:
         - ports:
             - port: "443"
+              protocol: TCP
+    # mcp-personal: xrs444's own Vikunja tasks + Radicale calendar/contacts,
+    # via the mcp-vikunja-t / mcp-caldav-t bridge pods only — see comment
+    # above.
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-personal
+            k8s:app: mcp-vikunja-t
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-personal
+            k8s:app: mcp-caldav-t
+      toPorts:
+        - ports:
+            - port: "8080"
               protocol: TCP

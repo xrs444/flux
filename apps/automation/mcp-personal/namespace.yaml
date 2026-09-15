@@ -13,20 +13,27 @@
 # per-server. Each hermes registers these directly in its own mcp_servers:
 # block instead.
 #
-# Isolation between t and s is enforced at three layers:
+# Isolation between t and s is enforced at four layers:
 #   1. Vikunja: each tk_ token is owned by its user; Vikunja scopes every
 #      response to the token owner.
 #   2. Radicale: dedicated hermes-t / hermes-s htpasswd principals with
 #      explicit rights stanzas (apps/services/radicale/
 #      configmap-radicale-config.yaml).
 #   3. Config: hermes-s's configmap simply never names the -t endpoints.
-# Layer 3 is omission, not a network control. These Services are plain
-# ClusterIP with no auth — any pod that knows the DNS name can reach them.
-# A NetworkPolicy restricting ingress to the hermes-t/hermes-s namespaces
-# would close that gap; no app in this repo ships one yet, so it's tracked
-# as a follow-up rather than bolted on here.
+#   4. Network (Cilium, netpol.homeprod/enforce below): mcp-vikunja-t /
+#      mcp-caldav-t only accept ingress from the hermes-t namespace,
+#      mcp-vikunja-s / mcp-caldav-s only from hermes-s — see
+#      ciliumnetworkpolicy-mcp-{vikunja,caldav}-{t,s}.yaml. This is the gap
+#      the network-segmentation project (triggered by this namespace) was
+#      built to close: previously any pod that knew a Service DNS name
+#      could reach it, config omission was the only thing stopping hermes-s
+#      from reading xrs444's data. See infrastructure/configs/
+#      network-policies/ for the baseline DNS/health/observability rules
+#      this label activates.
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: mcp-personal
+  labels:
+    netpol.homeprod/enforce: "true"

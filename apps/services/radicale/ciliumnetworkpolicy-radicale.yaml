@@ -8,13 +8,13 @@
 # namespace (unlike the six "direct-LoadBalancer" namespaces the plan
 # tracks separately), so a single ingress rule covers every consumer.
 #
-# When mcp-personal ships, hermes-t/-s reach the per-identity CalDAV MCP
-# bridge pods in mcp-personal, which in turn call radicale directly — not
-# hermes. That's a change on BOTH sides: mcp-personal's own CNP needs the
-# egress rule, AND this namespace's ingress rule needs to add
-# fromEndpoints for mcp-personal alongside traefik. Not added
-# speculatively before those Services exist — same "both sides" note as
-# vikunja's CNP carries for its own mcp-personal integration.
+# mcp-personal (2026-09-15): hermes-t/-s reach their per-identity CalDAV
+# MCP bridge pods, which in turn call radicale directly — not hermes.
+# mcp-caldav-t / mcp-caldav-s are each restricted on their own side
+# (apps/automation/mcp-personal/ciliumnetworkpolicy-mcp-caldav-{t,s}.yaml)
+# to accept ingress only from hermes-t / hermes-s respectively, so this
+# rule doesn't need to re-derive that isolation — either pod reaching
+# radicale has already proven it's the right identity's bridge.
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -29,6 +29,12 @@ spec:
     - fromEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: traefik
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-personal
+            k8s:app: mcp-caldav-t
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mcp-personal
+            k8s:app: mcp-caldav-s
       toPorts:
         - ports:
             - port: "5232"

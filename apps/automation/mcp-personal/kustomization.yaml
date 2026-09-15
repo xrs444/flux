@@ -23,14 +23,16 @@
 # initContainer in deployment-mcp-caldav-{t,s}.yaml exercises exactly that
 # request before the main container starts.
 #
-# NOT YET IMPLEMENTED — network-layer isolation. These Services are plain
-# ClusterIP with no auth, so any pod in the cluster that knows the DNS name
-# can read and write xrs444's tasks and calendar. The mcp-tools namespace
-# has the same property but is read-only and non-personal; here it is
-# read-write personal data. A NetworkPolicy restricting ingress on this
-# namespace to the hermes-t / hermes-s namespaces is the right fix. No app
-# in this repo currently ships a NetworkPolicy, so this would be a new
-# pattern — tracked separately rather than bolted on here.
+# Network-layer isolation: this namespace is onboarded into the cluster's
+# Cilium network-segmentation project (netpol.homeprod/enforce: "true" in
+# namespace.yaml — in fact this namespace's plain-ClusterIP-no-auth gap was
+# the original trigger for that whole project). Four per-Deployment
+# CiliumNetworkPolicies (ciliumnetworkpolicy-mcp-{vikunja,caldav}-{t,s}.yaml)
+# restrict each Service's ingress to its own hermes namespace only —
+# mcp-vikunja-t/mcp-caldav-t accept only from hermes-t, not hermes-s. The
+# matching egress rules live on hermes-t's and hermes-s's own CNPs, and the
+# matching ingress rules on radicale's and vikunja's CNPs (both sides of
+# every cross-namespace flow need a rule, in Cilium's default-deny model).
 #
 # custom-image/ is intentionally not a resource: it is build input for
 # ../../../.github/workflows/build-mcp-personal-image.yml, same
@@ -46,10 +48,14 @@ resources:
   # hermes-t (xrs444)
   - deployment-mcp-vikunja-t.yaml
   - service-mcp-vikunja-t.yaml
+  - ciliumnetworkpolicy-mcp-vikunja-t.yaml
   - deployment-mcp-caldav-t.yaml
   - service-mcp-caldav-t.yaml
+  - ciliumnetworkpolicy-mcp-caldav-t.yaml
   # hermes-s (samantha)
   - deployment-mcp-vikunja-s.yaml
   - service-mcp-vikunja-s.yaml
+  - ciliumnetworkpolicy-mcp-vikunja-s.yaml
   - deployment-mcp-caldav-s.yaml
   - service-mcp-caldav-s.yaml
+  - ciliumnetworkpolicy-mcp-caldav-s.yaml
