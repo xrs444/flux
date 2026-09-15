@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: cilium
-      version: "1.19.6"
+      version: "1.20.1"
       sourceRef:
         kind: HelmRepository
         name: cilium
@@ -29,9 +29,9 @@ spec:
     crds: CreateReplace
     timeout: 10m0s
   values:
-    # upgradeCompatibility set to 1.17 for smooth upgrade to 1.18
+    # upgradeCompatibility set to 1.19 for smooth upgrade to 1.20
     # This minimizes datapath disruption during the upgrade
-    upgradeCompatibility: "1.18"
+    upgradeCompatibility: "1.19"
 
     operator:
       revisionHistoryLimit: 3
