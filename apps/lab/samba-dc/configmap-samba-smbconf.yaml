@@ -1,0 +1,43 @@
+---
+# Known-good smb.conf, captured verbatim from the running samba-dc-0 pod on
+# 2026-09-15 (`kubectl exec -n samba-dc samba-dc-0 -- cat /etc/samba/external/smb.conf`)
+# before the persistence fix. Seeded into the samba-dc-etc PVC by the
+# statefulset's initContainer, ONLY if the sentinel file is absent, so the
+# existing domain (created 2026-08-22, SID S-1-5-21-2698442906-2105060791-302853650)
+# is preserved rather than re-provisioned. Do not hand-edit the contents below —
+# smb.conf is otherwise managed by Samba itself plus the postStart hook.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: samba-smbconf-seed
+  namespace: samba-dc
+data:
+  smb.conf: |
+    # Global parameters
+    [global]
+    	dns forwarder = 172.18.10.250
+    	idmap_ldb:use rfc2307 = yes
+    			wins support = yes
+    			template shell = /bin/bash
+    			template homedir = /home/%U
+    			idmap config AD : schema_mode = rfc2307
+    			idmap config AD : unix_nss_info = yes
+    			idmap config AD : backend = ad
+    			rpc server dynamic port range = 49152-49172
+    	rpc server dynamic port range = 49152-49172
+    	ldap server require strong auth = no
+    	interfaces = lo 172.21.0.11
+    	bind interfaces only = no
+    	netbios name = SAMBA-DC-0
+    	realm = AD.LAB.XRS444.NET
+    	server role = active directory domain controller
+    	workgroup = AD
+    	idmap_ldb:use rfc2307 = yes
+
+    [sysvol]
+    	path = /var/lib/samba/sysvol
+    	read only = No
+
+    [netlogon]
+    	path = /var/lib/samba/sysvol/ad.lab.xrs444.net/scripts
+    	read only = No

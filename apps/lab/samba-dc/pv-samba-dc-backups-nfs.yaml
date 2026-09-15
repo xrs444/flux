@@ -1,0 +1,39 @@
+---
+# Target for samba-tool domain backup tarballs (cronjob-samba-backup.yaml).
+# NFS rather than Longhorn deliberately: these are point-in-time AD-native
+# dumps, kept independent of the Longhorn volume/snapshot stack so a Longhorn
+# problem can't take out both the live data and its restorable backups.
+# Export: /export/zfs/systembackups/samba-dc on xsvr1 — see
+# nix/hosts/nixos/xsvr1/shares.nix (no_root_squash: samba-dc runs privileged).
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: samba-dc-backups-pv
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    path: /zfs/systembackups/samba-dc
+    server: 172.20.3.201
+  mountOptions:
+    - nfsvers=4
+    - hard
+    - intr
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: samba-dc-backups-pvc
+  namespace: samba-dc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs
+  resources:
+    requests:
+      storage: 20Gi
+  volumeName: samba-dc-backups-pv

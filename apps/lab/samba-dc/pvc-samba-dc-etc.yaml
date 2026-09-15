@@ -1,0 +1,22 @@
+---
+# Persists /etc/samba/external — the nowsci/samba-domain image's own "has this
+# already been provisioned?" sentinel (/etc/samba/external/smb.conf). This is
+# NOT part of /var/lib/samba, and was unmounted until 2026-09-15: every pod
+# replacement took the image's first-run branch and re-ran
+# `samba-tool domain provision`, silently wiping the domain inside the
+# samba-dc-data PVC. See the initContainer in statefulset-samba-dc.yaml, which
+# seeds this volume from configmap-samba-smbconf.yaml on first use.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: samba-dc-etc
+  namespace: samba-dc
+  labels:
+    recurring-job-group.longhorn.io/default: enabled
+spec:
+  storageClassName: longhorn-retain
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

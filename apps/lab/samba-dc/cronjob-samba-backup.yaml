@@ -1,0 +1,62 @@
+---
+# AD-native backup of the Samba domain, independent of Longhorn's block-level
+# volume backup (see the recurring-job-group.longhorn.io/default label on
+# pvc-samba-dc-data.yaml / pvc-samba-dc-etc.yaml). A Longhorn snapshot of a
+# live ldb database is only crash-consistent; `samba-tool domain backup
+# offline` takes the ldb transaction locks itself and produces a tarball
+# that's restorable with `samba-tool domain backup restore`.
+#
+# Runs at 03:00, an hour after samba-provision (02:00) and after the Longhorn
+# defaultbackup window, so none of the three overlap.
+#
+# Manual run:
+#   kubectl create job -n samba-dc --from=cronjob/samba-backup samba-backup-manual
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: samba-backup
+  namespace: samba-dc
+  labels:
+    app: samba-backup
+spec:
+  schedule: "0 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          serviceAccountName: samba-provision
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: registry.k8s.io/kubectl:v1.37.0
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -euo pipefail
+
+                  echo "Checking samba-dc-0 is ready..."
+                  kubectl get pod/samba-dc-0 -n samba-dc \
+                    -o jsonpath='{.status.containerStatuses[0].ready}' | grep -q true
+
+                  echo "Running samba-tool domain backup offline..."
+                  kubectl exec samba-dc-0 -n samba-dc -- \
+                    samba-tool domain backup offline --targetdir=/backups
+
+                  echo "Pruning backups older than 30 days..."
+                  kubectl exec samba-dc-0 -n samba-dc -- \
+                    find /backups -name 'samba-backup-*.tar.bz2' -mtime +30 -delete
+
+                  echo "Backup job complete."
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  cpu: 200m
+                  memory: 128Mi

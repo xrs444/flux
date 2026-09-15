@@ -2,9 +2,18 @@
 # Samba Active Directory Domain Controller
 # Domain: AD.LAB.XRS444.NET  |  NetBIOS: LAB  |  DC hostname: dc1
 # Image: nowsci/samba-domain — handles first-run `samba-tool domain provision`
-#   automatically when /var/lib/samba/private/sam.ldb does not exist.
-# Data persisted in Longhorn PVC; the provision script is mounted read-only
-# from ConfigMap and executed by the CronJob (see cronjob-samba-provision.yaml).
+#   automatically when /etc/samba/external/smb.conf does not exist (NOT
+#   /var/lib/samba/private/sam.ldb — that was a wrong assumption in an earlier
+#   version of this comment, and the reason the domain was silently
+#   re-provisioned on every pod replacement until 2026-09-15: this sentinel
+#   lives outside /var/lib/samba and was unmounted, so it never survived a
+#   restart). /etc/samba/external is now its own PVC (samba-dc-etc), seeded on
+#   first use by the initContainer below from configmap-samba-smbconf.yaml.
+# Data persisted in Longhorn PVCs (samba-dc-data, samba-dc-etc — both carry the
+# recurring-job-group.longhorn.io/default backup label); the provision script
+# is mounted read-only from ConfigMap and executed by the CronJob (see
+# cronjob-samba-provision.yaml). AD-native backups run via
+# cronjob-samba-backup.yaml onto NFS (pv-samba-dc-backups-nfs.yaml).
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -27,9 +36,38 @@ spec:
       # DC hostname must be stable and short; used in Kerberos keytabs + DNS SRV records
       hostname: dc1
       subdomain: samba-dc-headless
+      initContainers:
+        - name: seed-smbconf
+          # Seeds /etc/samba/external/smb.conf on FIRST USE of the samba-dc-etc
+          # volume only. If the file is already there (normal restart, or a
+          # previous run of this initContainer), do nothing — the entrypoint's
+          # first-run check must see it as already provisioned, or it will
+          # re-run `samba-tool domain provision` and wipe the domain again.
+          image: nowsci/samba-domain:20260701025204
+          command:
+            - /bin/sh
+            - -c
+            - |
+              if [ ! -f /etc/samba/external/smb.conf ]; then
+                echo "samba-dc-etc volume is empty — seeding known-good smb.conf"
+                cp /seed/smb.conf /etc/samba/external/smb.conf
+              else
+                echo "smb.conf already present on samba-dc-etc — leaving domain untouched"
+              fi
+          volumeMounts:
+            - name: samba-etc
+              mountPath: /etc/samba/external
+            - name: smbconf-seed
+              mountPath: /seed
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
       containers:
         - name: samba-dc
-          # Pin to a specific tag before production use; :latest used here for initial deploy
           image: nowsci/samba-domain:20260701025204
           envFrom:
             - configMapRef:
@@ -149,11 +187,18 @@ spec:
           volumeMounts:
             - name: samba-data
               mountPath: /var/lib/samba
+            # Persists the image's first-run sentinel (see header comment) —
+            # without this, every pod replacement re-provisions the domain.
+            - name: samba-etc
+              mountPath: /etc/samba/external
             - name: provision-scripts
               mountPath: /provision
             # Users/groups mounted separately — can't subPath into an existing mountpoint
             - name: provision-users
               mountPath: /provision-users
+            # Target for cronjob-samba-backup.yaml's `samba-tool domain backup offline`
+            - name: samba-backups
+              mountPath: /backups
           # After Samba starts, patch smb.conf so samba_dnsupdate only registers
           # the LB IP (HOSTIP) instead of the pod's eth0 IP, which is not routable
           # externally. Then delete any stale pod-IP DNS records.
@@ -223,6 +268,15 @@ spec:
         - name: samba-data
           persistentVolumeClaim:
             claimName: samba-dc-data
+        - name: samba-etc
+          persistentVolumeClaim:
+            claimName: samba-dc-etc
+        - name: smbconf-seed
+          configMap:
+            name: samba-smbconf-seed
+        - name: samba-backups
+          persistentVolumeClaim:
+            claimName: samba-dc-backups-pvc
         - name: provision-scripts
           configMap:
             name: samba-provision-scripts
