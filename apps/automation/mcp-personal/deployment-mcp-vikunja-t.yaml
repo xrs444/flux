@@ -18,6 +18,14 @@
 # Health probe: see deployment-mcp-caldav-t.yaml — same /healthz caveat
 # (proves the gateway is up, not that the token is valid). The preflight
 # initContainer below catches a bad/revoked token at deploy time instead.
+#
+# VIKUNJA_URL MUST include /api/v1. Verified live 2026-09-15 against the
+# installed node-vikunja source (node_modules/node-vikunja/dist/esm/core/
+# service.js): BaseService takes baseUrl verbatim (only strips a trailing
+# slash) and appends the endpoint directly — it does NOT append /api/v1
+# itself, contrary to that package's own README examples. Without the
+# suffix, every call 404s into Vikunja's SPA and the tool sees an HTML
+# document where it expected JSON ("Unexpected token '<'").
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -49,12 +57,12 @@ spec:
               set -e
               code=$(curl -s -o /dev/null -w '%{http_code}' \
                 -H "Authorization: Bearer $VIKUNJA_API_TOKEN" \
-                "${VIKUNJA_URL}/api/v1/projects")
-              echo "GET /api/v1/projects -> $code"
+                "${VIKUNJA_URL}/projects")
+              echo "GET \$VIKUNJA_URL/projects -> $code"
               case "$code" in 200) exit 0 ;; *) exit 1 ;; esac
           env:
             - name: VIKUNJA_URL
-              value: "http://vikunja.vikunja.svc.cluster.local:3456"
+              value: "http://vikunja.vikunja.svc.cluster.local:3456/api/v1"
             - name: VIKUNJA_API_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -82,9 +90,9 @@ spec:
             - containerPort: 8080
               name: http
           env:
-            # Base URL, NO /api/v1 suffix — vikunja-mcp appends it itself.
+            # MUST include /api/v1 — see the header comment above.
             - name: VIKUNJA_URL
-              value: "http://vikunja.vikunja.svc.cluster.local:3456"
+              value: "http://vikunja.vikunja.svc.cluster.local:3456/api/v1"
             - name: VIKUNJA_API_TOKEN
               valueFrom:
                 secretKeyRef:

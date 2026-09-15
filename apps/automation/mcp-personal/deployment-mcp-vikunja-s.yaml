@@ -32,12 +32,14 @@ spec:
               set -e
               code=$(curl -s -o /dev/null -w '%{http_code}' \
                 -H "Authorization: Bearer $VIKUNJA_API_TOKEN" \
-                "${VIKUNJA_URL}/api/v1/projects")
-              echo "GET /api/v1/projects -> $code"
+                "${VIKUNJA_URL}/projects")
+              echo "GET \$VIKUNJA_URL/projects -> $code"
               case "$code" in 200) exit 0 ;; *) exit 1 ;; esac
           env:
+            # MUST include /api/v1 — see deployment-mcp-vikunja-t.yaml's
+            # header comment (node-vikunja doesn't append it itself).
             - name: VIKUNJA_URL
-              value: "http://vikunja.vikunja.svc.cluster.local:3456"
+              value: "http://vikunja.vikunja.svc.cluster.local:3456/api/v1"
             - name: VIKUNJA_API_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -65,7 +67,7 @@ spec:
               name: http
           env:
             - name: VIKUNJA_URL
-              value: "http://vikunja.vikunja.svc.cluster.local:3456"
+              value: "http://vikunja.vikunja.svc.cluster.local:3456/api/v1"
             - name: VIKUNJA_API_TOKEN
               valueFrom:
                 secretKeyRef:
