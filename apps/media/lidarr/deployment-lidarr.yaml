@@ -28,7 +28,7 @@ spec:
                       - v-k8s-xsvr3
       containers:
         - name: lidarr
-          image: linuxserver/lidarr:2.10.3.4602-ls38
+          image: linuxserver/lidarr:3.1.0.4875-ls38
           ports:
             - containerPort: 8686
               name: http
