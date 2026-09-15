@@ -38,3 +38,25 @@ data:
       mcp-prometheus:
         url: http://mcp-prometheus.mcp-tools.svc.cluster.local:8080/mcp
         enabled: true
+
+      # Personal-scope MCPs (flux/apps/automation/mcp-personal/): samantha's
+      # own Vikunja tasks and Radicale calendar/contacts, read-write. No
+      # auth header — the credential lives with the MCP pod, not hermes.
+      # NOT the -t variants — that isolation is enforced per-server by
+      # credential (Vikunja token owner, Radicale principal) and by network
+      # (Cilium CNP restricts each Service's ingress to this namespace
+      # only, see ../mcp-personal/ciliumnetworkpolicy-mcp-{vikunja,caldav}-
+      # s.yaml). Same bug-895 caveat as hermes-t's ConfigMap: this seeds a
+      # rebuilt PVC only, applied live via `hermes mcp add` too.
+      #
+      # CalDAV caveat: mcp-caldav-s's list-calendars tool is blind to
+      # samantha/ and family/ (Radicale derives calendar-home-set from the
+      # authenticated hermes-s principal, not from rights grants) — real
+      # collection URLs are pinned into /opt/data/MEMORY.md instead, same
+      # reasoning as hermes-t's ConfigMap comment.
+      mcp-vikunja-s:
+        url: http://mcp-vikunja-s.mcp-personal.svc.cluster.local:8080/mcp
+        enabled: true
+      mcp-caldav-s:
+        url: http://mcp-caldav-s.mcp-personal.svc.cluster.local:8080/mcp
+        enabled: true

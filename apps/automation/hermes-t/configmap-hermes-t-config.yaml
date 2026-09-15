@@ -67,3 +67,35 @@ data:
         auth: header
         headers:
           Authorization: "Bearer ${MCP_MCPJUNGLE_API_KEY}"
+
+      # Personal-scope MCPs (flux/apps/automation/mcp-personal/): xrs444's
+      # own Vikunja tasks and Radicale calendar/contacts, read-write. No
+      # auth header — the credential (tk_ token / htpasswd password) lives
+      # with the MCP pod itself, not with hermes, so there's nothing to add
+      # to sealedsecret-hermes-t-config.yaml for these two. Deliberately
+      # NOT routed through mcpjungle: its per-client allow-list is
+      # per-server-name and can't express "as xrs444, never as samantha" —
+      # that isolation is enforced per-server instead, both by credential
+      # (Vikunja token owner, Radicale principal) and by network (Cilium
+      # CNP restricts each Service's ingress to this namespace only, see
+      # ../mcp-personal/ciliumnetworkpolicy-mcp-{vikunja,caldav}-t.yaml).
+      #
+      # NOTE (bug-895 pattern): adding these lines here does NOT affect a
+      # running hermes-t — seed-config is copy-if-missing and
+      # /opt/data/config.yaml already exists once seeded. Applied live via
+      # `hermes mcp add` as well; this block only seeds a rebuilt PVC.
+      #
+      # CalDAV caveat: mcp-caldav-t's list-calendars tool is blind to
+      # xrs444/ and family/ — Radicale derives calendar-home-set from the
+      # authenticated principal (hermes-t), not from rights grants. Every
+      # other tool takes an explicit calendarUrl, so the real collection
+      # URLs are pinned into /opt/data/MEMORY.md (hermes's built-in,
+      # always-active memory file — confirmed live 2026-09-15 that
+      # `agent.system_prompt` is not a recognized config key via `hermes
+      # config get`, so this ConfigMap can't carry that pin declaratively).
+      mcp-vikunja-t:
+        url: http://mcp-vikunja-t.mcp-personal.svc.cluster.local:8080/mcp
+        enabled: true
+      mcp-caldav-t:
+        url: http://mcp-caldav-t.mcp-personal.svc.cluster.local:8080/mcp
+        enabled: true
