@@ -1,0 +1,32 @@
+---
+# Grants Windmill's windmill-runner ServiceAccount (namespace: windmill,
+# see flux/apps/automation/windmill/rbac-windmill-runner.yaml) permission to
+# `kubectl exec` into the hermes-t pod, scoped to THIS namespace only —
+# deliberately narrower than extending the existing windmill-runner
+# ClusterRole. Used by f/sre/alert-ingest__flow/kanban_card_upsert.ts to run
+# `hermes kanban` CLI commands against the ops board. windmill-runner already
+# has cluster-wide `pods` get/list (rbac-windmill-runner.yaml) but not
+# `pods/exec` create, which is a distinct API verb/subresource.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: windmill-runner-exec
+  namespace: hermes-t
+rules:
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: windmill-runner-exec
+  namespace: hermes-t
+subjects:
+  - kind: ServiceAccount
+    name: windmill-runner
+    namespace: windmill
+roleRef:
+  kind: Role
+  name: windmill-runner-exec
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,31 @@
+---
+# eventSeverity: error means Flux only POSTs failure events to the webhook
+# — routine "reconciliation succeeded" info events are filtered by Flux
+# itself before they ever reach Windmill, so the flow doesn't have to.
+#
+# Scoped to Kustomization + GitRepository only, both of which live in
+# flux-system (verified live: `kubectl get kustomizations/gitrepositories -A`
+# — every one of them is in that namespace). HelmRelease objects are NOT
+# included here: they're scattered across ~15+ app namespaces and the Alert
+# CRD's eventSources has no cluster-wide wildcard for namespace, only for
+# name — enumerating every namespace wasn't worth it because every apps-*
+# Kustomization in flux/cluster/apps.yaml sets `wait: true`, so a failing
+# HelmRelease already flips its parent Kustomization to NotReady and
+# surfaces here (at "which category broke" granularity — good enough for a
+# triage card; `flux get helmrelease -A` finds the specific one).
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: flux-failures
+  namespace: flux-system
+spec:
+  providerRef:
+    name: flux-alert-ingest
+  eventSeverity: error
+  eventSources:
+    - kind: Kustomization
+      namespace: flux-system
+      name: "*"
+    - kind: GitRepository
+      namespace: flux-system
+      name: "*"

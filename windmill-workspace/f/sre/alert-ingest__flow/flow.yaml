@@ -36,6 +36,15 @@ description: >-
   is real, but auto-invoking it means mutating arr state with no ntfy
   Approve-button loop yet (Phase C), so it stays log-only until that gate
   exists.
+
+
+  Kanban board write (added for the Hermes-T Kanban plan): kanban_card_upsert
+  runs unconditionally right after post_ntfy, before route_alert branches.
+  Firing creates/looks-up an `ops` board card keyed on
+  `alert:<alertname>:<instance>` (always landing in `triage`, never
+  dispatchable); resolved completes the matching card. continue_on_error is
+  set so a kanban-write failure (e.g. hermes-t pod down) never blocks ntfy or
+  routing. See flux/apps/automation/hermes-t/KANBAN.md for card conventions.
 value:
   modules:
     - id: post_ntfy
@@ -54,6 +63,26 @@ value:
             type: javascript
             expr: flow_input
         lock: '!inline post_raw_ntfy_notification_immediately_—_unconditional.lock'
+        language: bun
+    - id: kanban_card_upsert
+      summary: Upsert/complete the Hermes-T ops-board Kanban card — unconditional,
+        runs after ntfy so a kanban-write failure never blocks the human
+        notification or downstream routing
+      continue_on_error: true
+      value:
+        type: rawscript
+        content: '!inline kanban_card_upsert.ts'
+        input_transforms:
+          payload:
+            type: javascript
+            expr: flow_input
+          # hermes-t's Matrix home_channel — lives in platforms.matrix.home_channel
+          # on the PVC's config.yaml (bug-936: platforms: isn't in the git
+          # ConfigMap), copied from the live config read 2026-09-15.
+          matrix_chat_id:
+            type: static
+            value: '!empvzVBpisqdknuqPo:matrix.xrs444.net'
+        lock: '!inline kanban_card_upsert.lock'
         language: bun
     - id: route_alert
       summary: Deterministic routing — known patterns → runbook stubs; unknown → Phase

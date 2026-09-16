@@ -10,6 +10,7 @@ resources:
   - pvc-hermes-t-data.yaml
   - configmap-hermes-t-config.yaml
   - sealedsecret-hermes-t-config.yaml
+  - rbac-windmill-runner-exec.yaml
   - deployment-hermes-t.yaml
   - service-hermes-t.yaml
   - servicemonitor-hermes-t.yaml

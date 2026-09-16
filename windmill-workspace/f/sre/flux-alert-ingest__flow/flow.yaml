@@ -1,0 +1,66 @@
+summary: Flux notification-controller webhook entry point — ntfy + ops-board
+  card for Kustomization/GitRepository reconciliation failures
+description: >-
+  Entry point for flux/infrastructure/configs/notification-controller/'s
+  generic Provider + Alert (eventSeverity: error). Deliberately separate from
+  f/sre/alert-ingest__flow, which expects Alertmanager's webhook shape
+  ({status, commonLabels, alerts[]}) — Flux's Event shape
+  ({involvedObject, severity, reason, message, timestamp}) is unrelated, so
+  reusing that flow would misparse every field and, since Flux emits far
+  more events than just failures, could spam ntfy/kanban on routine
+  successful reconciles if severity filtering slipped. See
+  sealedsecret-flux-alert-webhook.yaml for the full reasoning.
+
+  eventSeverity: error on the Alert CR means only failures reach this
+  webhook — Flux filters routine "reconciliation succeeded" events itself
+  before sending. kanban_card_upsert re-checks severity defensively anyway.
+
+  No resolved/complete path: Flux's event stream has no reliable per-object
+  "this specific failure is now fixed" signal the way Alertmanager's
+  `status: resolved` does. Cards are completed by a human/Claude Code, or by
+  a future Phase 3 read-only triage sweep re-checking object health via
+  mcp-kubernetes.
+
+  Not manually verified end-to-end (no wmill CLI / Windmill token available
+  in the environment this was authored in) — hand-authored to mirror
+  f/sre/alert-ingest__flow's structure and the OpenFlow schema exactly.
+  Verify with a synthetic Flux event before relying on it (see
+  flux/apps/automation/hermes-t/KANBAN.md verification checklist).
+value:
+  modules:
+    - id: post_ntfy
+      summary: Post raw ntfy notification — unconditional
+      value:
+        type: rawscript
+        content: '!inline post_ntfy.ts'
+        input_transforms:
+          ntfy_base_url:
+            type: static
+            value: https://ntfy.xrs444.net
+          ntfy_token:
+            type: static
+            value: $var:f/sre/ntfy_token
+          payload:
+            type: javascript
+            expr: flow_input
+        lock: '!inline post_ntfy.lock'
+        language: bun
+    - id: kanban_card_upsert
+      summary: Create/upsert the Hermes-T ops-board Kanban card
+      continue_on_error: true
+      value:
+        type: rawscript
+        content: '!inline kanban_card_upsert.ts'
+        input_transforms:
+          payload:
+            type: javascript
+            expr: flow_input
+          # hermes-t's Matrix home_channel — see alert-ingest__flow/flow.yaml's
+          # matrix_chat_id comment for provenance.
+          matrix_chat_id:
+            type: static
+            value: '!empvzVBpisqdknuqPo:matrix.xrs444.net'
+        lock: '!inline kanban_card_upsert.lock'
+        language: bun
+has_on_behalf_of: false
+schema: null

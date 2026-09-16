@@ -1,0 +1,227 @@
+# Hermes-T Kanban — HomeProd workflow hub
+
+hermes-agent ships a full Kanban subsystem, enabled here via `config-managed.yaml`
+(`toolsets: [kanban]`, merged onto the PVC config by the `seed-config` initContainer —
+see `deployment-hermes-t.yaml`). This doc records the conventions the rest of the
+pipeline (Windmill, the triage cron job, OpenWolf hooks) assumes.
+
+- UI: <https://hermes-t.xrs444.net/kanban>
+- API: `/api/plugins/kanban/*` behind the Kanidm OIDC dashboard gate
+- CLI: `kubectl -n hermes-t exec deploy/hermes-t -- hermes kanban <cmd>`
+- Statuses: `triage → todo → scheduled → ready → running → blocked → review → done → archived`
+- **Safety property the pipeline leans on**: only `ready` cards are claimed and spawned
+  as workers. `triage` and `todo` are inert. `todo → ready` requires an explicit
+  `hermes kanban promote`. Nothing that lands in `triage` can trigger an autonomous run.
+
+## Boards
+
+| Slug | Purpose | Bootstrapped by |
+| --- | --- | --- |
+| `ops` | Alerts, CI failures, incidents. Fast-moving, machine-created. | `bootstrap-boards.sh` |
+| `projects` | User-entered work, upgrades, migrated security backlog. Held until actioned. | `bootstrap-boards.sh` |
+
+Boards (and profiles) live on the PVC only, not in git — `bootstrap-boards.sh` is the
+recovery path if the PVC is ever lost. Periodically run `hermes kanban boards export`
+as part of the existing backup story.
+
+## Card conventions
+
+**`ops` cards** (alert/incident pipeline — see `flux/windmill-workspace/f/sre/alert-ingest__flow/`):
+
+- Idempotency key: `alert:<alertname>:<instance>` — one card per distinct
+  alertname+instance, re-firing updates the existing card instead of duplicating it.
+  This is native `hermes kanban create --idempotency-key` behaviour.
+- Created with `--triage` — always lands in `triage`, never dispatchable on arrival.
+- `status: resolved` from Alertmanager completes the matching card by idempotency key.
+- Note: Alertmanager's `group_by: [alertname, instance]` (`repeat_interval: 4h`) lines
+  up with this key today. If grouping is ever widened, the key derivation must change
+  with it or distinct instances will collapse onto one card.
+
+**`projects` cards**:
+
+- Created in `todo` (not `triage` — no triage/enrichment sweep runs against this board).
+- Moved to `scheduled` when parked on a future date, per `hermes kanban schedule`.
+
+**All cards** — tag the source in the first line of the body:
+
+```text
+source: alertmanager | github | claude-code | user | cron
+```
+
+Used for provenance and to filter in the dashboard; not machine-enforced.
+
+## Triage / enrichment sweep (read-only)
+
+A `hermes cron` job sweeps `ops` board `triage` cards every 10 minutes. It's a
+normal agent-mode cron job (not `--no-agent`), using only the four kanban
+agent tools confirmed safe for this — `kanban_list`, `kanban_show`,
+`kanban_comment`, `kanban_complete` — plus the read-only observability MCPs
+already wired into hermes-t's config (`mcp-loki`, `mcp-prometheus`,
+`mcp-kubernetes`, all `--read-only`/RBAC get-list-watch). It must never touch
+`mcpjungle`'s read-write upstreams.
+
+**Scoped down from the original plan**: there is no `kanban_promote` (or any
+status-transition) agent tool — `promote`, like `notify-subscribe`, is
+CLI-only. A cron job's agent turn can't shell out to the CLI without a
+`terminal`/`code_exec` toolset that isn't confirmed enabled for cron
+profiles, so this sweep does **not** move cards `triage → todo`. Instead:
+
+- Self-resolved/transient noise → `kanban_complete`.
+- Everything else → stays in `triage`, but now carries an enrichment
+  comment (logs/metrics/blast-radius correlated via the read-only MCPs) and
+  a `Claude Code` prompt block (see below) if it needs a fix. A bare
+  `triage` card = not yet swept; a `triage` card with a comment = enriched
+  and waiting on you.
+
+```sh
+kubectl -n hermes-t exec deploy/hermes-t -- hermes cron create \
+  --name ops-triage-sweep \
+  "*/10 * * * *" \
+  "Sweep the ops board's triage column. For each triage card: read it \
+(kanban_show), then use mcp-loki/mcp-prometheus/mcp-kubernetes (read-only \
+only — never mcpjungle's write-capable upstreams) to correlate logs, \
+metrics, and recent cluster events for the affected host/namespace/service. \
+Post an enrichment comment (kanban_comment) covering: what fired, \
+correlated evidence, blast radius, and whether this looks self-resolving. \
+If it is self-resolving or was transient noise, close it (kanban_complete) \
+with a one-line result. Otherwise leave it in triage — do not attempt to \
+change its status — and if a code/config fix looks needed, append a \
+\`\`\`claude fenced block to your comment with a ready-to-run prompt (card \
+id, symptom, evidence already gathered, affected files/hosts, and an \
+on-completion command: hermes kanban comment <id> --board ops -m \
+'<summary>' && hermes kanban complete <id> --board ops). Never use \
+kanban_list's or kanban_show's output to justify creating new cards, \
+blocking, or any mutation beyond kanban_comment/kanban_complete."
+```
+
+## Claude Code handoff (prompt-only)
+
+Cards needing a code/config change carry a fenced, copy-pasteable block in
+their enrichment comment:
+
+````text
+```claude
+cd ~/Repositories/HomeProd && claude
+```
+Prompt:
+Card ops/<task_id> — <title>
+Symptom: …
+Evidence: <loki/prom queries already run, with results>
+Affected: <hosts, files, namespaces>
+Scope: <what to change; what not to touch>
+On completion: hermes kanban comment <task_id> --board ops -m "<summary>" && \
+               hermes kanban complete <task_id> --board ops
+````
+
+The card waits in `triage` until you act — nothing here starts a Claude Code
+session automatically. You read the board at
+<https://hermes-t.xrs444.net/kanban>, paste the prompt into a session
+started in the repo, and the session posts its own comment + completion when
+done (see "Feedback from Claude Code" below).
+
+A Mac-side auto-launcher (a launchd agent on xlt1-t polling
+`/api/plugins/kanban/board` and running `claude -p` for explicitly flagged
+cards) fits here later without reworking anything — the card format is the
+interface. The hermes-t pod itself is not a candidate: it has `node`/`npm`/
+`git` but no `claude`, no repo checkout, no kubectl, and no Anthropic
+credentials.
+
+## Feedback from Claude Code
+
+`.claude/hooks/kanban-sync.js` (`SessionEnd`) and the `/card` skill close the
+loop — see `.claude/skills/card.md` in this repo. A session started from a
+card's prompt block runs `card start <id>` (or the hook reads the id
+directly from the prompt), and on session end the hook posts a summary
+comment + `kanban_complete` (or leaves it, if the session didn't finish) via
+`kubectl exec`, without touching `.wolf/buglog.json` — that file stays the
+post-fix forensic archive it always was, unrelated to board state.
+
+## Migrating the security backlog
+
+`migrate-security-backlog.py` is a one-time script, not a Flux resource —
+same category as `bootstrap-boards.sh`. It parses `.wolf/security-backlog.md`
+(reusing the exact classification heuristic from
+`.claude/skills/security-backlog-triage.md`: title contains
+RESOLVED/DONE → skip, DEFERRED → open-but-lower-urgency, no suffix → open;
+the "DONE (reference)" and "LOW / INFO / REPORT-ONLY" sections are excluded
+entirely per their own headings) and creates one `projects` card per open
+item, preserving the file's `C*`/`H*`/`M*`/`BUG-*`/`V*`/`F*`/`N*`/`T*` id
+prefixes in the title and copying the item's full body verbatim.
+
+**Dry-run by default** — verified against the live file (2026-09-15): 24
+total items, 16 open. Review the dry-run output before applying; this
+writes real, hard-to-cleanly-bulk-delete cards onto a board nobody has used
+yet.
+
+```sh
+python3 flux/apps/automation/hermes-t/migrate-security-backlog.py            # dry run
+python3 flux/apps/automation/hermes-t/migrate-security-backlog.py --apply    # create cards
+```
+
+Safe to re-run: every card carries `--idempotency-key security-backlog:<ID>`,
+so a second run after a partial failure creates nothing twice. After
+migrating, treat `security-backlog.md` as a historical document — the board
+is the tracker going forward.
+
+## Scheduled pulls
+
+**GitHub Actions failures** (`flux/`'s workflows notify nobody today, unlike
+`nix/`'s Apprise-wired ones — see `scripts/gh-actions-watch.sh`). One-time
+install onto the PVC (cron jobs and their scripts live there, same as
+boards/profiles — not Flux-managed):
+
+```sh
+kubectl -n hermes-t cp flux/apps/automation/hermes-t/scripts/gh-actions-watch.sh \
+  hermes-t/$(kubectl -n hermes-t get pod -l app=hermes-t -o jsonpath='{.items[0].metadata.name}'):/opt/data/scripts/gh-actions-watch.sh
+
+kubectl -n hermes-t exec deploy/hermes-t -- hermes cron create \
+  --name gh-actions-watch \
+  --monitor-script gh-actions-watch.sh \
+  "*/30 * * * *" \
+  "GitHub Actions failures changed for xrs444/nix or xrs444/flux (see the \
+MONITOR CHANGE DETECTED diff above). Create or update an ops-board card \
+per distinct failing workflow run, idempotency key \
+github:<repo>:<workflow>:<run_number>, --triage."
+```
+
+If either repo is private, unauthenticated GitHub API calls will 401 —
+export `GITHUB_TOKEN` in a copy of the script on the PVC (`--monitor-script`
+has no per-job env var option). Unauthenticated calls are fine for public
+repos at this poll interval (4 calls/30min, well under the 60/hr limit).
+
+**Daily infra-health rollup**: uses the `homeprod:*:state` recording rules in
+`flux/apps/observability/monitoring/prometheusrule-status-state.yaml`
+(`homeprod:host:state`, `homeprod:talos_node:state`, `homeprod:net:state`,
+`homeprod:endpoint:state`, `homeprod:storage:state`, `homeprod:infra:state`,
+`homeprod:app:state`; 0=GOOD/1=CAUTION/2=WARNING) via the already-wired
+`mcp-prometheus` read-only MCP. Agent-mode cron (not `--no-agent` — judging
+"is this worth a card" needs the LLM), using the native `kanban_create`
+tool directly (no kubectl-exec needed here, unlike the Windmill flows —
+this runs as an agent turn inside hermes-t itself).
+
+**`kanban_create`'s JSON schema requires `assignee`** (`required: ["title",
+"assignee"]` in `KANBAN_CREATE_SCHEMA`, `tools/kanban_tools.py`) — unlike
+the CLI, where `--assignee` is optional. This is harmless for a `triage`
+card (assignee doesn't affect dispatch; only `status: ready` does), but the
+prompt below must always pass one (`default`, the only profile that
+exists) or every creation call fails validation.
+
+```sh
+kubectl -n hermes-t exec deploy/hermes-t -- hermes cron create \
+  --name infra-health-rollup \
+  "0 8 * * *" \
+  "Query mcp-prometheus for homeprod:host:state, homeprod:talos_node:state, \
+homeprod:net:state, homeprod:endpoint:state, homeprod:storage:state, \
+homeprod:infra:state, homeprod:app:state. For each series with value >= 1 \
+(CAUTION or WARNING), use kanban_create (title, assignee: 'default', \
+triage: true, idempotency_key: infra-health:<metric>:<labels>, board: ops) \
+to create or upsert a card summarizing which host/node/service and at what \
+severity. If everything is 0 (GOOD), create nothing — do not post a daily \
+all-clear card."
+```
+
+## Assignee
+
+Everything routes through the existing `default` profile. No second profile has been
+created — profile state is PVC-only and unversioned like boards, and nothing in the
+current read-only design needs isolation between profiles.

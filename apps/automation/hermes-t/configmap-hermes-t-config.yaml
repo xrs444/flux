@@ -99,3 +99,18 @@ data:
       mcp-caldav-t:
         url: http://mcp-caldav-t.mcp-personal.svc.cluster.local:8080/mcp
         enabled: true
+
+  # Top-level keys git enforces on EVERY pod start, merged over the live
+  # /opt/data/config.yaml by the seed-config initContainer's second step
+  # (shallow, top-level-key overwrite only — see deployment-hermes-t.yaml).
+  # Distinct from config.yaml above, which only ever seeds a fresh PVC
+  # (bug-895/bug-936: copy-if-missing means config.yaml's contents stop
+  # applying the moment /opt/data/config.yaml exists). Kanban board — see
+  # Hermes-T Kanban plan: enables the kanban toolset so kanban_* agent
+  # tools and the /kanban dashboard tab become available
+  # (_profile_has_kanban_toolset() in tools/kanban_tools.py requires
+  # "kanban" in config's top-level `toolsets:` list; there is no
+  # HERMES_TOOLSETS env var).
+  config-managed.yaml: |
+    toolsets:
+      - kanban
