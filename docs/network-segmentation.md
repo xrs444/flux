@@ -121,32 +121,35 @@ with confirmed subnets to scope them:
    Firewalla to Zone A (172.20.1.0/24, 172.20.3.0/24) only. `no_root_squash`
    on several exports raises the stakes here.
 4. **Exporter ports (9080/9100/9633/9134/9177/9324)** — restrict inbound
-   to the Prometheus source only. Prometheus itself now runs in-cluster
-   (`monitoring` namespace) and reaches these via k8s 172.20.3.0/24's
-   egress, confirmed live in the Phase 1 flow capture
-   (`monitoring -> 172.20.3.201/.202` on exactly these ports) — so the
-   Firewalla-side rule is "allow 172.20.3.0/24 -> these ports," not a
-   single host.
+   to the Prometheus source only. Target list `exporter-hosts`
+   (`TL-e1b8fbc1-27e3-4e3f-a7fb-2d5b4c15c0ca`, created 2026-09-16) holds
+   the three destinations confirmed live via the Phase 1 flow capture
+   (`monitoring -> 172.20.3.201/.202` on exactly these ports) plus
+   `172.18.6.1` (xpbx1) — folding in the known-broken path (Prometheus →
+   xpbx1 currently returns `no route to host` per an existing buglog
+   entry) so the fix for this rule doesn't leave that one still broken.
+   Scope the allow to `k8s` (172.20.3.0/24).
 5. **VLAN 14 (Network Management, 172.18.4.0/24)** — admin/Zone-A access
    only; this is switches/APs/IPMI, the highest-value target on the
-   network if compromised.
-6. **`samba-dc` (172.21.0.11) and `xlab-mgmt`/powerdns (172.21.0.53) UDP
-   ports** — found during Phase 1's T2 planning for these (not-yet-onboarded)
-   namespaces: Cilium's `loadBalancer.mode: hybrid` means UDP traffic to
-   these direct-LoadBalancer services is always SNAT'd to the node IP, so
-   the in-cluster CiliumNetworkPolicy layer structurally cannot restrict
-   *who* reaches those UDP ports — Firewalla is the only enforcement point
-   available. Restrict to the three real hosts confirmed live during that
-   investigation: `xdt1-t` (172.18.100.100), `xlt1-t` LAN (172.18.100.10)
-   and WiFi (172.19.112.1), plus `xfw` itself for powerdns (device
-   identity, not an IP — it's the router). TCP ports on those same two services
-   *can* be restricted at the CNP layer once T2 onboards them; this
-   Firewalla rule is specifically for the UDP half.
-7. **Known-broken path to fix, not just document:** Prometheus →
-   `172.18.6.1` (xpbx1, Telephony VLAN) currently returns `no route to
-   host` per an existing buglog entry. Whatever rule scopes exporter
-   access to Zone A (#4 above) needs to explicitly include this target,
-   or the fix for #4 will leave this one still broken.
+   network if compromised. No device group exists yet for "admin
+   devices" and one can't be created via the Firewalla API (device
+   groups are GUI-only, unlike target lists) — needs a decision on
+   which device(s) before this can be written as a concrete rule.
+6. **`samba-dc` + `xlab-mgmt`/powerdns UDP ports** — found during Phase
+   1's T2 planning for these (not-yet-onboarded) namespaces: Cilium's
+   `loadBalancer.mode: hybrid` means UDP traffic to these direct-
+   LoadBalancer services is always SNAT'd to the node IP, so the
+   in-cluster CiliumNetworkPolicy layer structurally cannot restrict
+   *who* reaches those UDP ports — Firewalla is the only enforcement
+   point available. Target list `personal-svc-udp`
+   (`TL-4c965f10-e526-4186-8e32-e8a76f47a05c`, created 2026-09-16) holds
+   both destinations (172.21.0.11, 172.21.0.53). Restrict to the three
+   real hosts confirmed live during that investigation: `xdt1-t`
+   (172.18.100.100), `xlt1-t` LAN (172.18.100.10) and WiFi
+   (172.19.112.1), plus `xfw` itself for powerdns (device identity, not
+   an IP — it's the router). TCP ports on those same two services *can*
+   be restricted at the CNP layer once T2 onboards them; this Firewalla
+   rule is specifically for the UDP half.
 
 ## Structural constraints (apply to the whole matrix, not just one rule)
 
