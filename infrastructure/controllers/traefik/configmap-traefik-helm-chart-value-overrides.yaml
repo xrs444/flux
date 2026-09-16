@@ -340,8 +340,8 @@ data:
         enabled: false
         # -- Allows Traefik to automatically watch for file changes
         watch: true
-        # -- File content (YAML format, go template supported) (see https://doc.traefik.io/traefik/providers/file/)
-        content: ""
+        # -- File content as an object (chart v41 schema requires object, was string in v40)
+        content: {}
 
     # -- Add volumes to the traefik pod. The volume name will be passed to tpl.
     # This can be used to mount a cert pair or a configmap that holds a config.toml file.
