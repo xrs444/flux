@@ -40,6 +40,25 @@ spec:
         # Only keys present in config-managed.yaml are touched; every other
         # top-level key (dashboard, plugins, onboarding, _config_version,
         # platforms, mcp_servers) is left exactly as hermes last wrote it.
+        #
+        # Step 0 (bug-957 follow-up, 2026-09-16): chown /opt/data to
+        # hermes:hermes. The PVC's primary owner is root (whoever/whatever
+        # provisions the volume) — Kubernetes' fsGroup only ever changes
+        # GROUP ownership, never the primary owner, confirmed live all
+        # session (every `stat /opt/data` showed owner=root despite
+        # fsGroup being active throughout). hermes_cli/auth.py deliberately
+        # `chmod 700`s its own home dir on every credential refresh
+        # ("tighten parent dir so siblings can't traverse to creds") — sound
+        # for a single-owner deployment, but it strips the GROUP bits
+        # fsGroup grants, locking out anything that isn't the primary
+        # owner (the dashboard's own hermes-uid process included — this is
+        # what broke the /kanban UI with a 500, confirmed live). Making
+        # hermes the actual owner means that chmod becomes harmless: the
+        # owner still has full access no matter what group bits say.
+        # Idempotent (a no-op chown once already correct), runs as root
+        # (initContainer default), non-recursive — fsGroup's own fixup
+        # already granted correct group ownership recursively at mount
+        # time; only the top-level directory's owner was ever wrong.
         - name: seed-config
           image: nousresearch/hermes-agent:v2026.8.31
           command:
@@ -47,6 +66,7 @@ spec:
             - -c
             - |
               set -e
+              chown hermes:hermes /opt/data
               [ -f /opt/data/config.yaml ] || cp /opt/config-seed/config.yaml /opt/data/config.yaml
               /opt/hermes/.venv/bin/python - <<'PY'
               import yaml

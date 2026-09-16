@@ -35,10 +35,20 @@ spec:
         # Step 2 (bug-956/bug-957 fix, mirrors hermes-t): a shallow,
         # top-level-key merge of config-managed.yaml on TOP of whatever's
         # on the PVC, every pod start — idempotent. hermes-k had it worst:
-        # its /opt/data was never group-writable (bug-957, a separate
-        # fsGroup fixup bug), so config.yaml sat at 0 bytes, root-owned,
-        # since 2026-07-10 — this merge is also what backfills a genuinely
-        # empty base config now that the permission bug is fixed live.
+        # its /opt/data lost its group-write bits (bug-957 — see the chown
+        # step below for the actual mechanism), so config.yaml sat at 0
+        # bytes, root-owned, since 2026-07-10 — this merge is also what
+        # backfills a genuinely empty base config now that's fixed.
+        #
+        # Step 0 (bug-957, full root cause found 2026-09-16): chown
+        # /opt/data to hermes:hermes — see the fuller comment in
+        # deployment-hermes-t.yaml. The PVC's primary owner is root;
+        # fsGroup only ever grants GROUP access, and hermes_cli/auth.py's
+        # own `chmod 700` on every credential refresh strips exactly that,
+        # locking out anything that isn't the primary owner — this is what
+        # left config.yaml empty in the first place, not a one-off fsGroup
+        # fixup miss. Idempotent, non-recursive, runs as root (initContainer
+        # default).
         - name: seed-config
           image: nousresearch/hermes-agent:v2026.8.31
           command:
@@ -46,6 +56,7 @@ spec:
             - -c
             - |
               set -e
+              chown hermes:hermes /opt/data
               [ -f /opt/data/config.yaml ] || cp /opt/config-seed/config.yaml /opt/data/config.yaml
               /opt/hermes/.venv/bin/python - <<'PY'
               import yaml

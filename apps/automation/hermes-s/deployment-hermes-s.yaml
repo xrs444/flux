@@ -35,6 +35,14 @@ spec:
         # every pod start — idempotent. Without this, hermes-s had no
         # model configured live despite the ConfigMap declaring one, and
         # was silently falling back to deepseek-v4-pro.
+        #
+        # Step 0 (bug-957 follow-up, 2026-09-16): chown /opt/data to
+        # hermes:hermes — see the identical, fuller comment in
+        # deployment-hermes-t.yaml. The PVC's primary owner is root;
+        # fsGroup only ever grants GROUP access, and hermes_cli/auth.py's
+        # own chmod 700 on every credential refresh strips exactly that,
+        # locking out anything that isn't the primary owner. Idempotent,
+        # non-recursive, runs as root (initContainer default).
         - name: seed-config
           image: nousresearch/hermes-agent:v2026.8.31
           command:
@@ -42,6 +50,7 @@ spec:
             - -c
             - |
               set -e
+              chown hermes:hermes /opt/data
               [ -f /opt/data/config.yaml ] || cp /opt/config-seed/config.yaml /opt/data/config.yaml
               /opt/hermes/.venv/bin/python - <<'PY'
               import yaml
