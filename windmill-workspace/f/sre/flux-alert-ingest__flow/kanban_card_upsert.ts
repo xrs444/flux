@@ -25,7 +25,10 @@ async function hermesKanban(
       "exec",
       "deploy/hermes-t",
       "--",
-      "hermes",
+      // Full path, not bare "hermes" — see the identical comment in
+      // f/sre/alert-ingest__flow/kanban_card_upsert.ts for why. Verified
+      // live 2026-09-16.
+      "/opt/hermes/.venv/bin/hermes",
       "kanban",
       "--board",
       "ops",

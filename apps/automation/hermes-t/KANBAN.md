@@ -7,11 +7,25 @@ pipeline (Windmill, the triage cron job, OpenWolf hooks) assumes.
 
 - UI: <https://hermes-t.xrs444.net/kanban>
 - API: `/api/plugins/kanban/*` behind the Kanidm OIDC dashboard gate
-- CLI: `kubectl -n hermes-t exec deploy/hermes-t -- hermes kanban <cmd>`
+- CLI: `kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes kanban <cmd>`
+  — **always the full `/opt/hermes/.venv/bin/hermes` path, never bare `hermes`.**
+  `kubectl exec` (no shell) resolves PATH to `/opt/hermes/bin/hermes` first, a
+  "docker exec privilege-drop shim" that switches to the `hermes` user, whose
+  home dir (`/opt/data`) gets clamped to mode 700 (no group bits) sometime
+  after pod boot — breaking the shim's own `.env` read. Reproducible, not
+  fully diagnosed. Verified live 2026-09-16 — this exact bug failed every
+  card in the first live security-backlog migration run.
 - Statuses: `triage → todo → scheduled → ready → running → blocked → review → done → archived`
-- **Safety property the pipeline leans on**: only `ready` cards are claimed and spawned
-  as workers. `triage` and `todo` are inert. `todo → ready` requires an explicit
-  `hermes kanban promote`. Nothing that lands in `triage` can trigger an autonomous run.
+- **Safety property the pipeline leans on**: the dispatcher only claims a card
+  when it is BOTH `status: ready` AND has an `assignee` set
+  (`WHERE status = 'ready' AND assignee IS NOT NULL`, `kanban_db.py`) — `ready`
+  alone is not sufficient. `hermes kanban create` without `--triage` lands
+  directly in `ready` (verified live 2026-09-16, correcting an earlier wrong
+  assumption in this doc that it landed in `todo`) — that's fine and inert as
+  long as nothing sets an assignee, which nothing in this pipeline does.
+  `--triage` instead parks a card in `triage`, requiring an explicit
+  `hermes kanban promote` to move it forward. Both routes are safe; know
+  which one a given creation path actually uses before assuming either.
 
 ## Boards
 
@@ -39,7 +53,9 @@ as part of the existing backup story.
 
 **`projects` cards**:
 
-- Created in `todo` (not `triage` — no triage/enrichment sweep runs against this board).
+- Created in `ready`, unassigned (not `triage` — no triage/enrichment sweep
+  runs against this board). Inert: the dispatcher requires an assignee too,
+  and nothing sets one.
 - Moved to `scheduled` when parked on a future date, per `hermes kanban schedule`.
 
 **All cards** — tag the source in the first line of the body:
@@ -74,7 +90,7 @@ profiles, so this sweep does **not** move cards `triage → todo`. Instead:
   and waiting on you.
 
 ```sh
-kubectl -n hermes-t exec deploy/hermes-t -- hermes cron create \
+kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes cron create \
   --name ops-triage-sweep \
   "*/10 * * * *" \
   "Sweep the ops board's triage column. For each triage card: read it \
@@ -88,10 +104,13 @@ with a one-line result. Otherwise leave it in triage — do not attempt to \
 change its status — and if a code/config fix looks needed, append a \
 \`\`\`claude fenced block to your comment with a ready-to-run prompt (card \
 id, symptom, evidence already gathered, affected files/hosts, and an \
-on-completion command: hermes kanban comment <id> --board ops -m \
-'<summary>' && hermes kanban complete <id> --board ops). Never use \
-kanban_list's or kanban_show's output to justify creating new cards, \
-blocking, or any mutation beyond kanban_comment/kanban_complete."
+on-completion command run from the Mac, not bare hermes: kubectl -n \
+hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes kanban \
+comment <id> --board ops -m '<summary>' && kubectl -n hermes-t exec \
+deploy/hermes-t -- /opt/hermes/.venv/bin/hermes kanban complete <id> \
+--board ops). Never use kanban_list's or kanban_show's output to justify \
+creating new cards, blocking, or any mutation beyond \
+kanban_comment/kanban_complete."
 ```
 
 ## Claude Code handoff (prompt-only)
@@ -109,8 +128,11 @@ Symptom: …
 Evidence: <loki/prom queries already run, with results>
 Affected: <hosts, files, namespaces>
 Scope: <what to change; what not to touch>
-On completion: hermes kanban comment <task_id> --board ops -m "<summary>" && \
-               hermes kanban complete <task_id> --board ops
+On completion (run from the Mac, not bare hermes):
+  kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes \
+    kanban comment <task_id> --board ops -m "<summary>" && \
+  kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes \
+    kanban complete <task_id> --board ops
 ````
 
 The card waits in `triage` until you act — nothing here starts a Claude Code
@@ -174,7 +196,7 @@ boards/profiles — not Flux-managed):
 kubectl -n hermes-t cp flux/apps/automation/hermes-t/scripts/gh-actions-watch.sh \
   hermes-t/$(kubectl -n hermes-t get pod -l app=hermes-t -o jsonpath='{.items[0].metadata.name}'):/opt/data/scripts/gh-actions-watch.sh
 
-kubectl -n hermes-t exec deploy/hermes-t -- hermes cron create \
+kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes cron create \
   --name gh-actions-watch \
   --monitor-script gh-actions-watch.sh \
   "*/30 * * * *" \
@@ -207,7 +229,7 @@ prompt below must always pass one (`default`, the only profile that
 exists) or every creation call fails validation.
 
 ```sh
-kubectl -n hermes-t exec deploy/hermes-t -- hermes cron create \
+kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes cron create \
   --name infra-health-rollup \
   "0 8 * * *" \
   "Query mcp-prometheus for homeprod:host:state, homeprod:talos_node:state, \

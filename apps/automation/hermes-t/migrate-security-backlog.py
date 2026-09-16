@@ -103,14 +103,21 @@ def is_open(item: dict) -> bool:
 
 
 def hermes_kanban(args: list[str], dry_run: bool) -> subprocess.CompletedProcess | None:
+    # Full path, not bare "hermes" — kubectl exec (no shell) resolves PATH to
+    # /opt/hermes/bin/hermes first, a "docker exec privilege-drop shim" that
+    # switches to the hermes user, whose home dir (/opt/data) gets clamped to
+    # mode 700 (no group bits) sometime after pod boot. The .venv path
+    # bypasses the shim and runs as whatever identity invoked kubectl exec.
+    # Verified live 2026-09-16 — this exact bug caused every create call in
+    # the first --apply run to fail.
     cmd = [
         "kubectl", "-n", "hermes-t", "exec", "deploy/hermes-t", "--",
-        "hermes", "kanban", "--board", "projects", *args,
+        "/opt/hermes/.venv/bin/hermes", "kanban", "--board", "projects", *args,
     ]
     if dry_run:
         print("  [dry-run] " + " ".join(repr(c) if " " in c else c for c in cmd))
         return None
-    return subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    return subprocess.run(cmd, capture_output=True, text=True, timeout=90)
 
 
 def main() -> int:

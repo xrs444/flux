@@ -9,19 +9,29 @@
 #   kubectl -n hermes-t exec -it deploy/hermes-t -- sh < bootstrap-boards.sh
 # or paste the two `hermes kanban boards create` lines directly into an
 # `exec -it ... sh` session.
+#
+# Uses the full /opt/hermes/.venv/bin/hermes path, not bare "hermes" —
+# kubectl exec's PATH resolves bare "hermes" to /opt/hermes/bin/hermes
+# first, a privilege-drop shim that switches to the hermes user, whose
+# home dir (/opt/data) gets clamped to mode 700 (no group bits) sometime
+# after pod boot, breaking the shim's own .env read. Verified live
+# 2026-09-16 — this exact bug is why the first live run of this pattern
+# (via migrate-security-backlog.py) failed on every card.
 
 set -eu
 
-hermes kanban boards create ops \
+HERMES=/opt/hermes/.venv/bin/hermes
+
+$HERMES kanban boards create ops \
   --name "HomeProd Ops" \
   --description "Alerts, CI failures, incidents — fed by Alertmanager, GitHub Actions, Flux notification-controller" \
   --icon "🚨" \
   --color "#ef4444"
 
-hermes kanban boards create projects \
+$HERMES kanban boards create projects \
   --name "HomeProd Projects" \
   --description "User-entered work, upgrades, migrated security backlog — held until actioned" \
   --icon "🛠" \
   --color "#8b5cf6"
 
-hermes kanban boards list
+$HERMES kanban boards list

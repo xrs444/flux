@@ -37,7 +37,16 @@ async function hermesKanban(
       "exec",
       "deploy/hermes-t",
       "--",
-      "hermes",
+      // Full path, not bare "hermes" — kubectl exec (no shell) resolves PATH
+      // to /opt/hermes/bin/hermes FIRST, a "docker exec privilege-drop shim"
+      // that switches to the hermes user before running the real CLI. That
+      // user's own home dir (/opt/data) gets clamped to mode 700 (no group
+      // bits) sometime after pod boot — cause not fully diagnosed, but
+      // reproducible — so the shim intermittently can't even read its own
+      // .env. The .venv path bypasses the shim entirely and runs as
+      // whatever identity invoked kubectl exec (root, in this transport),
+      // which isn't subject to that restriction. Verified live 2026-09-16.
+      "/opt/hermes/.venv/bin/hermes",
       "kanban",
       "--board",
       "ops",
