@@ -15,7 +15,15 @@ export async function main(
   const reason: string = payload.reason ?? "ReconciliationFailed";
   const message: string = payload.message ?? "";
 
-  const title = `🔴 FLUX FAILURE: ${kind}/${name}`;
+  // No literal emoji in header values — HTTP headers must be Latin-1, and a
+  // fetch() implementation that enforces that (confirmed live 2026-09-16:
+  // Windmill's bun runtime throws "TypeError: Header 'Title' has invalid
+  // value" on this exact pattern in the sibling alert-ingest__flow's
+  // post_ntfy.ts) will crash the whole step. ntfy's own Tags shortcode
+  // mechanism (ASCII names, e.g. "rotating_light") is what actually renders
+  // an emoji client-side — this is the same pattern already used correctly
+  // in alert-ingest__flow/post_restic-check-repo_result_to_ntfy_thread.ts.
+  const title = `FLUX FAILURE: ${kind}/${name}`;
   const body = [`namespace: ${namespace}`, `reason: ${reason}`, message]
     .filter(Boolean)
     .join("\n");
@@ -23,7 +31,7 @@ export async function main(
   const headers: Record<string, string> = {
     Title: title,
     Priority: "5",
-    Tags: "flux,error",
+    Tags: "rotating_light,flux,error",
     "Content-Type": "text/plain",
   };
   if (ntfy_token) headers["Authorization"] = `Bearer ${ntfy_token}`;

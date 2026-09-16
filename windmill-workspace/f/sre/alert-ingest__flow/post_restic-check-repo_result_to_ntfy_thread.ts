@@ -4,7 +4,11 @@ export async function main(
   ntfy_token: string
 ) {
   const ok = check_result?.success !== false;
-  const title = ok ? "✅ restic-check-repo passed (xsvr2 offsite)" : "🔴 restic-check-repo FAILED (xsvr2 offsite)";
+  // No literal emoji in the Title header value — see the identical fix/
+  // comment in post_raw_ntfy_notification_immediately_—_unconditional.ts;
+  // the Tags shortcode below (already correct) is what actually renders
+  // the emoji client-side.
+  const title = ok ? "restic-check-repo passed (xsvr2 offsite)" : "restic-check-repo FAILED (xsvr2 offsite)";
   const body = typeof check_result === "string" ? check_result : JSON.stringify(check_result).slice(0, 2000);
 
   const headers: Record<string, string> = {

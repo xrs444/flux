@@ -14,12 +14,29 @@
 // Code once fixed, or by Phase 3's read-only triage sweep re-checking the
 // object's health via mcp-kubernetes.
 
+// Windmill's Bun.spawn() does not pass the worker pod's environment
+// through to spawned children — see the identical comment in
+// f/sre/alert-ingest__flow/kanban_card_upsert.ts for why explicit
+// --server/--token/--certificate-authority flags are needed instead of
+// relying on kubectl's in-cluster env-var auto-detection. Verified live
+// 2026-09-16.
+const K8S_SERVER = "https://kubernetes.default.svc:443";
+const K8S_TOKEN_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+const K8S_CA_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt";
+
 async function hermesKanban(
   args: string[]
 ): Promise<{ stdout: string; stderr: string; code: number }> {
+  const token = (await Bun.file(K8S_TOKEN_PATH).text()).trim();
   const proc = Bun.spawn(
     [
       "kubectl",
+      "--server",
+      K8S_SERVER,
+      "--token",
+      token,
+      "--certificate-authority",
+      K8S_CA_PATH,
       "-n",
       "hermes-t",
       "exec",

@@ -26,12 +26,31 @@
 // worker. Only an explicit human/cron `hermes kanban promote` moves a card
 // out of triage/todo.
 
+// Windmill's Bun.spawn() does not pass the worker pod's environment
+// through to spawned children — KUBERNETES_SERVICE_HOST/PORT are absent,
+// so kubectl's in-cluster auto-detection falls back to its ancient
+// localhost:8080 default and fails with "connection refused". Confirmed
+// live 2026-09-16 (reproduced the identical error by stripping those vars
+// manually; kubectl works fine with them present). Explicit --server/
+// --token/--certificate-authority flags, reading the projected service
+// account files directly, don't depend on env vars at all.
+const K8S_SERVER = "https://kubernetes.default.svc:443";
+const K8S_TOKEN_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+const K8S_CA_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt";
+
 async function hermesKanban(
   args: string[]
 ): Promise<{ stdout: string; stderr: string; code: number }> {
+  const token = (await Bun.file(K8S_TOKEN_PATH).text()).trim();
   const proc = Bun.spawn(
     [
       "kubectl",
+      "--server",
+      K8S_SERVER,
+      "--token",
+      token,
+      "--certificate-authority",
+      K8S_CA_PATH,
       "-n",
       "hermes-t",
       "exec",

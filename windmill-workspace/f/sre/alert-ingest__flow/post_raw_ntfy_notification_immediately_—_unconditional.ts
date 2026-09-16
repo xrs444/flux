@@ -27,9 +27,19 @@ export async function main(
   const priority =
     status === "resolved" ? 3 : severity === "critical" ? 5 : 4;
 
-  const emoji =
-    status === "resolved" ? "✅" : severity === "critical" ? "🔴" : "🟡";
-  const title = `${emoji} ${status === "resolved" ? "RESOLVED" : "FIRING"}: ${alertname}`;
+  // No literal emoji in header values — HTTP headers must be Latin-1;
+  // Windmill's bun runtime enforces that and throws "TypeError: Header
+  // 'Title' has invalid value" on any non-Latin-1 char, which (since this
+  // step has no continue_on_error) crashes the ENTIRE flow before ntfy,
+  // the Kanban board write, or routing ever run. Confirmed live 2026-09-16
+  // via a real flow run — every status/severity combination here maps to
+  // an emoji, so this was breaking on every single alert. ntfy's own Tags
+  // shortcode mechanism (ASCII names) is what actually renders an emoji
+  // client-side — already used correctly two lines below and in the
+  // sibling post_restic-check-repo_result_to_ntfy_thread.ts.
+  const emojiTag =
+    status === "resolved" ? "white_check_mark" : severity === "critical" ? "rotating_light" : "warning";
+  const title = `${status === "resolved" ? "RESOLVED" : "FIRING"}: ${alertname}`;
 
   const parts: string[] = [summary];
   if (description && description !== summary) parts.push(description);
@@ -40,7 +50,7 @@ export async function main(
   const headers: Record<string, string> = {
     Title: title,
     Priority: String(priority),
-    Tags: `${severity},${status}`,
+    Tags: `${emojiTag},${severity},${status}`,
     "Content-Type": "text/plain",
   };
   if (ntfy_token) headers["Authorization"] = `Bearer ${ntfy_token}`;
