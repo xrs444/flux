@@ -23,9 +23,26 @@ pipeline (Windmill, the triage cron job, OpenWolf hooks) assumes.
   directly in `ready` (verified live 2026-09-16, correcting an earlier wrong
   assumption in this doc that it landed in `todo`) — that's fine and inert as
   long as nothing sets an assignee, which nothing in this pipeline does.
-  `--triage` instead parks a card in `triage`, requiring an explicit
-  `hermes kanban promote` to move it forward. Both routes are safe; know
-  which one a given creation path actually uses before assuming either.
+  `--triage` parks a card in `triage` instead.
+- **`triage` is NOT inert by default — `kanban.auto_decompose` must be
+  `false` (bug-975, 2026-09-16).** hermes-agent's own `kanban.auto_decompose`
+  defaults to **`true`**: a gateway dispatcher tick (interval 60s, up to
+  `auto_decompose_per_tick: 3` per tick) that automatically flesh-outs,
+  **assigns**, and **promotes to `ready`** any triage card, with zero human
+  gate. hermes-agent's own source (`gateway/kanban_watchers.py`) has a
+  comment acknowledging this exact failure mode: *"auto-decompose created
+  and launched destructive tasks while the user [...]"*. Confirmed live: a
+  migrated security-backlog card manually dragged into `triage` had its body
+  auto-rewritten into a destructive action plan (`sudo loginctl
+  terminate-user root` on a live host + a git push meant to trigger a
+  fleet-wide CI/CD deploy) and a real worker was spawned within one
+  dispatcher tick — killed within minutes; see `.wolf/buglog.json` bug-975.
+  All three instances now set `kanban.auto_decompose: false` in
+  `config-managed.yaml`. **`--triage` alone never provided the "inert"
+  guarantee this doc previously claimed — disabling auto_decompose is what
+  actually makes it true.** If you ever need auto-decompose's fan-out
+  behavior for a deliberately-supervised workflow, re-enable it narrowly
+  and watch the board closely; do not flip it back on globally.
 
 ## Boards
 

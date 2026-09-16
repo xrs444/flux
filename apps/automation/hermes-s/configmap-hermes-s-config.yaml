@@ -69,7 +69,17 @@ data:
   # missing seeding, bug-895) — hermes-s had no model configured live and
   # was silently falling back to deepseek-v4-pro. Values match the blocks
   # above verbatim.
+  #
+  # kanban.auto_decompose: false — defensive, even though hermes-s doesn't
+  # have the kanban toolset enabled today. See the full bug-975 writeup in
+  # configmap-hermes-t-config.yaml: this hermes-agent default (True)
+  # auto-assigns and auto-promotes ANY triage card with zero human gate,
+  # and its own source acknowledges launching destructive tasks this way.
+  # Set here so enabling kanban later doesn't silently reintroduce it.
   config-managed.yaml: |
+    kanban:
+      auto_decompose: false
+
     model:
       default: qwen3-30b-a3b
       provider: custom

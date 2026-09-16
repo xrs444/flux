@@ -115,7 +115,13 @@ data:
   # [kanban]` or anything from hermes-t/s's mcp_servers here; kid-mode's
   # narrow tool surface is enforced by omission (see the VERIFIED note at
   # the top of this ConfigMap) and this managed layer must not widen it.
+  #
+  # kanban.auto_decompose: false — defensive, same reasoning as hermes-s.
+  # See the full bug-975 writeup in configmap-hermes-t-config.yaml.
   config-managed.yaml: |
+    kanban:
+      auto_decompose: false
+
     model:
       default: qwen3-30b-a3b
       provider: custom

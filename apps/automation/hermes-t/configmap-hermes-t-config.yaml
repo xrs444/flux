@@ -122,9 +122,32 @@ data:
   # terminal/memory blocks above verbatim (kept in both places: the plain
   # config.yaml key still matters for a genuinely fresh PVC seed, before
   # this managed layer's first merge has ever run).
+  #
+  # kanban.auto_decompose: false — CRITICAL SAFETY SETTING (bug-975,
+  # 2026-09-16). hermes-agent's kanban.auto_decompose defaults to TRUE
+  # (config_defaults.py) — a gateway dispatcher tick (interval=60s, up to
+  # auto_decompose_per_tick=3 per tick) that automatically flesh-outs,
+  # ASSIGNS, and PROMOTES ANY triage card to ready with zero human gate.
+  # hermes-agent's own source (gateway/kanban_watchers.py) carries a
+  # comment acknowledging this exact failure mode: "auto-decompose created
+  # and launched destructive tasks while the user [...]". This directly
+  # contradicted the documented safety model in KANBAN.md ("triage is
+  # inert") — confirmed live 2026-09-16 when dragging one migrated
+  # security-backlog card into triage caused the dispatcher to
+  # auto-rewrite its body into a destructive action plan (sudo
+  # loginctl terminate-user root on xsvr3 + a git push triggering a
+  # fleet-wide CI/CD deploy) and spawn a live worker (killed within
+  # minutes, task blocked, global `hermes pause` engaged pending this
+  # fix). Every `ops`-board alert card lands in triage too (kanban_card_
+  # upsert.ts's --triage flag) and was equally exposed. Disabling this is
+  # what actually makes "triage is inert" true — the --triage flag alone
+  # never provided that guarantee.
   config-managed.yaml: |
     toolsets:
       - kanban
+
+    kanban:
+      auto_decompose: false
 
     model:
       default: qwen3-30b-a3b
