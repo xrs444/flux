@@ -18,7 +18,10 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: kubectl
-              image: registry.k8s.io/kubectl:v1.37.0
+              # registry.k8s.io/kubectl images ship no shell at all (not even
+              # /bin/sh) as of v1.35+ — confirmed live 2026-09-16, see bug-949.
+              # alpine/k8s bundles kubectl + bash + jq + curl.
+              image: alpine/k8s:1.37.0
               command:
                 - /bin/bash
                 - -c
