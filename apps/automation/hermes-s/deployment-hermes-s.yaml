@@ -29,12 +29,30 @@ spec:
         # never the live mount. Copy-if-missing keeps the ConfigMap as the
         # source of truth for the *initial* config without clobbering
         # in-place edits hermes makes afterward. (bug-895)
+        #
+        # Step 2 (bug-956 fix, mirrors hermes-t): a shallow, top-level-key
+        # merge of config-managed.yaml on TOP of whatever's on the PVC,
+        # every pod start — idempotent. Without this, hermes-s had no
+        # model configured live despite the ConfigMap declaring one, and
+        # was silently falling back to deepseek-v4-pro.
         - name: seed-config
           image: nousresearch/hermes-agent:v2026.8.31
           command:
             - sh
             - -c
-            - "[ -f /opt/data/config.yaml ] || cp /opt/config-seed/config.yaml /opt/data/config.yaml"
+            - |
+              set -e
+              [ -f /opt/data/config.yaml ] || cp /opt/config-seed/config.yaml /opt/data/config.yaml
+              /opt/hermes/.venv/bin/python - <<'PY'
+              import yaml
+              with open("/opt/data/config.yaml") as f:
+                  live = yaml.safe_load(f) or {}
+              with open("/opt/config-seed/config-managed.yaml") as f:
+                  managed = yaml.safe_load(f) or {}
+              live.update(managed)
+              with open("/opt/data/config.yaml", "w") as f:
+                  yaml.safe_dump(live, f, sort_keys=False)
+              PY
           volumeMounts:
             - name: hermes-s-data
               mountPath: /opt/data
@@ -143,3 +161,5 @@ spec:
             items:
               - key: config.yaml
                 path: config.yaml
+              - key: config-managed.yaml
+                path: config-managed.yaml

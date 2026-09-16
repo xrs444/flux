@@ -103,3 +103,32 @@ data:
         - firewalla.*
         - windmill.*
         - gh.*                  # No PR opening
+
+  # Top-level keys git enforces on EVERY pod start, merged over the live
+  # /opt/data/config.yaml by the seed-config initContainer's second step
+  # (shallow, top-level-key overwrite only — see deployment-hermes-k.yaml).
+  # bug-956/bug-957 (2026-09-16): hermes-k had it worst of the three —
+  # its /opt/data was never group-writable (a separate fsGroup fixup bug,
+  # bug-957), so config.yaml sat at 0 bytes since 2026-07-10 and this kid-
+  # mode instance had effectively NO working config the entire time. Only
+  # model/terminal/memory here, deliberately — do NOT add `toolsets:
+  # [kanban]` or anything from hermes-t/s's mcp_servers here; kid-mode's
+  # narrow tool surface is enforced by omission (see the VERIFIED note at
+  # the top of this ConfigMap) and this managed layer must not widen it.
+  config-managed.yaml: |
+    model:
+      default: qwen3-30b-a3b
+      provider: custom
+      base_url: http://xcog1.lan:4000/v1
+      api_key: "${LITELLM_MASTER_KEY}"
+
+    terminal:
+      backend: local
+
+    memory:
+      memory_enabled: true
+      backend: hindsight
+      hindsight:
+        mode: local_external
+        api_url: http://hindsight.hindsight.svc.cluster.local:8888
+        bank_id: hermes-k

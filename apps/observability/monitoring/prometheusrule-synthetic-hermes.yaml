@@ -1,0 +1,67 @@
+---
+# Alerts for the synthetic Hermes LLM-reachability prober.
+# The prober is a Windmill scheduled script (f/monitoring/synthetic_hermes in the
+# xrs444 workspace) that calls each Hermes instance's own OpenAI-compatible gateway
+# (POST /v1/chat/completions) with a minimal prompt and verifies a real completion
+# comes back, then pushes results to Pushgateway. Added after bug-956/bug-957
+# (2026-09-16): hermes-t/s/k all had NO model configured live despite the git
+# ConfigMap declaring one, and were silently falling back to deepseek-v4-pro for
+# weeks before the user noticed via a broken chat session — this closes that blind
+# spot. The existing Xcog1LiteLLMDown alert (prometheusrule-xcog1.yaml) only covers
+# the backend being reachable; it would NOT have caught this class of failure,
+# since xcog1's LiteLLM was healthy the whole time — the problem was entirely on
+# the Hermes side.
+#
+# Two alert tiers:
+#   - SyntheticHermesFailed        (warning)  — any instance can't produce a completion
+#   - SyntheticHermesProberStale   (critical)  — Windmill/prober is down (dead-man switch)
+#
+# Routing: all alerts flow through the existing Alertmanager -> Windmill
+# f/sre/alert-ingest webhook -> ntfy, same as every other Prometheus alert in
+# this cluster.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: synthetic-hermes-rules
+  namespace: monitoring
+spec:
+  groups:
+    - name: synthetic-hermes
+      interval: 1m
+      rules:
+        - alert: SyntheticHermesFailed
+          expr: synthetic_hermes_success == 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.instance }} cannot produce a real LLM completion"
+            description: >
+              The synthetic prober failed to get a valid response from
+              **{{ $labels.instance }}**'s /v1/chat/completions gateway for more than
+              10 minutes. Likely causes: model misconfigured on the live pod
+              (config-managed.yaml gap — see bug-956/bug-957 in .wolf/buglog.json),
+              xcog1's LiteLLM unreachable (check Xcog1LiteLLMDown), or the gateway
+              itself down. Check: `kubectl -n {{ $labels.instance }} exec
+              deploy/{{ $labels.instance }} -- hermes config show` for a blank
+              Model: field, and https://{{ $labels.instance }}.xrs444.net directly.
+
+        # --- Dead-man switch (fires when Windmill/prober stops pushing) -------------
+        - alert: SyntheticHermesProberStale
+          expr: >
+            absent(push_time_seconds{job="synthetic_hermes"})
+            or
+            (time() - max(push_time_seconds{job="synthetic_hermes"})) > 1800
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Synthetic Hermes prober is not running"
+            description: >
+              No metrics have been pushed to Pushgateway for the synthetic_hermes job
+              in the last 30 minutes. The Windmill scheduled script
+              (f/monitoring/synthetic_hermes) is likely not running, or Windmill itself
+              is down. This alert fires independently of Windmill — check
+              Windmill at https://windmill.xrs444.net and the schedule status.
+              Note: also check WindmillWorkerDown (up{job="windmill"} == 0) for
+              the underlying Windmill health signal.

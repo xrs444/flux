@@ -1,0 +1,5 @@
+summary: Synthetic Hermes LLM-reachability monitor (hermes-t/s/k)
+description: "Calls each Hermes instance's /v1/chat/completions with a minimal prompt and verifies a real completion comes back. Catches bug-956: gateway stays up but the model is misconfigured/unreachable. Pushes pass/fail + latency to Pushgateway job=synthetic_hermes."
+lock: '!inline f/monitoring/synthetic_hermes.script.lock'
+kind: script
+schema: null

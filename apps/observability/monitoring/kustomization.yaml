@@ -29,6 +29,8 @@ resources:
   - middleware-grafana-lan.yaml
   # Synthetic SSO login monitoring (PrometheusRule + dead-man alerts)
   - prometheusrule-synthetic-login.yaml
+  # Synthetic Hermes LLM-reachability monitoring (PrometheusRule + dead-man alert)
+  - prometheusrule-synthetic-hermes.yaml
   # Samba AD DC health (pod + LDAP reachability)
   - probe-samba-dc.yaml
   - prometheusrule-samba-dc.yaml

@@ -60,3 +60,29 @@ data:
       mcp-caldav-s:
         url: http://mcp-caldav-s.mcp-personal.svc.cluster.local:8080/mcp
         enabled: true
+
+  # Top-level keys git enforces on EVERY pod start, merged over the live
+  # /opt/data/config.yaml by the seed-config initContainer's second step
+  # (shallow, top-level-key overwrite only — see deployment-hermes-s.yaml).
+  # bug-956 (2026-09-16): the model/terminal/memory blocks above were
+  # declared in config.yaml but never reached the running pod (copy-if-
+  # missing seeding, bug-895) — hermes-s had no model configured live and
+  # was silently falling back to deepseek-v4-pro. Values match the blocks
+  # above verbatim.
+  config-managed.yaml: |
+    model:
+      default: qwen3-30b-a3b
+      provider: custom
+      base_url: http://xcog1.lan:4000/v1
+      api_key: "${LITELLM_MASTER_KEY}"
+
+    terminal:
+      backend: local
+
+    memory:
+      memory_enabled: true
+      backend: hindsight
+      hindsight:
+        mode: local_external
+        api_url: http://hindsight.hindsight.svc.cluster.local:8888
+        bank_id: hermes-s

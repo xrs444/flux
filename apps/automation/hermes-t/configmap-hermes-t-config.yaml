@@ -105,12 +105,40 @@ data:
   # (shallow, top-level-key overwrite only — see deployment-hermes-t.yaml).
   # Distinct from config.yaml above, which only ever seeds a fresh PVC
   # (bug-895/bug-936: copy-if-missing means config.yaml's contents stop
-  # applying the moment /opt/data/config.yaml exists). Kanban board — see
-  # Hermes-T Kanban plan: enables the kanban toolset so kanban_* agent
-  # tools and the /kanban dashboard tab become available
-  # (_profile_has_kanban_toolset() in tools/kanban_tools.py requires
-  # "kanban" in config's top-level `toolsets:` list; there is no
-  # HERMES_TOOLSETS env var).
+  # applying the moment /opt/data/config.yaml exists).
+  #
+  # toolsets: enables the kanban toolset so kanban_* agent tools and the
+  # /kanban dashboard tab become available (_profile_has_kanban_toolset()
+  # in tools/kanban_tools.py requires "kanban" in config's top-level
+  # `toolsets:` list; there is no HERMES_TOOLSETS env var).
+  #
+  # model/terminal/memory: bug-956 (2026-09-16) — this exact gap (declared
+  # here, never applied) meant hermes-t had NO model configured live and
+  # was silently falling back to deepseek-v4-pro since at least 2026-09-10,
+  # until that fallback broke ("cannot access the LLM model" / WebSocket
+  # 1006). Moving these three blocks into the managed layer is what stops
+  # it from silently drifting again — they're now enforced on every pod
+  # start instead of only on first PVC seed. Values match the model/
+  # terminal/memory blocks above verbatim (kept in both places: the plain
+  # config.yaml key still matters for a genuinely fresh PVC seed, before
+  # this managed layer's first merge has ever run).
   config-managed.yaml: |
     toolsets:
       - kanban
+
+    model:
+      default: qwen3-30b-a3b
+      provider: custom
+      base_url: http://xcog1.lan:4000/v1
+      api_key: "${LITELLM_MASTER_KEY}"
+
+    terminal:
+      backend: local
+
+    memory:
+      memory_enabled: true
+      backend: hindsight
+      hindsight:
+        mode: local_external
+        api_url: http://hindsight.hindsight.svc.cluster.local:8888
+        bank_id: hermes-t
