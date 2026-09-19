@@ -50,7 +50,7 @@ spec:
         # fixup miss. Idempotent, non-recursive, runs as root (initContainer
         # default).
         - name: seed-config
-          image: nousresearch/hermes-agent:v2026.8.31
+          image: nousresearch/hermes-agent:v2026.9.14
           command:
             - sh
             - -c
@@ -75,7 +75,7 @@ spec:
               mountPath: /opt/config-seed
       containers:
         - name: hermes-k
-          image: nousresearch/hermes-agent:v2026.8.31
+          image: nousresearch/hermes-agent:v2026.9.14
           command: ["hermes", "gateway", "run"]
           ports:
             - containerPort: 8642
