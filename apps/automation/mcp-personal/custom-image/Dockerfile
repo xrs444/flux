@@ -23,7 +23,7 @@
 #
 # curl: used for in-pod debugging (kubectl exec ... curl .../healthz) and
 # by the optional credential-preflight initContainer in the Deployments.
-FROM node:22-alpine
+FROM node:24-alpine
 
 RUN apk add --no-cache tini curl
 
