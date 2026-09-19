@@ -142,12 +142,47 @@ data:
   # upsert.ts's --triage flag) and was equally exposed. Disabling this is
   # what actually makes "triage is inert" true — the --triage flag alone
   # never provided that guarantee.
+  #
+  # kanban.default_assignee: kanban-safe — SECOND finding, same incident
+  # (bug-975 follow-up, 2026-09-16-19). auto_decompose:false only stops
+  # the BACKGROUND dispatcher tick's own scanning — it does NOT gate the
+  # dashboard's `POST /tasks/{id}/specify` endpoint, which fires whenever
+  # a card is dragged into the triage lane in the browser (a hardcoded
+  # UX choice, no config knob disables it). That endpoint always
+  # auto-rewrites the card and auto-promotes it; whether it also sets an
+  # assignee is an LLM judgment call each time, not a guarantee — verified
+  # live: it assigned "default" for one card and left another unassigned.
+  # Separately, `gateway/kanban_watchers.py`'s dispatcher ALSO reads this
+  # exact same `default_assignee` key to sweep up and dispatch any
+  # existing unassigned `ready` card (whole different consumer, same
+  # config value) — so simply setting it retroactively dispatches every
+  # currently-unassigned ready card on the board, not just future ones.
+  #
+  # Given at least two independent paths can hand a card an assignee
+  # without a human explicitly choosing one, the robust fix isn't
+  # chasing every path that can reach ready+assigned — it's ensuring
+  # nothing dangerous happens even when one does. `kanban-safe` is a
+  # profile (PVC-only state, see KANBAN.md's bootstrap section) with
+  # `agent.disabled_toolsets` covering every dangerous built-in toolset
+  # (terminal, code_execution, computer_use, delegation, cronjob,
+  # browser, etc.) — verified against the EXACT function the dispatcher
+  # calls to build a worker's --toolsets pin
+  # (`hermes_cli.tools_config._get_platform_tools`), not just the
+  # `hermes tools list` display command, which does NOT reflect real
+  # toolset restrictions. Two dead ends hit before finding this: the
+  # top-level `toolsets:` key is purely ADDITIVE (adds kanban on top of
+  # an always-on default set, confirmed live — it does not restrict
+  # anything), and `tools.allowed/denied` was already known dead
+  # (hermes-k's ConfigMap, verified 2026-07-21). `agent.disabled_toolsets`
+  # is the only key that actually works — it runs last and overrides
+  # everything else.
   config-managed.yaml: |
     toolsets:
       - kanban
 
     kanban:
       auto_decompose: false
+      default_assignee: kanban-safe
 
     model:
       default: qwen3-30b-a3b

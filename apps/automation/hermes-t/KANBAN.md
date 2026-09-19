@@ -43,6 +43,47 @@ pipeline (Windmill, the triage cron job, OpenWolf hooks) assumes.
   actually makes it true.** If you ever need auto-decompose's fan-out
   behavior for a deliberately-supervised workflow, re-enable it narrowly
   and watch the board closely; do not flip it back on globally.
+- **`auto_decompose:false` closes ONE path, not the only one — the dashboard
+  itself is a second, ungated path (bug-975 follow-up, 2026-09-19).**
+  Dropping a card into the triage lane in the browser calls
+  `POST /tasks/{id}/specify` directly from the frontend, independent of
+  `auto_decompose` entirely — there's no server config that gates it, it's
+  a hardcoded UX choice. Confirmed live: `auto_decompose:false` correctly
+  stopped the background dispatcher tick (no second
+  `kanban auto-decompose [...]` log line ever appeared), but a card
+  manually dragged into triage still got auto-rewritten and auto-promoted
+  a few minutes later via this separate path. Whether it also sets an
+  assignee is an LLM judgment call each time — observed both ways across
+  two cards — so "it usually doesn't assign" is not a safety boundary.
+  **Given at least two independent paths can hand a card an assignee
+  without a human choosing one, don't chase every path to `ready`+assigned
+  — assume one will eventually succeed, and make sure nothing dangerous
+  happens when it does.** See the `kanban-safe` profile below.
+- **`kanban.default_assignee: kanban-safe` — the actual containment (bug-975
+  follow-up, 2026-09-19).** `gateway/kanban_watchers.py`'s dispatcher reads
+  this same config key to sweep up and dispatch any *existing* unassigned
+  `ready` card, not just future ones — so before setting it, park anything
+  currently `ready`+unassigned (`hermes kanban block <id> "..."`) or it gets
+  swept immediately. `kanban-safe` is a dedicated profile (PVC-only state,
+  see the bootstrap script below) whose `agent.disabled_toolsets` strips
+  every dangerous built-in toolset (`terminal`, `code_execution`,
+  `computer_use`, `delegation`, `cronjob`, `browser`, …), leaving only
+  `kanban`, `memory`, and the three read-only observability MCPs
+  (`mcp-loki`/`mcp-prometheus`/`mcp-kubernetes`). Verified against the
+  *exact* function the dispatcher calls to build a worker's `--toolsets`
+  pin (`hermes_cli.tools_config._get_platform_tools`) — **not** the
+  `hermes tools list` display command, which does not reflect real
+  restrictions and will show everything as enabled regardless. Two dead
+  ends hit first: the top-level `toolsets:` key (used above for `kanban`)
+  is purely *additive* — it adds a toolset on top of an always-on default
+  set, confirmed live it restricts nothing — and `tools.allowed/denied` is
+  already known dead (hermes-k's ConfigMap, verified 2026-07-21).
+  `agent.disabled_toolsets` is the only key that actually works; it runs
+  last and overrides everything else. Now that a card assigned this way
+  can't do damage, an unblocked card auto-routes to `kanban-safe` and gets
+  a (probably not very useful, since it can't touch infrastructure)
+  read-only pass — real fixes still go through Claude Code, per the
+  handoff section below.
 
 ## Boards
 
@@ -261,6 +302,10 @@ all-clear card."
 
 ## Assignee
 
-Everything routes through the existing `default` profile. No second profile has been
-created — profile state is PVC-only and unversioned like boards, and nothing in the
-current read-only design needs isolation between profiles.
+Deliberate, human-driven work (the triage sweep's comments, Claude Code sessions)
+routes through the `default` profile, same as before. As of bug-975 (2026-09-19),
+a second profile — `kanban-safe` — exists specifically as `kanban.default_assignee`:
+the fallback anything auto-assigned via a path a human didn't choose lands on. See
+the safety-property notes above for why, and `bootstrap-kanban-safe-profile.sh` (same
+disaster-recovery category as `bootstrap-boards.sh` — profile state is PVC-only and
+unversioned) to recreate it if the PVC is ever lost.
