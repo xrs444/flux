@@ -56,7 +56,7 @@ spec:
     enablePolicySecretsSync: true
     policySecretsNamespace: cilium-secrets
     enableIPv4: true
-    enableIPv6: false
+    enableIPv6: true
     enableNodePort: true
     hostPort:
       enabled: true
@@ -128,10 +128,18 @@ spec:
     enableSourceIPVerification: false
     autoDirectNodeRoutes: true
     ipv4NativeRoutingCIDR: "10.244.0.0/16"
+    # IPv6 rollout Phase 7 Option C (dual-stack pods, single-stack services) - see
+    # docs/ipv6-addressing.md. Pod v6 range only; serviceSubnets in Talos/controlplane.yaml
+    # already lists a v6 entry but that's pre-staged for a future full rebuild (Option B) -
+    # the live kube-apiserver service-cluster-ip-range is still v4-only (confirmed via
+    # `kubectl get svc kubernetes` SingleStack/IPv4), so no v6 ClusterIPs will be allocated
+    # regardless of this flag.
+    ipv6NativeRoutingCIDR: "fd2a:8d57:16a3:fd00::/56"
     directRoutingSkipUnreachable: true
     bpf:
       masquerade: true
     enableIPv4Masquerade: true
+    enableIPv6Masquerade: true
     ipMasqAgent:
       enabled: true
       config:
@@ -144,6 +152,9 @@ spec:
           # docs/network-segmentation.md.
           - 10.0.0.0/12
           - 172.21.0.0/24   # LoadBalancer IPs - BGP routed via BGP
+          - fd2a:8d57:16a3:fd00::/56   # Pod CIDR v6 - no masquerade for pod-to-pod
+          - fd2a:8d57:16a3:fe00::/112  # Service CIDR v6 - not yet live (v4-only apiserver
+                                        # today), included for parity, inert until Option B
         masqLinkLocal: false
 
     # Enable Prometheus metrics on port 9962 (agent)
