@@ -55,8 +55,15 @@ spec:
     enableMetrics: true
     enablePolicySecretsSync: true
     policySecretsNamespace: cilium-secrets
-    enableIPv4: true
-    enableIPv6: true
+    # ipv4.enabled/ipv6.enabled are the real chart-1.20.2 toggles for the enable-ipv4/
+    # enable-ipv6 ConfigMap keys (verified against the unpacked chart templates -
+    # cilium-configmap.yaml:333,337). A top-level `enableIPv4`/`enableIPv6` key (as this
+    # HelmRelease previously had) is not referenced anywhere in the chart and is a silent
+    # no-op - IPv4 only "worked" because ipv4.enabled defaults to true upstream.
+    ipv4:
+      enabled: true
+    ipv6:
+      enabled: true
     enableNodePort: true
     hostPort:
       enabled: true
