@@ -51,6 +51,24 @@ spec:
           ports:
             - containerPort: 8000
               name: http
+          # apprise-api's tag-routed /notify/<key> endpoint reads from its own internal
+          # persistent store (populated only via POST /add/<key>), not from CONFIG_DIR
+          # directly — dropping apprise.yml on disk (render-config init container) is not
+          # enough on its own. Without this hook, /notify/apprise silently 204s with zero
+          # URLs loaded on every pod restart (bug-578, recurred as bug seen 2026-09-22
+          # after this pod had been up 26h with an empty store). Loop until the server is
+          # actually accepting connections, then register the rendered config.
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - |
+                    until curl -sf -o /dev/null http://localhost:8000/; do sleep 1; done
+                    curl -sf -X POST http://localhost:8000/add/apprise \
+                      --data-urlencode format=yaml \
+                      --data-urlencode config@/config/apprise.yml
           volumeMounts:
             - name: apprise-config-rendered
               mountPath: /config
