@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       mcpjungle_version:
-        description: 'MCPJungle stdio base image tag (e.g. 0.4.5-stdio)'
+        description: 'MCPJungle stdio base image tag (e.g. 0.4.6-stdio)'
         required: true
-        default: '0.4.5-stdio'
+        default: '0.4.6-stdio'
   push:
     branches: [main]
     paths:
@@ -35,7 +35,7 @@ jobs:
             VER="${{ github.event.inputs.mcpjungle_version }}"
             echo "mcpjungle_version=${VER}" >> "$GITHUB_OUTPUT"
           else
-            echo "mcpjungle_version=0.4.5-stdio" >> "$GITHUB_OUTPUT"
+            echo "mcpjungle_version=0.4.6-stdio" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Log in to GHCR
@@ -50,6 +50,8 @@ jobs:
         with:
           context: apps/mcpjungle/custom-image
           push: true
+          build-args: |
+            MCPJUNGLE_VERSION=${{ steps.version.outputs.mcpjungle_version }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.mcpjungle_version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

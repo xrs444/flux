@@ -23,7 +23,8 @@
 # patch (adds NODE_RED_USERNAME/NODE_RED_PASSWORD Basic-auth support, plus an
 # opt-in NODE_RED_INSECURE_TLS since the add-on's direct-access cert was
 # found expired 2026-08-29 — fix the cert, don't lean on that flag).
-FROM ghcr.io/mcpjungle/mcpjungle:0.4.6-stdio
+ARG MCPJUNGLE_VERSION=0.4.6-stdio
+FROM ghcr.io/mcpjungle/mcpjungle:${MCPJUNGLE_VERSION}
 
 COPY netbox-mcp-rw /opt/netbox-mcp-rw
 RUN cd /opt/netbox-mcp-rw && uv sync --frozen

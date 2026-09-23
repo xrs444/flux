@@ -96,6 +96,36 @@ Boards (and profiles) live on the PVC only, not in git — `bootstrap-boards.sh`
 recovery path if the PVC is ever lost. Periodically run `hermes kanban boards export`
 as part of the existing backup story.
 
+**Board name resolution has no fuzzy/case-insensitive matching and fails by silently
+creating a duplicate (bug-1005, 2026-09-22).** Asked to target "the HomeProd Projects
+board" (display name of the real `projects` board), the model guessed a kebab-cased
+slug and ran `hermes kanban boards create` instead of finding the existing board —
+producing a duplicate (`homeprod-projects`, display name "Homeprod Projects") whose
+cards then had to be reconciled by hand. Root cause, confirmed against hermes-agent's
+own docs: the `kanban_create` agent tool has **no `board` parameter at all** and there
+is **no `kanban_boards_list` (or any board-discovery) agent tool** — a model asked to
+target a board by name has no way to resolve the real slug except shelling out via the
+`terminal`/`code_execution` toolset (both enabled on the `default` profile, confirmed
+live via `hermes tools list`) and guessing. `hermes kanban boards create` always
+succeeds even when a matching board already exists under a different slug — no
+case-insensitive match, no refuse-and-ask. hermes-agent is a prebuilt image here (no
+`flux/apps/automation/hermes-t/custom-image/` — confirmed no vendored source), so this
+isn't fixable in this repo's build, only mitigated by instruction: `/opt/data/
+MEMORY.md` (the same always-active-memory pin mechanism already used for the CalDAV
+collection-URL note below) now tells the model to always run `hermes kanban boards
+list` (full `/opt/hermes/.venv/bin/hermes` path, via terminal) and resolve to the
+exact existing **slug** before any board-create or board-targeted command — never a
+typed/remembered display name. That pin is PVC-only and unversioned like the boards
+themselves; re-add it from this note if the PVC is ever lost (see `/opt/data/
+MEMORY.md`'s live content for the exact wording).
+
+Separately investigated during the same incident: whether the CLI's "current board"
+state (`~/.hermes/kanban/current`, selected via `hermes kanban boards switch <slug>`)
+persists reliably across separate `kubectl exec` invocations, since one apparent
+revert was observed live. Could not reproduce — repeated switch → list → new exec →
+list cycles via the full hermes path all showed the switched board correctly. Left
+unexplained rather than assigned a cause; worth another look only if it recurs.
+
 ## Card conventions
 
 **`ops` cards** (alert/incident pipeline — see `flux/windmill-workspace/f/sre/alert-ingest__flow/`):
@@ -112,8 +142,26 @@ as part of the existing backup story.
 **`projects` cards**:
 
 - Created in `ready`, unassigned (not `triage` — no triage/enrichment sweep
-  runs against this board). Inert: the dispatcher requires an assignee too,
-  and nothing sets one.
+  runs against this board).
+- **This is NOT inert (bug-1006, 2026-09-22) — this doc's earlier claim that "the
+  dispatcher requires an assignee too, and nothing sets one" is stale and wrong.**
+  `kanban.default_assignee: kanban-safe` (set since bug-975's 2026-09-19 follow-up,
+  see "Assignee" below) is board-agnostic: `gateway/kanban_watchers.py`'s dispatcher
+  sweeps up *any* `ready`+unassigned card on *any* board, including `projects`, and
+  dispatches it to `kanban-safe` within one tick (~60s). Confirmed live: 10 `projects`
+  cards created the plain documented way (`hermes kanban create`, no `--assignee`) had
+  8 swept to `running` before this was noticed. Confirmed via `hermes config get
+  kanban` that the config schema is flat — `default_assignee` has no per-board
+  override, so scoping the sweep to exclude `projects` isn't possible today. There is
+  currently **no way to create a `projects` card that lands `ready`+unassigned and
+  stays that way** — pick one:
+  - `--triage` instead of the default (parks in `triage`, no sweep reads that status
+    for `projects`-board cards — but see the `auto_decompose`/dashboard-drag warnings
+    above if you ever touch it after creation), or
+  - block immediately after creating: `hermes kanban block <id> --kind needs_input`
+    (the workaround used live for today's 10 cards — safe since `kanban-safe` can't
+    touch infrastructure, but still an unintended dispatch worth avoiding at the
+    source).
 - Moved to `scheduled` when parked on a future date, per `hermes kanban schedule`.
 
 **All cards** — tag the source in the first line of the body:
