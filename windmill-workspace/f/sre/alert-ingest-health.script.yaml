@@ -1,0 +1,31 @@
+summary: Alert-ingest pipeline self-check — surfaces silent kanban_card_upsert failures
+description: >-
+  Watches Windmill's own job history for f/sre/alert-ingest and
+  f/sre/flux-alert-ingest's kanban_card_upsert step. That step runs with
+  continue_on_error: true (deliberately — a kanban-write failure must never
+  block ntfy or runbook routing), which means the parent flow job reports
+  success:true even when the step itself throws on every single run. That's
+  exactly what happened from 2026-09-16 to 2026-09-24: `hermes kanban
+  complete` on a `triage` card is a guaranteed failure (kanban_db.py's
+  complete_task() only accepts running/ready/blocked/review), and nothing
+  ever surfaced it until a manual ops-board triage pass found 63 stuck cards.
+  See .wolf/buglog.json and flux/apps/automation/hermes-t/KANBAN.md.
+
+
+  There is no Prometheus metric for this to alert on — confirmed live,
+  Prometheus scrapes zero `windmill_*` series; the only existing signal is
+  the generic `up{job="windmill"}` worker-health check, which says nothing
+  about individual script outcomes. This script queries Windmill's REST API
+  directly instead (GET /api/w/{workspace}/jobs/list, filtered to the watched
+  step paths, success=false, within the lookback window) and pings ntfy's
+  alerts-warning topic if either step failed at all in that window.
+
+
+  Scheduled hourly (alert-ingest-health.schedule.yaml). Not itself alerted on
+  by anything else — a genuinely last-resort watchdog for the alert pipeline,
+  which is otherwise unmonitored recursively (nothing watches the thing that
+  watches everything else).
+lock: '!inline f/sre/alert-ingest-health.script.lock'
+has_on_behalf_of: false
+kind: script
+schema: null

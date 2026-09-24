@@ -130,14 +130,41 @@ unexplained rather than assigned a cause; worth another look only if it recurs.
 
 **`ops` cards** (alert/incident pipeline — see `flux/windmill-workspace/f/sre/alert-ingest__flow/`):
 
-- Idempotency key: `alert:<alertname>:<instance>` — one card per distinct
-  alertname+instance, re-firing updates the existing card instead of duplicating it.
-  This is native `hermes kanban create --idempotency-key` behaviour.
+- Idempotency key (as of 2026-09-24, bug-1031): `alert:<alertname>:<k=v,k=v,...>`,
+  derived from Alertmanager's `groupLabels` — the exact set named in `group_by`
+  below, sorted, `instance` dropped when `job == "kube-state-metrics"` (that label
+  is the KSM exporter's own pod IP there, not the alert's subject, and changes on
+  every KSM restart). One card per distinct alert **group**, not per
+  alertname+instance — the old key collapsed unrelated alerts sharing no
+  `instance` label onto one card (9 distinct `TargetDown` jobs → one
+  `TargetDown — unknown`) and re-split KSM alerts on every pod restart. See
+  `kanban_card_upsert.ts`'s header comment for the full derivation.
 - Created with `--triage` — always lands in `triage`, never dispatchable on arrival.
-- `status: resolved` from Alertmanager completes the matching card by idempotency key.
-- Note: Alertmanager's `group_by: [alertname, instance]` (`repeat_interval: 4h`) lines
-  up with this key today. If grouping is ever widened, the key derivation must change
-  with it or distinct instances will collapse onto one card.
+- `status: resolved` from Alertmanager **archives** the matching card (not
+  `complete` — `kanban_db.complete_task()` only accepts a task already in
+  `running/ready/blocked/review`; `triage` isn't in that set, so `hermes kanban
+  complete` on an alert card fails every time with "unknown id or terminal
+  state". This was the actual pipeline bug from 2026-09-16 (when the pipeline
+  went live) to 2026-09-24 (found via a manual board triage pass, 63 cards stuck
+  with zero ever closed) — invisible because the module runs with
+  `continue_on_error: true`, so the parent flow job reported `success: true` on
+  every run regardless. `archive_task()` has no source-status guard, so it works
+  from `triage`; it also frees the idempotency key so the next firing of the same
+  alert group gets a fresh lookup instead of silently matching a dead card. See
+  bug-1031 in `.wolf/buglog.json`.)
+- Note: Alertmanager's `group_by: [alertname, namespace, job, instance]`
+  (`repeat_interval: 4h`) is what `groupLabels` reflects. If grouping is ever
+  widened or narrowed again, the key derivation in `kanban_card_upsert.ts` must
+  change with it.
+- `Watchdog` and `InfoInhibitor` are never carded (they're dead-man's-switch /
+  grouping-helper alerts, not faults) — filtered in `kanban_card_upsert.ts`
+  before the create call.
+- A belt-and-suspenders `ops-board-reconcile` `--no-agent` cron (hourly) archives
+  any `triage` card whose alert has stopped firing in Alertmanager, independent
+  of whether a `resolved` webhook ever arrived — added because Alertmanager
+  losing its in-memory state (a pod restart) means it never sends one, which is
+  exactly what happened 2026-09-21 and orphaned everything fired before it. See
+  "Scheduled pulls" below.
 
 **`projects` cards**:
 
@@ -172,6 +199,12 @@ source: alertmanager | github | claude-code | user | cron
 
 Used for provenance and to filter in the dashboard; not machine-enforced.
 
+**`--board <slug>` is a top-level `kanban` flag and must come BEFORE the
+subcommand** (`hermes kanban --board ops comment <id> ...`), not after it.
+Every command below was fixed to this order 2026-09-24 (bug-1031) — the
+previous form (`hermes kanban comment <id> --board ops`) fails outright with
+`unrecognized arguments: --board ops`.
+
 ## Triage / enrichment sweep (read-only)
 
 A `hermes cron` job sweeps `ops` board `triage` cards every 10 minutes. It's a
@@ -182,18 +215,32 @@ already wired into hermes-t's config (`mcp-loki`, `mcp-prometheus`,
 `mcp-kubernetes`, all `--read-only`/RBAC get-list-watch). It must never touch
 `mcpjungle`'s read-write upstreams.
 
-**Scoped down from the original plan**: there is no `kanban_promote` (or any
-status-transition) agent tool — `promote`, like `notify-subscribe`, is
-CLI-only. A cron job's agent turn can't shell out to the CLI without a
-`terminal`/`code_exec` toolset that isn't confirmed enabled for cron
-profiles, so this sweep does **not** move cards `triage → todo`. Instead:
+**Scoped down from the original plan, twice now:**
 
-- Self-resolved/transient noise → `kanban_complete`.
-- Everything else → stays in `triage`, but now carries an enrichment
-  comment (logs/metrics/blast-radius correlated via the read-only MCPs) and
-  a `Claude Code` prompt block (see below) if it needs a fix. A bare
-  `triage` card = not yet swept; a `triage` card with a comment = enriched
-  and waiting on you.
+1. There is no `kanban_promote` (or any status-transition) agent tool —
+   `promote`, like `notify-subscribe`, is CLI-only. A cron job's agent turn
+   can't shell out to the CLI without a `terminal`/`code_exec` toolset that
+   isn't confirmed enabled for cron profiles, so this sweep does **not** move
+   cards `triage → todo`.
+2. **`kanban_complete` cannot act on a `triage` card either** (bug-1031,
+   2026-09-24) — `complete_task()`'s status guard only accepts
+   `running/ready/blocked/review`, and there is no `kanban_archive` agent
+   tool. The sweep's prompt originally told it to call `kanban_complete` on
+   self-resolving/transient cards; that call was failing every time,
+   silently, for the same reason the alert-ingest resolve path was (see
+   "Card conventions" above). **As of 2026-09-24 the sweep is
+   enrichment-comment only — it never attempts to close a card.** Closing
+   happens via the alert-ingest resolve path (archives on `resolved`), the
+   `ops-board-reconcile` cron (archives orphans hourly), or a human/Claude
+   Code session acting on the sweep's own `claude` prompt block.
+
+So: every triage card gets an enrichment comment (logs/metrics/blast-radius
+correlated via the read-only MCPs, and whether it looks self-resolving) and,
+if a fix looks needed, a `Claude Code` prompt block (see below). A bare
+`triage` card = not yet swept; a `triage` card with a comment = enriched and
+waiting on you (or on one of the two closing mechanisms above).
+
+Installed live 2026-09-24 (job id `980ea8699475`):
 
 ```sh
 kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes cron create \
@@ -204,19 +251,21 @@ kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes cron cr
 only — never mcpjungle's write-capable upstreams) to correlate logs, \
 metrics, and recent cluster events for the affected host/namespace/service. \
 Post an enrichment comment (kanban_comment) covering: what fired, \
-correlated evidence, blast radius, and whether this looks self-resolving. \
-If it is self-resolving or was transient noise, close it (kanban_complete) \
-with a one-line result. Otherwise leave it in triage — do not attempt to \
-change its status — and if a code/config fix looks needed, append a \
-\`\`\`claude fenced block to your comment with a ready-to-run prompt (card \
-id, symptom, evidence already gathered, affected files/hosts, and an \
-on-completion command run from the Mac, not bare hermes: kubectl -n \
-hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes kanban \
-comment <id> --board ops -m '<summary>' && kubectl -n hermes-t exec \
-deploy/hermes-t -- /opt/hermes/.venv/bin/hermes kanban complete <id> \
---board ops). Never use kanban_list's or kanban_show's output to justify \
-creating new cards, blocking, or any mutation beyond \
-kanban_comment/kanban_complete."
+correlated evidence, blast radius, and whether this looks self-resolving or \
+already resolved. Do NOT attempt to change status, complete, or close any \
+card — kanban_complete cannot act on a triage card (the underlying status \
+guard only allows running/ready/blocked/review), and there is no archive \
+tool available to you. Closing triage cards is handled by the alert-ingest \
+resolve path and the ops-board-reconcile cron, not this sweep. If a \
+code/config fix looks needed, append a \`\`\`claude fenced block to your \
+comment with a ready-to-run prompt (card id, symptom, evidence already \
+gathered, affected files/hosts, and an on-completion command run from the \
+Mac: kubectl -n hermes-t exec deploy/hermes-t -- \
+/opt/hermes/.venv/bin/hermes kanban --board ops comment <id> -m \
+'<summary>' && kubectl -n hermes-t exec deploy/hermes-t -- \
+/opt/hermes/.venv/bin/hermes kanban --board ops archive <id>). Never use \
+kanban_list's or kanban_show's output to justify creating new cards, \
+blocking, or any mutation beyond kanban_comment."
 ```
 
 ## Claude Code handoff (prompt-only)
@@ -234,11 +283,12 @@ Symptom: …
 Evidence: <loki/prom queries already run, with results>
 Affected: <hosts, files, namespaces>
 Scope: <what to change; what not to touch>
-On completion (run from the Mac, not bare hermes):
+On completion (run from the Mac, not bare hermes) — archive, not complete;
+see "Card conventions" above for why:
   kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes \
-    kanban comment <task_id> --board ops -m "<summary>" && \
+    kanban --board ops comment <task_id> -m "<summary>" && \
   kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes \
-    kanban complete <task_id> --board ops
+    kanban --board ops archive <task_id>
 ````
 
 The card waits in `triage` until you act — nothing here starts a Claude Code
@@ -256,13 +306,18 @@ credentials.
 
 ## Feedback from Claude Code
 
-`.claude/hooks/kanban-sync.js` (`SessionEnd`) and the `/card` skill close the
+`.wolf/hooks/kanban-sync.js` (`SessionEnd`) and the `/card` skill close the
 loop — see `.claude/skills/card.md` in this repo. A session started from a
-card's prompt block runs `card start <id>` (or the hook reads the id
-directly from the prompt), and on session end the hook posts a summary
-comment + `kanban_complete` (or leaves it, if the session didn't finish) via
-`kubectl exec`, without touching `.wolf/buglog.json` — that file stays the
-post-fix forensic archive it always was, unrelated to board state.
+card's prompt block runs `/card start <id>`, and on session end the hook
+posts a wrap-up comment via `kubectl exec` — it deliberately never completes
+or archives the card itself (a session that crashes or hits a context limit
+shouldn't get its card marked done just because the session ended); only an
+explicit `/card done` does that. `/card done` archives `ops`-board cards
+(they live in `triage`, which `complete` can't act on — see Card conventions
+above) and completes `projects`-board cards (created in `ready`, where
+`complete` works normally). Neither path touches `.wolf/buglog.json` — that
+file stays the post-fix forensic archive it always was, unrelated to board
+state.
 
 ## Migrating the security backlog
 
@@ -292,6 +347,14 @@ migrating, treat `security-backlog.md` as a historical document — the board
 is the tracker going forward.
 
 ## Scheduled pulls
+
+**All jobs below were documented but never actually installed until
+2026-09-24 (bug-1031) — `hermes cron list` returned "No scheduled jobs" the
+entire time, which is why every card on the board was bare with no
+enrichment comment.** Now live: `ops-triage-sweep` (`980ea8699475`),
+`gh-actions-watch` (`8c74d34dc21f`), `infra-health-rollup` (`8b53689bed00`),
+`ops-board-reconcile` (`4db328b0dffa`). `hermes cron list` reflects current
+state; job ids here are a point-in-time reference, not load-bearing.
 
 **GitHub Actions failures** (`flux/`'s workflows notify nobody today, unlike
 `nix/`'s Apprise-wired ones — see `scripts/gh-actions-watch.sh`). One-time
@@ -347,6 +410,43 @@ to create or upsert a card summarizing which host/node/service and at what \
 severity. If everything is 0 (GOOD), create nothing — do not post a daily \
 all-clear card."
 ```
+
+**Ops-board reconciler** (`ops-board-reconcile`, added 2026-09-24, bug-1031
+follow-up): a `--no-agent` cron, hourly, at
+`flux/apps/automation/hermes-t/scripts/ops-board-reconcile.py` — installed
+onto the PVC the same way as `gh-actions-watch.sh` above (`kubectl cp` to
+`/opt/data/scripts/`). It exists because the resolve path (archiving on a
+`resolved` webhook) only works if Alertmanager actually sends one — and it
+won't if Alertmanager loses its in-memory state (a pod restart, e.g. the one
+on 2026-09-21T20:17Z that orphaned every card fired before it). The script
+queries Alertmanager's `/api/v2/alerts/groups` directly (not via
+mcp-prometheus — this is `--no-agent`, no agent tool access), rebuilds each
+`triage` card's idempotency key from its title using the identical derivation
+`kanban_card_upsert.ts` uses to create it, and archives any card whose key
+matches no currently-active group.
+
+Requires a `CiliumNetworkPolicy` egress rule from `hermes-t` to
+`monitoring`/`alertmanager:9093` — added to
+`ciliumnetworkpolicy-hermes-t.yaml` in the same change (`monitoring` isn't
+itself T1-onboarded yet, so only hermes-t's own egress needed the allow).
+**This cron will fail every run until that CNP change is deployed
+(commit+push, Flux reconciles it)** — check `hermes cron runs
+ops-board-reconcile` for a connection-refused/timeout error as the signal
+it's not live yet.
+
+**Alert-ingest pipeline self-check** (`f/sre/alert-ingest-health`, added
+2026-09-24, bug-1031 follow-up): a Windmill schedule, hourly, NOT a `hermes
+cron` — lives in `flux/windmill-workspace/f/sre/`, deployed via `wmill sync
+push` like the rest of that workspace. Exists for the same reason the bug
+above went undetected for 8 days: `kanban_card_upsert`'s `continue_on_error:
+true` means the parent flow job reports `success: true` even when that step
+throws on every single run. There is no Prometheus metric to alert on this
+(confirmed live — zero `windmill_*` series scraped; `up{job="windmill"}` only
+covers worker liveness, not per-script outcomes), so this queries Windmill's
+own job-history API directly for recent `kanban_card_upsert` failures on
+either `f/sre/alert-ingest` or `f/sre/flux-alert-ingest`, and pings ntfy's
+`alerts-warning` topic if it finds any. A last-resort watchdog for the thing
+that watches everything else — nothing else watches it.
 
 ## Assignee
 

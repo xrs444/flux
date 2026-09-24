@@ -3,15 +3,24 @@
 // the deterministic runbook routing — so a kanban-write failure never blocks
 // ntfy or routing (see continue_on_error on this module in flow.yaml).
 //
-// Idempotency: `alert:<alertname>:<instance>` is passed as
-// `--idempotency-key` to `hermes kanban create`. hermes_cli/kanban_db.py's
-// create_task() does the dedup itself — a non-archived task with a matching
-// key short-circuits and returns its existing id instead of creating a
-// duplicate — so re-firing the same alert updates nothing here; it's a
-// pure lookup. This lines up with Alertmanager's `group_by: [alertname,
-// instance]` (repeat_interval: 4h) in secret-alertmanager-config.secret.yaml
-// — if grouping is ever widened, this key derivation must change with it or
-// distinct instances will collapse onto one card.
+// Idempotency: the key is derived from Alertmanager's `groupLabels` — the
+// exact label set named in `group_by` in secret-alertmanager-config.secret.yaml
+// — sorted `k=v` pairs joined with commas, e.g. `alertname=TargetDown,job=snmp`.
+// `groupLabels` is identical between a group's firing and resolved
+// notifications, so the resolve is guaranteed to match its firing card by
+// construction. Using `alerts[0].labels` instead (the old approach) was
+// wrong in both directions: labels absent from the group key (e.g.
+// `TargetDown` carries no `instance`) collapsed distinct alerts onto one
+// card, while labels that vary run-to-run but aren't part of the group
+// (kube-state-metrics alerts keyed on the KSM pod's own IP) re-carded the
+// same condition on every KSM restart. See KANBAN.md's Card conventions
+// section — the two must change together if `group_by` is ever widened.
+//
+// `--idempotency-key` is passed to `hermes kanban create`.
+// hermes_cli/kanban_db.py's create_task() does the dedup itself — a
+// non-archived task with a matching key short-circuits and returns its
+// existing id instead of creating a duplicate — so re-firing the same
+// alert group updates nothing here; it's a pure lookup.
 //
 // Transport is `kubectl exec` into the hermes-t pod rather than hitting its
 // dashboard REST API directly: the `default` worker group already carries
@@ -81,8 +90,15 @@ async function hermesKanban(
   return { stdout, stderr, code };
 }
 
+// Alertmanager fires this permanently by design (dead-man's-switch) or as a
+// grouping helper, not a fault — never worth a card. Checked against
+// groupLabels.alertname so it's caught regardless of which alert in the
+// group happens to be alerts[0].
+const NEVER_CARD_ALERTNAMES = new Set(["Watchdog", "InfoInhibitor"]);
+
 export async function main(payload: any, matrix_chat_id: string) {
   const status: string = payload.status ?? "firing";
+  const groupLabels: any = payload.groupLabels ?? {};
   const commonLabels: any = payload.commonLabels ?? {};
   const commonAnnotations: any = payload.commonAnnotations ?? {};
   const alerts: any[] = payload.alerts ?? [];
@@ -90,16 +106,32 @@ export async function main(payload: any, matrix_chat_id: string) {
   const labels = firstAlert.labels ?? commonLabels;
   const annotations = firstAlert.annotations ?? commonAnnotations;
 
-  const alertname: string = labels.alertname ?? "UnknownAlert";
-  const instance: string = labels.instance ?? labels.namespace ?? "unknown";
+  const alertname: string = groupLabels.alertname ?? labels.alertname ?? "UnknownAlert";
+  if (NEVER_CARD_ALERTNAMES.has(alertname)) {
+    return { action: "skipped", reason: `${alertname} is never carded` };
+  }
+
   const severity: string = labels.severity ?? "warning";
   const summary: string = annotations.summary ?? alertname;
   const description: string = annotations.description ?? "";
   const startsAt: string = firstAlert.startsAt ?? "";
   const generatorURL: string = firstAlert.generatorURL ?? "";
 
-  const idempotencyKey = `alert:${alertname}:${instance}`;
-  const title = `${alertname} — ${instance}`;
+  // Idempotency key + title from groupLabels (see comment block above) —
+  // falls back to commonLabels/labels only if Alertmanager ever omits
+  // groupLabels (shouldn't happen for a webhook receiver, but cheap to guard).
+  const keySource = Object.keys(groupLabels).length > 0 ? groupLabels : labels;
+  // kube-state-metrics alerts' `instance` is the KSM exporter pod's own
+  // address, not the alert's subject — it changes on every KSM restart
+  // (confirmed live: the same condition re-carded under 3 different pod
+  // IPs). namespace + alertname already identify the condition without it.
+  const isKsmAlert = keySource.job === "kube-state-metrics";
+  const keyParts = Object.entries(keySource)
+    .filter(([k]) => k !== "alertname" && !(isKsmAlert && k === "instance"))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}=${v}`);
+  const idempotencyKey = `alert:${alertname}${keyParts.length ? ":" + keyParts.join(",") : ""}`;
+  const title = keyParts.length ? `${alertname} — ${keyParts.join(", ")}` : alertname;
 
   const bodyLines = ["source: alertmanager", `severity: ${severity}`, summary];
   if (description && description !== summary) bodyLines.push(description);
@@ -108,8 +140,8 @@ export async function main(payload: any, matrix_chat_id: string) {
   if (alerts.length > 1) bodyLines.push(`(${alerts.length} alerts in group)`);
 
   // create is idempotent on idempotency_key — a repeat firing notification
-  // for the same alertname+instance returns the existing card's id rather
-  // than creating a second one.
+  // for the same alert group returns the existing card's id rather than
+  // creating a second one.
   const createResult = await hermesKanban([
     "create",
     title,
@@ -154,16 +186,34 @@ export async function main(payload: any, matrix_chat_id: string) {
     return { action: "upserted", task_id: taskId, idempotency_key: idempotencyKey };
   }
 
-  const completeResult = await hermesKanban([
-    "complete",
+  // Close by archiving, not completing. kanban_db.complete_task() only
+  // accepts a card already in running/ready/blocked/review — never triage,
+  // which is where every alert card lands and stays (see the module comment
+  // above). `hermes kanban complete` on a triage card fails every time with
+  // "unknown id or terminal state" (confirmed live — this was the pipeline's
+  // actual bug: every resolve since 2026-09-16 threw here, masked by
+  // continue_on_error on this module in flow.yaml). archive_task()'s guard
+  // is `status != 'archived'` — no source-status restriction, so it works
+  // unconditionally. It's also strictly safer than "promote then complete":
+  // promoting to ready+unassigned would sit in kanban.default_assignee's
+  // sweep path and get dispatched to the kanban-safe profile within ~60s
+  // (see KANBAN.md) — a real dispatch on every routine alert resolution.
+  // Archiving also frees the idempotency key, so create_task()'s dedup
+  // (which only matches non-archived tasks) won't silently swallow the next
+  // time this same alert group fires.
+  const commentResult = await hermesKanban([
+    "comment",
     taskId,
-    "--result",
     `Resolved via Alertmanager at ${new Date().toISOString()}`,
   ]);
-  if (completeResult.code !== 0) {
+  if (commentResult.code !== 0) {
+    console.error(`kanban comment failed (non-fatal): ${commentResult.stderr}`);
+  }
+  const archiveResult = await hermesKanban(["archive", taskId]);
+  if (archiveResult.code !== 0) {
     throw new Error(
-      `hermes kanban complete failed (exit ${completeResult.code}): ${completeResult.stderr}`
+      `hermes kanban archive failed (exit ${archiveResult.code}): ${archiveResult.stderr}`
     );
   }
-  return { action: "completed", task_id: taskId, idempotency_key: idempotencyKey };
+  return { action: "archived", task_id: taskId, idempotency_key: idempotencyKey };
 }

@@ -112,3 +112,20 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
+    # Alertmanager (2026-09-24, ops-board reconciler): the `ops-board-reconcile`
+    # --no-agent hermes cron runs inside this pod and reads
+    # /api/v2/alerts/groups directly to archive `ops` board cards whose alert
+    # has stopped firing (belt-and-suspenders for when Alertmanager itself
+    # loses state, e.g. a pod restart, and never sends the `resolved` webhook
+    # that would normally close the card — see KANBAN.md). `monitoring` isn't
+    # itself T1-onboarded yet (no CiliumNetworkPolicy there), so only this
+    # pod's own egress needs the allow — Alertmanager's ingress is unrestricted
+    # until Phase 1 of the network-segmentation project reaches it.
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: monitoring
+            k8s:app.kubernetes.io/name: alertmanager
+      toPorts:
+        - ports:
+            - port: "9093"
+              protocol: TCP

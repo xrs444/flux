@@ -40,10 +40,11 @@ description: >-
 
   Kanban board write (added for the Hermes-T Kanban plan): kanban_card_upsert
   runs unconditionally right after post_ntfy, before route_alert branches.
-  Firing creates/looks-up an `ops` board card keyed on
-  `alert:<alertname>:<instance>` (always landing in `triage`, never
-  dispatchable); resolved completes the matching card. continue_on_error is
-  set so a kanban-write failure (e.g. hermes-t pod down) never blocks ntfy or
+  Firing creates/looks-up an `ops` board card keyed on Alertmanager's
+  `groupLabels` (always landing in `triage`, never dispatchable); resolved
+  archives the matching card (not complete — triage cards can't be
+  completed, see kanban_card_upsert.ts). continue_on_error is set so a
+  kanban-write failure (e.g. hermes-t pod down) never blocks ntfy or
   routing. See flux/apps/automation/hermes-t/KANBAN.md for card conventions.
 value:
   modules:

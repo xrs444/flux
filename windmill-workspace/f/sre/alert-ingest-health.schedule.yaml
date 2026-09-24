@@ -1,0 +1,12 @@
+schedule: 0 0 * * * *
+timezone: America/Phoenix
+enabled: true
+script_path: f/sre/alert-ingest-health
+is_flow: false
+args:
+  ntfy_base_url: https://ntfy.xrs444.net
+  ntfy_token: $var:f/sre/ntfy_token
+  lookback_minutes: 90
+permissioned_as: u/xrs444
+summary: Hourly check for silently-failing kanban_card_upsert steps
+no_flow_overlap: true
