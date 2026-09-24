@@ -1,3 +1,4 @@
+---
 apiVersion: cilium.io/v2alpha1
 kind: CiliumBGPPeerConfig
 metadata:
@@ -13,6 +14,32 @@ spec:
     restartTimeSeconds: 15
   families:
     - afi: ipv4
+      safi: unicast
+      advertisements:
+        matchLabels:
+          advertise: bgp
+---
+# Genuinely separate peer config for the v6-only BGP session (IPv6 rollout Phase 6, see
+# docs/ipv6-addressing.md and nix/modules/services/bird-bgp/default.nix). NOT an ipv6
+# family added to xsvr-peer above — Cilium's BGP control plane (GoBGP) derives a route's
+# next-hop from the peering session's address family, so an ipv4-transport session
+# advertising ipv6 routes maps a broken IPv4-mapped next-hop (cilium/cilium#37831,
+# confirmed still applicable on 1.20.2 — closed as accepted GoBGP behavior, no code fix).
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPPeerConfig
+metadata:
+  name: xsvr-peer-v6
+  namespace: kube-system
+spec:
+  timers:
+    holdTimeSeconds: 9
+    keepAliveTimeSeconds: 3
+  ebgpMultihop: 4
+  gracefulRestart:
+    enabled: true
+    restartTimeSeconds: 15
+  families:
+    - afi: ipv6
       safi: unicast
       advertisements:
         matchLabels:
