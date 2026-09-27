@@ -129,3 +129,17 @@ spec:
         - ports:
             - port: "9093"
               protocol: TCP
+    # GitHub API (2026-09-26): the `gh-actions-watch` --monitor-script cron
+    # (scripts/gh-actions-watch.sh, installed as part of the same bug-1031
+    # fix as the reconciler above) curls api.github.com every 30m and had no
+    # egress rule at all — found live via `hermes cron list` showing 106
+    # consecutive failures, all "Expecting value: line 1 column 1 (char 0)"
+    # (curl's empty stdout on a blocked/timed-out connection, not a GitHub
+    # API or auth problem — confirmed via a direct curl from this pod: no
+    # response within 8s, exit 28).
+    - toFQDNs:
+        - matchName: api.github.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
