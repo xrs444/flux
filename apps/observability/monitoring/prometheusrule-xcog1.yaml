@@ -47,6 +47,35 @@ spec:
               minutes. Hermes and Home Assistant LLM/voice requests routed
               through LiteLLM will fail even if the host itself is up.
 
+        # Attribution gap closed 2026-09-28 (bug-991): Xcog1LiteLLMDown above
+        # only probes LiteLLM's own /health/liveliness, which stays green
+        # even when the mlx_lm.server daemon behind it is crash-looping on a
+        # Metal OOM — the front door answers, inference doesn't. That left
+        # this exact failure mode (2026-09-26 to 2026-09-28, all three
+        # hermes-t/s/k agents down) with nothing pointing at xcog1;
+        # SyntheticHermesFailed fired correctly but diagnosis of WHERE was
+        # entirely manual. No new probe or scrape target needed — both
+        # sides already exist as metrics; this just correlates them.
+        - alert: Xcog1InferenceDegraded
+          expr: |
+            probe_success{job="blackbox-xcog1-litellm"} == 1
+              and on() min(synthetic_hermes_success) == 0
+          for: 10m
+          labels:
+            severity: critical
+            category: xcog1
+          annotations:
+            summary: "xcog1 LiteLLM front door up but inference failing"
+            description: >
+              LiteLLM's liveliness endpoint is answering while every Hermes
+              synthetic probe (synthetic_hermes_success, all instances) has
+              failed for 10+ minutes — the signature of a model daemon
+              crash-loop behind a healthy proxy (bug-991: mlx_lm.server
+              Metal OOM). Check
+              /var/log/llm-stack/mlx-lm-*.stderr on xcog1 for
+              kIOGPUCommandBufferCallbackErrorOutOfMemory before assuming
+              the Hermes side is at fault.
+
         # Disk usage on xcog1's data volume (model weights under /var/models).
         # NOTE (verify after first scrape, plan §D11): confirm the actual
         # mountpoint/fstype labels macOS node_exporter reports for this host
