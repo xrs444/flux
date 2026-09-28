@@ -17,3 +17,15 @@ spec:
     - port: api
       path: /metrics
       interval: 30s
+      # PowerDNS's webserver paths (/metrics, static UI) take HTTP Basic
+      # auth with the API key as password -- NOT the X-API-Key header (that
+      # header is only for the /api/v1 REST endpoints). Confirmed live:
+      # X-API-Key on /metrics returns 401 with WWW-Authenticate: Basic.
+      # Username is arbitrary; PowerDNS only checks the password.
+      basicAuth:
+        username:
+          name: powerdns-api-key
+          key: username
+        password:
+          name: powerdns-api-key
+          key: api-key
