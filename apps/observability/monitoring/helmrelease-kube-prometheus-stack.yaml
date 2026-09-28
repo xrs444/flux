@@ -43,6 +43,17 @@ spec:
         retentionSize: 45GiB
         storageSpec:
           volumeClaimTemplate:
+            metadata:
+              # Tells the stock KubePersistentVolumeFillingUp alert to skip
+              # this PVC (its own "unless kube_persistentvolumeclaim_labels{
+              # label_excluded_from_alerts="true"}" clause) -- predict_linear
+              # can't see that retentionSize below caps growth at 45GiB, so it
+              # reads the climb toward that ceiling as heading to 100% and
+              # keeps firing a false "days to full" alert. Requires
+              # kube-state-metrics' --metric-labels-allowlist to actually
+              # expose this label (apps/core/kube-state-metrics/deployment.yaml).
+              labels:
+                excluded_from_alerts: "true"
             spec:
               storageClassName: longhorn-retain
               accessModes: [ReadWriteOnce]

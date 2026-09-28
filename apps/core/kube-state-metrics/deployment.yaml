@@ -126,6 +126,17 @@ spec:
       containers:
         - name: kube-state-metrics
           image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.20.0
+          # Default build emits no kube_*_labels/_annotations info metrics at
+          # all (not just zero label dimensions -- the whole metric family is
+          # absent) unless a metric-labels-allowlist entry opts it in. Scoped
+          # to just this one label on PVCs so kube-prometheus-stack's own
+          # built-in `unless kube_persistentvolumeclaim_labels{label_excluded_
+          # from_alerts="true"}` alert-exclusion clause (already present in
+          # KubePersistentVolumeFillingUp's expression) actually has something
+          # to match against -- see prometheus's own PVC label in
+          # helmrelease-kube-prometheus-stack.yaml for the first user of it.
+          args:
+            - --metric-labels-allowlist=persistentvolumeclaims=[excluded_from_alerts]
           ports:
             - name: metrics
               containerPort: 8080
