@@ -205,6 +205,12 @@ Every command below was fixed to this order 2026-09-24 (bug-1031) — the
 previous form (`hermes kanban comment <id> --board ops`) fails outright with
 `unrecognized arguments: --board ops`.
 
+**`hermes kanban comment` takes the comment body as a positional arg, not
+`-m`** (fixed in this doc 2026-09-28) — `comment <task_id> "<text>"`, not
+`comment <task_id> -m "<text>"`. The latter fails with `unrecognized
+arguments: -m`. Every `-m`-form command in this doc (the sweep install and
+the Claude Code handoff completion command) was corrected.
+
 ## Triage / enrichment sweep (read-only)
 
 A `hermes cron` job sweeps `ops` board `triage` cards every 10 minutes. It's a
@@ -261,7 +267,7 @@ code/config fix looks needed, append a \`\`\`claude fenced block to your \
 comment with a ready-to-run prompt (card id, symptom, evidence already \
 gathered, affected files/hosts, and an on-completion command run from the \
 Mac: kubectl -n hermes-t exec deploy/hermes-t -- \
-/opt/hermes/.venv/bin/hermes kanban --board ops comment <id> -m \
+/opt/hermes/.venv/bin/hermes kanban --board ops comment <id> \
 '<summary>' && kubectl -n hermes-t exec deploy/hermes-t -- \
 /opt/hermes/.venv/bin/hermes kanban --board ops archive <id>). Never use \
 kanban_list's or kanban_show's output to justify creating new cards, \
@@ -286,7 +292,7 @@ Scope: <what to change; what not to touch>
 On completion (run from the Mac, not bare hermes) — archive, not complete;
 see "Card conventions" above for why:
   kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes \
-    kanban --board ops comment <task_id> -m "<summary>" && \
+    kanban --board ops comment <task_id> "<summary>" && \
   kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes \
     kanban --board ops archive <task_id>
 ````
