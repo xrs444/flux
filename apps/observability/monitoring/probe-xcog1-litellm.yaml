@@ -4,12 +4,16 @@
 # /metrics callback is enterprise-gated in current releases (plan §D3), so
 # liveliness is checked via blackbox instead. Endpoint returns 200 with no
 # auth required. The probe result feeds into the Xcog1LiteLLMDown alert rule.
-# Pinned to 172.20.1.130 (not xcog1.lan): the hostname round-robins across 3
-# A records (xcog1 is multi-homed — LAN + Tailscale), and only .130 is
-# actually reachable from the cluster's pod network — confirmed live via
-# `kubectl run --rm -i busybox -- nc -zv <ip> 4000` against each address;
-# the other two time out. Using the bare hostname made the probe fail
-# non-deterministically depending on which A record got resolved.
+# Uses xcog1.lan, not a pinned IP (2026-10-02 correction): a prior comment
+# here claimed xcog1.lan round-robinned across 3 A records (LAN + Tailscale)
+# and pinned 172.20.1.130 to work around it. Re-checked live via
+# `kubectl run --rm -i busybox -- nslookup xcog1.lan` from inside this same
+# cluster — it returns exactly one A and one AAAA record, no Tailscale
+# address, no ambiguity. That justification didn't hold up, and a pinned IP
+# would silently break the next time xcog1's address changes (e.g. a VLAN
+# move) with nothing to catch it. If this probe starts failing
+# non-deterministically again, re-verify with the same nslookup before
+# reaching for another IP pin as the fix.
 apiVersion: monitoring.coreos.com/v1
 kind: Probe
 metadata:
@@ -29,6 +33,6 @@ spec:
   targets:
     staticConfig:
       static:
-        - http://172.20.1.130:4000/health/liveliness
+        - http://xcog1.lan:4000/health/liveliness
       labels:
         job: blackbox-xcog1-litellm
