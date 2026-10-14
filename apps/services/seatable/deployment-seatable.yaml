@@ -156,11 +156,13 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
         - name: mariadb
-          image: mariadb:12
+          image: mariadb:13
           ports:
             - containerPort: 3306
               name: mysql
           env:
+            - name: MARIADB_AUTO_UPGRADE
+              value: "1"
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
