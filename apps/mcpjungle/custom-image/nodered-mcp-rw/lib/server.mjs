@@ -5,8 +5,10 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import 'dotenv/config';
+import { config } from 'dotenv';
 import axios from 'axios';
+
+config();
 import { buildAuthHeaders, buildHttpsAgent } from './utils.mjs';
 
 // Import tool registrars
