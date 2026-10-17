@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: mcp-firewalla
-          image: amittell/firewalla-mcp-server:1.3.0
+          image: amittell/firewalla-mcp-server:1.5.0
           ports:
             - containerPort: 8080
               name: http
