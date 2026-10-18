@@ -363,27 +363,41 @@ enrichment comment.** Now live: `ops-triage-sweep` (`980ea8699475`),
 state; job ids here are a point-in-time reference, not load-bearing.
 
 **GitHub Actions failures** (`flux/`'s workflows notify nobody today, unlike
-`nix/`'s Apprise-wired ones — see `scripts/gh-actions-watch.sh`). One-time
-install onto the PVC (cron jobs and their scripts live there, same as
-boards/profiles — not Flux-managed):
+`nix/`'s Apprise-wired ones — see `scripts/gh-actions-watch.py`).
+
+**Replaced 2026-10-14 (agent-mode → deterministic `--no-agent`)**: the
+original version paired `--monitor-script` with an English prompt asking
+the agent to "create on the ops-board" with a stable idempotency key.
+`kanban_create` has no `board` parameter — it relies on ambient
+board-selection state that KANBAN.md already documented as occasionally
+drifting — and the model free-texted a slightly different title each run
+instead of a code-derived one. Over several weeks this produced 36
+near-duplicate cards across 3 different title conventions, most of them
+misrouted onto `projects` instead of `ops`, invisible because nothing
+errored. It also hard-depended this watch on the xcog1 LLM backend, which
+silently dropped ticks during its own outage (bug-991). The new version is
+the same no-agent pattern as `ops-board-reconcile.py`: no LLM involved,
+explicit `--board ops` on every call, and a stable code-derived
+idempotency key/title — `kanban create`'s own `--idempotency-key` already
+dedupes server-side, so the script just calls `create` for every currently
+failing run on every tick; already-existing cards are a no-op.
+
+One-time install onto the PVC (cron jobs and their scripts live there, same
+as boards/profiles — not Flux-managed):
 
 ```sh
-kubectl -n hermes-t cp flux/apps/automation/hermes-t/scripts/gh-actions-watch.sh \
-  hermes-t/$(kubectl -n hermes-t get pod -l app=hermes-t -o jsonpath='{.items[0].metadata.name}'):/opt/data/scripts/gh-actions-watch.sh
+kubectl -n hermes-t cp flux/apps/automation/hermes-t/scripts/gh-actions-watch.py \
+  hermes-t/$(kubectl -n hermes-t get pod -l app=hermes-t -o jsonpath='{.items[0].metadata.name}'):/opt/data/scripts/gh-actions-watch.py
 
 kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes cron create \
   --name gh-actions-watch \
-  --monitor-script gh-actions-watch.sh \
-  "*/30 * * * *" \
-  "GitHub Actions failures changed for xrs444/nix or xrs444/flux (see the \
-MONITOR CHANGE DETECTED diff above). Create or update an ops-board card \
-per distinct failing workflow run, idempotency key \
-github:<repo>:<workflow>:<run_number>, --triage."
+  --no-agent --script gh-actions-watch.py \
+  "*/30 * * * *"
 ```
 
-If either repo is private, unauthenticated GitHub API calls will 401 —
-export `GITHUB_TOKEN` in a copy of the script on the PVC (`--monitor-script`
-has no per-job env var option). Unauthenticated calls are fine for public
+If either repo is private, unauthenticated GitHub API calls will 401 — set
+`GITHUB_TOKEN` at the top of the script on the PVC (no per-job env var
+option in `hermes cron create`). Unauthenticated calls are fine for public
 repos at this poll interval (4 calls/30min, well under the 60/hr limit).
 
 **Daily infra-health rollup**: uses the `homeprod:*:state` recording rules in
