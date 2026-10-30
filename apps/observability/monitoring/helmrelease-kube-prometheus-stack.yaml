@@ -39,6 +39,34 @@ spec:
     # Prometheus configuration
     prometheus:
       prometheusSpec:
+        # Chart ships no resources/tolerations/affinity by default — Prometheus
+        # ran fully unconstrained, and sat on xsvr4 (81% memory used) during
+        # the 2026-10-29 xsvr1 OOM incident, i.e. the thing meant to show you
+        # the event was itself at risk of being killed by a similar one.
+        # Pinned to xsvr2 instead (80GiB VM, ~8% used) via the reserved
+        # node-role.kubernetes.io/ha-only taint — see Talos/patches/v-k8s-xsvr2.yaml.
+        # Limit sized above observed usage (1572Mi via `kubectl top`).
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        tolerations:
+          - key: node-role.kubernetes.io/ha-only
+            operator: Equal
+            value: reserved
+            effect: NoSchedule
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/ha-only
+                      operator: In
+                      values:
+                        - reserved
         retention: 30d
         retentionSize: 45GiB
         storageSpec:
@@ -79,6 +107,30 @@ spec:
     # Grafana configuration
     grafana:
       enabled: true
+      # Pinned to xsvr2 alongside Prometheus/Alertmanager — see prometheus.
+      # prometheusSpec above for why. Limit sized above observed usage
+      # (485Mi via `kubectl top`).
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 768Mi
+      tolerations:
+        - key: node-role.kubernetes.io/ha-only
+          operator: Equal
+          value: reserved
+          effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/ha-only
+                    operator: In
+                    values:
+                      - reserved
       persistence:
         enabled: true
         storageClassName: longhorn-retain
@@ -153,6 +205,31 @@ spec:
     # Alertmanager configuration
     alertmanager:
       alertmanagerSpec:
+        # Pinned to xsvr2 alongside Prometheus/Grafana — see prometheus.
+        # prometheusSpec above for why. Only had a 200Mi request before
+        # (no limit); this is the thing that has to survive to actually
+        # page about a memory-pressure event elsewhere in the cluster.
+        resources:
+          requests:
+            cpu: 50m
+            memory: 200Mi
+          limits:
+            cpu: 200m
+            memory: 512Mi
+        tolerations:
+          - key: node-role.kubernetes.io/ha-only
+            operator: Equal
+            value: reserved
+            effect: NoSchedule
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/ha-only
+                      operator: In
+                      values:
+                        - reserved
         storage:
           volumeClaimTemplate:
             spec:

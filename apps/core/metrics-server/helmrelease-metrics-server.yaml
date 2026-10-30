@@ -33,3 +33,29 @@ spec:
       - name: wildcard-cert
         mountPath: /certs
         readOnly: true
+    # Chart default only sets a request (100m/200Mi), no limit. Pinned to
+    # xsvr2 along with the rest of the monitoring stack so cluster metrics
+    # stay available during an OOM event on another node — see
+    # Talos/patches/v-k8s-xsvr2.yaml for the reserved node-role.kubernetes.io/
+    # ha-only taint/label this tolerates/matches.
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    tolerations:
+      - key: node-role.kubernetes.io/ha-only
+        operator: Equal
+        value: reserved
+        effect: NoSchedule
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/ha-only
+                  operator: In
+                  values:
+                    - reserved

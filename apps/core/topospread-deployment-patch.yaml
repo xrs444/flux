@@ -1,0 +1,21 @@
+---
+# Even spread across nodes — preference, not a hard requirement
+# (whenUnsatisfiable: ScheduleAnyway), so a blanket by-kind patch can never
+# leave a Deployment unschedulable. matchLabelKeys pulls the pod's own
+# "pod-template-hash" label at admission time, so this works generically
+# across every Deployment without needing to know each app's own label
+# values. The descheduler (infrastructure/controllers/descheduler/) actively
+# corrects drift the scheduler's placement-time preference alone won't catch.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: not-used
+spec:
+  template:
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          matchLabelKeys:
+            - pod-template-hash

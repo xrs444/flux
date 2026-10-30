@@ -19,3 +19,19 @@ resources:
   - ./termix
   - ./vikunja
   - ./matrix
+
+# Self-hosted-apps priority tier + even-spread preference. See
+# infrastructure/configs/priority-classes/ and the 2026-10-29 xsvr1 incident.
+patches:
+  - path: priority-high-deployment-patch.yaml
+    target:
+      kind: Deployment
+  - path: priority-high-statefulset-patch.yaml
+    target:
+      kind: StatefulSet
+  - path: topospread-deployment-patch.yaml
+    target:
+      kind: Deployment
+  - path: topospread-statefulset-patch.yaml
+    target:
+      kind: StatefulSet

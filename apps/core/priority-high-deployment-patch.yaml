@@ -1,0 +1,11 @@
+---
+# Self-hosted-apps priority tier — see infrastructure/configs/priority-classes/.
+# Applied by-kind (no name match) to every raw Deployment manifest in this category.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: not-used
+spec:
+  template:
+    spec:
+      priorityClassName: apps-high-priority

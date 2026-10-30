@@ -34,3 +34,11 @@ resources:
   - ciliumnetworkpolicy-mcpjungle.yaml
   - ciliumnetworkpolicy-mcp-firewalla.yaml
   - ciliumnetworkpolicy-mcp-omada.yaml
+
+patches:
+  - path: priority-high-deployment-patch.yaml
+    target:
+      kind: Deployment
+  - path: topospread-deployment-patch.yaml
+    target:
+      kind: Deployment

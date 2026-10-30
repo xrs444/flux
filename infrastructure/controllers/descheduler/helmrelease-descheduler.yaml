@@ -1,0 +1,117 @@
+---
+# Added 2026-10-30 after the xsvr1 memory-exhaustion incident (2026-10-29).
+# topologySpreadConstraints (apps/_shared-patches/topospread-*-patch.yaml)
+# only steer *new* scheduling decisions — they don't correct pods that
+# already piled onto one node before the constraint existed, or drift back
+# together over time. This actively rebalances: RemovePodsViolatingTopology
+# SpreadConstraint enforces the spread preference above, LowNodeUtilization
+# evicts from over-utilized nodes toward under-utilized ones, and
+# RemovePodsViolatingNodeTaints/NodeAffinity clean up anything stuck on a
+# node it shouldn't be on (e.g. after the memory-constrained/ha-only taints
+# above were introduced).
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: descheduler
+  namespace: kube-system
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: descheduler
+      version: "0.37.0"
+      sourceRef:
+        kind: HelmRepository
+        name: descheduler
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    kind: CronJob
+    schedule: "*/15 * * * *"
+
+    # Pinned to xsvr2 (reserved node-role.kubernetes.io/ha-only) — see
+    # Talos/patches/v-k8s-xsvr2.yaml. Keeps the rebalancer itself out of the
+    # blast radius of the memory pressure it's meant to help correct.
+    tolerations:
+      - key: node-role.kubernetes.io/ha-only
+        operator: Equal
+        value: reserved
+        effect: NoSchedule
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/ha-only
+                  operator: In
+                  values:
+                    - reserved
+
+    # xsvr2 is the weakest CPU in the cluster (Atom C2750, 6 vCPU allocated
+    # to the VM) — kept deliberately small. Chart default is 500m/256Mi
+    # request+limit; this is a 15-minutely CronJob run, not a long-lived
+    # server, so a tight limit is fine.
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 300m
+        memory: 256Mi
+
+    deschedulerPolicy:
+      profiles:
+        - name: default
+          pluginConfig:
+            - name: DefaultEvictor
+              args:
+                podProtections:
+                  defaultDisabled:
+                    - "PodsWithLocalStorage"
+                  extraEnabled:
+                    - "PodsWithPVC"
+            - name: RemoveDuplicates
+            - name: RemovePodsHavingTooManyRestarts
+              args:
+                podRestartThreshold: 100
+                includingInitContainers: true
+            - name: RemovePodsViolatingNodeAffinity
+              args:
+                nodeAffinityType:
+                  - requiredDuringSchedulingIgnoredDuringExecution
+            - name: RemovePodsViolatingNodeTaints
+            - name: RemovePodsViolatingInterPodAntiAffinity
+            - name: RemovePodsViolatingTopologySpreadConstraint
+            - name: LowNodeUtilization
+              args:
+                thresholds:
+                  cpu: 20
+                  memory: 20
+                  pods: 20
+                # Raised memory targetThreshold from the chart default (50)
+                # to 70 — xsvr1/xsvr4 normally run in the 60-80% memory range
+                # even when healthy (24GiB VM, control-plane + storage +
+                # several app pods), so a 50% target would churn constantly.
+                # 70% only triggers real rebalancing on genuinely overloaded
+                # nodes, which is what we actually want to catch.
+                targetThresholds:
+                  cpu: 50
+                  memory: 70
+                  pods: 50
+          plugins:
+            balance:
+              enabled:
+                - RemoveDuplicates
+                - RemovePodsViolatingTopologySpreadConstraint
+                - LowNodeUtilization
+            deschedule:
+              enabled:
+                - RemovePodsHavingTooManyRestarts
+                - RemovePodsViolatingNodeTaints
+                - RemovePodsViolatingNodeAffinity
+                - RemovePodsViolatingInterPodAntiAffinity

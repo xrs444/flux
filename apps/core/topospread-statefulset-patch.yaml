@@ -1,0 +1,16 @@
+---
+# StatefulSet pods carry "controller-revision-hash" instead of
+# "pod-template-hash" — see topospread-deployment-patch.yaml for the rest.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: not-used
+spec:
+  template:
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          matchLabelKeys:
+            - controller-revision-hash

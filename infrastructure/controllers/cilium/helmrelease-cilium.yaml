@@ -33,8 +33,42 @@ spec:
     # This minimizes datapath disruption during the upgrade
     upgradeCompatibility: "1.19"
 
+    # CNI agent must run on every node and is critical to node function —
+    # losing it mid-OOM (as happened to cilium-envoy on xsvr1, 2026-10-29,
+    # while unconstrained/BestEffort) breaks networking cluster-wide for that
+    # node. system-node-critical is the standard built-in class for exactly
+    # this (kube-apiserver/kubelet-tier), kube-system namespace only.
+    priorityClassName: system-node-critical
+    # Limit sized above observed cilium-agent RSS (776Mi-1.2Gi across nodes
+    # via `kubectl top`), not a guess.
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 2000m
+        memory: 1536Mi
+
+    envoy:
+      priorityClassName: system-node-critical
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
     operator:
       revisionHistoryLimit: 3
+      priorityClassName: system-cluster-critical
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi
       prometheus:
         enabled: true
         port: 9963

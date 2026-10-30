@@ -7,3 +7,21 @@ resources:
   - ./loki
   - ./mcp-tools
   - ./prometheus-sa
+
+# Self-hosted-apps priority tier + even-spread preference. Components pinned
+# to xsvr2 (Prometheus/Alertmanager/Grafana/metrics-server, set directly in
+# their own HelmRelease values) keep their own node affinity regardless —
+# priority tier and node placement are independent.
+patches:
+  - path: priority-high-deployment-patch.yaml
+    target:
+      kind: Deployment
+  - path: priority-high-statefulset-patch.yaml
+    target:
+      kind: StatefulSet
+  - path: topospread-deployment-patch.yaml
+    target:
+      kind: Deployment
+  - path: topospread-statefulset-patch.yaml
+    target:
+      kind: StatefulSet

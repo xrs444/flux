@@ -5,6 +5,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+  - ./priority-classes      # Cluster-wide PriorityClass tiers for OOM eviction order
   - ./helmrepositories      # Additional Helm repositories for configs
   - ./cluster-issuers       # Let's Encrypt certificate issuers
   - ./reflector             # Secret/ConfigMap replication across namespaces

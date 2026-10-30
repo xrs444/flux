@@ -1,0 +1,29 @@
+# Priority tiers for node-pressure eviction order and scheduler preemption.
+# Infra (Longhorn's own "longhorn-critical", Cilium's system-node-critical/
+# system-cluster-critical) sits above both of these by design — see
+# helmrelease-longhorn.yaml and helmrelease-cilium.yaml.
+#
+# Tier order (highest first): infra > apps-high-priority > apps-low-priority
+# > unclassified (default 0). Applied cluster-wide via by-kind kustomize
+# patches in apps/_shared-patches/ — see each apps/<category>/kustomization.yaml.
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: apps-high-priority
+value: 1000000
+globalDefault: false
+description: >-
+  Self-hosted apps users depend on directly (hermes, paperless-ngx, immich,
+  netbox, seatable, matrix, etc.) — protected ahead of arr/media-stack and
+  batch workloads during node memory pressure.
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: apps-low-priority
+value: 100
+globalDefault: false
+description: >-
+  arr/media stack and batch/lab workloads — most replaceable tier, first to
+  be evicted under node memory pressure so higher tiers survive.

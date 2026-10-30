@@ -39,6 +39,9 @@ resources:
   - prometheusrule-xcog1.yaml
   # Longhorn storage health (volume robustness, disk health)
   - prometheusrule-longhorn.yaml
+  # Node/container memory pressure + overcommit (added after the 2026-10-29
+  # xsvr1 OOM incident — see file header)
+  - prometheusrule-resource-pressure.yaml
   # Overall System Status dashboard state (0/1/2 GOOD/CAUTION/WARNING recording rules)
   - prometheusrule-status-state.yaml
   # UPS alerts (xups.lan via SNMP, xdt1-t via NUT)

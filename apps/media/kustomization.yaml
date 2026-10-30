@@ -13,3 +13,20 @@ resources:
   - ./romm
   - ./manyfold
   - ./booklore
+
+# arr/media-stack priority tier (most replaceable, first evicted under node
+# memory pressure) + even-spread preference across nodes. See
+# infrastructure/configs/priority-classes/ and the 2026-10-29 xsvr1 incident.
+patches:
+  - path: priority-low-deployment-patch.yaml
+    target:
+      kind: Deployment
+  - path: priority-low-statefulset-patch.yaml
+    target:
+      kind: StatefulSet
+  - path: topospread-deployment-patch.yaml
+    target:
+      kind: Deployment
+  - path: topospread-statefulset-patch.yaml
+    target:
+      kind: StatefulSet

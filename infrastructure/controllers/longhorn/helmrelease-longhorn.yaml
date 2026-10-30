@@ -57,8 +57,27 @@ spec:
         node-role.kubernetes.io/ha-only=reserved:NoSchedule;
         memory-constrained=true:NoSchedule
 
+      # CSI sidecars/plugin ran fully unconstrained (BestEffort QoS, no
+      # request/limit at all) before the 2026-10-29 xsvr1 memory-exhaustion
+      # incident — BestEffort pods are first in line for the kernel OOM
+      # killer, which is exactly what crash-looped longhorn-csi-plugin and
+      # friends during that event. Component names must match the chart's
+      # documented supported list exactly (see `helm show values longhorn/
+      # longhorn --version 1.12.1` around systemManagedCSIComponentsResourceLimits).
+      systemManagedCSIComponentsResourceLimits: '{"csi-attacher":{"requests":{"cpu":"10m","memory":"64Mi"},"limits":{"cpu":"100m","memory":"128Mi"}},"csi-provisioner":{"requests":{"cpu":"10m","memory":"64Mi"},"limits":{"cpu":"100m","memory":"128Mi"}},"csi-resizer":{"requests":{"cpu":"10m","memory":"64Mi"},"limits":{"cpu":"100m","memory":"128Mi"}},"csi-snapshotter":{"requests":{"cpu":"10m","memory":"64Mi"},"limits":{"cpu":"100m","memory":"128Mi"}},"longhorn-csi-plugin":{"requests":{"cpu":"50m","memory":"256Mi"},"limits":{"cpu":"500m","memory":"1Gi"}},"node-driver-registrar":{"requests":{"cpu":"10m","memory":"32Mi"},"limits":{"cpu":"50m","memory":"64Mi"}},"longhorn-liveness-probe":{"requests":{"cpu":"10m","memory":"32Mi"},"limits":{"cpu":"50m","memory":"64Mi"}}}'
+
     # Longhorn Manager configuration
     longhornManager:
+      # Also unconstrained before the xsvr1 incident — see
+      # systemManagedCSIComponentsResourceLimits comment above. 1Gi limit
+      # sized above the ~500-900Mi observed via `kubectl top` cluster-wide.
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
       # Node selector for Talos compatibility
       nodeSelector: {}
       tolerations:

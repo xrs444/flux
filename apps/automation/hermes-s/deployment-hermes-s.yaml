@@ -140,7 +140,11 @@ spec:
               memory: 512Mi
             limits:
               cpu: 2000m
-              memory: 4Gi
+              # Was 4Gi (8x request) — observed usage is ~400-450Mi via
+              # `kubectl top`. 4Gi contributed to a node-wide memory-limit
+              # overcommit of 55GB vs 20.8GB allocatable on xsvr1
+              # (2026-10-29 incident). 1.5Gi still leaves 3x headroom.
+              memory: 1536Mi
           startupProbe:
             tcpSocket:
               port: gateway

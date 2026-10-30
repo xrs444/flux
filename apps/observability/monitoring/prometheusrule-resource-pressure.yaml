@@ -1,0 +1,101 @@
+---
+# Added 2026-10-30 after the xsvr1 memory-exhaustion incident (2026-10-29):
+# the node ran at 23.3/24GB used with the Talos OOM controller firing every
+# ~5s unable to find a victim, while pod memory *limits* on that node summed
+# to 55GB against 20.8GB allocatable (2.65x overcommit) — and nothing alerted
+# on either condition beforehand. These rules catch both the leading
+# indicator (overcommit ratio, near-limit containers) and the event itself
+# (node memory pressure, OOMKilled containers).
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: resource-pressure
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: resource-pressure
+      interval: 1m
+      rules:
+        - alert: NodeMemoryPressureHigh
+          expr: |
+            node_memory_MemAvailable_bytes{job="node"} / node_memory_MemTotal_bytes{job="node"} < 0.15
+          for: 10m
+          labels:
+            severity: warning
+            category: resource-pressure
+          annotations:
+            summary: "Node {{ $labels.instance }} has less than 15% memory available"
+            description: >
+              {{ $labels.instance }} has had under 15% of total memory available for 10m+.
+              Check `kubectl top pods --sort-by=memory` on this node and the
+              NodeMemoryLimitOvercommitRatioHigh alert for likely overcommitted pods.
+
+        - alert: NodeMemoryPressureCritical
+          expr: |
+            node_memory_MemAvailable_bytes{job="node"} / node_memory_MemTotal_bytes{job="node"} < 0.07
+          for: 5m
+          labels:
+            severity: critical
+            category: resource-pressure
+          annotations:
+            summary: "Node {{ $labels.instance }} is critically low on memory"
+            description: >
+              {{ $labels.instance }} has had under 7% of total memory available for 5m+ —
+              this is the range observed during the 2026-10-29 xsvr1 OOM-loop incident
+              where kubelet/etcd health checks began timing out. Check node readiness
+              and control-plane static pod status now.
+
+        - alert: NodeMemoryLimitOvercommitRatioHigh
+          expr: |
+            sum by (node) (
+              kube_pod_container_resource_limits{resource="memory"}
+              * on (namespace, pod) group_left(node) kube_pod_info
+            )
+            / on (node) group_left()
+            kube_node_status_allocatable{resource="memory"}
+            > 2
+          for: 30m
+          labels:
+            severity: warning
+            category: resource-pressure
+          annotations:
+            summary: "Node {{ $labels.node }} has >2x memory overcommit at the limit level"
+            description: >
+              Sum of pod memory limits on {{ $labels.node }} is more than 2x the node's
+              allocatable memory for 30m+. Individual pods are within their own limits,
+              but simultaneous bursts can still exhaust the node (this is exactly what
+              happened on xsvr1 on 2026-10-29, at a 2.65x ratio). Review the biggest
+              limits with `kubectl describe node {{ $labels.node }}`.
+
+        - alert: ContainerMemoryNearLimit
+          expr: |
+            container_memory_working_set_bytes{container!="", image!=""}
+            / on (namespace, pod, container) kube_pod_container_resource_limits{resource="memory"}
+            > 0.9
+          for: 10m
+          labels:
+            severity: warning
+            category: resource-pressure
+          annotations:
+            summary: "{{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container }}) is near its memory limit"
+            description: >
+              Container has used over 90% of its memory limit for 10m+ and is an
+              OOM-kill risk. Current working set: {{ $value | humanizePercentage }} of limit.
+
+        - alert: ContainerOOMKilled
+          expr: |
+            kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1
+          for: 2m
+          labels:
+            severity: warning
+            category: resource-pressure
+          annotations:
+            summary: "{{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container }}) was OOMKilled"
+            description: >
+              Container's last termination reason was OOMKilled. If this is a
+              BestEffort/unlimited pod, it may be a symptom of node-wide memory
+              pressure rather than this container's own limit being too low —
+              check NodeMemoryPressureHigh/Critical for the same node.
