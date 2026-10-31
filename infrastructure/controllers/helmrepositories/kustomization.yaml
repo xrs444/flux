@@ -10,3 +10,4 @@ resources:
   - ./helmrepository-jetstack.yaml
   - ./helmrepository-cilium.yaml
   - ./helmrepository-sealedsecrets.yaml
+  - ./helmrepository-descheduler.yaml
