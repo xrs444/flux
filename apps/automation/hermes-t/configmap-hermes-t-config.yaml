@@ -18,11 +18,27 @@ data:
     # custom_providers:/providers:, not model:), so a naive alias would
     # silently resolve to "no-key-required" and 401 against xcog1's LiteLLM.
     # Needs a proper custom_providers: pool entry — follow-up, not this pass.
+    #
+    # context_length: 32768 (2026-10-30, cosmetic follow-up to bug-1087) —
+    # hermes-agent's own live probe against this endpoint only ever hits
+    # LiteLLM's bare /v1/models and /v1/models/{id} (confirmed live via curl:
+    # neither carries a context-length field), so it always "probe-downs" to
+    # a generic default, and separately its models.dev catalog lookup can
+    # resolve a published-but-irrelevant figure for the bare id "qwen3-30b-a3b"
+    # (observed: 131,072, matching one aggregator's listing) — neither number
+    # reflects this deployment's real server-side ceiling
+    # (models.qwen3-30b-a3b.maxInputTokens = 32768 in
+    # nix/hosts/darwin/xcog1/default.nix). Pinning it here is pure display/
+    # compression-math accuracy, not a functional fix: LiteLLM's own
+    # context_window_fallback already covers the gap underneath it
+    # (confirmed live end-to-end through this exact CLI path, not just a raw
+    # curl — see cerebrum/hermes-matrix-windmill.md's 2026-10-30 entry).
     model:
       default: qwen3-30b-a3b
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
+      context_length: 32768
 
     terminal:
       backend: local
@@ -184,11 +200,15 @@ data:
       auto_decompose: false
       default_assignee: kanban-safe
 
+    # context_length: see the detailed comment on the model: block above —
+    # same value, kept in both places for the same reason the rest of this
+    # block is duplicated (fresh-PVC seed vs. git-enforced managed layer).
     model:
       default: qwen3-30b-a3b
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
+      context_length: 32768
 
     terminal:
       backend: local

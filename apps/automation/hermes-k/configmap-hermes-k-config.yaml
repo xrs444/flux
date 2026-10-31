@@ -33,11 +33,24 @@ data:
     # xcog1 (Mac Mini) LiteLLM front door — local qwen3-30b-a3b via mlx-lm.
     # Kid policy: local model ONLY. Never add a deepseek-hard alias or any
     # other cloud-tier model here — hermes-k must not reach cloud inference.
+    #
+    # context_length: 32768 — matches the real server-side ceiling (cosmetic,
+    # see configmap-hermes-t-config.yaml's fuller comment and cerebrum/
+    # hermes-matrix-windmill.md's 2026-10-30 entry). NOTE flagged, NOT fixed,
+    # same session: LiteLLM's router_settings.context_window_fallbacks
+    # (bug-1087) is scoped to the qwen3-30b-a3b MODEL GROUP, not per-caller —
+    # an oversized prompt from hermes-k would silently fall back to
+    # deepseek-hard (cloud) exactly like hermes-t/s do, the same way this
+    # comment's own "never add a deepseek-hard alias here" boundary is
+    # enforced only by hermes-k's config never NAMING it, not by any
+    # LiteLLM-side access control. Setting context_length here does not
+    # change that — it only makes hermes-k's own client-side math accurate.
     model:
       default: qwen3-30b-a3b
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
+      context_length: 32768
 
     terminal:
       backend: local
@@ -127,6 +140,7 @@ data:
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
+      context_length: 32768
 
     terminal:
       backend: local
