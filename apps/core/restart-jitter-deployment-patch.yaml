@@ -1,0 +1,30 @@
+---
+# Added 2026-10-30 after a self-inflicted incident: patching every Deployment/
+# StatefulSet at once (priorityClassName/topologySpreadConstraints rollout)
+# forced them all to recreate pods simultaneously, which stormed image pulls
+# and pushed xsvr4 into DiskPressure, mass-evicting pods cluster-wide.
+#
+# initContainers only run when a pod is freshly CREATED, not when an
+# existing pod's container crash-loops in place — so this staggers exactly
+# "many new pods at once" (mass config push, node drain, bulk eviction)
+# without adding any delay to normal crash-loop recovery. busybox:1.28
+# matches a tag already cached cluster-wide (used elsewhere), so this adds
+# no new image pull.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: not-used
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: restart-jitter
+          image: busybox:1.28
+          command: ["sh", "-c", "sleep $((RANDOM % 90))"]
+          resources:
+            requests:
+              cpu: 5m
+              memory: 8Mi
+            limits:
+              cpu: 20m
+              memory: 16Mi

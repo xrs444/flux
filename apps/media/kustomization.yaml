@@ -30,3 +30,9 @@ patches:
   - path: topospread-statefulset-patch.yaml
     target:
       kind: StatefulSet
+  - path: restart-jitter-deployment-patch.yaml
+    target:
+      kind: Deployment
+  - path: restart-jitter-statefulset-patch.yaml
+    target:
+      kind: StatefulSet

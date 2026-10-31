@@ -1,0 +1,19 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: not-used
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: restart-jitter
+          image: busybox:1.28
+          command: ["sh", "-c", "sleep $((RANDOM % 90))"]
+          resources:
+            requests:
+              cpu: 5m
+              memory: 8Mi
+            limits:
+              cpu: 20m
+              memory: 16Mi

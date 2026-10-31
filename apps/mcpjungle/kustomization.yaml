@@ -42,3 +42,6 @@ patches:
   - path: topospread-deployment-patch.yaml
     target:
       kind: Deployment
+  - path: restart-jitter-deployment-patch.yaml
+    target:
+      kind: Deployment
