@@ -10,5 +10,6 @@ spec:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: ScheduleAnyway
+          labelSelector: {}
           matchLabelKeys:
             - controller-revision-hash
