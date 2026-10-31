@@ -38,7 +38,7 @@ spec:
                       - v-k8s-xsvr3
       containers:
         - name: omada-controller
-          image: mbentley/omada-controller:6.3.0.45
+          image: mbentley/omada-controller:6.3.0.111
           ports:
             - containerPort: 80  # HTTP
               name: http
