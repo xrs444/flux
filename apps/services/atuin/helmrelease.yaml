@@ -29,6 +29,12 @@ spec:
   values:
     replicaCount: 1
 
+    # Chart appVersion (18.12.0) is pinned to a tag upstream no longer
+    # publishes to ghcr.io (only commit-sha tags + `latest` exist now),
+    # so the default image.tag causes ImagePullBackOff. Override to latest.
+    image:
+      tag: latest
+
     podSecurityContext:
       fsGroup: 65534
 
