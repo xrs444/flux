@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: termix
-          image: ghcr.io/lukegus/termix:2.9.1
+          image: ghcr.io/lukegus/termix:26.10.6
           ports:
             - containerPort: 8080
               name: http
