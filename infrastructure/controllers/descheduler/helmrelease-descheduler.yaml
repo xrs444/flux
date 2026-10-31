@@ -42,6 +42,14 @@ spec:
         operator: Equal
         value: reserved
         effect: NoSchedule
+      # xsvr2 is ALSO a control-plane node and already carries this taint
+      # (Talos/patches/v-k8s-xsvr2.yaml) — missing this meant the pod could
+      # not schedule on ANY node (ha-only required it on xsvr2, but
+      # control-plane blocked it there too), which silently defeated the
+      # pin entirely until found during the 2026-10-30 rollout incident.
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

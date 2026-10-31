@@ -50,6 +50,11 @@ spec:
         operator: Equal
         value: reserved
         effect: NoSchedule
+      # xsvr2 is ALSO a control-plane node and already carries this taint —
+      # see descheduler's helmrelease for the full explanation.
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
