@@ -19,26 +19,29 @@ data:
     # silently resolve to "no-key-required" and 401 against xcog1's LiteLLM.
     # Needs a proper custom_providers: pool entry — follow-up, not this pass.
     #
-    # context_length: 32768 (2026-10-30, cosmetic follow-up to bug-1087) —
-    # hermes-agent's own live probe against this endpoint only ever hits
-    # LiteLLM's bare /v1/models and /v1/models/{id} (confirmed live via curl:
-    # neither carries a context-length field), so it always "probe-downs" to
-    # a generic default, and separately its models.dev catalog lookup can
-    # resolve a published-but-irrelevant figure for the bare id "qwen3-30b-a3b"
-    # (observed: 131,072, matching one aggregator's listing) — neither number
-    # reflects this deployment's real server-side ceiling
-    # (models.qwen3-30b-a3b.maxInputTokens = 32768 in
-    # nix/hosts/darwin/xcog1/default.nix). Pinning it here is pure display/
-    # compression-math accuracy, not a functional fix: LiteLLM's own
-    # context_window_fallback already covers the gap underneath it
-    # (confirmed live end-to-end through this exact CLI path, not just a raw
-    # curl — see cerebrum/hermes-matrix-windmill.md's 2026-10-30 entry).
+    # context_length: 131072 (2026-10-30, REVERTED from 32768 — bug-1106).
+    # The 32768 pin (an earlier same-day "cosmetic follow-up to bug-1087")
+    # broke hermes-agent outright: Hermes Agent enforces its OWN hard
+    # startup-time floor of 64,000 tokens on model.context_length,
+    # independent of any actual request/compression behavior — rejecting
+    # this value with "context window ... below the minimum 64,000 required
+    # by Hermes Agent" before the assistant can even start. The deployment's
+    # real server-side ceiling (models.qwen3-30b-a3b.maxInputTokens = 32768
+    # in nix/hosts/darwin/xcog1/default.nix) still applies and is still
+    # enforced by LiteLLM's context_window_fallback regardless of this
+    # value — this field only affects hermes-agent's own local
+    # token-counting/compression math, never what LiteLLM actually allows
+    # through. 131072 matches the model's real published context window
+    # (models.dev catalog figure for qwen3-30b-a3b, confirmed in the prior
+    # investigation — see cerebrum/hermes-matrix-windmill.md's 2026-10-30
+    # entries), clearing Hermes's 64K floor without claiming a number the
+    # model can't actually support.
     model:
       default: qwen3-30b-a3b
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
-      context_length: 32768
+      context_length: 131072
 
     terminal:
       backend: local
@@ -201,14 +204,15 @@ data:
       default_assignee: kanban-safe
 
     # context_length: see the detailed comment on the model: block above —
-    # same value, kept in both places for the same reason the rest of this
-    # block is duplicated (fresh-PVC seed vs. git-enforced managed layer).
+    # same value (reverted to 131072, bug-1106), kept in both places for the
+    # same reason the rest of this block is duplicated (fresh-PVC seed vs.
+    # git-enforced managed layer).
     model:
       default: qwen3-30b-a3b
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
-      context_length: 32768
+      context_length: 131072
 
     terminal:
       backend: local

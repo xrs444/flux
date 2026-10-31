@@ -13,19 +13,23 @@ data:
     # runtime — verified live against config.py's _expand_env_vars, which
     # applies to any string value in config.yaml, not just mcp headers.
     #
-    # context_length: 32768 — matches the real server-side ceiling
-    # (models.qwen3-30b-a3b.maxInputTokens in nix/hosts/darwin/xcog1), which
-    # hermes-agent's own live probe/catalog lookup can't discover on its own.
-    # Cosmetic (display/compression-math accuracy only — LiteLLM's
-    # context_window_fallback already covers the gap underneath it). See
+    # context_length: 131072 (REVERTED from 32768 — bug-1106). Pinning the
+    # deployment's real server-side ceiling
+    # (models.qwen3-30b-a3b.maxInputTokens in nix/hosts/darwin/xcog1) here
+    # broke hermes-agent outright: Hermes Agent enforces its own hard
+    # startup-time floor of 64,000 tokens on this field, independent of
+    # LiteLLM's actual enforcement underneath. 131072 (the model's real
+    # published context window) clears that floor; LiteLLM's
+    # context_window_fallback still covers the real 32768 ceiling
+    # regardless of what this field says. See
     # flux/apps/automation/hermes-t/configmap-hermes-t-config.yaml's fuller
-    # comment and cerebrum/hermes-matrix-windmill.md's 2026-10-30 entry.
+    # comment and cerebrum/hermes-matrix-windmill.md's 2026-10-30 entries.
     model:
       default: qwen3-30b-a3b
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
-      context_length: 32768
+      context_length: 131072
 
     terminal:
       backend: local
@@ -94,7 +98,7 @@ data:
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
-      context_length: 32768
+      context_length: 131072
 
     terminal:
       backend: local
