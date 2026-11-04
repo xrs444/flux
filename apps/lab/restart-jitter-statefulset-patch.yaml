@@ -8,7 +8,7 @@ spec:
     spec:
       initContainers:
         - name: restart-jitter
-          image: busybox:1.28
+          image: busybox:1.38
           command: ["sh", "-c", "sleep $((RANDOM % 90))"]
           resources:
             requests:
