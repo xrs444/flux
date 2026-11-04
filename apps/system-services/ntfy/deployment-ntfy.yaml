@@ -21,7 +21,7 @@ spec:
     spec:
       initContainers:
         - name: setup-users
-          image: binwiederhier/ntfy:v2.37.1
+          image: binwiederhier/ntfy:v2.37.2
           command:
             - sh
             - -c
@@ -77,7 +77,7 @@ spec:
               subPath: lib
       containers:
         - name: ntfy
-          image: binwiederhier/ntfy:v2.37.1
+          image: binwiederhier/ntfy:v2.37.2
           command:
             - ntfy
             - serve
