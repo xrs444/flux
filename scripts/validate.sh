@@ -19,10 +19,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Prerequisites
-# - yq v4.48
-# - kustomize v5.7
-# - kubeconform v0.7
+# Prerequisites — run ./scripts/install-validator-toolchain.sh for exactly these
+# versions (keep that script, this comment, and test.yml's action `version:`
+# inputs in sync — they were not reproducible before 2026-11-07: this script
+# pulled "latest" schemas while CI pinned nothing, so a schema release or an
+# @main action change could silently change what passed):
+# - yq v4.54.2
+# - kustomize v5.8.3
+# - kubeconform v0.8.0
+# - Flux CRD schemas v2.10.0 (matches the distribution actually deployed —
+#   not "latest", which drifts independently of what's running)
 
 set -o errexit
 set -o pipefail
@@ -35,9 +41,11 @@ kustomize_config="kustomization.yaml"
 kubeconform_flags=("-skip=Secret")
 kubeconform_config=("-strict" "-ignore-missing-schemas" "-schema-location" "default" "-schema-location" "/tmp/flux-crd-schemas" "-verbose")
 
-echo "INFO - Downloading Flux OpenAPI schemas"
+CRD_SCHEMA_VERSION="v2.10.0"
+
+echo "INFO - Downloading Flux OpenAPI schemas (${CRD_SCHEMA_VERSION})"
 mkdir -p /tmp/flux-crd-schemas/master-standalone-strict
-curl -sL https://github.com/fluxcd/flux2/releases/latest/download/crd-schemas.tar.gz | tar zxf - -C /tmp/flux-crd-schemas/master-standalone-strict
+curl -sL "https://github.com/fluxcd/flux2/releases/download/${CRD_SCHEMA_VERSION}/crd-schemas.tar.gz" | tar zxf - -C /tmp/flux-crd-schemas/master-standalone-strict
 
 # skip Helm chart templates (Go template syntax) and CI workflow files
 find . -type f -name '*.yaml' \
