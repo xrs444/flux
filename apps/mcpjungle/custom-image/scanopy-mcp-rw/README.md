@@ -19,15 +19,19 @@ actual network state.
 - `scanopy_create_object(object_type, data)` — create
 - `scanopy_update_object(object_type, object_id, data)` — partial update
 - `scanopy_delete_object(object_type, object_id)` — delete
-- `scanopy_bulk_create_objects` / `scanopy_bulk_update_objects` / `scanopy_bulk_delete_objects`
-  — bulk variants (unverified against the real API — see `scanopy_client.py`'s docstring)
+
+No bulk tools: `bulk_create`/`bulk_update`/`bulk_delete` were removed (2026-11-07, P1
+security review) — the `/bulk/` endpoint shape was copied from NetBox/DRF convention and
+never confirmed against Scanopy's own API, and an agent-facing tool has no business
+exposing an unverified multi-object write/delete call. Use the single-object tools in a
+loop instead.
 
 Valid `object_type` values: `credentials`, `daemons`, `dependencies`, `hosts`, `interfaces`,
 `invites`, `ip-addresses`, `networks`, `organizations`, `ports`, `services`, `shares`,
 `snapshots`, `subnets`, `tags`, `topologies`, `users`, `vlans`.
 
 **`credentials` is read-only** — it holds SNMP community strings / SSH keys used for
-authenticated scans. Every write tool (`create`/`update`/`delete`/`bulk_*`) validates against
+authenticated scans. Every write tool (`create`/`update`/`delete`) validates against
 a `SCANOPY_WRITABLE_TYPES` map that excludes it; an LLM shouldn't be minting or rotating scan
 secrets. Everything else is full read/write.
 

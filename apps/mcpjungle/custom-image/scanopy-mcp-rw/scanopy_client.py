@@ -110,28 +110,10 @@ class ScanopyRestClient:
         response.raise_for_status()
         return response.status_code in (200, 204)
 
-    def bulk_create(self, endpoint: str, data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """
-        Create multiple objects in Scanopy via the REST API.
-        UNVERIFIED: whether Scanopy's API actually supports a /bulk/ endpoint at all — this
-        mirrors NetBox/DRF convention, not something confirmed against Scanopy's own docs.
-        """
-        url = f"{self._build_url(endpoint)}/bulk"
-        response = self.session.post(url, json=data, verify=self.verify_ssl)
-        response.raise_for_status()
-        return self._unwrap(response.json())
-
-    def bulk_update(self, endpoint: str, data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Update multiple objects in Scanopy via the REST API. UNVERIFIED, see bulk_create."""
-        url = f"{self._build_url(endpoint)}/bulk"
-        response = self.session.patch(url, json=data, verify=self.verify_ssl)
-        response.raise_for_status()
-        return self._unwrap(response.json())
-
-    def bulk_delete(self, endpoint: str, ids: List[str]) -> bool:
-        """Delete multiple objects from Scanopy via the REST API. UNVERIFIED, see bulk_create."""
-        url = f"{self._build_url(endpoint)}/bulk"
-        data = [{"id": id} for id in ids]
-        response = self.session.delete(url, json=data, verify=self.verify_ssl)
-        response.raise_for_status()
-        return response.status_code in (200, 204)
+    # bulk_create/bulk_update/bulk_delete were removed (2026-11-07, P1 security review):
+    # the /bulk/ endpoint convention was copied from NetBox/DRF and never confirmed against
+    # Scanopy's own API, and an agent-facing client has no business exposing unverified
+    # multi-object write/delete calls — a bad tool call could silently fan out across every
+    # object matching the request instead of failing closed on one. Re-add only after the
+    # endpoint shape is confirmed live against the deployed instance (see module docstring),
+    # and gate it behind an explicit allow-list/confirmation in the caller, not just here.

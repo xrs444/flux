@@ -183,63 +183,14 @@ def scanopy_delete_object(object_type: str, object_id: str):
         return {"success": False, "message": f"Failed to delete {object_type} with ID {object_id}"}
 
 
-@mcp.tool()
-def scanopy_bulk_create_objects(object_type: str, data: list):
-    """
-    Create multiple objects in Scanopy in a single request.
-    UNVERIFIED: whether Scanopy's API actually supports bulk endpoints — see
-    scanopy_client.py's module docstring. Try scanopy_create_object in a loop if this fails.
-
-    Args:
-        object_type: String representing the Scanopy object type (excludes "credentials")
-        data: List of dicts containing the object data to create
-    """
-    if object_type not in SCANOPY_WRITABLE_TYPES:
-        raise ValueError(_valid_types_message(SCANOPY_WRITABLE_TYPES))
-
-    endpoint = SCANOPY_WRITABLE_TYPES[object_type]
-    return scanopy.bulk_create(endpoint, data)
-
-
-@mcp.tool()
-def scanopy_bulk_update_objects(object_type: str, data: list):
-    """
-    Update multiple objects in Scanopy in a single request. UNVERIFIED, see
-    scanopy_bulk_create_objects.
-
-    Args:
-        object_type: String representing the Scanopy object type (excludes "credentials")
-        data: List of dicts containing the object data to update (must include "id")
-    """
-    if object_type not in SCANOPY_WRITABLE_TYPES:
-        raise ValueError(_valid_types_message(SCANOPY_WRITABLE_TYPES))
-
-    endpoint = SCANOPY_WRITABLE_TYPES[object_type]
-    return scanopy.bulk_update(endpoint, data)
-
-
-@mcp.tool()
-def scanopy_bulk_delete_objects(object_type: str, object_ids: list):
-    """
-    Delete multiple objects from Scanopy in a single request. UNVERIFIED, see
-    scanopy_bulk_create_objects.
-
-    Args:
-        object_type: String representing the Scanopy object type (excludes "credentials")
-        object_ids: List of UUID strings to delete
-
-    WARNING: This permanently deletes the objects and cannot be undone!
-    """
-    if object_type not in SCANOPY_WRITABLE_TYPES:
-        raise ValueError(_valid_types_message(SCANOPY_WRITABLE_TYPES))
-
-    endpoint = SCANOPY_WRITABLE_TYPES[object_type]
-    success = scanopy.bulk_delete(endpoint, object_ids)
-
-    if success:
-        return {"success": True, "message": f"Successfully deleted {len(object_ids)} {object_type} objects"}
-    else:
-        return {"success": False, "message": f"Failed to delete {object_type} objects"}
+# scanopy_bulk_create_objects/scanopy_bulk_update_objects/scanopy_bulk_delete_objects were
+# removed (2026-11-07, P1 security review): the underlying /bulk/ endpoint was never
+# confirmed against Scanopy's own API (copied from NetBox/DRF convention, see
+# scanopy_client.py's module docstring), and an agent-facing MCP tool has no business
+# exposing an unverified multi-object write/delete call — especially bulk_delete, which
+# is irreversible. Use scanopy_create_object/scanopy_update_object/scanopy_delete_object
+# in a loop instead. Re-add only after the endpoint shape is confirmed live, gated behind
+# an explicit allow-list/confirmation.
 
 
 if __name__ == "__main__":
