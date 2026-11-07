@@ -39,17 +39,10 @@ spec:
       containers:
         - name: mcp-kubernetes
           image: ghcr.io/containers/kubernetes-mcp-server:v0.1.2
-          args:
-            # --port enables both streamable-http (/mcp) and SSE (/sse) on
-            # the same port. Hermes uses the /mcp streamable-http endpoint
-            # per the cluster's MCP transport standard.
-            - --port=8080
-            - --log-level=1
-            # Belt-and-braces: refuse write ops at the tool layer as well as
-            # via RBAC. Read-only enforcement is the RBAC ClusterRole; this
-            # flag prevents the server from advertising destructive tools
-            # to Hermes at all.
-            - --read-only
+          # v0.1.0+ dropped all runtime CLI flags (--port/--log-level/
+          # --read-only) in favor of a single TOML config file — see
+          # configmap-mcp-kubernetes.yaml, mounted below over the image's
+          # own default config at this same path.
           ports:
             - containerPort: 8080
               name: http
@@ -78,3 +71,12 @@ spec:
             runAsNonRoot: true
             capabilities:
               drop: [ALL]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/kubernetes-mcp-server/config.toml
+              subPath: config.toml
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: mcp-kubernetes-config

@@ -1,0 +1,16 @@
+# kubernetes-mcp-server v0.1.0+ dropped all runtime CLI flags in favor of a
+# single TOML config file (see containers/kubernetes-mcp-server
+# docs/configuration-changes.md). This replaces the old --port/--log-level/
+# --read-only flags that deployment-mcp-kubernetes.yaml used to pass as args.
+# Mounted over the image's own default /etc/kubernetes-mcp-server/config.toml
+# (which only sets port, not read_only) via the Deployment's volumeMount.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-kubernetes-config
+  namespace: mcp-tools
+data:
+  config.toml: |
+    port = "8080"
+    log_level = 1
+    read_only = true

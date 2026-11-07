@@ -25,6 +25,7 @@ resources:
   - serviceaccount-mcp-kubernetes.yaml
   - clusterrole-mcp-kubernetes.yaml
   - clusterrolebinding-mcp-kubernetes.yaml
+  - configmap-mcp-kubernetes.yaml
   - deployment-mcp-kubernetes.yaml
   - service-mcp-kubernetes.yaml
   - ciliumnetworkpolicy-mcp-kubernetes.yaml
