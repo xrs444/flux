@@ -28,7 +28,7 @@ FROM node:24-alpine
 RUN apk add --no-cache tini curl
 
 RUN npm install -g --omit=dev \
-      supergateway@3.4.3 \
+      supergateway@4.2.1 \
       caldav-mcp@0.10.3 \
       @democratize-technology/vikunja-mcp@0.2.0 \
   && npm cache clean --force
