@@ -103,12 +103,14 @@ spec:
             - name: LOG_LEVEL
               value: "info"
           resources:
+            # STOPGAP (2026-11-07) — see deployment-mcp-caldav-t.yaml for the
+            # full rationale (same ContainerOOMKilled leak, 115 restarts here).
             requests:
               cpu: 50m
-              memory: 128Mi
+              memory: 192Mi
             limits:
               cpu: 500m
-              memory: 512Mi
+              memory: 1024Mi
           livenessProbe:
             httpGet:
               path: /healthz

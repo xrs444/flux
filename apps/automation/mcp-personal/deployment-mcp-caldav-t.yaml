@@ -134,12 +134,24 @@ spec:
             # Higher than the mcp-tools/ baseline (25m/64Mi, 500m/256Mi):
             # stateless mode forks a node process per tool call, so
             # concurrent calls mean concurrent interpreters.
+            #
+            # STOPGAP (2026-11-07, ContainerOOMKilled, kanban t_5d863125/
+            # t_47399574): observed climbing ~50Mi -> 340-426Mi over a ~27min
+            # cycle before hitting 512Mi and getting OOMKilled (172 restarts).
+            # Looks like a leak in the supergateway stdio<->HTTP bridge, not
+            # caldav-mcp itself — mcp-vikunja-s runs the same supergateway
+            # pattern with 0 restarts, so it's probably call-volume-driven.
+            # Doubling the limit buys roughly 2x the time between restarts;
+            # it does not fix the leak. Watch `kubectl -n mcp-personal top
+            # pods` — if usage plateaus under 1Gi this was just headroom, if
+            # it keeps climbing the real fix is a supergateway version bump
+            # or a restart-on-schedule workaround.
             requests:
               cpu: 50m
-              memory: 128Mi
+              memory: 192Mi
             limits:
               cpu: 500m
-              memory: 512Mi
+              memory: 1024Mi
           livenessProbe:
             httpGet:
               path: /healthz
