@@ -14,6 +14,17 @@
 #
 # Renovate: image tag pinned; on MCP review-required rule in renovate.json
 # because tool contracts can shift.
+#
+# No caller bearer-auth here (checked 2026-11-11 alongside mcp-loki's fix
+# for mcp-grafana's startup SECURITY warning): ghcr.io/containers/
+# kubernetes-mcp-server only offers full OAuth/OIDC for caller auth
+# (Keycloak/Entra ID docs), not a lightweight bearer-token flag — wiring
+# that up would need a Kanidm OIDC client, a bigger lift than this pass
+# covers. Same exposure as mcp-loki had (0.0.0.0:8080, no caller auth,
+# plus the read-only RBAC ClusterRole), mitigated the same way:
+# ciliumnetworkpolicy-mcp-kubernetes.yaml restricts ingress to hermes-t
+# only, ClusterIP-only, no Ingress. Worth a follow-up if the cluster ever
+# needs stronger isolation here.
 ---
 apiVersion: apps/v1
 kind: Deployment

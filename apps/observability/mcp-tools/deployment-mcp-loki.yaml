@@ -27,6 +27,17 @@
 # probes and Service traffic, which hit the pod by ClusterIP, not
 # localhost. Wildcarding it is safe here because the Service is
 # ClusterIP-only with no Ingress (bug-567).
+#
+# MCP_GRAFANA_SERVER_TOKEN: mcp-grafana >=1.1.0 logs a SECURITY warning on
+# every non-loopback bind with no caller auth ("Anyone who can reach this
+# address can invoke MCP tools..."), and the PR that introduced it
+# (grafana/mcp-grafana#1059) originally made this a hard startup failure
+# before being softened to a warning-only default the same day (#1060) —
+# there's no changelog/issue signal for when (or whether) it becomes a
+# hard failure again, so added proactively 2026-11-11 rather than waiting.
+# Only hermes-t calls this server (ciliumnetworkpolicy-mcp-loki.yaml), and
+# its MCP client config now sends this same token as a bearer header — see
+# apps/automation/hermes-t/configmap-hermes-t-config.yaml.
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -72,6 +83,11 @@ spec:
                 secretKeyRef:
                   name: grafana-admin-secret
                   key: admin-password
+            - name: MCP_GRAFANA_SERVER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-grafana-credentials
+                  key: server-auth-token
           resources:
             requests:
               cpu: 25m

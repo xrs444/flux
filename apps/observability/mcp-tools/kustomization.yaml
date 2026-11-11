@@ -18,6 +18,7 @@ resources:
   - ciliumnetworkpolicy-mcp-prometheus.yaml
   # mcp-loki (backed by grafana/mcp-grafana --enabled-tools=loki)
   # grafana-admin-secret is reflected from monitoring namespace by reflector
+  - sealedsecret-mcp-grafana-credentials.yaml
   - deployment-mcp-loki.yaml
   - service-mcp-loki.yaml
   - ciliumnetworkpolicy-mcp-loki.yaml

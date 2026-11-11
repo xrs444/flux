@@ -63,9 +63,22 @@ data:
       mcp-prometheus:
         url: http://mcp-prometheus.mcp-tools.svc.cluster.local:8080/mcp
         enabled: true
+      # mcp-loki requires a bearer token as of 2026-11-11 (mcp-grafana's
+      # SECURITY warning on non-loopback binds with no caller auth — see
+      # deployment-mcp-loki.yaml). Same auth: header / headers pattern as
+      # mcpjungle below; MCP_GRAFANA_SERVER_TOKEN sourced from
+      # sealedsecret-hermes-t-config.yaml, same raw value sealed into
+      # mcp-tools' sealedsecret-mcp-grafana-credentials.yaml for the server
+      # side. mcp-prometheus/mcp-kubernetes don't get this: neither
+      # upstream (pab1it0/prometheus-mcp-server, manusa/kubernetes-mcp-
+      # server) exposes an equivalent lightweight caller bearer-token flag
+      # at this time (the latter only has full OAuth/OIDC, a bigger lift).
       mcp-loki:
         url: http://mcp-loki.mcp-tools.svc.cluster.local:8080/mcp
         enabled: true
+        auth: header
+        headers:
+          Authorization: "Bearer ${MCP_GRAFANA_SERVER_TOKEN}"
       mcp-kubernetes:
         url: http://mcp-kubernetes.mcp-tools.svc.cluster.local:8080/mcp
         enabled: true

@@ -10,6 +10,15 @@
 # Backend: kube-prometheus-stack's Prometheus in the monitoring namespace.
 # Renovate: image tag is pinned; kubernetes manager auto-detects semver
 # updates from ghcr.io.
+#
+# No caller bearer-auth here (checked 2026-11-11 alongside mcp-loki's fix
+# for mcp-grafana's startup SECURITY warning): pab1it0/prometheus-mcp-server
+# v1.6.2's AUTH_* env vars (PROMETHEUS_USERNAME/PASSWORD/TOKEN) authenticate
+# this server's own calls OUT to Prometheus, not callers IN to this MCP
+# server — there's no equivalent inbound caller-token flag upstream. Same
+# exposure as mcp-loki had (0.0.0.0:8080, no caller auth), mitigated the
+# same way: ciliumnetworkpolicy-mcp-prometheus.yaml restricts ingress to
+# hermes-t only, ClusterIP-only, no Ingress.
 ---
 apiVersion: apps/v1
 kind: Deployment

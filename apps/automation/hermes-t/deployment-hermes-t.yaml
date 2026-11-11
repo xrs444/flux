@@ -138,6 +138,11 @@ spec:
                 secretKeyRef:
                   name: hermes-t-config
                   key: MCP_MCPJUNGLE_API_KEY
+            - name: MCP_GRAFANA_SERVER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-t-config
+                  key: MCP_GRAFANA_SERVER_TOKEN
             - name: MATRIX_HOMESERVER
               value: "http://synapse.matrix.svc.cluster.local:8008"
             - name: MATRIX_ALLOWED_USERS
