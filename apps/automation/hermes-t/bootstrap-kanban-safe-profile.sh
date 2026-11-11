@@ -55,12 +55,12 @@ cfg["agent"]["disabled_toolsets"] = [
 ]
 
 cfg["mcp_servers"] = {
-    # mcp-loki needs a bearer token as of 2026-11-11 -- same
-    # auth: header pattern as the main profile's configmap-hermes-t-config.yaml.
+    # mcp-loki needs a bearer token as of 2026-11-11 -- same headers:
+    # pattern as the main profile's configmap-hermes-t-config.yaml
+    # (there is no separate "auth" field; headers: is the whole mechanism).
     "mcp-loki": {
         "url": "http://mcp-loki.mcp-tools.svc.cluster.local:8080/mcp",
         "enabled": True,
-        "auth": "header",
         "headers": {"Authorization": "Bearer ${MCP_GRAFANA_SERVER_TOKEN}"},
     },
     "mcp-prometheus": {"url": "http://mcp-prometheus.mcp-tools.svc.cluster.local:8080/mcp", "enabled": True},

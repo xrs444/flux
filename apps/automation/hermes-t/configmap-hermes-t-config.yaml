@@ -59,14 +59,19 @@ data:
     # verified live against the running mcp-prometheus/mcp-loki/mcp-kubernetes
     # pods; see their deployment manifests for tool lists and RBAC scoping).
     # hermes-k never gets this block — kid-mode denies these tools by policy.
+    #
+    # This whole mcp_servers: block is also mirrored verbatim in
+    # config-managed.yaml below (bug-1138, 2026-11-11) — see that section's
+    # header comment for why. Keeping both in sync matters only for a
+    # genuinely fresh PVC seed (before the managed layer's first merge);
+    # the managed copy is what actually governs a long-running pod.
     mcp_servers:
       mcp-prometheus:
         url: http://mcp-prometheus.mcp-tools.svc.cluster.local:8080/mcp
         enabled: true
       # mcp-loki requires a bearer token as of 2026-11-11 (mcp-grafana's
       # SECURITY warning on non-loopback binds with no caller auth — see
-      # deployment-mcp-loki.yaml). Same auth: header / headers pattern as
-      # mcpjungle below; MCP_GRAFANA_SERVER_TOKEN sourced from
+      # deployment-mcp-loki.yaml). MCP_GRAFANA_SERVER_TOKEN sourced from
       # sealedsecret-hermes-t-config.yaml, same raw value sealed into
       # mcp-tools' sealedsecret-mcp-grafana-credentials.yaml for the server
       # side. mcp-prometheus/mcp-kubernetes don't get this: neither
@@ -76,7 +81,6 @@ data:
       mcp-loki:
         url: http://mcp-loki.mcp-tools.svc.cluster.local:8080/mcp
         enabled: true
-        auth: header
         headers:
           Authorization: "Bearer ${MCP_GRAFANA_SERVER_TOKEN}"
       mcp-kubernetes:
@@ -89,14 +93,15 @@ data:
       # access control, scoped via `mcpjungle create mcp-client hermes-t
       # --allow "firewalla,omada,arr,homeassistant,jellyfin,netbox"`), not
       # Kanidm/oauth2-proxy — verified live against the running hermes-t pod
-      # (`hermes mcp add --auth header`, schema confirmed via mcp_tool.py:
-      # `headers: {Authorization: "Bearer ${VAR}"}`, `${VAR}` resolved from
-      # the MCP_MCPJUNGLE_API_KEY env var, itself sourced from
-      # sealedsecret-hermes-t-config.yaml like DEEPSEEK_API_KEY/etc above).
+      # (schema confirmed via mcp_tool_transport.py: `headers: {Authorization:
+      # "Bearer ${VAR}"}` is the whole mechanism — there is no separate
+      # `auth:` field; mcp_tool_transport.py only recognizes `auth: oauth`
+      # as a distinct case, nothing else). `${VAR}` resolves from the
+      # MCP_MCPJUNGLE_API_KEY env var, itself sourced from
+      # sealedsecret-hermes-t-config.yaml like DEEPSEEK_API_KEY/etc above.
       mcpjungle:
         url: http://mcpjungle.mcp-gateway.svc.cluster.local:8080/mcp
         enabled: true
-        auth: header
         headers:
           Authorization: "Bearer ${MCP_MCPJUNGLE_API_KEY}"
 
@@ -111,11 +116,6 @@ data:
       # (Vikunja token owner, Radicale principal) and by network (Cilium
       # CNP restricts each Service's ingress to this namespace only, see
       # ../mcp-personal/ciliumnetworkpolicy-mcp-{vikunja,caldav}-t.yaml).
-      #
-      # NOTE (bug-895 pattern): adding these lines here does NOT affect a
-      # running hermes-t — seed-config is copy-if-missing and
-      # /opt/data/config.yaml already exists once seeded. Applied live via
-      # `hermes mcp add` as well; this block only seeds a rebuilt PVC.
       #
       # CalDAV caveat: mcp-caldav-t's list-calendars tool is blind to
       # xrs444/ and family/ — Radicale derives calendar-home-set from the
@@ -208,6 +208,24 @@ data:
   # (hermes-k's ConfigMap, verified 2026-07-21). `agent.disabled_toolsets`
   # is the only key that actually works — it runs last and overrides
   # everything else.
+  #
+  # mcp_servers: moved into the managed layer 2026-11-11 (bug-1138) —
+  # exactly the bug-895/bug-936 class of gap documented above for model/
+  # terminal/memory, rediscovered the hard way: the plain config.yaml
+  # key above only ever seeds a fresh PVC, so adding a `headers:` bearer
+  # token to mcp-loki there did nothing for this already-long-lived pod,
+  # and a live kubectl-exec edit (the same out-of-band mechanism that
+  # originally put mcpjungle's headers in place) was the only thing that
+  # actually took effect. Putting the whole block here instead closes
+  # that gap for good — every pod start now reasserts exactly this set.
+  # Trade-off accepted knowingly: this is a shallow top-level-key merge
+  # (`live.update(managed)`), so every live mcp_servers entry MUST be
+  # listed here or it gets silently dropped on next restart — including
+  # mcp-vikunja-t/mcp-caldav-t, which until now existed only via a live
+  # `hermes mcp add` and were never in git at all. A future one-off
+  # `hermes mcp add` for this profile will no longer survive a restart
+  # unless it's also added here — that's the intended trade for no more
+  # silent drift on something auth-bearing.
   config-managed.yaml: |
     toolsets:
       - kanban
@@ -237,3 +255,31 @@ data:
         mode: local_external
         api_url: http://hindsight.hindsight.svc.cluster.local:8888
         bank_id: hermes-t
+
+    # Verbatim mirror of the mcp_servers: block above — see this file's
+    # bug-1138 comment just above config-managed.yaml's own header for why
+    # this moved here and what the shallow-merge trade-off means in
+    # practice.
+    mcp_servers:
+      mcp-prometheus:
+        url: http://mcp-prometheus.mcp-tools.svc.cluster.local:8080/mcp
+        enabled: true
+      mcp-loki:
+        url: http://mcp-loki.mcp-tools.svc.cluster.local:8080/mcp
+        enabled: true
+        headers:
+          Authorization: "Bearer ${MCP_GRAFANA_SERVER_TOKEN}"
+      mcp-kubernetes:
+        url: http://mcp-kubernetes.mcp-tools.svc.cluster.local:8080/mcp
+        enabled: true
+      mcpjungle:
+        url: http://mcpjungle.mcp-gateway.svc.cluster.local:8080/mcp
+        enabled: true
+        headers:
+          Authorization: "Bearer ${MCP_MCPJUNGLE_API_KEY}"
+      mcp-vikunja-t:
+        url: http://mcp-vikunja-t.mcp-personal.svc.cluster.local:8080/mcp
+        enabled: true
+      mcp-caldav-t:
+        url: http://mcp-caldav-t.mcp-personal.svc.cluster.local:8080/mcp
+        enabled: true
