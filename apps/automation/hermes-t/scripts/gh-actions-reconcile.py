@@ -65,10 +65,20 @@ def _gh_get(path: str) -> dict:
 
 
 def _latest_run_for_workflow_id(repo: str, workflow_id: str) -> int | None:
+    """Max run_number among the most recent runs — NOT runs[0]. Confirmed
+    live (2026-11-11): GitHub's own ordering is by created_at/internal id,
+    not run_number, and two runs from the same batch (e.g. a single
+    Dependabot Updates invocation covering multiple ecosystems) can share
+    an identical created_at down to the second, landing in either order.
+    per_page=1 alone returned run 36 ahead of the actually-latest run 37
+    for exactly this reason, which left both cards alive instead of
+    archiving 36. per_page=5 is a comfortable buffer against ties without
+    a second API call."""
     runs = _gh_get(
-        f"/repos/{repo}/actions/workflows/{workflow_id}/runs?per_page=1"
+        f"/repos/{repo}/actions/workflows/{workflow_id}/runs?per_page=5"
     ).get("workflow_runs", [])
-    return runs[0].get("run_number") if runs else None
+    numbers = [r["run_number"] for r in runs if r.get("run_number") is not None]
+    return max(numbers) if numbers else None
 
 
 def latest_run_number(repo: str, workflow_name: str, workflow_id: str | None) -> int | None:

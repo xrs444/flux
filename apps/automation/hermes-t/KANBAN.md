@@ -488,6 +488,16 @@ could ever be found. `gh-actions-watch.py` now also writes `workflow_id:
 into the body; the reconciler reads that first and only falls back to the
 by-name `/actions/workflows` lookup for cards created before this fix.
 
+**`/actions/workflows/{id}/runs` is not reliably sorted by `run_number`**
+(same-day follow-up, 2026-11-11): a single Dependabot Updates invocation
+that touches multiple ecosystems produces several runs sharing an
+identical `created_at` down to the second, and GitHub's own ordering for
+that endpoint is by `created_at`/internal id, not `run_number` — confirmed
+live, `per_page=1` returned run 36 ahead of the actually-newer run 37,
+which left both cards alive (36 passed `run >= latest` too) instead of
+archiving 36. Fixed by fetching `per_page=5` and taking `max(run_number)`
+across the page rather than trusting index 0.
+
 ```sh
 kubectl -n hermes-t cp flux/apps/automation/hermes-t/scripts/gh-actions-reconcile.py \
   hermes-t/$(kubectl -n hermes-t get pod -l app=hermes-t -o jsonpath='{.items[0].metadata.name}'):/opt/data/scripts/gh-actions-reconcile.py
