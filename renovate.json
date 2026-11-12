@@ -1,8 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "dependencyDashboard": true,
-  "dependencyDashboardTitle": "Renovate Dependency Dashboard",
+  "dependencyDashboard": {
+    "enabled": true,
+    "title": "Renovate Dependency Dashboard"
+  },
   "ignorePaths": ["cluster/flux-system/gotk-components.yaml"],
   "flux": {
     "managerFilePatterns": [
