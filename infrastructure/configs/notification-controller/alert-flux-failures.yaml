@@ -13,7 +13,7 @@
 # HelmRelease already flips its parent Kustomization to NotReady and
 # surfaces here (at "which category broke" granularity — good enough for a
 # triage card; `flux get helmrelease -A` finds the specific one).
-apiVersion: notification.toolkit.fluxcd.io/v1beta3
+apiVersion: notification.toolkit.fluxcd.io/v1
 kind: Alert
 metadata:
   name: flux-failures
