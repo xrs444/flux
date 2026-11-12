@@ -358,9 +358,10 @@ is the tracker going forward.
 2026-09-24 (bug-1031) — `hermes cron list` returned "No scheduled jobs" the
 entire time, which is why every card on the board was bare with no
 enrichment comment.** Now live: `ops-triage-sweep` (`980ea8699475`),
-`gh-actions-watch` (`8c74d34dc21f`), `infra-health-rollup` (`8b53689bed00`),
-`ops-board-reconcile` (`4db328b0dffa`). `hermes cron list` reflects current
-state; job ids here are a point-in-time reference, not load-bearing.
+`gh-actions-watch` (`c2f05c4061d0`), `infra-health-rollup` (`8b53689bed00`),
+`ops-board-reconcile` (`4db328b0dffa`), `gh-actions-reconcile` (added
+2026-11-11, see below). `hermes cron list` reflects current state; job ids
+here are a point-in-time reference, not load-bearing.
 
 **GitHub Actions failures** (`flux/`'s workflows notify nobody today, unlike
 `nix/`'s Apprise-wired ones — see `scripts/gh-actions-watch.py`).
@@ -453,6 +454,40 @@ itself T1-onboarded yet, so only hermes-t's own egress needed the allow).
 (commit+push, Flux reconciles it)** — check `hermes cron runs
 ops-board-reconcile` for a connection-refused/timeout error as the signal
 it's not live yet.
+
+**GitHub Actions reconciler** (`gh-actions-reconcile`, added 2026-11-11):
+`gh-actions-watch.py` above has no equivalent closing mechanism of its own —
+it only ever creates/upserts a card per currently-failing run, so every
+failing run it has ever seen stays on the board forever. Confirmed live
+2026-11-11: 25 of 27 CI cards on the `ops` board were stale this way, some
+over a month old (manually archived that backlog the same day). This script
+is the drift-catcher, same `--no-agent` pattern and hourly cadence as
+`ops-board-reconcile.py`, at
+`flux/apps/automation/hermes-t/scripts/gh-actions-reconcile.py` — installed
+onto the PVC the same way (`kubectl cp` to `/opt/data/scripts/`). It
+reconstructs `(repo, workflow, run_number)` from each `source: cron`
+triage card's title (the exact format `gh-actions-watch.py` writes),
+resolves the workflow's display name to an id via
+`GET /repos/{repo}/actions/workflows`, and archives the card if a newer run
+of that same workflow now exists — regardless of whether that newer run
+succeeded (this specific failure is resolved) or failed again
+(`gh-actions-watch.py` has already created, or will create on its own next
+tick, a fresh card for it). Only touches `source: cron` cards, never
+alert-sourced ones (`ops-board-reconcile.py`'s territory).
+
+```sh
+kubectl -n hermes-t cp flux/apps/automation/hermes-t/scripts/gh-actions-reconcile.py \
+  hermes-t/$(kubectl -n hermes-t get pod -l app=hermes-t -o jsonpath='{.items[0].metadata.name}'):/opt/data/scripts/gh-actions-reconcile.py
+
+kubectl -n hermes-t exec deploy/hermes-t -- /opt/hermes/.venv/bin/hermes cron create \
+  --name gh-actions-reconcile \
+  --no-agent --script gh-actions-reconcile.py \
+  "15 * * * *"
+```
+
+Same `GITHUB_TOKEN` note as `gh-actions-watch.py` if either repo goes
+private. Scheduled at minute 15 (not 0 or */30) to avoid ticking in lockstep
+with `ops-board-reconcile` (`0 * * * *`) and `gh-actions-watch` (`*/30 * * * *`).
 
 **Alert-ingest pipeline self-check** (`f/sre/alert-ingest-health`, added
 2026-09-24, bug-1031 follow-up): a Windmill schedule, hourly, NOT a `hermes
