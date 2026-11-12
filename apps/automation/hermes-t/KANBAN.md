@@ -466,14 +466,27 @@ is the drift-catcher, same `--no-agent` pattern and hourly cadence as
 `flux/apps/automation/hermes-t/scripts/gh-actions-reconcile.py` — installed
 onto the PVC the same way (`kubectl cp` to `/opt/data/scripts/`). It
 reconstructs `(repo, workflow, run_number)` from each `source: cron`
-triage card's title (the exact format `gh-actions-watch.py` writes),
-resolves the workflow's display name to an id via
-`GET /repos/{repo}/actions/workflows`, and archives the card if a newer run
-of that same workflow now exists — regardless of whether that newer run
-succeeded (this specific failure is resolved) or failed again
-(`gh-actions-watch.py` has already created, or will create on its own next
-tick, a fresh card for it). Only touches `source: cron` cards, never
-alert-sourced ones (`ops-board-reconcile.py`'s territory).
+triage card's title (the exact format `gh-actions-watch.py` writes), and
+archives the card if a newer run of that same workflow now exists —
+regardless of whether that newer run succeeded (this specific failure is
+resolved) or failed again (`gh-actions-watch.py` has already created, or
+will create on its own next tick, a fresh card for it). Only touches
+`source: cron` cards, never alert-sourced ones (`ops-board-reconcile.py`'s
+territory).
+
+**Grouping uses `workflow_id`, not the title's workflow name** (same-day
+follow-up, 2026-11-11): the first version resolved a card's workflow purely
+by matching the title's display name against `GET
+/repos/{repo}/actions/workflows`. That works for a normally-named workflow
+(Build and Deploy, version-drift) but not for GitHub's own Dependabot
+Updates check, which emits a unique dynamic `name`/`display_title` per run
+("uv in `<path>` for `<packages>` - Update #`<id>`") that never matches
+itself across runs — confirmed live: 3 such cards survived the first
+version untouched, weeks old, because no "latest run of that exact title"
+could ever be found. `gh-actions-watch.py` now also writes `workflow_id:
+<id>` (stable across runs, already present on every run object it fetches)
+into the body; the reconciler reads that first and only falls back to the
+by-name `/actions/workflows` lookup for cards created before this fix.
 
 ```sh
 kubectl -n hermes-t cp flux/apps/automation/hermes-t/scripts/gh-actions-reconcile.py \

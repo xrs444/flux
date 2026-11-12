@@ -18,13 +18,25 @@ gh-actions-watch.py sets on every card it creates — never alert-sourced
 cards, which ops-board-reconcile.py already owns).
 
 A card is archived when its run number is no longer the most recent run of
-that exact (repo, workflow) pair — regardless of whether the newer run
-succeeded (this specific failure is resolved) or failed again
-(gh-actions-watch.py has already created, or will create on its own next
-tick, a fresh card for that newer run; this one is just a stale duplicate).
-If the title doesn't parse, or the workflow/run can't be resolved via the
-GitHub API, the card is left alone rather than guessed at — same policy as
+that exact workflow — regardless of whether the newer run succeeded (this
+specific failure is resolved) or failed again (gh-actions-watch.py has
+already created, or will create on its own next tick, a fresh card for
+that newer run; this one is just a stale duplicate). If the title doesn't
+parse, or the workflow/run can't be resolved via the GitHub API, the card
+is left alone rather than guessed at — same policy as
 ops-board-reconcile.py's `_title_to_key`.
+
+Grouping prefers `workflow_id` out of the card's body (stable across runs,
+added 2026-11-11 to gh-actions-watch.py) over the title's `workflow` text,
+because GitHub's Dependabot Updates check emits a unique dynamic display
+name per run (e.g. "uv in <path> for <packages> - Update #<id>") that never
+matches itself across runs — a title-only lookup would leave every single
+Dependabot-sourced card stuck forever (confirmed live 2026-11-11: 3 such
+cards, weeks old, survived this script's first version untouched for
+exactly that reason). Cards created before workflow_id existed fall back to
+the by-name `/actions/workflows` lookup, which is correct for any
+normally-named workflow (Build and Deploy, version-drift, etc.) but would
+mis-group Dependabot runs if it were the only path.
 """
 
 import json
@@ -40,6 +52,7 @@ GITHUB_TOKEN = None  # set via env if either repo goes private; see gh-actions-w
 # Mirrors gh-actions-watch.py's own title format exactly:
 #   f"{repo} | {workflow} | run {run_number}"
 TITLE_RE = re.compile(r"^(?P<repo>\S+) \| (?P<workflow>.+) \| run (?P<run>\d+)$")
+WORKFLOW_ID_RE = re.compile(r"^workflow_id: (?P<id>\d+)$", re.MULTILINE)
 
 
 def _gh_get(path: str) -> dict:
@@ -51,20 +64,27 @@ def _gh_get(path: str) -> dict:
         return json.load(resp)
 
 
-def latest_run_number(repo: str, workflow_name: str) -> int | None:
-    """Resolve a workflow's display name (as carded in the title) to its id,
-    then fetch the single most recent run. None if the workflow or any run
-    can't be found — the caller leaves the card alone in that case."""
+def _latest_run_for_workflow_id(repo: str, workflow_id: str) -> int | None:
+    runs = _gh_get(
+        f"/repos/{repo}/actions/workflows/{workflow_id}/runs?per_page=1"
+    ).get("workflow_runs", [])
+    return runs[0].get("run_number") if runs else None
+
+
+def latest_run_number(repo: str, workflow_name: str, workflow_id: str | None) -> int | None:
+    """Fetch the single most recent run for this workflow. Prefers the stable
+    workflow_id (from the card body) when present; otherwise resolves the
+    display name (as carded in the title) to an id via /actions/workflows
+    first. None if the workflow or any run can't be found — the caller
+    leaves the card alone in that case."""
+    if workflow_id is not None:
+        return _latest_run_for_workflow_id(repo, workflow_id)
+
     workflows = _gh_get(f"/repos/{repo}/actions/workflows?per_page=100").get("workflows", [])
     match = next((w for w in workflows if w.get("name") == workflow_name), None)
     if match is None:
         return None
-    runs = _gh_get(
-        f"/repos/{repo}/actions/workflows/{match['id']}/runs?per_page=1"
-    ).get("workflow_runs", [])
-    if not runs:
-        return None
-    return runs[0].get("run_number")
+    return _latest_run_for_workflow_id(repo, str(match["id"]))
 
 
 def hermes_kanban(*args: str) -> subprocess.CompletedProcess:
@@ -94,11 +114,13 @@ def main() -> int:
         if not match:
             continue
         repo, workflow, run = match["repo"], match["workflow"], int(match["run"])
+        id_match = WORKFLOW_ID_RE.search(body)
+        workflow_id = id_match["id"] if id_match else None
 
-        key = (repo, workflow)
+        key = (repo, workflow_id or workflow)
         if key not in latest_cache:
             try:
-                latest_cache[key] = latest_run_number(repo, workflow)
+                latest_cache[key] = latest_run_number(repo, workflow, workflow_id)
             except Exception as exc:  # noqa: BLE001 — top-level entrypoint
                 print(f"FAILED to fetch latest run for {repo} | {workflow}: {exc}", file=sys.stderr)
                 latest_cache[key] = None

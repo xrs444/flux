@@ -29,6 +29,18 @@ Monitor-script contract note (inherited, no longer load-bearing here): this
 runs as a plain --no-agent script now, not --monitor-script, so the
 stable-stdout requirement that applied to the old .sh version doesn't apply
 — stdout here is a human-readable summary, logged verbatim by hermes cron.
+
+Body carries `workflow_id` (added 2026-11-11, gh-actions-reconcile.py
+follow-up): `run.get("name")` is NOT always a stable per-workflow label —
+GitHub's Dependabot Updates check emits a unique dynamic `name`/
+`display_title` per run (e.g. "uv in <path> for <packages> - Update
+#<id>"), so a card's title alone can't be grouped back to "the same
+workflow, a later run" the way it can for a normally-named workflow like
+Build and Deploy. `run["workflow_id"]` is stable across all runs of the
+same underlying workflow regardless of what its dynamic display name says,
+and is already present on every run this script fetches — recording it in
+the body lets gh-actions-reconcile.py resolve staleness directly via
+`/actions/workflows/{workflow_id}/runs`, no display-name matching needed.
 """
 
 import json
@@ -77,10 +89,11 @@ def main() -> int:
         for run in runs:
             workflow = run.get("name", "?")
             run_number = run.get("run_number", "?")
+            workflow_id = run.get("workflow_id", "?")
             html_url = run.get("html_url", "")
             key = f"github:{repo}:{workflow}:{run_number}"
             title = f"{repo} | {workflow} | run {run_number}"
-            body = f"source: cron\n\n{html_url}"
+            body = f"source: cron\nworkflow_id: {workflow_id}\n\n{html_url}"
 
             result = hermes_kanban(
                 "create", title,
