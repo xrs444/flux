@@ -49,13 +49,26 @@ spec:
 
         # Attribution gap closed 2026-09-28 (bug-991): Xcog1LiteLLMDown above
         # only probes LiteLLM's own /health/liveliness, which stays green
-        # even when the mlx_lm.server daemon behind it is crash-looping on a
-        # Metal OOM — the front door answers, inference doesn't. That left
+        # even when the backend behind it can't actually serve a real
+        # completion — the front door answers, inference doesn't. That left
         # this exact failure mode (2026-09-26 to 2026-09-28, all three
         # hermes-t/s/k agents down) with nothing pointing at xcog1;
         # SyntheticHermesFailed fired correctly but diagnosis of WHERE was
         # entirely manual. No new probe or scrape target needed — both
         # sides already exist as metrics; this just correlates them.
+        #
+        # Description updated 2026-11-14 (bug-1154): the original text named
+        # one specific cause (mlx_lm.server Metal OOM, bug-991) and pointed
+        # at mlx-lm-*.stderr — stale since qwen3-30b-a3b moved to
+        # llama-server on 2026-10-31 (bug-1106), and actively misleading: a
+        # live recurrence of this alert on 2026-11-14 turned out to have
+        # THREE different causes in one incident, none of them an mlx OOM
+        # (hermes-agent's reasoning_effort vs litellm's drop_params, litellm
+        # itself wedged with zero new log output for a week, and
+        # llama-server's single --parallel slot monopolized by one huge
+        # prompt — see buglog bug-1144/bug-1154 and cerebrum
+        # llm-stack-xcog1.md for the full breakdown). Point at a checklist
+        # of causes instead of asserting one.
         - alert: Xcog1InferenceDegraded
           expr: |
             probe_success{job="blackbox-xcog1-litellm"} == 1
@@ -69,12 +82,61 @@ spec:
             description: >
               LiteLLM's liveliness endpoint is answering while every Hermes
               synthetic probe (synthetic_hermes_success, all instances) has
-              failed for 10+ minutes — the signature of a model daemon
-              crash-loop behind a healthy proxy (bug-991: mlx_lm.server
-              Metal OOM). Check
-              /var/log/llm-stack/mlx-lm-*.stderr on xcog1 for
-              kIOGPUCommandBufferCallbackErrorOutOfMemory before assuming
-              the Hermes side is at fault.
+              failed for 10+ minutes — the front door is up, something
+              behind it isn't serving real completions. Known causes so
+              far, check in this order: (1) Xcog1LlamaCppQueueBacklog firing
+              alongside this = the model backend is just busy/backed up,
+              not down — see that alert. (2) litellm itself wedged: curl
+              http://xcog1.lan:4000/v1/models directly (a static route with
+              zero backend calls) — a bare 500 there even with a valid
+              auth header means litellm's own process is stuck, not the
+              model; check /var/log/llm-stack/litellm.std{out,err} for a
+              long gap in log activity, and if confirmed,
+              `sudo launchctl kickstart -k system/net.xrs444.litellm`.
+              (3) the model daemon itself: check
+              /var/log/llm-stack/llama-cpp-*.stderr (NOT mlx-lm-*.stderr —
+              qwen3-30b-a3b has used llama-server since 2026-10-31) for
+              real errors vs. just slow progress; `ps`/`top` showing 0% CPU
+              does NOT mean idle, llama-server's work is Metal/GPU-bound
+              and invisible to CPU sampling.
+
+        # Added 2026-11-14 (bug-1154): llama-server's own --metrics endpoint
+        # (loopback-only, republished via node_exporter's textfile
+        # collector — nix llm-stack module, metricsScrapeScript) exposes
+        # llamacpp:requests_deferred, a gauge of requests currently queued
+        # behind the --parallel slot(s). Found live that a single large
+        # prompt can occupy the lone slot for minutes with every other
+        # caller queued and zero outside visibility — from the monitoring
+        # side a busy queue and an actually-wedged daemon looked identical
+        # until this. This alert is warning-severity and fires separately
+        # from Xcog1InferenceDegraded specifically so the two are
+        # distinguishable: this firing ALONE means "busy, give it time";
+        # this firing ALONGSIDE InferenceDegraded is the signal to check
+        # InferenceDegraded's cause (1) before assuming the backend itself
+        # is broken.
+        - alert: Xcog1LlamaCppQueueBacklog
+          expr: |
+            llamacpp:requests_deferred{instance="xcog1.lan:9100"} > 0
+          for: 3m
+          labels:
+            severity: warning
+            category: xcog1
+          annotations:
+            summary: "xcog1 llama-server has requests queued behind a busy slot"
+            description: >
+              llamacpp:requests_deferred has been above 0 for 3+ minutes —
+              at least one request is waiting because every --parallel
+              slot is occupied (currently --parallel 1, so this means ONE
+              in-flight request, likely a large prompt, is blocking
+              everyone else). Check llamacpp:requests_processing
+              (should be >= 1 while this fires) and
+              /var/log/llm-stack/llama-cpp-*.stderr's print_timing lines
+              for real progress — if requests_processing is 0 while this
+              is still firing, or print_timing shows no progress for
+              several minutes, the daemon is actually stuck, not just busy
+              (`sudo launchctl kickstart -k
+              system/net.xrs444.llama-cpp-<model>` to recover; this WILL
+              drop whatever request was in flight).
 
         # Disk usage on xcog1's data volume (model weights under /var/models).
         # NOTE (verify after first scrape, plan §D11): confirm the actual
