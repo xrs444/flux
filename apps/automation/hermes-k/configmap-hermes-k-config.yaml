@@ -30,32 +30,42 @@ data:
   # an explicit deny: DO NOT copy an `mcp_servers:` block onto this file from
   # hermes-t/hermes-s without deliberately deciding kid-mode should have it.
   config.yaml: |
-    # xcog1 (Mac Mini) LiteLLM front door — local qwen3-30b-a3b via mlx-lm.
+    # xcog1 (Mac Mini) LiteLLM front door — local qwen3-30b-a3b via
+    # llama-server/llama.cpp (migrated 2026-10-31, bug-1106 — this comment
+    # used to say mlx-lm, now stale-fixed).
     # Kid policy: local model ONLY. Never add a deepseek-hard alias or any
     # other cloud-tier model here — hermes-k must not reach cloud inference.
     #
-    # context_length: 131072 (REVERTED from 32768 — bug-1106). The 32768 pin
-    # broke hermes-agent outright: Hermes Agent enforces its own hard
-    # startup-time floor of 64,000 tokens on this field, so a value matching
-    # the deployment's real server-side ceiling (below that floor) prevents
-    # the assistant from starting at all. 131072 (the model's real published
-    # context window) clears the floor; see configmap-hermes-t-config.yaml's
-    # fuller comment and cerebrum/hermes-matrix-windmill.md's 2026-10-30
-    # entries. NOTE still flagged, NOT fixed, from the original comment:
-    # LiteLLM's router_settings.context_window_fallbacks (bug-1087) is
-    # scoped to the qwen3-30b-a3b MODEL GROUP, not per-caller — an oversized
-    # prompt from hermes-k would silently fall back to deepseek-hard (cloud)
-    # exactly like hermes-t/s do, the same way this comment's own "never add
-    # a deepseek-hard alias here" boundary is enforced only by hermes-k's
-    # config never NAMING it, not by any LiteLLM-side access control.
-    # context_length here still only affects hermes-k's own client-side
-    # math, never that access-control gap.
+    # context_length: 64000 (reconfirmed from scratch 2026-11-14, bug-1154
+    # follow-up — see nix/hosts/darwin/xcog1/default.nix's llamaCppModels
+    # comment and configmap-hermes-t-config.yaml for the full memory/
+    # concurrency analysis). hermes-agent enforces a hard startup-time
+    # floor of 64,000 on this field. The real backend now provisions
+    # exactly two 64,000-token slots (parallel=2, contextSize=128000)
+    # specifically to make 64000 here true, not just floor-clearing, the
+    # way the previous 131072 value (the model's full published window,
+    # unbacked by real capacity) was.
+    #
+    # The access-control gap this comment used to flag — LiteLLM's
+    # router_settings.context_window_fallbacks being scoped to the
+    # qwen3-30b-a3b MODEL GROUP, not per-caller, so an oversized prompt
+    # from hermes-k could silently fall back to deepseek-hard (cloud),
+    # violating hermes-k's own local-only policy — currently can't happen
+    # for a DIFFERENT reason than intended: no context_window_fallbacks is
+    # configured at all post-migration (cloudTier.contextWindowFallbackFor
+    # is deliberately empty — see the nix host config's own comment).
+    # An oversized prompt from any of hermes-t/s/k just hard-fails against
+    # llama-server's own context limit today, with no cloud leak risk, but
+    # also no graceful degradation. If that fallback is ever reintroduced,
+    # this per-caller scoping gap still needs solving first — it was never
+    # actually fixed, just currently inert because the mechanism it would
+    # exploit doesn't exist right now.
     model:
       default: qwen3-30b-a3b
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
-      context_length: 131072
+      context_length: 64000
 
     terminal:
       backend: local
@@ -145,7 +155,7 @@ data:
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
-      context_length: 131072
+      context_length: 64000
 
     terminal:
       backend: local

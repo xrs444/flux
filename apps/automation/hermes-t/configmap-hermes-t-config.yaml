@@ -6,7 +6,9 @@ metadata:
   namespace: hermes-t
 data:
   config.yaml: |
-    # xcog1 (Mac Mini) LiteLLM front door — local qwen3-30b-a3b via mlx-lm.
+    # xcog1 (Mac Mini) LiteLLM front door — local qwen3-30b-a3b via
+    # llama-server/llama.cpp (migrated 2026-10-31 from mlx_lm.server,
+    # bug-1106 — this comment used to say mlx-lm, now stale-fixed).
     # provider: custom is hermes-agent's generic OpenAI-compatible slot;
     # api_key uses ${VAR} env interpolation (same mechanism as
     # MCP_MCPJUNGLE_API_KEY below), resolved from LITELLM_MASTER_KEY at
@@ -19,29 +21,28 @@ data:
     # silently resolve to "no-key-required" and 401 against xcog1's LiteLLM.
     # Needs a proper custom_providers: pool entry — follow-up, not this pass.
     #
-    # context_length: 131072 (2026-10-30, REVERTED from 32768 — bug-1106).
-    # The 32768 pin (an earlier same-day "cosmetic follow-up to bug-1087")
-    # broke hermes-agent outright: Hermes Agent enforces its OWN hard
-    # startup-time floor of 64,000 tokens on model.context_length,
-    # independent of any actual request/compression behavior — rejecting
-    # this value with "context window ... below the minimum 64,000 required
-    # by Hermes Agent" before the assistant can even start. The deployment's
-    # real server-side ceiling (models.qwen3-30b-a3b.maxInputTokens = 32768
-    # in nix/hosts/darwin/xcog1/default.nix) still applies and is still
-    # enforced by LiteLLM's context_window_fallback regardless of this
-    # value — this field only affects hermes-agent's own local
-    # token-counting/compression math, never what LiteLLM actually allows
-    # through. 131072 matches the model's real published context window
-    # (models.dev catalog figure for qwen3-30b-a3b, confirmed in the prior
-    # investigation — see cerebrum/hermes-matrix-windmill.md's 2026-10-30
-    # entries), clearing Hermes's 64K floor without claiming a number the
-    # model can't actually support.
+    # context_length: 64000 (reconfirmed from scratch 2026-11-14, bug-1154
+    # follow-up — see nix/hosts/darwin/xcog1/default.nix's llamaCppModels
+    # comment for the full memory/concurrency analysis). hermes-agent
+    # enforces a hard startup-time floor of 64,000 on this field,
+    # independent of any actual request/compression behavior — below that
+    # it refuses to start with "context window ... below the minimum
+    # 64,000 required by Hermes Agent". The previous value here (131072,
+    # the model's full published window) was set 2026-10-30 purely to
+    # clear that floor and was NEVER actually backed by the real backend
+    # capacity — there was no maxInputTokens ceiling or context_window
+    # fallback connecting this field to reality (that comment's claim that
+    # one "still applies" was itself stale, written one day before the
+    # 2026-10-31 mlx->llama.cpp migration removed it). The real backend
+    # now provisions exactly two 64,000-token slots (parallel=2,
+    # contextSize=128000) specifically to make 64000 here true, not just
+    # floor-clearing — this field and the real backend capacity now agree.
     model:
       default: qwen3-30b-a3b
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
-      context_length: 131072
+      context_length: 64000
 
     terminal:
       backend: local
@@ -235,15 +236,15 @@ data:
       default_assignee: kanban-safe
 
     # context_length: see the detailed comment on the model: block above —
-    # same value (reverted to 131072, bug-1106), kept in both places for the
-    # same reason the rest of this block is duplicated (fresh-PVC seed vs.
-    # git-enforced managed layer).
+    # same value (64000, reconfirmed 2026-11-14, bug-1154), kept in both
+    # places for the same reason the rest of this block is duplicated
+    # (fresh-PVC seed vs. git-enforced managed layer).
     model:
       default: qwen3-30b-a3b
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
-      context_length: 131072
+      context_length: 64000
 
     terminal:
       backend: local

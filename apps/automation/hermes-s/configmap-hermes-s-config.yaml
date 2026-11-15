@@ -6,30 +6,34 @@ metadata:
   namespace: hermes-s
 data:
   config.yaml: |
-    # xcog1 (Mac Mini) LiteLLM front door — local qwen3-30b-a3b via mlx-lm.
+    # xcog1 (Mac Mini) LiteLLM front door — local qwen3-30b-a3b via
+    # llama-server/llama.cpp (migrated 2026-10-31, bug-1106 — this comment
+    # used to say mlx-lm, now stale-fixed).
     # provider: custom is hermes-agent's generic OpenAI-compatible slot;
     # api_key uses ${VAR} env interpolation (same mechanism as
     # MCP_MCPJUNGLE_API_KEY below), resolved from LITELLM_MASTER_KEY at
     # runtime — verified live against config.py's _expand_env_vars, which
     # applies to any string value in config.yaml, not just mcp headers.
     #
-    # context_length: 131072 (REVERTED from 32768 — bug-1106). Pinning the
-    # deployment's real server-side ceiling
-    # (models.qwen3-30b-a3b.maxInputTokens in nix/hosts/darwin/xcog1) here
-    # broke hermes-agent outright: Hermes Agent enforces its own hard
-    # startup-time floor of 64,000 tokens on this field, independent of
-    # LiteLLM's actual enforcement underneath. 131072 (the model's real
-    # published context window) clears that floor; LiteLLM's
-    # context_window_fallback still covers the real 32768 ceiling
-    # regardless of what this field says. See
-    # flux/apps/automation/hermes-t/configmap-hermes-t-config.yaml's fuller
-    # comment and cerebrum/hermes-matrix-windmill.md's 2026-10-30 entries.
+    # context_length: 64000 (reconfirmed from scratch 2026-11-14, bug-1154
+    # follow-up — see nix/hosts/darwin/xcog1/default.nix's llamaCppModels
+    # comment and flux/apps/automation/hermes-t's ConfigMap for the full
+    # memory/concurrency analysis and reasoning). hermes-agent enforces a
+    # hard startup-time floor of 64,000 on this field. The previous value
+    # (131072, the model's full published window) was set 2026-10-30
+    # purely to clear that floor and was never actually backed by real
+    # backend capacity — the maxInputTokens ceiling this comment used to
+    # cite stopped existing at the 2026-10-31 mlx->llama.cpp migration,
+    # one day after this comment was written. The real backend now
+    # provisions exactly two 64,000-token slots (parallel=2,
+    # contextSize=128000) specifically to make 64000 here true, not just
+    # floor-clearing.
     model:
       default: qwen3-30b-a3b
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
-      context_length: 131072
+      context_length: 64000
 
     terminal:
       backend: local
@@ -98,7 +102,7 @@ data:
       provider: custom
       base_url: http://xcog1.lan:4000/v1
       api_key: "${LITELLM_MASTER_KEY}"
-      context_length: 131072
+      context_length: 64000
 
     terminal:
       backend: local
