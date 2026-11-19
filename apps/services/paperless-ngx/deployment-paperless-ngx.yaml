@@ -35,7 +35,7 @@ spec:
                       - v-k8s-xsvr3
       containers:
         - name: paperless-ngx
-          image: ghcr.io/paperless-ngx/paperless-ngx:3.4.2
+          image: ghcr.io/paperless-ngx/paperless-ngx:3.5.1
           ports:
             - containerPort: 8000
               name: http
@@ -73,10 +73,17 @@ spec:
             limits:
               cpu: 2000m
               memory: 2Gi
+          # Probes send "Host: localhost": since 3.5.0, with PAPERLESS_URL set and
+          # PAPERLESS_ALLOWED_HOSTS unset, Paperless only accepts that URL's hostname
+          # plus localhost. kubelet would otherwise probe with the pod IP as Host and
+          # get a 400 (DisallowedHost), failing every probe.
           startupProbe:
             httpGet:
               path: /
               port: http
+              httpHeaders:
+                - name: Host
+                  value: localhost
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 30
@@ -85,6 +92,9 @@ spec:
             httpGet:
               path: /
               port: http
+              httpHeaders:
+                - name: Host
+                  value: localhost
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
@@ -92,6 +102,9 @@ spec:
             httpGet:
               path: /
               port: http
+              httpHeaders:
+                - name: Host
+                  value: localhost
             periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 3
