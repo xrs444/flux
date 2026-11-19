@@ -68,7 +68,7 @@ spec:
               mountPath: /config-templates
       containers:
         - name: seatable
-          image: seatable/seatable-enterprise:6.2.15
+          image: seatable/seatable-enterprise:7.0.15
           ports:
             - containerPort: 80
               name: http
@@ -106,12 +106,27 @@ spec:
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_PASSWORD
-              value: ""
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: redis-password
             - name: JWT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
                   name: seatable-secrets
                   key: jwt-private-key
+            # 7.0: dtable-server runs as its own container (sidecar below), so
+            # dtable-web / the API gateway reach it over the pod's loopback
+            # rather than the compose hostname "dtable-server".
+            - name: INNER_DTABLE_SERVER_URL
+              value: "http://127.0.0.1:5000"
+            # Required by the 7.0 compose for the server and the automation
+            # worker; both must share the same value.
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: secret-key
             - name: SEATABLE_ADMIN_EMAIL
               value: "xrs444@xrs444.net"
             - name: SEATABLE_ADMIN_PASSWORD
@@ -155,6 +170,153 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+        # --- SeaTable 7.0: dtable-server and the automation worker are no longer
+        # part of the seatable-enterprise image. Both are required: without
+        # dtable-server bases don't open, without the worker automations don't
+        # run. Mirrors dtable-server.yml / seatable-automation-worker.yml from
+        # seatable/seatable-release@v7.0.18, with compose hostnames replaced by
+        # the pod's loopback (all containers share this pod, like mariadb/redis).
+        - name: dtable-server
+          image: seatable/dtable-server-js:7.0.14
+          ports:
+            - containerPort: 5000
+              name: dtable-server
+          env:
+            - name: SEATABLE_MYSQL_DB_HOST
+              value: "127.0.0.1"
+            - name: SEATABLE_MYSQL_DB_PORT
+              value: "3306"
+            - name: SEATABLE_MYSQL_DB_USER
+              value: "root"
+            - name: SEATABLE_MYSQL_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: mariadb-root-password
+            - name: SEATABLE_MYSQL_DB_DTABLE_DB_NAME
+              value: "dtable_db"
+            - name: REDIS_HOST
+              value: "127.0.0.1"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: redis-password
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: jwt-private-key
+            - name: TZ
+              value: "America/Phoenix"
+            - name: INNER_DTABLE_WEB_SERVICE_URL
+              value: "http://127.0.0.1:80"
+            - name: INNER_DTABLE_DB_URL
+              value: "http://127.0.0.1:7777"
+            - name: DTABLE_SERVER_LOG_LEVEL
+              value: "INFO"
+          volumeMounts:
+            - name: seatable-data
+              mountPath: /shared
+            - name: seatable-license
+              mountPath: /shared/seatable/seatable-license.txt
+              subPath: seatable-license.txt
+              readOnly: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: dtable-server
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: dtable-server
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+        - name: seatable-automation-worker
+          image: seatable/automation-worker:7.0.14
+          env:
+            - name: SEATABLE_MYSQL_DB_HOST
+              value: "127.0.0.1"
+            - name: SEATABLE_MYSQL_DB_PORT
+              value: "3306"
+            - name: SEATABLE_MYSQL_DB_USER
+              value: "root"
+            - name: SEATABLE_MYSQL_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: mariadb-root-password
+            - name: SEATABLE_MYSQL_DB_DTABLE_DB_NAME
+              value: "dtable_db"
+            - name: SEATABLE_MYSQL_DB_SEAFILE_DB_NAME
+              value: "seafile_db"
+            - name: SEATABLE_MYSQL_DB_CCNET_DB_NAME
+              value: "ccnet_db"
+            - name: REDIS_HOST
+              value: "127.0.0.1"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: redis-password
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: jwt-private-key
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: secret-key
+            - name: SEATABLE_SERVER_HOSTNAME
+              value: "seatable.xrs444.net"
+            - name: SEATABLE_SERVER_PROTOCOL
+              value: "https"
+            - name: TZ
+              value: "America/Phoenix"
+            - name: INNER_DTABLE_WEB_SERVICE_URL
+              value: "http://127.0.0.1:80"
+            - name: INNER_DTABLE_SERVER_URL
+              value: "http://127.0.0.1:5000"
+            - name: INNER_DTABLE_DB_URL
+              value: "http://127.0.0.1:7777"
+            - name: ENABLE_PYTHON_SCRIPT
+              value: "false"
+            - name: ENABLE_SEATABLE_AI
+              value: "false"
+            - name: SEATABLE_LOG_TO_STDOUT
+              value: "true"
+            - name: LOG_LEVEL
+              value: "INFO"
+            - name: STORAGE_TYPE
+              value: "disk"
+          volumeMounts:
+            - name: seatable-data
+              mountPath: /shared
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
         - name: mariadb
           image: mariadb:13
           ports:
@@ -184,8 +346,25 @@ spec:
             - --character-set-server=utf8mb4
             - --collation-server=utf8mb4_unicode_ci
             - --max-connections=1000
+            # SeaTable's supported MariaDB config (seatable-server.yml, 7.0).
+            # Live values before this change: snapshot isolation ON, 16M packet.
+            - --innodb_snapshot_isolation=OFF
+            - --max-allowed-packet=32M
         - name: redis
           image: redis:8-alpine
+          # 7.0's supported config runs Redis with a password and an
+          # allkeys-lru maxmemory (compose default 500mb); sized here to stay
+          # under the container limit.
+          command:
+            - /bin/sh
+            - -c
+            - exec redis-server --requirepass "$REDIS_PASSWORD" --maxmemory 400mb --maxmemory-policy allkeys-lru
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: seatable-secrets
+                  key: redis-password
           ports:
             - containerPort: 6379
               name: redis
@@ -195,7 +374,7 @@ spec:
               memory: 64Mi
             limits:
               cpu: 200m
-              memory: 256Mi
+              memory: 512Mi
       volumes:
         - name: seatable-data
           persistentVolumeClaim:
