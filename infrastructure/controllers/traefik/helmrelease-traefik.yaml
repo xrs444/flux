@@ -36,8 +36,13 @@ spec:
         enabled: true
     service:
       enabled: true
-      externalTrafficPolicy: Local
-      loadBalancerIP: 172.21.0.2
+      # These live under service.spec — the chart ignored them as top-level
+      # keys (even on 41.x) and rejects them outright from 42.3.1. Until now
+      # externalTrafficPolicy: Local was only on the live Service because of
+      # a manual `kubectl patch` (2025-06-19), not because of this file.
+      spec:
+        externalTrafficPolicy: Local
+        loadBalancerIP: 172.21.0.2
   valuesFrom:
     - kind: ConfigMap
       name: traefik-helm-chart-value-overrides
