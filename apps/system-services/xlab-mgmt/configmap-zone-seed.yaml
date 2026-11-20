@@ -25,7 +25,7 @@ data:
           "ttl": 3600,
           "records": [
             {
-              "content": "ns1.lab.xrs444.net. hostmaster.lab.xrs444.net. 2026062901 10800 3600 604800 3600",
+              "content": "ns1.lab.xrs444.net. hostmaster.lab.xrs444.net. 2026112001 10800 3600 604800 3600",
               "disabled": false
             }
           ]
@@ -192,6 +192,72 @@ data:
           "records": [
             {
               "content": "172.25.2.100",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "zbx-srv01.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 300,
+          "records": [
+            {
+              "content": "172.25.2.10",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "zbx-db01.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 300,
+          "records": [
+            {
+              "content": "172.25.2.11",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "zbx-web01.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 300,
+          "records": [
+            {
+              "content": "172.25.2.12",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "zbx-prx-clu01-01.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 300,
+          "records": [
+            {
+              "content": "172.25.2.13",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "zbx-prx-clu01-02.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 300,
+          "records": [
+            {
+              "content": "172.25.2.14",
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "zbx-trap-clu01-01.lab.xrs444.net.",
+          "type": "A",
+          "ttl": 300,
+          "records": [
+            {
+              "content": "172.25.2.15",
               "disabled": false
             }
           ]
