@@ -127,6 +127,16 @@ spec:
                 secretKeyRef:
                   name: seatable-secrets
                   key: secret-key
+            # The dtable-server sidecar image runs its own dtable-storage-server
+            # on :6666 (same /shared/seatable/storage-data, same conf). In the
+            # compose layout each container has its own network namespace so
+            # both can bind it; in this single pod they share one, so this
+            # container's monitor.sh (which can't see the sidecar's process)
+            # restarted a duplicate every minute and it died with "bind:
+            # address already in use" (hundreds of times a day). Disable the
+            # duplicate here; dtable-db reaches the sidecar's one on loopback.
+            - name: ENABLE_DTABLE_STORAGE_SERVER
+              value: "false"
             - name: SEATABLE_ADMIN_EMAIL
               value: "xrs444@xrs444.net"
             - name: SEATABLE_ADMIN_PASSWORD
