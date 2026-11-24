@@ -57,7 +57,10 @@ spec:
         - matchName: huggingface.co
         - matchPattern: "*.huggingface.co"
         - matchName: hf.co
-        - matchPattern: "*.hf.co"
+        # "**." (multi-label) — large files redirect to us.aws.cdn.hf.co, which
+        # a single-label "*.hf.co" does not match. Confirmed 2026-11-24: the
+        # hs-rerank-1 download sat at 0 bytes until init timed out (300s).
+        - matchPattern: "**.hf.co"
       toPorts:
         - ports:
             - port: "443"
