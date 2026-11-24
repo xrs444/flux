@@ -95,6 +95,12 @@ spec:
           env:
             - name: TZ
               value: "America/Phoenix"
+            # xcog1 llama-server prefills the ~56K-token ops-triage-sweep prompt
+            # in 4-5 min with no streamed bytes; the 180s default stale-stream
+            # timeout (240s for >50K ctx) aborted it every run, and the aborted
+            # prefill restarted from scratch on retry (bug-1116).
+            - name: HERMES_STREAM_STALE_TIMEOUT
+              value: "900"
             - name: HERMES_DASHBOARD
               value: "1"
             - name: HERMES_DASHBOARD_HOST
