@@ -27,7 +27,7 @@ spec:
     spec:
       initContainers:
         - name: preflight
-          image: ghcr.io/xrs444/mcp-personal@sha256:87745bf6087eaa1970a180f4c7470a7310d5263d10e8dcbdf8e3ee746d53c4d1
+          image: ghcr.io/xrs444/mcp-personal@sha256:8942054e4bc71c344b004f18dfc8da65cb41280a566e2c6332b853ecbc4bcabb
           command:
             - sh
             - -c
@@ -49,7 +49,7 @@ spec:
                   key: CALDAV_PASSWORD
       containers:
         - name: mcp-caldav-s
-          image: ghcr.io/xrs444/mcp-personal@sha256:87745bf6087eaa1970a180f4c7470a7310d5263d10e8dcbdf8e3ee746d53c4d1
+          image: ghcr.io/xrs444/mcp-personal@sha256:8942054e4bc71c344b004f18dfc8da65cb41280a566e2c6332b853ecbc4bcabb
           command: ["supergateway"]
           args:
             - --stdio
