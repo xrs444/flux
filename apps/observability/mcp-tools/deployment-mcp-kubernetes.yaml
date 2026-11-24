@@ -49,7 +49,7 @@ spec:
       serviceAccountName: mcp-kubernetes
       containers:
         - name: mcp-kubernetes
-          image: ghcr.io/containers/kubernetes-mcp-server:v0.1.2
+          image: ghcr.io/containers/kubernetes-mcp-server:v0.1.3
           # v0.1.0+ dropped all runtime CLI flags (--port/--log-level/
           # --read-only) in favor of a single TOML config file — see
           # configmap-mcp-kubernetes.yaml, mounted below over the image's
