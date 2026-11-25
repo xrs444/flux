@@ -22,6 +22,8 @@ from prometheus_client.core import REGISTRY, GaugeMetricFamily, CounterMetricFam
 MSP_ID = os.environ["FIREWALLA_MSP_ID"]
 MSP_TOKEN = os.environ["FIREWALLA_MSP_TOKEN"]
 POLL_INTERVAL = int(os.environ.get("FIREWALLA_POLL_INTERVAL_SECONDS", "60"))
+RATE_LIMIT_WAIT = int(os.environ.get("FIREWALLA_RATE_LIMIT_WAIT_SECONDS", "660"))
+MAX_BACKOFF = int(os.environ.get("FIREWALLA_MAX_BACKOFF_SECONDS", "3600"))
 LISTEN_PORT = int(os.environ.get("FIREWALLA_METRICS_PORT", "9878"))
 PER_DEVICE_METRICS = os.environ.get("FIREWALLA_PER_DEVICE_METRICS", "true").lower() == "true"
 
@@ -72,14 +74,30 @@ def _refresh():
 
 
 def _refresh_loop():
+    # On HTTP 429 the MSP API's lockout can restart on every request it sees
+    # (observed 2026-11-24/25: ~18h of 60s retries kept the shared MSP token
+    # locked out for the exporter AND mcp-firewalla). So after a 429 stop
+    # polling for longer than the lockout (Retry-After if given, else
+    # RATE_LIMIT_WAIT), then back off exponentially while it keeps happening.
+    rate_limit_wait = RATE_LIMIT_WAIT
     while True:
+        wait = POLL_INTERVAL
         try:
             _refresh()
+            rate_limit_wait = RATE_LIMIT_WAIT
         except Exception as e:  # noqa: BLE001 -- exporter must never crash the loop
-            print(f"[firewalla-exporter] refresh failed: {e}", file=sys.stderr)
             with _lock:
                 _cache["ok"] = False
-        time.sleep(POLL_INTERVAL)
+            resp = getattr(e, "response", None)
+            if resp is not None and resp.status_code == 429:
+                retry_after = resp.headers.get("Retry-After", "")
+                hinted = int(retry_after) if retry_after.isdigit() else 0
+                wait = max(hinted, rate_limit_wait)
+                rate_limit_wait = min(rate_limit_wait * 2, MAX_BACKOFF)
+                print(f"[firewalla-exporter] rate limited (429); pausing {wait}s", file=sys.stderr)
+            else:
+                print(f"[firewalla-exporter] refresh failed: {e}", file=sys.stderr)
+        time.sleep(wait)
 
 
 class FirewallaCollector:
