@@ -45,12 +45,16 @@ spec:
             # *_target_list tools were always on before; keep them.
             - name: FIREWALLA_ENABLE_WRITE_TOOLS
               value: "true"
-            # TEMPORARY. v2 refuses to listen on 0.0.0.0 without a bearer token.
-            # This restores the v1 no-auth behaviour so the rollout can proceed.
-            # Replace with MCP_HTTP_BEARER_TOKEN (SealedSecret) + an
-            # Authorization header on the mcpjungle side, then delete this.
-            - name: MCP_HTTP_ALLOW_NO_TOKEN
-              value: "true"
+            # v2 refuses to listen on 0.0.0.0 without a bearer token. The same
+            # value is held by mcpjungle (registered with --bearer-token; the
+            # registration lives in its SQLite DB on the PVC, so re-run
+            # `/mcpjungle register --name firewalla ... --bearer-token <t> --force`
+            # with this secret's bearer-token if that PVC is ever reset).
+            - name: MCP_HTTP_BEARER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mcp-firewalla-credentials
+                  key: bearer-token
             # v2 rejects any request whose Host header isn't listed (403 "Host
             # not allowed"). Default is localhost only; mcpjungle calls the
             # in-cluster service name.
