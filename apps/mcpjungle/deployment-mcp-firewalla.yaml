@@ -40,6 +40,11 @@ spec:
               value: "8080"
             - name: MCP_HTTP_PATH
               value: "/mcp"
+            # v2.0.0 made every state-changing tool opt-in (default server is
+            # read-only, 24 tools). pause_rule, resume_rule and the three
+            # *_target_list tools were always on before; keep them.
+            - name: FIREWALLA_ENABLE_WRITE_TOOLS
+              value: "true"
             - name: FIREWALLA_MSP_ID
               value: "dn-j3almw.firewalla.net"
             - name: FIREWALLA_MSP_TOKEN
