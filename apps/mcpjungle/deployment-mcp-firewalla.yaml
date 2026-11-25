@@ -51,6 +51,11 @@ spec:
             # Authorization header on the mcpjungle side, then delete this.
             - name: MCP_HTTP_ALLOW_NO_TOKEN
               value: "true"
+            # v2 rejects any request whose Host header isn't listed (403 "Host
+            # not allowed"). Default is localhost only; mcpjungle calls the
+            # in-cluster service name.
+            - name: MCP_HTTP_ALLOWED_HOSTS
+              value: "localhost,127.0.0.1,[::1],mcp-firewalla,mcp-firewalla.mcp-gateway,mcp-firewalla.mcp-gateway.svc,mcp-firewalla.mcp-gateway.svc.cluster.local"
             - name: FIREWALLA_MSP_ID
               value: "dn-j3almw.firewalla.net"
             - name: FIREWALLA_MSP_TOKEN
