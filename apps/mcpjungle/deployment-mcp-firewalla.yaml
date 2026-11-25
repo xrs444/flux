@@ -45,6 +45,12 @@ spec:
             # *_target_list tools were always on before; keep them.
             - name: FIREWALLA_ENABLE_WRITE_TOOLS
               value: "true"
+            # TEMPORARY. v2 refuses to listen on 0.0.0.0 without a bearer token.
+            # This restores the v1 no-auth behaviour so the rollout can proceed.
+            # Replace with MCP_HTTP_BEARER_TOKEN (SealedSecret) + an
+            # Authorization header on the mcpjungle side, then delete this.
+            - name: MCP_HTTP_ALLOW_NO_TOKEN
+              value: "true"
             - name: FIREWALLA_MSP_ID
               value: "dn-j3almw.firewalla.net"
             - name: FIREWALLA_MSP_TOKEN
