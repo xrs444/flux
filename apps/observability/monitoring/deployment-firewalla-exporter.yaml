@@ -39,7 +39,7 @@ spec:
           # (a :latest re-push kept serving the old cached digest after rollout restart).
           # A sha-tagged image is unique per build, so there's nothing to cache-hit on by
           # mistake. Update this tag after every rebuild of firewalla-exporter/.
-          image: ghcr.io/xrs444/firewalla-exporter:a1e73daedc0c253649575492ae06cae7459e2b93
+          image: ghcr.io/xrs444/firewalla-exporter:81ccbf95f02f7c4178dff69d5f1f7e49aba67d91
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
