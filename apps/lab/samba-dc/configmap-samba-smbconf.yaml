@@ -6,6 +6,14 @@
 # existing domain (created 2026-08-22, SID S-1-5-21-2698442906-2105060791-302853650)
 # is preserved rather than re-provisioned. Do not hand-edit the contents below —
 # smb.conf is otherwise managed by Samba itself plus the postStart hook.
+#
+# 2026-11-25: netbios name changed SAMBA-DC-0 -> DC1. The samba-dc-data volume
+# was found empty (filesystem created 2026-11-18) and the domain was restored
+# from the 2026-11-18 03:00 AD-native backup with
+# `samba-tool domain backup restore --newservername=DC1`; that command cannot
+# reuse the backed-up DC's own name (SAMBA-DC-0 -> "Entry ... already exists"),
+# so the restored domain's DC is DC1. This seed must match, or a rebuilt
+# samba-dc-etc volume would come back with the wrong server name.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -28,7 +36,7 @@ data:
     	ldap server require strong auth = no
     	interfaces = lo 172.21.0.11
     	bind interfaces only = no
-    	netbios name = SAMBA-DC-0
+    	netbios name = DC1
     	realm = AD.LAB.XRS444.NET
     	server role = active directory domain controller
     	workgroup = AD
