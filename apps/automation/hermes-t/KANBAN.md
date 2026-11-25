@@ -271,8 +271,19 @@ Mac: kubectl -n hermes-t exec deploy/hermes-t -- \
 '<summary>' && kubectl -n hermes-t exec deploy/hermes-t -- \
 /opt/hermes/.venv/bin/hermes kanban --board ops archive <id>). Never use \
 kanban_list's or kanban_show's output to justify creating new cards, \
-blocking, or any mutation beyond kanban_comment."
+blocking, or any mutation beyond kanban_comment. Keep tool output small: \
+query one host/namespace/service at a time, use short time ranges (<=1h) \
+and cap results (~50 lines/series). If a tool result is saved to a \
+spillover file, read it exactly ONCE and work from what you read; never \
+re-read the same file (a guardrail halts the run if you do)."
 ```
+
+Live changes 2026-11-25 (bug-1116 follow-up, edited via `hermes cron edit`):
+schedule `*/10` → `*/30` (each run re-prefills a ~56K-token context on
+xcog1's llama-server and takes 20-45 min; `*/10` runs just skipped each
+other), plus the "Keep tool output small" tail above (without it the agent
+re-read a spilled tool-output file until hermes' loop guardrail aborted the
+run). The create command above shows the original `*/10`; use `*/30`.
 
 ## Claude Code handoff (prompt-only)
 
@@ -429,7 +440,12 @@ homeprod:infra:state, homeprod:app:state. For each series with value >= 1 \
 triage: true, idempotency_key: infra-health:<metric>:<labels>, board: ops) \
 to create or upsert a card summarizing which host/node/service and at what \
 severity. If everything is 0 (GOOD), create nothing — do not post a daily \
-all-clear card."
+all-clear card. Use ONLY the mcp-prometheus query tools and kanban_create, \
+called directly. Never use execute_code or any code-execution tool: it is \
+blocked in unattended sessions and aborts the run. Filter server-side: run \
+one PromQL instant query per metric of the form <metric> >= 1 so only \
+non-GOOD series come back; never list or fetch all series, and never \
+request range data."
 ```
 
 **Ops-board reconciler** (`ops-board-reconcile`, added 2026-09-24, bug-1031
