@@ -46,6 +46,12 @@ spec:
             capabilities:
               drop: ["ALL"]
           env:
+            # Poll every 5 min, not the 60 s default. The data is gauges plus one
+            # cumulative bandwidth counter, so a longer interval loses no totals.
+            # The MSP token (100 req / 5 min) is shared with mcp-firewalla, and
+            # 60 s retries against a 429 kept it locked out for ~18 h.
+            - name: FIREWALLA_POLL_INTERVAL_SECONDS
+              value: "300"
             - name: FIREWALLA_MSP_ID
               value: "dn-j3almw.firewalla.net"
             - name: FIREWALLA_MSP_TOKEN
