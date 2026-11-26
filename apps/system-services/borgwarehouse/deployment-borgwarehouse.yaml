@@ -96,11 +96,10 @@ spec:
               value: "https://idm.xrs444.net/oauth2/openid/oauth2_borgwarehouse"
             - name: OIDC_PROVIDER_NAME
               value: "Kanidm"
+            # Kanidm's client_id is the client NAME, not the entry UUID the
+            # secret's client-id key holds (UUID -> invalid_client_id).
             - name: OIDC_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: oauth2-secret-borgwarehouse
-                  key: client-id
+              value: "oauth2_borgwarehouse"
             - name: OIDC_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
