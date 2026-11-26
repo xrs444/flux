@@ -23,6 +23,12 @@ Raw `.note` files are copied to `/sync/raw-backup` before any parsing.
    `/var/syncthing/xrs444/supernote-work-outbox` (e.g. id `supernote-work`)
    to its `config/folder.json` + reconcile script, shared with the iPhone only.
 
+## Registration
+New-user registration is an admin toggle in the web UI (added in image
+26.05.26), persisted in MariaDB — not declarative. After creating your
+account, turn it off there. Image tags are tracked by Renovate (renovate.json,
+"Supernote Private Cloud" rule); updates need manual review.
+
 ## Unverified (check on first start)
 - notelib port / how supernote-service addresses it (Service assumes 8080).
 - supernote-service env var names and the `data/` layout it writes under.

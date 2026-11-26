@@ -122,6 +122,16 @@
       "addLabels": ["mcp", "requires-review"]
     },
     {
+      "description": "Supernote Private Cloud (apps/services/supernote) — YY.MM.DD date tags with zero-padded parts that strict semver mis-parses, hence loose versioning. Requires review: a schema/data migration may ship in any release, and the DB holds the only account.",
+      "matchPackageNames": [
+        "docker.io/supernote/supernote-service",
+        "docker.io/supernote/notelib"
+      ],
+      "versioning": "loose",
+      "automerge": false,
+      "addLabels": ["requires-review"]
+    },
+    {
       "description": "Flux components are managed by update-flux.yml — skip entirely",
       "enabled": false,
       "matchPackageNames": [
