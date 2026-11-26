@@ -55,7 +55,11 @@ spec:
                 key: oauth-json-base64
 
       workerGroups:
-        # default: privileged, SSH-enabled, in-cluster kubectl via windmill-runner SA
+        # default: SSH-enabled, in-cluster kubectl via windmill-runner SA. NOT privileged
+        # (F6, 2026-11-26): nothing it does needs it — SSH/ansible/kubectl run fine as
+        # root without extra capabilities, nsjail/unshare-pid sandboxing isn't enabled,
+        # and the native group has always run unprivileged. If a job ever fails with a
+        # permission/capability error, set this back to true rather than guessing.
         # image: windmill-full (not the chart-default slim windmill image) — this
         # group runs the ansible-language lab/rack power scripts (f/lab/lab_power_on,
         # f/sre/rack_power_off), which need the bundled ansible-playbook binary
@@ -64,7 +68,7 @@ spec:
         # windmill.tag / Chart.AppVersion, same as the slim image.
         - name: default
           replicas: 1
-          privileged: true
+          privileged: false
           image: "ghcr.io/windmill-labs/windmill-full"
           serviceAccountName: windmill-runner
           volumes:

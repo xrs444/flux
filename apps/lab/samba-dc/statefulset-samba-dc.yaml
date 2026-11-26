@@ -262,6 +262,15 @@ spec:
             limits:
               cpu: 1000m
               memory: 1Gi
+          # F6 (2026-11-26): deliberately left privileged, not yet narrowed. A Samba AD DC
+          # sets security.NTACL / POSIX-ACL xattrs on its Longhorn volumes and does
+          # root-only DNS/NTP/ownership operations, which normally needs elevated
+          # capabilities (typically SYS_ADMIN). That minimal set has NOT been tested here,
+          # and a failed start takes the lab domain down. To narrow it: in a lab
+          # maintenance window replace `privileged: true` with an explicit
+          # `capabilities.add` list, confirm first-run provisioning + restart + samba-tool
+          # operations still work, and drop no_root_squash on the backups export
+          # (see pv-samba-dc-backups-nfs.yaml) once it no longer needs full root.
           securityContext:
             privileged: true
       volumes:
