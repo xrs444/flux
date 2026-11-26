@@ -8,8 +8,22 @@ spec:
   entryPoints:
     - websecure
   routes:
+    # Notification API: called by NixOS hosts (fail2ban actions), CI workflows and Windmill
+    # with no way to pass the oauth2-proxy gate, so /notify stays ungated (F2 residual risk:
+    # anyone who can reach the ingress and knows the config key can send notifications).
+    - match: Host(`apprise.xrs444.net`) && PathPrefix(`/notify`)
+      kind: Rule
+      services:
+        - name: apprise
+          port: 8000
+    # Web UI / config / admin paths are gated.
     - match: Host(`apprise.xrs444.net`)
       kind: Rule
+      middlewares:
+        - name: dashboard-auth
+          namespace: traefik
+        - name: dashboard-errors
+          namespace: traefik
       services:
         - name: apprise
           port: 8000

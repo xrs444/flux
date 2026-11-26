@@ -10,6 +10,11 @@ spec:
   routes:
     - match: Host(`borgwarehouse.xrs444.net`)
       kind: Rule
+      middlewares:
+        - name: dashboard-auth
+          namespace: traefik
+        - name: dashboard-errors
+          namespace: traefik
       services:
         - name: borgwarehouse
           port: 3000

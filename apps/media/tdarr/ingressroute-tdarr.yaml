@@ -9,6 +9,11 @@ spec:
   routes:
     - match: Host(`tdarr.xrs444.net`)
       kind: Rule
+      middlewares:
+        - name: dashboard-auth
+          namespace: traefik
+        - name: dashboard-errors
+          namespace: traefik
       services:
         - name: tdarr
           port: 8265
