@@ -82,6 +82,12 @@ spec:
           env:
             - name: TZ
               value: "America/Phoenix"
+            # Better Auth (v3.8.0+) rejects requests whose Origin isn't its
+            # base URL / trusted origins ("Invalid origin" -> login fails).
+            - name: BETTER_AUTH_URL
+              value: "https://borgwarehouse.xrs444.net"
+            - name: BETTER_AUTH_TRUSTED_ORIGINS
+              value: "https://borgwarehouse.xrs444.net"
             # Kanidm SSO (generic OIDC) — password login stays enabled
             # alongside it (DISABLE_PASSWORD_LOGIN unset) until OIDC login
             # has actually been verified end to end, to avoid a repeat
