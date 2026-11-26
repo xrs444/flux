@@ -159,6 +159,11 @@ unexplained rather than assigned a cause; worth another look only if it recurs.
 - `Watchdog` and `InfoInhibitor` are never carded (they're dead-man's-switch /
   grouping-helper alerts, not faults) — filtered in `kanban_card_upsert.ts`
   before the create call.
+- Since 2026-11-25 the same cron also archives `source: flux` cards (titles
+  `Flux <Kind>/<name> — <reason>`) once a live `resources_get` through
+  `mcp-kubernetes` shows that Flux resource Ready=True; the Flux path never
+  sends a resolve, so these piled up. Lookup errors leave the card untouched.
+  Script changes must be re-installed with `kubectl cp` (see below).
 - A belt-and-suspenders `ops-board-reconcile` `--no-agent` cron (hourly) archives
   any `triage` card whose alert has stopped firing in Alertmanager, independent
   of whether a `resolved` webhook ever arrived — added because Alertmanager
