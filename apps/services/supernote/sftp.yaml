@@ -14,9 +14,9 @@ metadata:
   name: sftp-authorized-keys
   namespace: supernote
 data:
-  # Replace with the laptop's public key (e.g. contents of ~/.ssh/id_ed25519.pub).
-  # Public keys are not secret.
-  laptop.pub: "REPLACE_WITH_LAPTOP_PUBLIC_KEY"
+  # Work laptop's public key (comment: work-laptop-sftp-pull). Public keys are
+  # not secret; the matching private key lives only on the laptop.
+  laptop.pub: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPs4RHcqMS0d2UtCjRy4aePSagmFgffrhpcPsgip+q13 work-laptop-sftp-pull"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
