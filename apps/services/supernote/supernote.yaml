@@ -25,6 +25,13 @@ spec:
       labels:
         app: supernote
     spec:
+      # The image's bundled nginx proxies to upstreams named
+      # `supernote-service:9888` / `:19071` (its Docker Compose service name).
+      # Without this alias nginx fails with "host not found in upstream" and
+      # dies, so nothing listens on 8080. Both upstreams are in this pod.
+      hostAliases:
+        - ip: "127.0.0.1"
+          hostnames: ["supernote-service"]
       initContainers:
         # note-router runs as uid 1000 (matches the Syncthing pod / NFS tree);
         # make its private Longhorn volume writable for it.
