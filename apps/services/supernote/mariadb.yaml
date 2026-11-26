@@ -24,13 +24,13 @@ spec:
     spec:
       initContainers:
         - name: fetch-schema
-          image: curlimages/curl:8.11.1
+          image: curlimages/curl:8.11.1@sha256:c1fe1679c34d9784c1b0d1e5f62ac0a79fca01fb6377cdd33e90473c6f9f9a69
           command: [sh, -c, "curl -fsSL -o /initdb/supernotedb.sql https://supernote-private-cloud.supernote.com/cloud/supernotedb.sql"]
           volumeMounts:
             - {name: initdb, mountPath: /initdb}
       containers:
         - name: mariadb
-          image: mariadb:10.6.24
+          image: mariadb:10.6.24@sha256:ea23e7cd253323f6a7c0abedb5a7ce9646bc5620e9be38373cff1fecbd5b57e0
           ports:
             - {containerPort: 3306, name: mysql}
           env:
