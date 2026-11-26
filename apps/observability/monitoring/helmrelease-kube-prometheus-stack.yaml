@@ -193,7 +193,9 @@ spec:
       additionalDataSources:
         - name: Loki
           type: loki
-          url: https://loki.xrs444.net
+          # In-cluster URL: the datasource is a backend call from Grafana, which can't
+          # authenticate through the oauth2-proxy gate on the external IngressRoute (F1/F4).
+          url: http://loki.loki.svc.cluster.local:3100
           uid: "000000002"
           jsonData:
             maxLines: 1000
