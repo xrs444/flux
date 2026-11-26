@@ -1,9 +1,0 @@
-{
-  "id": "supernote-work",
-  "label": "Supernote Work Outbox",
-  "path": "/var/syncthing/xrs444/supernote-work-outbox",
-  "rescanIntervalS": 60,
-  "devices": [
-    { "deviceID": "Q6D7BV2-3XTJXGY-QUHWPUB-K5UCSPK-4C5SBP3-ZOCLD5R-YPBTSWE-6I4WXQM" }
-  ]
-}

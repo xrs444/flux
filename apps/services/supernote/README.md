@@ -2,7 +2,7 @@
 
 Manta -> Supernote Private Cloud (`supernote.xrs444.net`) -> note-router ->
 - `Note/Personal/**` -> `obsidian/Supernote/**.md` + PDF (existing Syncthing -> Obsidian)
-- `Note/Work/**`     -> `supernote-work-outbox/` PDF + HTML (share to OneNote manually)
+- `Note/Work/**`     -> `supernote-work-outbox/` PDF + HTML, served read-only over SFTP
 - `TODO ...` lines   -> Vikunja tasks (one-way, hash-deduped)
 
 Raw `.note` files are copied to `/sync/raw-backup` before any parsing.
@@ -17,11 +17,13 @@ Raw `.note` files are copied to `/sync/raw-backup` before any parsing.
 4. Add `./supernote` to `apps/services/kustomization.yaml`.
 5. Register the Supernote account (needs working mail per Supernote's manual),
    then log in from the Manta against `supernote.xrs444.net`.
-6. Syncthing: reuses the existing instance (`apps/system-services/syncthing`).
-   Personal notes land in `obsidian/Supernote/` inside the already-synced
-   Obsidian folder — nothing to do. For Work, add a folder
-   `/var/syncthing/xrs444/supernote-work-outbox` (e.g. id `supernote-work`)
-   to its `config/folder.json` + reconcile script, shared with the iPhone only.
+6. Personal notes land in `obsidian/Supernote/` inside the Obsidian folder the
+   existing Syncthing (`apps/system-services/syncthing`) already syncs.
+7. Work notes: `sftp.yaml` serves `supernote-work-outbox/` read-only over SFTP
+   (user `worknotes`, key auth). Put the work laptop's public key in the
+   `sftp-authorized-keys` ConfigMap, find the LB address with
+   `kubectl get svc -n supernote sftp`, and have the laptop pull
+   `outbox/` on a schedule.
 
 ## Registration
 New-user registration is an admin toggle in the web UI (added in image

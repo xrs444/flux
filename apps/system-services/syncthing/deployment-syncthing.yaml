@@ -130,15 +130,21 @@ spec:
                       sleep 2
                     done
                     echo "Syncthing ready, reconciling desired config..."
+                    # One-shot cleanup of the retired supernote-work folder and
+                    # the two iPhone device IDs (Work notes moved to SFTP).
+                    # The folder must go first: a folder referencing a device
+                    # missing from the list below would make that PUT invalid.
+                    # Idempotent and best-effort (404 once already gone); safe
+                    # to delete this block after the next restart has run it.
+                    for path in folders/supernote-work \
+                      devices/PXNQG3T-XJXQKWD-SGN5DYT-46BSF4C-SPGLDY7-URUVSEA-VGLQEZN-BJUEGAL \
+                      devices/Q6D7BV2-3XTJXGY-QUHWPUB-K5UCSPK-4C5SBP3-ZOCLD5R-YPBTSWE-6I4WXQM; do
+                      curl -s -o /dev/null -X DELETE -H "X-API-Key: ${SYNCTHING_API_KEY}" "$API/rest/config/$path" || true
+                    done
                     curl -sf -X PUT -H "X-API-Key: ${SYNCTHING_API_KEY}" -H "Content-Type: application/json" \
                       -d @/etc/syncthing-desired/devices.json "$API/rest/config/devices"
                     curl -sf -X PUT -H "X-API-Key: ${SYNCTHING_API_KEY}" -H "Content-Type: application/json" \
                       -d @/etc/syncthing-desired/folder.json "$API/rest/config/folders/xrs444-obsidian"
-                    # Work notes outbox written by supernote/note-router. Share
-                    # it ONLY with the iPhone: add its device ID to both
-                    # config/devices.json and this folder's "devices" list.
-                    curl -sf -X PUT -H "X-API-Key: ${SYNCTHING_API_KEY}" -H "Content-Type: application/json" \
-                      -d @/etc/syncthing-desired/folder-supernote-work.json "$API/rest/config/folders/supernote-work"
                     echo "Syncthing config reconciled."
           volumeMounts:
             - name: data

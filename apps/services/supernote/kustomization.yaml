@@ -11,4 +11,5 @@ resources:
   - mariadb.yaml
   - redis-notelib.yaml
   - supernote.yaml
+  - sftp.yaml
   - ingressroute-supernote.yaml

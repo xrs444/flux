@@ -1,0 +1,106 @@
+# Read-only SFTP for the Work-notes outbox. The work laptop pulls from here
+# (scheduled script) and files the notes into OneNote; nothing is pushed to
+# the phone or the work tenant from the cluster.
+#
+# - key-only auth (no password), chrooted, outbox mounted read-only
+# - same NFS tree note-router writes to (supernote-syncthing-tree PVC)
+# - host keys persist on a small Longhorn PVC so the laptop's known_hosts
+#   entry survives pod restarts
+# - laptop's PUBLIC key lives in the sftp-authorized-keys ConfigMap below
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sftp-authorized-keys
+  namespace: supernote
+data:
+  # Replace with the laptop's public key (e.g. contents of ~/.ssh/id_ed25519.pub).
+  # Public keys are not secret.
+  laptop.pub: "REPLACE_WITH_LAPTOP_PUBLIC_KEY"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: supernote-sftp-hostkeys
+  namespace: supernote
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: longhorn
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sftp
+  namespace: supernote
+  labels:
+    app: sftp
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: sftp
+  template:
+    metadata:
+      labels:
+        app: sftp
+    spec:
+      initContainers:
+        - name: gen-hostkeys
+          image: atmoz/sftp:alpine@sha256:c5fb9e4beb8b7054a4c0b65c5e11df47cc20da95ad6002e88aecff62bab06372
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              [ -f /keys/ssh_host_ed25519_key ] || ssh-keygen -q -t ed25519 -N "" -f /keys/ssh_host_ed25519_key
+              [ -f /keys/ssh_host_rsa_key ] || ssh-keygen -q -t rsa -b 4096 -N "" -f /keys/ssh_host_rsa_key
+          volumeMounts:
+            - {name: hostkeys, mountPath: /keys}
+      containers:
+        - name: sftp
+          image: atmoz/sftp:alpine@sha256:c5fb9e4beb8b7054a4c0b65c5e11df47cc20da95ad6002e88aecff62bab06372
+          # user::uid — empty password, key auth only (keys from
+          # /home/worknotes/.ssh/keys/*, copied to authorized_keys at start).
+          args: ["worknotes::1000"]
+          ports:
+            - {containerPort: 22, name: sftp}
+          volumeMounts:
+            - {name: hostkeys, mountPath: /etc/ssh/ssh_host_ed25519_key, subPath: ssh_host_ed25519_key}
+            - {name: hostkeys, mountPath: /etc/ssh/ssh_host_ed25519_key.pub, subPath: ssh_host_ed25519_key.pub}
+            - {name: hostkeys, mountPath: /etc/ssh/ssh_host_rsa_key, subPath: ssh_host_rsa_key}
+            - {name: hostkeys, mountPath: /etc/ssh/ssh_host_rsa_key.pub, subPath: ssh_host_rsa_key.pub}
+            - {name: authorized-keys, mountPath: /home/worknotes/.ssh/keys/laptop.pub, subPath: laptop.pub, readOnly: true}
+            - {name: tree, mountPath: /home/worknotes/outbox, subPath: supernote-work-outbox, readOnly: true}
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {cpu: 200m, memory: 128Mi}
+          readinessProbe:
+            tcpSocket: {port: sftp}
+            periodSeconds: 10
+      volumes:
+        - name: hostkeys
+          persistentVolumeClaim: {claimName: supernote-sftp-hostkeys}
+        - name: authorized-keys
+          configMap:
+            name: sftp-authorized-keys
+        - name: tree
+          persistentVolumeClaim: {claimName: supernote-syncthing-tree}
+---
+# LAN-reachable via the cluster's Cilium LB pool (172.21.0.0/24 range).
+apiVersion: v1
+kind: Service
+metadata:
+  name: sftp
+  namespace: supernote
+spec:
+  type: LoadBalancer
+  selector:
+    app: sftp
+  ports:
+    - {name: sftp, port: 22, targetPort: 22, protocol: TCP}
