@@ -290,6 +290,15 @@ other), plus the "Keep tool output small" tail above (without it the agent
 re-read a spilled tool-output file until hermes' loop guardrail aborted the
 run). The create command above shows the original `*/10`; use `*/30`.
 
+Further live edits to the sweep prompt, same day: pass `board: 'ops'` on every
+`kanban_*` call (hermes' current board is `projects`, so the default sees the
+wrong board and the sweep answers `[SILENT]`); one call per `tool_call`, never
+batched; never call full-listing tools (`get_targets` = 445K chars); and Loki
+tools need `datasourceUid '000000002'` (the Grafana datasource named Loki; the
+agent had been passing the server name `mcp-loki`, which fails with "datasource
+not found"). Cron platform also has `web`, `terminal`, `code_execution`,
+`memory`, `browser` etc. disabled (`hermes tools disable --platform cron ...`).
+
 ## Claude Code handoff (prompt-only)
 
 Cards needing a code/config change carry a fenced, copy-pasteable block in
