@@ -32,11 +32,17 @@ spec:
               chmod 700 /home/borgwarehouse/.ssh
               chown -R 1000:1000 /home/borgwarehouse/app/config
               chown -R 1000:1000 /home/borgwarehouse/logs
+              # fsGroup makes kubelet re-apply g+rw on the /etc/ssh volume at
+              # every pod start; sshd refuses 0660 host keys ("UNPROTECTED
+              # PRIVATE KEY FILE ... no hostkeys available -- exiting").
+              chmod 600 /etc/ssh/ssh_host_*_key
           volumeMounts:
             - name: borgwarehouse-config
               mountPath: /home/borgwarehouse/app/config
             - name: borgwarehouse-ssh
               mountPath: /home/borgwarehouse/.ssh
+            - name: borgwarehouse-ssh-host
+              mountPath: /etc/ssh
             - name: borgwarehouse-logs
               mountPath: /home/borgwarehouse/logs
             - name: borgwarehouse-repos
@@ -50,6 +56,8 @@ spec:
           ports:
             - containerPort: 3000
               name: http
+            - containerPort: 22
+              name: ssh
           startupProbe:
             httpGet:
               path: /

@@ -1,0 +1,22 @@
+---
+# Borg SSH endpoint (sshd inside the pod, container port 22) on a dedicated
+# Cilium LB IP. The `advertise: bgp` label is what makes the BGP advertisement
+# announce it; without it the IP is assigned but unroutable.
+# Clients: ssh://<user>@<this IP / DNS name>:2222/./<repo>
+apiVersion: v1
+kind: Service
+metadata:
+  name: borgwarehouse-ssh
+  namespace: borgwarehouse
+  labels:
+    advertise: bgp
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 172.21.0.12
+  selector:
+    app: borgwarehouse
+  ports:
+    - name: ssh
+      protocol: TCP
+      port: 2222
+      targetPort: ssh

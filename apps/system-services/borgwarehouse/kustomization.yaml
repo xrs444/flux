@@ -8,4 +8,5 @@ resources:
   - oauth2-sealedsecret-borgwarehouse.yaml
   - deployment-borgwarehouse.yaml
   - service-borgwarehouse.yaml
+  - service-borgwarehouse-ssh.yaml
   - ingressroute-borgwarehouse.yaml
