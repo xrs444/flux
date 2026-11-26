@@ -299,6 +299,14 @@ agent had been passing the server name `mcp-loki`, which fails with "datasource
 not found"). Cron platform also has `web`, `terminal`, `code_execution`,
 `memory`, `browser` etc. disabled (`hermes tools disable --platform cron ...`).
 
+Later the same day: the sweep prompt also requires an explicit `task_id` on
+`kanban_show`/`kanban_comment` and tells the sweep to skip GitHub Actions cards
+(`source: cron`, handled by `gh-actions-reconcile`) so its slow turns (~one
+card per 5-40 min on xcog1) go to alertmanager/flux cards. `gh-actions-reconcile`
+(`03ae9c8fcb90`) now runs `*/15` instead of hourly: it is LLM-free and failing
+workflows (Secret Scanning, version-drift) otherwise accumulate dozens of
+superseded cards between passes.
+
 ## Claude Code handoff (prompt-only)
 
 Cards needing a code/config change carry a fenced, copy-pasteable block in
