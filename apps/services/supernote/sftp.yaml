@@ -93,11 +93,16 @@ spec:
           persistentVolumeClaim: {claimName: supernote-syncthing-tree}
 ---
 # LAN-reachable via the cluster's Cilium LB pool (172.21.0.0/24 range).
+# The `advertise: bgp` label is what makes Cilium's BGP advertisement
+# (infrastructure: bgp-advertisements, selector advertise=bgp) announce this
+# IP; without it the LB IP is assigned but unroutable ("No route to host").
 apiVersion: v1
 kind: Service
 metadata:
   name: sftp
   namespace: supernote
+  labels:
+    advertise: bgp
 spec:
   type: LoadBalancer
   selector:
