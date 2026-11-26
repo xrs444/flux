@@ -16,6 +16,7 @@ resources:
   - ./rustdesk
   - ./scanopy
   - ./seatable
+  - ./supernote
   - ./termix
   - ./vikunja
   - ./matrix

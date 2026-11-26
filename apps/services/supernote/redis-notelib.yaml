@@ -1,0 +1,82 @@
+# Redis (password-protected, ephemeral — session/cache only) and notelib
+# (Supernote's note-conversion helper that supernote-service calls by name).
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: supernote
+  labels:
+    app: redis
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.4.7
+          args: [redis-server, --requirepass, $(REDIS_PASSWORD), --save, ""]
+          ports:
+            - {containerPort: 6379, name: redis}
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom: {secretKeyRef: {name: supernote-secrets, key: redis-password}}
+          resources:
+            requests: {cpu: 20m, memory: 32Mi}
+            limits: {cpu: 200m, memory: 128Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: supernote
+spec:
+  selector:
+    app: redis
+  ports:
+    - {name: redis, port: 6379, targetPort: 6379}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notelib
+  namespace: supernote
+  labels:
+    app: notelib
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notelib
+  template:
+    metadata:
+      labels:
+        app: notelib
+    spec:
+      containers:
+        - name: notelib
+          image: docker.io/supernote/notelib:6.9.3
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {cpu: 1000m, memory: 768Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notelib
+  namespace: supernote
+spec:
+  selector:
+    app: notelib
+  ports:
+    # Port not documented by Supernote's compose (no ports published); verify
+    # with `kubectl logs deploy/notelib` on first start and adjust.
+    - {name: http, port: 8080, targetPort: 8080}

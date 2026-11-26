@@ -1,0 +1,77 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: supernote-data
+  namespace: supernote
+  labels:
+    recurring-job-group.longhorn.io/default: enabled
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: longhorn
+---
+# note-router private state (not synced anywhere):
+#   /sync/raw-backup   -> untouched copies of every .note ever routed
+#   /sync/state.db     -> note-router dedupe state (sqlite)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: supernote-sync
+  namespace: supernote
+  labels:
+    recurring-job-group.longhorn.io/default: enabled
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: longhorn
+---
+# Second binding of the existing Syncthing instance's NFS export (its
+# /var/syncthing/xrs444 subtree, see apps/system-services/syncthing/
+# pv-syncthing-data.yaml). A PVC can't cross namespaces, so the pod here gets
+# its own PV/PVC pointing at the same share. note-router writes:
+#   obsidian/Supernote/**          -> already inside the synced Obsidian folder
+#   supernote-work-outbox/**       -> needs a new Syncthing folder (README)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: supernote-syncthing-tree-nfs
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes: [ReadWriteMany]
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 172.20.3.201
+    path: /zfs/users/syncthing/xrs444
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: supernote-syncthing-tree
+  namespace: supernote
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: ""
+  volumeName: supernote-syncthing-tree-nfs
+  resources:
+    requests:
+      storage: 1Ti
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: supernote-mariadb
+  namespace: supernote
+  labels:
+    recurring-job-group.longhorn.io/default: enabled
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn

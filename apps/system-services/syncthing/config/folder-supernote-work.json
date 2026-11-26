@@ -1,0 +1,6 @@
+{
+  "id": "supernote-work",
+  "label": "Supernote Work Outbox",
+  "path": "/var/syncthing/xrs444/supernote-work-outbox",
+  "devices": []
+}

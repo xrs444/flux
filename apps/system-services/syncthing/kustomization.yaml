@@ -25,3 +25,4 @@ configMapGenerator:
     files:
       - config/devices.json
       - config/folder.json
+      - config/folder-supernote-work.json

@@ -1,0 +1,27 @@
+# Supernote device sync over HTTPS. socket.io (auto-sync push) is on 18072.
+# Routing split mirrors Supernote's reference nginx snippet — verify the exact
+# socket.io path against the current official manual before first device login.
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: supernote
+  namespace: supernote
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`supernote.xrs444.net`) && PathPrefix(`/socket.io`)
+      kind: Rule
+      priority: 20
+      services:
+        - name: supernote
+          port: 18072
+    - match: Host(`supernote.xrs444.net`)
+      kind: Rule
+      priority: 10
+      services:
+        - name: supernote
+          port: 8080
+  tls:
+    secretName: letsencrypt-wildcard-cert-xrs444.net

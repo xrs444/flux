@@ -32,6 +32,10 @@ spec:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: mcp-personal
             k8s:app: mcp-vikunja-s
+        # supernote note-router pushes TODO lines as tasks (one-way).
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: supernote
+            k8s:app: supernote
       toPorts:
         - ports:
             - port: "3456"

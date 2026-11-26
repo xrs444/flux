@@ -134,6 +134,11 @@ spec:
                       -d @/etc/syncthing-desired/devices.json "$API/rest/config/devices"
                     curl -sf -X PUT -H "X-API-Key: ${SYNCTHING_API_KEY}" -H "Content-Type: application/json" \
                       -d @/etc/syncthing-desired/folder.json "$API/rest/config/folders/xrs444-obsidian"
+                    # Work notes outbox written by supernote/note-router. Share
+                    # it ONLY with the iPhone: add its device ID to both
+                    # config/devices.json and this folder's "devices" list.
+                    curl -sf -X PUT -H "X-API-Key: ${SYNCTHING_API_KEY}" -H "Content-Type: application/json" \
+                      -d @/etc/syncthing-desired/folder-supernote-work.json "$API/rest/config/folders/supernote-work"
                     echo "Syncthing config reconciled."
           volumeMounts:
             - name: data

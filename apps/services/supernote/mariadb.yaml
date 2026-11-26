@@ -1,0 +1,70 @@
+# MariaDB for Supernote Private Cloud. Schema comes from Supernote's published
+# supernotedb.sql, fetched by an initContainer into the entrypoint-initdb dir
+# (only runs against an empty data dir, i.e. first start).
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: supernote
+  labels:
+    app: mariadb
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      initContainers:
+        - name: fetch-schema
+          image: curlimages/curl:8.11.1
+          command: [sh, -c, "curl -fsSL -o /initdb/supernotedb.sql https://supernote-private-cloud.supernote.com/cloud/supernotedb.sql"]
+          volumeMounts:
+            - {name: initdb, mountPath: /initdb}
+      containers:
+        - name: mariadb
+          image: mariadb:10.6.24
+          ports:
+            - {containerPort: 3306, name: mysql}
+          env:
+            - {name: MYSQL_DATABASE, value: supernotedb}
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom: {secretKeyRef: {name: supernote-secrets, key: mysql-root-password}}
+            - name: MYSQL_USER
+              valueFrom: {secretKeyRef: {name: supernote-secrets, key: mysql-user}}
+            - name: MYSQL_PASSWORD
+              valueFrom: {secretKeyRef: {name: supernote-secrets, key: mysql-password}}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/mysql}
+            - {name: initdb, mountPath: /docker-entrypoint-initdb.d}
+          resources:
+            requests: {cpu: 50m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+          readinessProbe:
+            exec:
+              command: [healthcheck.sh, --connect, --innodb_initialized]
+            periodSeconds: 10
+            failureThreshold: 6
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: supernote-mariadb}
+        - name: initdb
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: supernote
+spec:
+  selector:
+    app: mariadb
+  ports:
+    - {name: mysql, port: 3306, targetPort: 3306}

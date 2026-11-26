@@ -1,0 +1,113 @@
+# Supernote Private Cloud + note-router in ONE pod, because supernote-data
+# is RWO and note-router needs to read it.
+#   supernote-service -> writes synced .note files to /home/supernote/data
+#   note-router       -> reads that tree (ro); writes into the NFS tree the
+#                        existing Syncthing instance shares (/syncthing), and
+#                        keeps state.db + raw-backup on local Longhorn (/sync)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supernote
+  namespace: supernote
+  labels:
+    app: supernote
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: supernote
+  template:
+    metadata:
+      labels:
+        app: supernote
+    spec:
+      initContainers:
+        # note-router runs as uid 1000 (matches the Syncthing pod / NFS tree);
+        # make its private Longhorn volume writable for it.
+        - name: chown-sync
+          image: busybox:1.37
+          command: [sh, -c, "chown 1000:1000 /sync"]
+          volumeMounts:
+            - {name: sync, mountPath: /sync}
+      containers:
+        - name: supernote-service
+          image: docker.io/supernote/supernote-service:25.11.24
+          ports:
+            - {containerPort: 8080, name: http}
+            - {containerPort: 18072, name: socketio}
+          env:
+            - {name: MYSQL_DATABASE, value: supernotedb}
+            - {name: MYSQL_HOSTNAME, value: mariadb}
+            - {name: DB_HOSTNAME, value: mariadb}
+            - name: MYSQL_USER
+              valueFrom: {secretKeyRef: {name: supernote-secrets, key: mysql-user}}
+            - name: MYSQL_PASSWORD
+              valueFrom: {secretKeyRef: {name: supernote-secrets, key: mysql-password}}
+            - {name: REDIS_HOST, value: redis}
+            - {name: REDIS_PORT, value: "6379"}
+            - name: REDIS_PASSWORD
+              valueFrom: {secretKeyRef: {name: supernote-secrets, key: redis-password}}
+          volumeMounts:
+            - {name: data, mountPath: /home/supernote/data, subPath: data}
+            - {name: data, mountPath: /home/supernote/recycle, subPath: recycle}
+            - {name: data, mountPath: /home/supernote/convert, subPath: convert}
+            - {name: data, mountPath: /home/supernote/logs, subPath: logs/app}
+            - {name: data, mountPath: /home/supernote/cloud/logs, subPath: logs/cloud}
+            - {name: data, mountPath: /var/log/nginx, subPath: logs/web}
+          resources:
+            requests: {cpu: 100m, memory: 512Mi}
+            limits: {cpu: 1500m, memory: 1536Mi}
+          startupProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 10
+            failureThreshold: 30
+        - name: note-router
+          image: ghcr.io/xrs444/note-router:latest
+          env:
+            - {name: NOTES_ROOT, value: /data}
+            # Existing Syncthing (apps/system-services/syncthing) already syncs
+            # xrs444/obsidian; we write into a Supernote/ subfolder of it.
+            - {name: VAULT_DIR, value: /syncthing/obsidian/Supernote}
+            - {name: WORK_OUTBOX, value: /syncthing/supernote-work-outbox}
+            - {name: RAW_BACKUP, value: /sync/raw-backup}
+            - {name: STATE_DB, value: /sync/state.db}
+            - {name: POLL_SECONDS, value: "60"}
+            - {name: VIKUNJA_URL, value: "http://vikunja.vikunja.svc:3456"}
+            - {name: VIKUNJA_PROJECT_ID, value: "36"}
+            - name: VIKUNJA_TOKEN
+              valueFrom: {secretKeyRef: {name: supernote-secrets, key: vikunja-token}}
+          volumeMounts:
+            # supernote-service's synced tree lives under the data/ subPath.
+            - {name: data, mountPath: /data, subPath: data, readOnly: true}
+            - {name: sync, mountPath: /sync}
+            - {name: syncthing-tree, mountPath: /syncthing}
+          # NFS tree is owned by the Syncthing pod's uid.
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          resources:
+            requests: {cpu: 20m, memory: 64Mi}
+            limits: {cpu: 500m, memory: 384Mi}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: supernote-data}
+        - name: sync
+          persistentVolumeClaim: {claimName: supernote-sync}
+        - name: syncthing-tree
+          persistentVolumeClaim: {claimName: supernote-syncthing-tree}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: supernote
+  namespace: supernote
+spec:
+  selector:
+    app: supernote
+  ports:
+    - {name: http, port: 8080, targetPort: 8080}
+    - {name: socketio, port: 18072, targetPort: 18072}

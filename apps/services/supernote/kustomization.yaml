@@ -1,0 +1,14 @@
+# Supernote Private Cloud -> note-router -> Obsidian vault (Syncthing) /
+# work outbox / Vikunja. See README.md. NOT yet listed in
+# apps/services/kustomization.yaml: seal supernote-secrets first.
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - pvcs.yaml
+  - sealedsecret-supernote-secrets.yaml
+  - mariadb.yaml
+  - redis-notelib.yaml
+  - supernote.yaml
+  - ingressroute-supernote.yaml
