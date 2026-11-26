@@ -1,0 +1,59 @@
+---
+# Dashy-only oauth2-proxy: separate Kanidm client (oauth2_dashy) so Rowan and
+# Greyson can reach Dashy without access to the admin-only oauth2_traefik apps.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: oauth2-proxy-dashy
+  namespace: dashy
+spec:
+  chart:
+    spec:
+      chart: oauth2-proxy
+      version: "10.7.4"
+      sourceRef:
+        kind: HelmRepository
+        name: oauth2-proxy
+        namespace: flux-system
+  interval: 5m
+  values:
+    replicaCount: 1
+    revisionHistoryLimit: 3
+    config:
+      existingSecret: oauth2-proxy-dashy-creds
+    extraArgs:
+      - --provider=oidc
+      - --oidc-issuer-url=https://idm.xrs444.net/oauth2/openid/oauth2_dashy
+      - --redirect-url=https://home.xrs444.net/oauth2/callback
+      - --email-domain=*
+      - --upstream=static://200
+      - --scope=openid email profile groups
+      - --cookie-name=_oauth2_proxy_dashy
+      - --cookie-domain=home.xrs444.net
+      - --cookie-secure=true
+      - --cookie-samesite=lax
+      - --code-challenge-method=S256
+      - --skip-provider-button=true
+      - --reverse-proxy=true
+      - --set-xauthrequest=true
+      - --whitelist-domain=home.xrs444.net
+    probes:
+      liveness:
+        enabled: true
+        initialDelaySeconds: 30
+        timeoutSeconds: 5
+      readiness:
+        enabled: true
+        initialDelaySeconds: 10
+        timeoutSeconds: 5
+        periodSeconds: 10
+      startup:
+        enabled: true
+        initialDelaySeconds: 0
+        timeoutSeconds: 5
+        periodSeconds: 10
+        failureThreshold: 60
+    service:
+      enabled: true
+      type: ClusterIP
+      portNumber: 4180

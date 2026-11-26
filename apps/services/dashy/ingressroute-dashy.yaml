@@ -8,13 +8,17 @@ spec:
   entryPoints:
     - websecure
   routes:
+    # OAuth2 callback/sign-in endpoints, served by the Dashy-only oauth2-proxy
+    - match: Host(`home.xrs444.net`) && PathPrefix(`/oauth2/`)
+      kind: Rule
+      services:
+        - name: oauth2-proxy-dashy
+          port: 4180
     - match: Host(`home.xrs444.net`)
       kind: Rule
       middlewares:
-        - name: dashboard-errors
-          namespace: traefik
-        - name: dashboard-auth
-          namespace: traefik
+        - name: dashy-errors
+        - name: dashy-auth
       services:
         - name: dashy
           port: 8080

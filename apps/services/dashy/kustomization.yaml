@@ -6,4 +6,7 @@ resources:
   - configmap-dashy.yaml
   - deployment-dashy.yaml
   - service-dashy.yaml
+  - oauth2-proxy-sealedsecret.yaml
+  - helmrelease-oauth2-proxy.yaml
+  - middleware-dashy-auth.yaml
   - ingressroute-dashy.yaml
