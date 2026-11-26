@@ -20,8 +20,9 @@ import sqlite3
 import subprocess
 import tempfile
 import time
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -35,6 +36,9 @@ STATE_DB = os.environ.get("STATE_DB", "/sync/state.db")
 POLL_SECONDS = int(os.environ.get("POLL_SECONDS", "60"))
 # Skip files modified very recently: the device may still be uploading.
 SETTLE_SECONDS = int(os.environ.get("SETTLE_SECONDS", "30"))
+# Frontmatter dates use local time, not UTC: an evening note in Arizona
+# would otherwise be stamped with tomorrow's date.
+NOTE_TZ = ZoneInfo(os.environ.get("NOTE_TZ", "America/Phoenix"))
 VIKUNJA_URL = os.environ.get("VIKUNJA_URL", "").rstrip("/")
 VIKUNJA_PROJECT_ID = os.environ.get("VIKUNJA_PROJECT_ID", "")
 VIKUNJA_TOKEN = os.environ.get("VIKUNJA_TOKEN", "")
@@ -148,7 +152,7 @@ def write_personal(note: Path, rel: Path, text: str, keywords: list[str], tmp: P
     pdf_rel = Path("attachments") / stem.with_suffix(".pdf")
     extract_pdf(note, VAULT_DIR / pdf_rel)
     md_path.parent.mkdir(parents=True, exist_ok=True)
-    mtime = datetime.fromtimestamp(note.stat().st_mtime, timezone.utc).strftime("%Y-%m-%d")
+    mtime = datetime.fromtimestamp(note.stat().st_mtime, NOTE_TZ).strftime("%Y-%m-%d")
     tags = "\n".join(f"  - {k}" for k in ["supernote", *keywords])
     md_path.write_text(
         f"---\ndate: {mtime}\nsource: supernote\ntags:\n{tags}\n---\n\n"
