@@ -73,7 +73,7 @@ spec:
             periodSeconds: 10
             failureThreshold: 30
         - name: note-router
-          image: ghcr.io/xrs444/note-router@sha256:973946d13c2c74448f84aaafa6dfbd986e65870a067537077cd0a94e9a0562ef
+          image: ghcr.io/xrs444/note-router@sha256:3720eb39808a5f175dd2e7842846f1ee145699d0ccaf29a40c55679c25d94f62
           env:
             - {name: NOTES_ROOT, value: /data}
             # Existing Syncthing (apps/system-services/syncthing) already syncs
