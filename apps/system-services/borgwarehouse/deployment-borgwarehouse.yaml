@@ -86,7 +86,10 @@ spec:
               memory: 256Mi
             limits:
               cpu: 1000m
-              memory: 1Gi
+              # Was 1Gi: the container also runs sshd + `borg serve` for every
+              # client, so a first backup from two hosts OOMKilled the pod
+              # (exit 137, 2026-11-26) and dropped the backup connections.
+              memory: 4Gi
           env:
             - name: TZ
               value: "America/Phoenix"
