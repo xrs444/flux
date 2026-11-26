@@ -5,3 +5,4 @@ namespace: kube-system
 resources:
   - coredns-custom-configmap.yaml
   - deployment-coredns.yaml
+  - pdb-coredns.yaml

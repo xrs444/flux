@@ -1,0 +1,15 @@
+---
+# F8: Talos's CoreDNS Deployment runs 2 replicas with no PodDisruptionBudget, so a
+# node drain could evict both at once and take out cluster DNS. maxUnavailable: 1
+# lets one drain at a time (the topologySpreadConstraints in deployment-coredns.yaml
+# keep the two replicas on different nodes).
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: coredns
+  namespace: kube-system
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      k8s-app: kube-dns

@@ -62,6 +62,10 @@ spec:
     operator:
       revisionHistoryLimit: 3
       priorityClassName: system-cluster-critical
+      # F8: never let a node drain evict both operator replicas at once (replicas: 2).
+      podDisruptionBudget:
+        enabled: true
+        maxUnavailable: 1
       resources:
         requests:
           cpu: 50m
