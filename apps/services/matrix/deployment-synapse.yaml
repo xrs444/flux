@@ -51,7 +51,7 @@ spec:
               mountPath: /etc/matrix
       containers:
         - name: synapse
-          image: matrixdotorg/synapse:latest
+          image: matrixdotorg/synapse:sha-7f6b880@sha256:c6b5dba477c41b22167e771174456364b7c9c83a4cb2d5d7ee1e530334c5cd06
           ports:
             - containerPort: 8008
               name: http

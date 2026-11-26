@@ -23,7 +23,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: coturn
-          image: coturn/coturn:latest
+          image: coturn/coturn:4.19.2@sha256:ccdbc51e6f072130b0fc9eebda21f8d026d0a25581746c52557e887818011a3f
           args:
             - --use-auth-secret
             - --static-auth-secret=$(TURN_SHARED_SECRET)
