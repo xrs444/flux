@@ -49,6 +49,12 @@
       "automerge": false
     },
     {
+      "description": "mcp (Python SDK) 2.x removed mcp.server.fastmcp, which netbox-mcp-rw and scanopy-mcp-rw import — a 2.x lock crash-loops both MCP servers (2026-11-14 outage). Hold at 1.x until server.py is migrated to the MCPServer API.",
+      "matchDatasources": ["pypi"],
+      "matchPackageNames": ["mcp"],
+      "allowedVersions": "<2.0.0"
+    },
+    {
       "description": "Skip :latest image tags — no version to track",
       "matchDatasources": ["docker"],
       "matchCurrentVersion": "/^latest$/",
