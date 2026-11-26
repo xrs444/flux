@@ -13,8 +13,8 @@ spec:
         (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
       kind: Rule
       middlewares:
-        - name: dashboard-auth
         - name: dashboard-errors
+        - name: dashboard-auth
       services:
         - name: api@internal
           kind: TraefikService

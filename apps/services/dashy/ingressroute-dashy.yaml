@@ -11,9 +11,9 @@ spec:
     - match: Host(`home.xrs444.net`)
       kind: Rule
       middlewares:
-        - name: dashboard-auth
-          namespace: traefik
         - name: dashboard-errors
+          namespace: traefik
+        - name: dashboard-auth
           namespace: traefik
       services:
         - name: dashy
