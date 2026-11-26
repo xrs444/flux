@@ -1,0 +1,33 @@
+name: tests
+
+# Unit tests for the repo's own Python code (mocked HTTP, no network) and shellcheck for its
+# shell scripts. Manifest validation lives in test.yml; this covers the code that isn't YAML.
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: ['*']
+    tags-ignore: ['*']
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Install test dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install --quiet -r tests/python/requirements.txt
+      - name: Run tests
+        run: .venv/bin/python -m pytest tests/python -q
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      # shellcheck ships preinstalled on GitHub's ubuntu runners.
+      - name: Shellcheck
+        run: |
+          git ls-files '*.sh' | xargs shellcheck --severity=warning
