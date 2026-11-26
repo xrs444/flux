@@ -8,8 +8,23 @@ spec:
   entryPoints:
     - websecure
   routes:
+    # Log shipping: NixOS hosts, xpbx1 and vocibuild push here via promtail, which
+    # can't pass the oauth2-proxy gate, so the push endpoint stays ungated. The longer
+    # rule wins on Traefik's default priority. Residual risk (F1): unauthenticated
+    # write from anything that can reach the ingress.
+    - match: Host(`loki.xrs444.net`) && Path(`/loki/api/v1/push`)
+      kind: Rule
+      services:
+        - name: loki
+          port: 3100
+    # Everything else (query API, UI) is gated. Grafana uses the in-cluster service.
     - match: Host(`loki.xrs444.net`)
       kind: Rule
+      middlewares:
+        - name: dashboard-auth
+          namespace: traefik
+        - name: dashboard-errors
+          namespace: traefik
       services:
         - name: loki
           port: 3100
