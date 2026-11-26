@@ -113,6 +113,13 @@ def extract_keywords(note: Path) -> list[str]:
 
 def push_todos(conn: sqlite3.Connection, text: str, source: str) -> None:
     if not (VIKUNJA_URL and VIKUNJA_PROJECT_ID and VIKUNJA_TOKEN):
+        # Don't skip silently: an empty token once meant TODOs vanished with
+        # no log line at all.
+        if any(TODO_RE.match(line) for line in text.splitlines()):
+            log.warning(
+                "TODO lines found in %s but Vikunja is not configured "
+                "(url/project/token missing) - skipping", source,
+            )
         return
     for line in text.splitlines():
         m = TODO_RE.match(line)
