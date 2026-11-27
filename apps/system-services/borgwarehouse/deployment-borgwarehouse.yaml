@@ -95,6 +95,14 @@ spec:
               value: "America/Phoenix"
             # Better Auth (v3.8.0+) rejects requests whose Origin isn't its
             # base URL / trusted origins ("Invalid origin" -> login fails).
+            # Persistent signing secret (otherwise regenerated every pod start,
+            # logging everyone out). Reuses the sealed secret's cookie-secret
+            # (32 chars, the Better Auth minimum).
+            - name: BETTER_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-secret-borgwarehouse
+                  key: cookie-secret
             - name: BETTER_AUTH_URL
               value: "https://borgwarehouse.xrs444.net"
             - name: BETTER_AUTH_TRUSTED_ORIGINS
