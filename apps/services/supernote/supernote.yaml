@@ -42,7 +42,7 @@ spec:
             - {name: sync, mountPath: /sync}
       containers:
         - name: supernote-service
-          image: docker.io/supernote/supernote-service:26.10.09@sha256:570018387243cec1fcbb1176dc8b878f063a7e55ba5d0b802cecf64a9588159e
+          image: docker.io/supernote/supernote-service:26.11.27@sha256:d11be6c8161456499651410d866d365423e97bf0ca22737ad305155ee5a74b29
           ports:
             - {containerPort: 8080, name: http}
             - {containerPort: 18072, name: socketio}
