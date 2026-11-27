@@ -29,7 +29,7 @@ RUN apk add --no-cache tini curl
 
 RUN npm install -g --omit=dev \
       supergateway@4.3.0 \
-      caldav-mcp@0.12.1 \
+      caldav-mcp@0.15.0 \
       @democratize-technology/vikunja-mcp@0.2.0 \
   && npm cache clean --force
 
