@@ -55,7 +55,10 @@ spec:
               mountPath: /media/tvshows
           resources:
             requests:
-              cpu: 500m
+              # Lowered 500m->100m (2026-11-27): xsvr3 (5 CPU) was 99% requested, so
+              # node-exporter/promtail daemonset pods pinned to it sat Pending and
+              # kept apps-core/apps-observability unhealthy. Limit unchanged.
+              cpu: 100m
               memory: 2Gi
             limits:
               cpu: 2000m
