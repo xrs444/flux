@@ -1,5 +1,5 @@
 # Test-only dependencies for tests/python (the modules under test import requests and
 # prometheus_client). Pinned so a dependency release can't change what passes.
 pytest==9.0.3
-requests==2.33.0
+requests==2.34.2
 prometheus_client==0.21.1
