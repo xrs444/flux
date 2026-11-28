@@ -69,7 +69,7 @@ spec:
         # arrives, and caldav-mcp's own exit-on-auth-failure happens inside
         # that lazily-spawned child, invisible to Kubernetes.
         - name: preflight
-          image: ghcr.io/xrs444/mcp-personal@sha256:8942054e4bc71c344b004f18dfc8da65cb41280a566e2c6332b853ecbc4bcabb
+          image: ghcr.io/xrs444/mcp-personal@sha256:f6c5bc50dff7cfaf0378699bd20891bbb0e58ee50e8f90fd54fe49116b818a02
           command:
             - sh
             - -c
@@ -97,7 +97,7 @@ spec:
           # Update from the "Print digest for deployment pinning" step of
           # the Build MCP Personal Image run after every custom-image/
           # change.
-          image: ghcr.io/xrs444/mcp-personal@sha256:8942054e4bc71c344b004f18dfc8da65cb41280a566e2c6332b853ecbc4bcabb
+          image: ghcr.io/xrs444/mcp-personal@sha256:f6c5bc50dff7cfaf0378699bd20891bbb0e58ee50e8f90fd54fe49116b818a02
           command: ["supergateway"]
           args:
             - --stdio

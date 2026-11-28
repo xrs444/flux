@@ -24,7 +24,7 @@ spec:
     spec:
       initContainers:
         - name: preflight
-          image: ghcr.io/xrs444/mcp-personal@sha256:8942054e4bc71c344b004f18dfc8da65cb41280a566e2c6332b853ecbc4bcabb
+          image: ghcr.io/xrs444/mcp-personal@sha256:f6c5bc50dff7cfaf0378699bd20891bbb0e58ee50e8f90fd54fe49116b818a02
           command:
             - sh
             - -c
@@ -47,7 +47,7 @@ spec:
                   key: VIKUNJA_API_TOKEN
       containers:
         - name: mcp-vikunja-s
-          image: ghcr.io/xrs444/mcp-personal@sha256:8942054e4bc71c344b004f18dfc8da65cb41280a566e2c6332b853ecbc4bcabb
+          image: ghcr.io/xrs444/mcp-personal@sha256:f6c5bc50dff7cfaf0378699bd20891bbb0e58ee50e8f90fd54fe49116b818a02
           command: ["supergateway"]
           args:
             - --stdio
