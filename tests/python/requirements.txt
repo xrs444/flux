@@ -2,4 +2,4 @@
 # prometheus_client). Pinned so a dependency release can't change what passes.
 pytest==9.0.3
 requests==2.33.0
-prometheus_client==0.21.1
+prometheus_client==0.26.0
